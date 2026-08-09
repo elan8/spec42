@@ -1050,254 +1050,55 @@ standard library package VectorFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'VectorFunctions'
-      (documentation)
-      (membership_import private -> 'ScalarValues::NumericalValue'[unresolved])
-      (membership_import private -> 'ScalarValues::Positive'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (membership_import private -> 'RealFunctions::sqrt'[unresolved])
-      (membership_import private -> 'TrigFunctions::arccos'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (namespace_import private -> 'ControlFunctions'[unresolved])
-      (namespace_import public -> 'VectorValues'[unresolved])
-      (function_def abstract 'isZeroVector'
-        (documentation)
-        (feature_def in 'v' : 'VectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '+' :> 'DataFunctions::+'[unresolved]
-        (documentation)
-        (feature_def in 'v' : 'VectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'VectorValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out 'u' : 'VectorValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'zeroAddition'
-          (result_expr_membership))
-        (invariant_def 'commutivity'
-          (result_expr_membership)))
-      (function_def abstract '-' :> 'DataFunctions::-'[unresolved]
-        (documentation)
-        (feature_def in 'v' : 'VectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'VectorValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out 'u' : 'VectorValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'negation'
-          (result_expr_membership))
-        (invariant_def 'difference'
-          (result_expr_membership)))
-      (function_def abstract 'sum0'
-        (documentation)
-        (feature_def in 'coll' : 'VectorValue'[unresolved]
-          (multiplicity_range [*]))
-        (feature_def in 'zero' : 'VectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (invariant_def 'precondition'
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out 's' : 'VectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'VectorOf'
-        (documentation)
-        (feature_def in ordered 'components' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1..*]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_def :>> 'dimension'[unresolved]
-              (feature_value (=)))
-            (feature_def :>> 'elements'[unresolved]
-              (feature_value (=))))))
-      (function_def abstract 'scalarVectorMult' :> 'DataFunctions::*'[unresolved]
-        (documentation)
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'v' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'w' : 'NumericalVectorValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'scaling'
-          (result_expr_membership))
-        (invariant_def 'zeroLength'
-          (result_expr_membership)))
-      (alias_member '*' -> 'VectorFunctions::scalarVectorMult'[function_def])
-      (function_def abstract 'vectorScalarMult' :> 'DataFunctions::*'[unresolved]
-        (documentation)
-        (feature_def in 'v' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'w' : 'NumericalVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (default =)))))
-      (function_def abstract 'vectorScalarDiv' :> 'DataFunctions::/'[unresolved]
-        (documentation)
-        (feature_def in 'v' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'w' : 'NumericalVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def abstract 'inner' :> 'DataFunctions::*'[unresolved]
-        (documentation)
-        (feature_def in 'v' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'x' : 'NumericalValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'commmutivity'
-          (result_expr_membership))
-        (invariant_def 'zeroInner'
-          (result_expr_membership)))
-      (function_def abstract 'norm'
-        (documentation)
-        (feature_def in 'v' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'l' : 'NumericalValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'squareNorm'
-          (result_expr_membership))
-        (invariant_def 'lengthZero'
-          (result_expr_membership)))
-      (function_def abstract 'angle'
-        (documentation)
-        (feature_def in 'v' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'NumericalVectorValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'theta' : 'NumericalValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'commutivity'
-          (result_expr_membership))
-        (invariant_def 'lengthInsensitive'
-          (result_expr_membership)))
-      (function_def 'CartesianVectorOf'
-        (documentation)
-        (feature_def in ordered 'components' : 'Real'[unresolved]
-          (multiplicity_range [*]))
-        (return_parameter_membership
-          (feature_def out : 'CartesianVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_def :>> 'dimension'[unresolved]
-              (feature_value (=)))
-            (feature_def :>> 'elements'[unresolved]
-              (feature_value (=))))))
-      (function_def 'CartesianThreeVectorOf' :> 'VectorFunctions::CartesianVectorOf'[function_def]
-        (feature_def in ordered 'components' : 'Real'[unresolved] :>> 'VectorFunctions::CartesianVectorOf::components'[feature_def][implied]
-          (multiplicity_range [3]))
-        (return_parameter_membership
-          (feature_def out : 'CartesianThreeVectorValue'[unresolved] :>> ''[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_def :>> 'CartesianVectorOf::result::dimension'[unresolved] :>> 'CartesianThreeVectorValue::dimension'[unresolved]))))
-      (feature_def 'cartesianZeroVector' : 'CartesianVectorValue'[unresolved]
-        (multiplicity_range [3])
-        (feature_value (=))
-        (documentation))
-      (feature_def 'cartesian3DZeroVector' : 'CartesianThreeVectorValue'[unresolved]
-        (multiplicity_range [1])
-        (feature_value (=)))
-      (function_def 'isCartesianZeroVector' :> 'VectorFunctions::isZeroVector'[function_def]
-        (documentation)
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::isZeroVector::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved] :>> ''[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'cartesian+' :> 'VectorFunctions::+'[function_def]
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::+::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::+::w'[feature_def][implied]
-          (multiplicity_range [0..1]))
-        (invariant_def 'precondition'
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out 'u' : 'CartesianVectorValue'[unresolved] :>> 'u'[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'cartesian-' :> 'VectorFunctions::-'[function_def]
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::-::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::-::w'[feature_def][implied]
-          (multiplicity_range [0..1]))
-        (invariant_def 'precondition'
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out 'u' : 'CartesianVectorValue'[unresolved] :>> 'u'[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'cartesianScalarVectorMult' :> 'VectorFunctions::scalarVectorMult'[function_def]
-        (feature_def in 'x' : 'Real'[unresolved] :>> 'VectorFunctions::scalarVectorMult::x'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::scalarVectorMult::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'w' : 'CartesianVectorValue'[unresolved] :>> 'w'[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'cartesianVectorScalarMult' :> 'VectorFunctions::vectorScalarMult'[function_def]
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::vectorScalarMult::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'x' : 'Real'[unresolved] :>> 'VectorFunctions::vectorScalarMult::x'[feature_def][implied]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'w' : 'CartesianVectorValue'[unresolved] :>> 'w'[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'cartesianInner' :> 'VectorFunctions::inner'[function_def]
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::inner::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::inner::w'[feature_def][implied]
-          (multiplicity_range [1]))
-        (invariant_def 'precondition'
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out 'x' : 'Real'[unresolved] :>> 'x'[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'cartesianNorm' :> 'VectorFunctions::norm'[function_def]
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::norm::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'l' : 'NumericalValue'[unresolved] :>> 'l'[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'cartesianAngle' :> 'VectorFunctions::angle'[function_def]
-        (feature_def in 'v' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::angle::v'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'w' : 'CartesianVectorValue'[unresolved] :>> 'VectorFunctions::angle::w'[feature_def][implied]
-          (multiplicity_range [1]))
-        (invariant_def 'precondition'
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out 'theta' : 'Real'[unresolved] :>> 'theta'[feature_def][implied]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'sum'
-        (feature_def in 'coll' : 'CartesianThreeVectorValue'[unresolved]
-          (multiplicity_range [*]))
-        (return_parameter_membership
-          (feature_def out : 'CartesianThreeVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VectorFunctions"))) (name "VectorFunctions") (declared-name "VectorFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "VectorFunctions::*#alias"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::CartesianThreeVectorOf"))) (name "CartesianThreeVectorOf") (declared-name "CartesianThreeVectorOf"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::CartesianVectorOf"))) (name "CartesianVectorOf") (declared-name "CartesianVectorOf"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::Positive"))) (name "Positive") (declared-name "Positive"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::VectorOf"))) (name "VectorOf") (declared-name "VectorOf"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "VectorFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::angle"))) (name "angle") (declared-name "angle"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::arccos"))) (name "arccos") (declared-name "arccos"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesian3DZeroVector"))) (name "cartesian3DZeroVector") (declared-name "cartesian3DZeroVector"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianAngle"))) (name "cartesianAngle") (declared-name "cartesianAngle"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianInner"))) (name "cartesianInner") (declared-name "cartesianInner"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianNorm"))) (name "cartesianNorm") (declared-name "cartesianNorm"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianScalarVectorMult"))) (name "cartesianScalarVectorMult") (declared-name "cartesianScalarVectorMult"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianVectorScalarMult"))) (name "cartesianVectorScalarMult") (declared-name "cartesianVectorScalarMult"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VectorFunctions::cartesianZeroVector"))) (name "cartesianZeroVector") (declared-name "cartesianZeroVector"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::inner"))) (name "inner") (declared-name "inner"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::isCartesianZeroVector"))) (name "isCartesianZeroVector") (declared-name "isCartesianZeroVector"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::isZeroVector"))) (name "isZeroVector") (declared-name "isZeroVector"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::norm"))) (name "norm") (declared-name "norm"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::scalarVectorMult"))) (name "scalarVectorMult") (declared-name "scalarVectorMult"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::size"))) (name "size") (declared-name "size"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorFunctions::sqrt"))) (name "sqrt") (declared-name "sqrt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::sum"))) (name "sum") (declared-name "sum"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::sum0"))) (name "sum0") (declared-name "sum0"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::vectorScalarDiv"))) (name "vectorScalarDiv") (declared-name "vectorScalarDiv"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorFunctions::vectorScalarMult"))) (name "vectorScalarMult") (declared-name "vectorScalarMult"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorFunctions::_documentation"))) (to (node (document "d0") (qualified-name "VectorFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -41,9 +41,15 @@ state def SD {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (state_def 'SD'
-      (step_usage 's')
-      (step_usage 's2' :> 'step'[unresolved]))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

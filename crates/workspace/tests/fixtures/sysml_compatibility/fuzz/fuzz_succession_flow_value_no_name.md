@@ -66,17 +66,19 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (class_def 'Container'
-        (step_def 'a1' : 'Action1'[unresolved])
-        (succession_def
-          (connector_end 'a1')
-          (connector_end 'a2'))
-        (flow_usage composite 'a1')
-        (flow_usage composite
-          (feature_value (=))
-          (connector_end 'a1.y')
-          (connector_end 'a2.x'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "P::Container"))) (name "Container") (declared-name "Container"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -106,18 +106,22 @@ semantic.unresolved_name 'endShot'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Redefinition'
-      (classifier_def 'A'
-        (feature_def 'f'))
-      (classifier_def 'B' :> 'Redefinition::A'[classifier_def]
-        (feature_def :>> 'Redefinition::A::f'[feature_def]
-          (feature_def 'g')))
-      (classifier_def 'C' :> 'Redefinition::A'[classifier_def] :> 'Redefinition::B'[classifier_def]
-        (feature_def :> 'Redefinition::A::f'[feature_def]
-          (feature_def :>> 'g'[unresolved])))
-      (class_def 'X'
-        (feature_def :>> 'startShot'[unresolved])
-        (feature_def :>> 'endShot'[unresolved])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Redefinition"))) (name "Redefinition") (declared-name "Redefinition")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::B"))) (name "B") (declared-name "B"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::C"))) (name "C") (declared-name "C"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Redefinition::X"))) (name "X") (declared-name "X"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -77,13 +77,28 @@ semantic.unresolved_name 'ScalarValues::Boolean'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Opaque Action Example'
-      (part_def 'Sensor'
-        (attribute_usage composite 'ready' : 'ScalarValues::Boolean'[unresolved]))
-      (action_def 'UpdateSensors'
-        (reference_usage in reference 'sensors' : 'Opaque Action Example::Sensor'[part_def]
-          (multiplicity_range [*]))
-        (textual_rep)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Opaque Action Example"))) (name "Opaque Action Example") (declared-name "Opaque Action Example")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (name "Sensor") (declared-name "Sensor") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (name "ready") (declared-name "ready") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::Sensor")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (name "UpdateSensors") (declared-name "UpdateSensors")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (name "sensors") (declared-name "sensors") (effective (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

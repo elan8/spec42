@@ -160,29 +160,56 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '13b-Safety and Security Features Element Group'
-      (part_usage 'vehicle1_c1'
-        (part_usage composite 'interior'
-          (part_usage composite 'alarm')
-          (part_usage composite 'seatBelt'
-            (multiplicity_range [2]))
-          (part_usage composite 'frontSeat'
-            (multiplicity_range [2]))
-          (part_usage composite 'driverAirBag'))
-        (part_usage composite 'bodyAssy'
-          (part_usage composite 'body')
-          (part_usage composite 'bumper')
-          (part_usage composite 'keylessEntry')))
-      (package 'Safety Features'
-        (membership_import public -> '13b-Safety and Security Features Element Group::vehicle1_c1::interior::seatBelt'[part_usage])
-        (membership_import public -> '13b-Safety and Security Features Element Group::vehicle1_c1::interior::driverAirBag'[part_usage])
-        (membership_import public -> '13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::bumper'[part_usage]))
-      (package 'Security Features'
-        (membership_import public -> '13b-Safety and Security Features Element Group::vehicle1_c1::interior::alarm'[part_usage])
-        (membership_import public -> '13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::keylessEntry'[part_usage]))
-      (package 'Safety & Security Features'
-        (namespace_import public -> '13b-Safety and Security Features Element Group::Safety Features'[package])
-        (namespace_import public -> '13b-Safety and Security Features Element Group::Security Features'[package])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group"))) (name "13b-Safety and Security Features Element Group") (declared-name "13b-Safety and Security Features Element Group")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features"))) (name "Safety & Security Features") (declared-name "Safety & Security Features")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features::*#import"))) (name "*") (declared-name "*"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety Features"))) (name "Safety Features") (declared-name "Safety Features")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety Features::bumper"))) (name "bumper") (declared-name "bumper"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety Features::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety Features::seatBelt"))) (name "seatBelt") (declared-name "seatBelt"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Security Features"))) (name "Security Features") (declared-name "Security Features")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Security Features::alarm"))) (name "alarm") (declared-name "alarm"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Security Features::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry"))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior"))) (name "interior") (declared-name "interior") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group::vehicle1_c1::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

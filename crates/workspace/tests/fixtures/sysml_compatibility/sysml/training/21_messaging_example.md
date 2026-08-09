@@ -154,37 +154,65 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Messaging Example'
-      (item_def 'Scene')
-      (item_def 'Image')
-      (item_def 'Picture')
-      (attribute_def 'Show'
-        (item_usage composite 'picture' : 'Messaging Example::Picture'[item_def]))
-      (action_def 'Focus'
-        (item_usage in 'scene' : 'Messaging Example::Scene'[item_def])
-        (item_usage out 'image' : 'Messaging Example::Image'[item_def]))
-      (action_def 'Shoot'
-        (item_usage in 'image' : 'Messaging Example::Image'[item_def])
-        (item_usage out 'picture' : 'Messaging Example::Picture'[item_def]))
-      (action_def 'TakePicture')
-      (action_usage 'screen')
-      (action_usage 'takePicture' : 'Messaging Example::TakePicture'[action_def]
-        (action_usage composite 'trigger')
-        (accept_action_usage)
-        (source_succession
-          (action_usage 'focus' : 'Messaging Example::Focus'[action_def]
-            (item_usage in 'scene'
-              (feature_value (=)))
-            (item_usage out 'image')))
-        (flow_usage composite
-          (connector_end 'focus.image')
-          (connector_end 'shoot.image'))
-        (source_succession
-          (action_usage 'shoot' : 'Messaging Example::Shoot'[action_def]
-            (item_usage in 'image')
-            (item_usage out 'picture')))
-        (source_succession
-          (send_action_usage))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Messaging Example"))) (name "Messaging Example") (declared-name "Messaging Example")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Messaging Example::Focus"))) (name "Focus") (declared-name "Focus")
+          (contains
+            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Messaging Example::Image"))) (name "Image") (declared-name "Image"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Messaging Example::Picture"))) (name "Picture") (declared-name "Picture"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Messaging Example::Scene"))) (name "Scene") (declared-name "Scene"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Messaging Example::Shoot"))) (name "Shoot") (declared-name "Shoot")
+          (contains
+            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Messaging Example::Show"))) (name "Show") (declared-name "Show") (declared (properties (ordered false) (unique true))))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Messaging Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::screen"))) (name "screen") (declared-name "screen") (declared (properties (composite true) (reference false))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::focus"))) (name "focus") (declared-name "focus") (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus")))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "scene") (children (expression (kind "featureReference") (reference "trigger")))))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Messaging Example::takePicture::focus::scene"))) (role feature-value))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::trigger"))) (name "trigger") (declared-name "trigger") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::takePicture::focus"))) (to (node (document "d0") (qualified-name "Messaging Example::takePicture::shoot"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::takePicture"))) (to (node (document "d0") (qualified-name "Messaging Example::takePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::takePicture"))) (to (node (document "d0") (qualified-name "Messaging Example::takePicture::shoot"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::takePicture"))) (to (node (document "d0") (qualified-name "Messaging Example::takePicture::trigger"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Focus::image"))) (to (node (document "d0") (qualified-name "Messaging Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Focus::scene"))) (to (node (document "d0") (qualified-name "Messaging Example::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Shoot::image"))) (to (node (document "d0") (qualified-name "Messaging Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::Shoot::picture"))) (to (node (document "d0") (qualified-name "Messaging Example::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::takePicture"))) (to (node (document "d0") (qualified-name "Messaging Example::TakePicture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::takePicture::focus"))) (to (node (document "d0") (qualified-name "Messaging Example::Focus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Messaging Example::takePicture::shoot"))) (to (node (document "d0") (qualified-name "Messaging Example::Shoot"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

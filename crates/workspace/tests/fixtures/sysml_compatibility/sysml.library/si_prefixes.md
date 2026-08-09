@@ -607,205 +607,217 @@ standard library package SIPrefixes {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'SIPrefixes'
-      (documentation)
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (attribute_usage 'yocto' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'zepto' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'atto' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'femto' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'pico' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'nano' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'micro' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'milli' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'centi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'deci' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'deca' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'hecto' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'kilo' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'mega' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'giga' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'tera' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'peta' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'exa' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'zetta' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'yotta' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'kibi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'mebi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'gibi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'tebi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'pebi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'exbi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'zebi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=))))
-      (attribute_usage 'yobi' : 'UnitPrefix'[unresolved]
-        (reference_usage reference :>> 'longName'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'symbol'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'conversionFactor'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SIPrefixes"))) (name "SIPrefixes") (declared-name "SIPrefixes")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SIPrefixes::*"))) (name "*") (declared-name "*"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "SIPrefixes::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::atto"))) (name "atto") (declared-name "atto") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::atto::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::atto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::atto::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::atto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::atto::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::atto")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::centi"))) (name "centi") (declared-name "centi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::centi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::centi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::centi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::centi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::centi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::centi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::deca"))) (name "deca") (declared-name "deca") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::deca::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::deca")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::deca::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::deca")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::deca::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::deca")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::deci"))) (name "deci") (declared-name "deci") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::deci::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::deci")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::deci::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::deci")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::deci::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::deci")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::exa"))) (name "exa") (declared-name "exa") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::exa::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::exa")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::exa::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::exa")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::exa::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::exa")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::exbi"))) (name "exbi") (declared-name "exbi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::exbi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::exbi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::exbi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::exbi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::exbi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::exbi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::femto"))) (name "femto") (declared-name "femto") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::femto::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::femto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::femto::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::femto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::femto::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::femto")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::gibi"))) (name "gibi") (declared-name "gibi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::gibi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::gibi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::gibi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::gibi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::gibi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::gibi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::giga"))) (name "giga") (declared-name "giga") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::giga::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::giga")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::giga::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::giga")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::giga::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::giga")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::hecto"))) (name "hecto") (declared-name "hecto") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::hecto::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::hecto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::hecto::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::hecto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::hecto::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::hecto")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::kibi"))) (name "kibi") (declared-name "kibi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::kibi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::kibi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::kibi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::kibi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::kibi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::kibi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::kilo"))) (name "kilo") (declared-name "kilo") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::kilo::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::kilo")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::kilo::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::kilo")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::kilo::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::kilo")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::mebi"))) (name "mebi") (declared-name "mebi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::mebi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::mebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::mebi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::mebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::mebi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::mebi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::mega"))) (name "mega") (declared-name "mega") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::mega::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::mega")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::mega::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::mega")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::mega::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::mega")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::micro"))) (name "micro") (declared-name "micro") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::micro::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::micro")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::micro::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::micro")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::micro::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::micro")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::milli"))) (name "milli") (declared-name "milli") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::milli::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::milli")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::milli::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::milli")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::milli::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::milli")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::nano"))) (name "nano") (declared-name "nano") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::nano::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::nano")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::nano::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::nano")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::nano::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::nano")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::pebi"))) (name "pebi") (declared-name "pebi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::pebi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::pebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::pebi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::pebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::pebi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::pebi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::peta"))) (name "peta") (declared-name "peta") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::peta::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::peta")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::peta::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::peta")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::peta::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::peta")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::pico"))) (name "pico") (declared-name "pico") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::pico::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::pico")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::pico::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::pico")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::pico::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::pico")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::tebi"))) (name "tebi") (declared-name "tebi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::tebi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::tebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::tebi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::tebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::tebi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::tebi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::tera"))) (name "tera") (declared-name "tera") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::tera::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::tera")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::tera::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::tera")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::tera::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::tera")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::yobi"))) (name "yobi") (declared-name "yobi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yobi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yobi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yobi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yobi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yobi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yobi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::yocto"))) (name "yocto") (declared-name "yocto") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yocto::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yocto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yocto::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yocto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yocto::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yocto")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::yotta"))) (name "yotta") (declared-name "yotta") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yotta::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yotta")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yotta::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yotta")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::yotta::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::yotta")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::zebi"))) (name "zebi") (declared-name "zebi") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zebi::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zebi::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zebi")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zebi::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zebi")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::zepto"))) (name "zepto") (declared-name "zepto") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zepto::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zepto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zepto::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zepto")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zepto::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zepto")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SIPrefixes::zetta"))) (name "zetta") (declared-name "zetta") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zetta::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zetta")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zetta::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zetta")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SIPrefixes::zetta::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SIPrefixes::zetta")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SIPrefixes::_documentation"))) (to (node (document "d0") (qualified-name "SIPrefixes"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

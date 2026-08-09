@@ -194,34 +194,28 @@ semantic.unresolved_name 'Occurrence'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Moments'
-      (membership_import private -> 'Occurrences::Life'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (class_def 'Eternity' :> 'Life'[unresolved]
-        (feature_def :>> 'predecessors'[unresolved]
-          (multiplicity_range [0]))
-        (feature_def :>> 'successors'[unresolved]
-          (multiplicity_range [0]))
-        (feature_def :>> 'outsideOfOccurrences'[unresolved]
-          (multiplicity_range [0])))
-      (class_def 'UniversalEternity' :> 'Moments::Eternity'[class_def]
-        (multiplicity_range [1])
-        (feature_def :>> 'timeSlices'[unresolved] : 'Moments::Period'[class_def])
-        (feature_def :>> 'snapshots'[unresolved] : 'Moments::Moment'[class_def]))
-      (feature_def 'universalEternity' : 'Moments::UniversalEternity'[class_def]
-        (multiplicity_range [1]))
-      (class_def 'Period'
-        (feature_def :>> 'timeSliceOf'[unresolved] : 'Moments::UniversalEternity'[class_def]
-          (multiplicity_range [1])))
-      (class_def sufficient 'InstantOccurrence' :> 'Occurrence'[unresolved]
-        (feature_def :>> 'snapshots'[unresolved]
-          (multiplicity_range [1])))
-      (class_def 'Moment' :> 'Moments::Period'[class_def] :> 'Moments::InstantOccurrence'[class_def]
-        (feature_def :>> 'snapshotOf'[unresolved] : 'Moments::UniversalEternity'[class_def]
-          (multiplicity_range [1])))
-      (membership_import private -> 'Occurrence::spaceTimeCoincidentOccurrences'[unresolved])
-      (feature_def 'coincidentUEPortion' : 'Occurrence'[unresolved] :> 'spaceTimeCoincidentOccurrences'[unresolved] :> 'universalEternity::portions'[unresolved]
-        (multiplicity_range [1])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Moments"))) (name "Moments") (declared-name "Moments")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Moments::Eternity"))) (name "Eternity") (declared-name "Eternity"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Moments::Life"))) (name "Life") (declared-name "Life"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Moments::Moment"))) (name "Moment") (declared-name "Moment"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Moments::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Moments::Period"))) (name "Period") (declared-name "Period"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Moments::UniversalEternity"))) (name "UniversalEternity") (declared-name "UniversalEternity"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Moments::all"))) (name "all") (declared-name "all"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Moments::coincidentUEPortion"))) (name "coincidentUEPortion") (declared-name "coincidentUEPortion"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Moments::spaceTimeCoincidentOccurrences"))) (name "spaceTimeCoincidentOccurrences") (declared-name "spaceTimeCoincidentOccurrences"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Moments::universalEternity"))) (name "universalEternity") (declared-name "universalEternity"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

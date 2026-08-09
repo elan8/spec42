@@ -108,21 +108,32 @@ semantic.unresolved_name 'Vehicle'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Individuals and Roles'
-      (namespace_import private -> 'Part Definition Example'[unresolved])
-      (part_def 'Wheel')
-      (part_def individual 'Vehicle_1' :> 'Vehicle'[unresolved]
-        (part_usage composite 'leftFrontWheel' : 'Individuals and Roles::Wheel'[part_def])
-        (part_usage composite 'rightFrontWheel' : 'Individuals and Roles::Wheel'[part_def]))
-      (part_def individual 'Wheel_1' :> 'Individuals and Roles::Wheel'[part_def])
-      (part_usage individual 'vehicle_1' : 'Individuals and Roles::Vehicle_1'[part_def]
-        (not_implemented 'malformed')
-        (part_usage composite 'vehicle_1_t0'
-          (occurrence_usage composite 'leftFrontWheel_t0' : 'Individuals and Roles::Wheel_1'[part_def] :>> 'Individuals and Roles::Vehicle_1::leftFrontWheel'[part_usage]))
-        (source_succession
-          (not_implemented 'malformed'))
-        (part_usage composite 'vehicle_1_t1'
-          (occurrence_usage composite 'rightFrontWheel_t1' : 'Individuals and Roles::Wheel_1'[part_def] :>> 'Individuals and Roles::Vehicle_1::rightFrontWheel'[part_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Individuals and Roles"))) (name "Individuals and Roles") (declared-name "Individuals and Roles")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Individuals and Roles::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1") (declared (properties (individual true)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (name "leftFrontWheel") (declared-name "leftFrontWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (name "rightFrontWheel") (declared-name "rightFrontWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (name "Wheel_1") (declared-name "Wheel_1") (declared (properties (individual true))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (name "vehicle_1") (declared-name "vehicle_1") (declared (properties (individual true) (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

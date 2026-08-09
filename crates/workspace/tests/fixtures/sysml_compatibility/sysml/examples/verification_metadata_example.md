@@ -84,19 +84,43 @@ semantic.unresolved_name 'VerificationMethod'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VerificationMetadataExample'
-      (namespace_import private -> 'VerificationCases'[unresolved])
-      (namespace_import private -> 'VerificationMethodKind'[unresolved])
-      (verification_case_def 'MassTest')
-      (verification_case_usage 'massTests' : 'VerificationMetadataExample::MassTest'[verification_case_def]
-        (metadata_usage :> 'VerificationMethod'[unresolved]
-          (feature_def 'kind'
-            (feature_value (=))))
-        (objective_membership composite)
-        (action_usage composite 'weighVehicle'
-          (metadata_usage :> 'VerificationMethod'[unresolved]
-            (feature_def 'kind'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VerificationMetadataExample"))) (name "VerificationMetadataExample") (declared-name "VerificationMetadataExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationMetadataExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationMetadataExample::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "verification def") (id (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (name "MassTest") (declared-name "MassTest"))
+        (element (kind "verification") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (name "massTests") (declared-name "massTests")
+          (contains
+            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (name "VerificationMethod") (declared-name "VerificationMethod") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
+              )
+            )
+            (element (kind "objective") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (name "weighVehicle") (declared-name "weighVehicle") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
+              (contains
+                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (name "VerificationMethod") (declared-name "VerificationMethod") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

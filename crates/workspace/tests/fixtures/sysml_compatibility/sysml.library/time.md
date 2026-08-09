@@ -889,129 +889,189 @@ standard library package Time {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Time'
-      (documentation)
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'ScalarValues::Integer'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (membership_import private -> 'Quantities::ScalarQuantityValue'[unresolved])
-      (membership_import private -> 'Quantities::scalarQuantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (membership_import public -> 'ISQBase::DurationValue'[unresolved])
-      (membership_import public -> 'ISQBase::DurationUnit'[unresolved])
-      (membership_import public -> 'ISQBase::duration'[unresolved])
-      (membership_import public -> 'ISQSpaceTime::TimeValue'[unresolved])
-      (membership_import public -> 'ISQSpaceTime::TimeUnit'[unresolved])
-      (membership_import public -> 'ISQSpaceTime::time'[unresolved])
-      (part_usage 'universalClock' : 'Time::Clock'[part_def] :> 'Clocks::universalClock'[unresolved]
-        (multiplicity_range [1])
-        (documentation))
-      (part_def 'Clock' :> 'Clocks::Clock'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'currentTime'[unresolved] : 'Time::TimeInstantValue'[attribute_def]))
-      (calculation_def 'TimeOf' :> 'Clocks::TimeOf'[unresolved]
-        (documentation)
-        (reference_usage in reference 'o' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'clock' : 'Time::Clock'[part_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'timeInstant' : 'Time::TimeInstantValue'[attribute_def]
-            (multiplicity_range [1]))))
-      (calculation_def 'DurationOf' :> 'Clocks::DurationOf'[unresolved]
-        (documentation)
-        (reference_usage in reference 'o' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'clock' : 'Time::Clock'[part_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'duration' : 'DurationValue'[unresolved])))
-      (attribute_def 'TimeScale' :> 'IntervalScale'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'unit'[unresolved] : 'DurationUnit'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'definitionalEpoch' : 'DefinitionalQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'definitionalQuantityValues'[unresolved]
-          (feature_value (=))))
-      (attribute_def 'TimeInstantValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'Time::TimeScale'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'timeInstant' : 'Time::TimeInstantValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def abstract 'DateTime' :> 'Time::TimeInstantValue'[attribute_def]
-        (documentation))
-      (attribute_def abstract 'Date' :> 'Time::TimeInstantValue'[attribute_def]
-        (documentation))
-      (attribute_def abstract 'TimeOfDay' :> 'Time::TimeInstantValue'[attribute_def]
-        (documentation))
-      (attribute_usage 'Coordinated Universal Time' : 'Time::TimeScale'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'unit'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'Time::TimeScale::definitionalEpoch'[attribute_usage] : 'DefinitionalQuantityValue'[unresolved]
-          (reference_usage reference :>> 'num'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'definition'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'UtcTimeInstantValue' :> 'Time::DateTime'[attribute_def]
-        (reference_usage reference :>> 'mRef'[unresolved]
-          (feature_value (=))
-          (documentation)))
-      (attribute_usage 'utcTimeInstant' : 'Time::UtcTimeInstantValue'[attribute_def] :> 'Time::timeInstant'[attribute_usage])
-      (attribute_def 'Iso8601DateTimeEncoding' :> 'String'[unresolved]
-        (documentation))
-      (attribute_def 'Iso8601DateTime' :> 'Time::UtcTimeInstantValue'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'val' : 'Time::Iso8601DateTimeEncoding'[attribute_def])
-        (attribute_usage composite :>> 'num'[unresolved]
-          (feature_value (=)))
-        (calculation_usage composite 'getElapsedUtcTime'
-          (reference_usage in reference 'iso8601DateTime' : 'Time::Iso8601DateTimeEncoding'[attribute_def])
-          (return_parameter_membership
-            (feature_def out : 'Real'[unresolved]))))
-      (attribute_def 'Iso8601DateTimeStructure' :> 'Time::UtcTimeInstantValue'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'year' : 'Integer'[unresolved])
-        (attribute_usage composite 'month' : 'Natural'[unresolved])
-        (attribute_usage composite 'day' : 'Natural'[unresolved])
-        (attribute_usage composite 'hour' : 'Natural'[unresolved])
-        (attribute_usage composite 'minute' : 'Natural'[unresolved])
-        (attribute_usage composite 'second' : 'Natural'[unresolved])
-        (attribute_usage composite 'microsecond' : 'Natural'[unresolved])
-        (attribute_usage composite 'hourOffset' : 'Integer'[unresolved])
-        (attribute_usage composite 'minuteOffset' : 'Integer'[unresolved])
-        (attribute_usage composite :>> 'num'[unresolved]
-          (feature_value (=)))
-        (calculation_usage composite 'getElapsedUtcTime'
-          (reference_usage in reference 'year' : 'Integer'[unresolved])
-          (reference_usage in reference 'month' : 'Natural'[unresolved])
-          (reference_usage in reference 'day' : 'Natural'[unresolved])
-          (reference_usage in reference 'hour' : 'Natural'[unresolved])
-          (reference_usage in reference 'minute' : 'Natural'[unresolved])
-          (reference_usage in reference 'second' : 'Natural'[unresolved])
-          (reference_usage in reference 'microsecond' : 'Natural'[unresolved])
-          (reference_usage in reference 'hourOffset' : 'Integer'[unresolved])
-          (reference_usage in reference 'minuteOffest' : 'Integer'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'Real'[unresolved]))))
-      (calculation_usage 'convertIso8601DateTimeToStructure'
-        (documentation)
-        (reference_usage in reference 'iso8601DateTime' : 'Time::Iso8601DateTime'[attribute_def])
-        (return_parameter_membership
-          (feature_def out : 'Time::Iso8601DateTimeStructure'[attribute_def])))
-      (calculation_usage 'convertIso8601StructureToDateTime'
-        (documentation)
-        (reference_usage in reference 'iso8601DateTimeStructure' : 'Time::Iso8601DateTimeStructure'[attribute_def])
-        (attribute_usage composite 'x' : 'Time::Iso8601DateTime'[attribute_def])
-        (return_parameter_membership
-          (feature_def out : 'Time::Iso8601DateTime'[attribute_def]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Time"))) (name "Time") (declared-name "Time")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Time::Clock"))) (name "Clock") (declared-name "Clock") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::Clock::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Clock")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Clock::currentTime"))) (name "currentTime") (declared-name "currentTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Clock")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::Coordinated Universal Time"))) (name "Coordinated Universal Time") (declared-name "Coordinated Universal Time") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::Coordinated Universal Time::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Coordinated Universal Time")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Coordinated Universal Time::definitionalEpoch"))) (name "definitionalEpoch") (declared-name "definitionalEpoch") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Coordinated Universal Time")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Coordinated Universal Time::unit"))) (name "unit") (declared-name "unit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Coordinated Universal Time")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::Date"))) (name "Date") (declared-name "Date") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::Date::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Date")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::DateTime"))) (name "DateTime") (declared-name "DateTime") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::DateTime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::DateTime")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Time::DurationOf"))) (name "DurationOf") (declared-name "DurationOf")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::DurationOf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::DurationOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time::DurationOf::clock"))) (name "clock") (declared-name "clock") (effective (featuring-type (node (document "d0") (qualified-name "Time::DurationOf")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Time::DurationOf::duration"))) (name "duration") (declared-name "duration") (effective (featuring-type (node (document "d0") (qualified-name "Time::DurationOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time::DurationOf::o"))) (name "o") (declared-name "o") (effective (featuring-type (node (document "d0") (qualified-name "Time::DurationOf")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::DurationUnit"))) (name "DurationUnit") (declared-name "DurationUnit"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::DurationValue"))) (name "DurationValue") (declared-name "DurationValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::Integer"))) (name "Integer") (declared-name "Integer"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::Iso8601DateTime"))) (name "Iso8601DateTime") (declared-name "Iso8601DateTime") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::Iso8601DateTime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTime")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTime::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTime")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTime::val"))) (name "val") (declared-name "val") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTime")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeEncoding"))) (name "Iso8601DateTimeEncoding") (declared-name "Iso8601DateTimeEncoding") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeEncoding::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeEncoding")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure"))) (name "Iso8601DateTimeStructure") (declared-name "Iso8601DateTimeStructure") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::day"))) (name "day") (declared-name "day") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::hour"))) (name "hour") (declared-name "hour") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::hourOffset"))) (name "hourOffset") (declared-name "hourOffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::microsecond"))) (name "microsecond") (declared-name "microsecond") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::minute"))) (name "minute") (declared-name "minute") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::minuteOffset"))) (name "minuteOffset") (declared-name "minuteOffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::month"))) (name "month") (declared-name "month") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::second"))) (name "second") (declared-name "second") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::year"))) (name "year") (declared-name "year") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::String"))) (name "String") (declared-name "String"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::TimeInstantValue"))) (name "TimeInstantValue") (declared-name "TimeInstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::TimeInstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::TimeInstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::TimeInstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::TimeInstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::TimeInstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::TimeInstantValue")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Time::TimeOf"))) (name "TimeOf") (declared-name "TimeOf")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::TimeOf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::TimeOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time::TimeOf::clock"))) (name "clock") (declared-name "clock") (effective (featuring-type (node (document "d0") (qualified-name "Time::TimeOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time::TimeOf::o"))) (name "o") (declared-name "o") (effective (featuring-type (node (document "d0") (qualified-name "Time::TimeOf")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::TimeOfDay"))) (name "TimeOfDay") (declared-name "TimeOfDay") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::TimeOfDay::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::TimeOfDay")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::TimeScale"))) (name "TimeScale") (declared-name "TimeScale") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::TimeScale::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::TimeScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::TimeScale::definitionalEpoch"))) (name "definitionalEpoch") (declared-name "definitionalEpoch") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::TimeScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::TimeScale::definitionalQuantityValues"))) (name "definitionalQuantityValues") (declared-name "definitionalQuantityValues") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::TimeScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::TimeScale::unit"))) (name "unit") (declared-name "unit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::TimeScale")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::TimeUnit"))) (name "TimeUnit") (declared-name "TimeUnit"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::TimeValue"))) (name "TimeValue") (declared-name "TimeValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::UtcTimeInstantValue"))) (name "UtcTimeInstantValue") (declared-name "UtcTimeInstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::UtcTimeInstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::UtcTimeInstantValue"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::UtcTimeInstantValue::mRef::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::UtcTimeInstantValue")))))
+              )
+            )
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::_documentation"))) (name ""))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure"))) (name "convertIso8601DateTimeToStructure") (declared-name "convertIso8601DateTimeToStructure")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure::iso8601DateTime"))) (name "iso8601DateTime") (declared-name "iso8601DateTime") (effective (featuring-type (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime"))) (name "convertIso8601StructureToDateTime") (declared-name "convertIso8601StructureToDateTime")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime::iso8601DateTimeStructure"))) (name "iso8601DateTimeStructure") (declared-name "iso8601DateTimeStructure") (effective (featuring-type (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::duration"))) (name "duration") (declared-name "duration"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::scalarQuantities"))) (name "scalarQuantities") (declared-name "scalarQuantities"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time::time"))) (name "time") (declared-name "time"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::timeInstant"))) (name "timeInstant") (declared-name "timeInstant") (declared (properties (ordered false) (unique true))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Time::universalClock"))) (name "universalClock") (declared-name "universalClock") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::universalClock::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Clock")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::utcTimeInstant"))) (name "utcTimeInstant") (declared-name "utcTimeInstant") (declared (properties (ordered false) (unique true))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::Clock::_documentation"))) (to (node (document "d0") (qualified-name "Time::Clock"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::Coordinated Universal Time::_documentation"))) (to (node (document "d0") (qualified-name "Time::Coordinated Universal Time"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::Date::_documentation"))) (to (node (document "d0") (qualified-name "Time::Date"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::DateTime::_documentation"))) (to (node (document "d0") (qualified-name "Time::DateTime"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::DurationOf::_documentation"))) (to (node (document "d0") (qualified-name "Time::DurationOf"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTime::_documentation"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTime"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTimeEncoding::_documentation"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTimeEncoding"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::_documentation"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::TimeInstantValue::_documentation"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::TimeOf::_documentation"))) (to (node (document "d0") (qualified-name "Time::TimeOf"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::TimeOfDay::_documentation"))) (to (node (document "d0") (qualified-name "Time::TimeOfDay"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::TimeScale::_documentation"))) (to (node (document "d0") (qualified-name "Time::TimeScale"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::UtcTimeInstantValue::mRef::_documentation"))) (to (node (document "d0") (qualified-name "Time::UtcTimeInstantValue::mRef"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::_documentation"))) (to (node (document "d0") (qualified-name "Time"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure::_documentation"))) (to (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime::_documentation"))) (to (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Time::universalClock::_documentation"))) (to (node (document "d0") (qualified-name "Time::universalClock"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Time::Clock::currentTime"))) (to (node (document "d0") (qualified-name "Time::Clock::currentTime"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Time::Coordinated Universal Time::definitionalEpoch"))) (to (node (document "d0") (qualified-name "Time::TimeScale::definitionalEpoch"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Time::Coordinated Universal Time::unit"))) (to (node (document "d0") (qualified-name "Time::TimeScale::unit"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTime::num"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue::num"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure::num"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue::num"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Time::UtcTimeInstantValue::mRef"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue::mRef"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Time::Clock"))) (to (node (document "d0") (qualified-name "Time::Clock"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::Clock::currentTime"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::Coordinated Universal Time"))) (to (node (document "d0") (qualified-name "Time::TimeScale"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::Date"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::DateTime"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTime"))) (to (node (document "d0") (qualified-name "Time::UtcTimeInstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTime::val"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTimeEncoding"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure"))) (to (node (document "d0") (qualified-name "Time::UtcTimeInstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::TimeInstantValue::mRef"))) (to (node (document "d0") (qualified-name "Time::TimeScale"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::TimeOfDay"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::UtcTimeInstantValue"))) (to (node (document "d0") (qualified-name "Time::DateTime"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure::"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::convertIso8601DateTimeToStructure::iso8601DateTime"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTime"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime::"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTime"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::convertIso8601StructureToDateTime::iso8601DateTimeStructure"))) (to (node (document "d0") (qualified-name "Time::Iso8601DateTimeStructure"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::timeInstant"))) (to (node (document "d0") (qualified-name "Time::TimeInstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::universalClock"))) (to (node (document "d0") (qualified-name "Time::Clock"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time::utcTimeInstant"))) (to (node (document "d0") (qualified-name "Time::UtcTimeInstantValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

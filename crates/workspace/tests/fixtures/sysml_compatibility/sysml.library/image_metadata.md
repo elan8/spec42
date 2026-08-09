@@ -234,31 +234,71 @@ standard library package ImageMetadata {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ImageMetadata'
-      (documentation)
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (attribute_def 'Image'
-        (documentation)
-        (attribute_usage composite 'content' : 'String'[unresolved]
-          (multiplicity_range [0..1])
-          (documentation))
-        (attribute_usage composite 'encoding' : 'String'[unresolved]
-          (multiplicity_range [0..1])
-          (documentation))
-        (attribute_usage composite 'type' : 'String'[unresolved]
-          (multiplicity_range [0..1])
-          (documentation))
-        (attribute_usage composite 'location' : 'String'[unresolved]
-          (multiplicity_range [0..1])
-          (documentation)))
-      (metadata_def 'Icon'
-        (documentation)
-        (attribute_usage composite 'fullImage' : 'ImageMetadata::Image'[attribute_def]
-          (multiplicity_range [0..1])
-          (documentation))
-        (attribute_usage composite 'smallImage' : 'ImageMetadata::Image'[attribute_def]
-          (multiplicity_range [0..1])
-          (documentation))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ImageMetadata"))) (name "ImageMetadata") (declared-name "ImageMetadata")
+      (contains
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ImageMetadata::Icon"))) (name "Icon") (declared-name "Icon")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Icon::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Icon")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))) (name "fullImage") (declared-name "fullImage") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Icon"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))) (name "smallImage") (declared-name "smallImage") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Icon"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image")))))
+              )
+            )
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ImageMetadata::Image"))) (name "Image") (declared-name "Image") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Image::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ImageMetadata::Image::content"))) (name "content") (declared-name "content") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Image::content::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ImageMetadata::Image::encoding"))) (name "encoding") (declared-name "encoding") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Image::encoding::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ImageMetadata::Image::location"))) (name "location") (declared-name "location") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Image::location::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ImageMetadata::Image::type"))) (name "type") (declared-name "type") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::Image::type::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ImageMetadata::Image")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ImageMetadata::String"))) (name "String") (declared-name "String"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ImageMetadata::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Icon::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Icon"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Image::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Image"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Image::content::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Image::content"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Image::encoding::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Image::encoding"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Image::location::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Image::location"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Image::type::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata::Image::type"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::_documentation"))) (to (node (document "d0") (qualified-name "ImageMetadata"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Icon::fullImage"))) (to (node (document "d0") (qualified-name "ImageMetadata::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ImageMetadata::Icon::smallImage"))) (to (node (document "d0") (qualified-name "ImageMetadata::Image"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

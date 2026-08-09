@@ -479,90 +479,140 @@ standard library package StateSpaceRepresentation {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'StateSpaceRepresentation'
-      (documentation)
-      (membership_import private -> 'ISQ::DurationValue'[unresolved])
-      (membership_import private -> 'Quantities::VectorQuantityValue'[unresolved])
-      (namespace_import private -> 'VectorCalculations'[unresolved])
-      (attribute_def abstract 'StateSpace' :> 'VectorQuantityValue'[unresolved])
-      (attribute_def abstract 'Input' :> 'VectorQuantityValue'[unresolved])
-      (attribute_def abstract 'Output' :> 'VectorQuantityValue'[unresolved])
-      (calculation_def abstract 'GetNextState'
-        (reference_usage in reference 'input' : 'StateSpaceRepresentation::Input'[attribute_def])
-        (reference_usage in reference 'stateSpace' : 'StateSpaceRepresentation::StateSpace'[attribute_def])
-        (reference_usage in reference 'timeStep' : 'DurationValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'StateSpaceRepresentation::StateSpace'[attribute_def])))
-      (calculation_def abstract 'GetOutput'
-        (reference_usage in reference 'input' : 'StateSpaceRepresentation::Input'[attribute_def])
-        (reference_usage in reference 'stateSpace' : 'StateSpaceRepresentation::StateSpace'[attribute_def])
-        (return_parameter_membership
-          (feature_def out : 'StateSpaceRepresentation::Output'[attribute_def])))
-      (action_def abstract 'StateSpaceEventDef'
-        (documentation))
-      (action_def 'ZeroCrossingEventDef' :> 'StateSpaceRepresentation::StateSpaceEventDef'[action_def])
-      (item_def 'StateSpaceItem'
-        (documentation))
-      (action_def abstract 'StateSpaceDynamics'
-        (documentation)
-        (attribute_usage in 'input' : 'StateSpaceRepresentation::Input'[attribute_def])
-        (calculation_usage abstract composite 'getNextState' : 'StateSpaceRepresentation::GetNextState'[calculation_def])
-        (calculation_usage abstract composite 'getOutput' : 'StateSpaceRepresentation::GetOutput'[calculation_def])
-        (attribute_usage composite 'stateSpace' : 'StateSpaceRepresentation::StateSpace'[attribute_def])
-        (attribute_usage out 'output' : 'StateSpaceRepresentation::Output'[attribute_def]
-          (feature_value (=))))
-      (attribute_def abstract 'StateDerivative' :> 'VectorQuantityValue'[unresolved]
-        (documentation)
-        (reference_usage reference 'stateSpace' : 'StateSpaceRepresentation::StateSpace'[attribute_def])
-        (constraint_usage composite
-          (result_expr_membership)))
-      (calculation_def abstract 'GetDerivative'
-        (documentation)
-        (reference_usage in reference 'input' : 'StateSpaceRepresentation::Input'[attribute_def])
-        (reference_usage in reference 'stateSpace' : 'StateSpaceRepresentation::StateSpace'[attribute_def])
-        (return_parameter_membership
-          (feature_def out : 'StateSpaceRepresentation::StateDerivative'[attribute_def])))
-      (calculation_def abstract 'Integrate'
-        (documentation)
-        (reference_usage in reference 'getDerivative' : 'StateSpaceRepresentation::GetDerivative'[calculation_def])
-        (reference_usage in reference 'input' : 'StateSpaceRepresentation::Input'[attribute_def])
-        (reference_usage in reference 'initialState' : 'StateSpaceRepresentation::StateSpace'[attribute_def])
-        (reference_usage in reference 'timeInterval' : 'DurationValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'result' : 'StateSpaceRepresentation::StateSpace'[attribute_def])))
-      (action_def abstract 'ContinuousStateSpaceDynamics' :> 'StateSpaceRepresentation::StateSpaceDynamics'[action_def]
-        (documentation)
-        (calculation_usage abstract composite 'getDerivative' : 'StateSpaceRepresentation::GetDerivative'[calculation_def])
-        (calculation_usage composite :>> 'StateSpaceRepresentation::StateSpaceDynamics::getNextState'[calculation_usage] : 'StateSpaceRepresentation::GetNextState'[calculation_def]
-          (calculation_usage composite 'integrate' : 'StateSpaceRepresentation::Integrate'[calculation_def]
-            (reference_usage in reference 'getDerivative'
-              (feature_value (=)))
-            (reference_usage in reference 'input'
-              (feature_value (=)))
-            (reference_usage in reference 'initialState'
-              (feature_value (=)))
-            (reference_usage in reference 'timeInterval'
-              (feature_value (=))))
-          (return_parameter_membership
-            (feature_def out 'result'
-              (feature_value (=)))))
-        (event_occurrence_usage 'zeroCrossingEvents' : 'StateSpaceRepresentation::ZeroCrossingEventDef'[action_def]
-          (multiplicity_range [0..*])))
-      (calculation_def abstract 'GetDifference'
-        (documentation)
-        (reference_usage in reference 'input' : 'StateSpaceRepresentation::Input'[attribute_def])
-        (reference_usage in reference 'stateSpace' : 'StateSpaceRepresentation::StateSpace'[attribute_def])
-        (return_parameter_membership
-          (feature_def out : 'StateSpaceRepresentation::StateSpace'[attribute_def])))
-      (action_def abstract 'DiscreteStateSpaceDynamics' :> 'StateSpaceRepresentation::StateSpaceDynamics'[action_def]
-        (documentation)
-        (calculation_usage abstract composite 'getDifference' : 'StateSpaceRepresentation::GetDifference'[calculation_def])
-        (calculation_usage composite :>> 'StateSpaceRepresentation::StateSpaceDynamics::getNextState'[calculation_usage] : 'StateSpaceRepresentation::GetNextState'[calculation_def]
-          (attribute_usage composite 'diff' : 'StateSpaceRepresentation::StateSpace'[attribute_def]
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'result'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "StateSpaceRepresentation"))) (name "StateSpaceRepresentation") (declared-name "StateSpaceRepresentation")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::*"))) (name "*") (declared-name "*"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics"))) (name "ContinuousStateSpaceDynamics") (declared-name "ContinuousStateSpaceDynamics")
+          (contains
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics:::>> getNextState: GetNextState"))) (name ":>> getNextState: GetNextState") (declared-name ":>> getNextState: GetNextState") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics::getDerivative: GetDerivative"))) (name "getDerivative: GetDerivative") (declared-name "getDerivative: GetDerivative") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics::occurrence zeroCrossingEvents[0..*] : ZeroCrossingEventDef"))) (name "occurrence zeroCrossingEvents[0..*] : ZeroCrossingEventDef") (declared-name "occurrence zeroCrossingEvents[0..*] : ZeroCrossingEventDef") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics"))) (name "DiscreteStateSpaceDynamics") (declared-name "DiscreteStateSpaceDynamics")
+          (contains
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics:::>> getNextState: GetNextState"))) (name ":>> getNextState: GetNextState") (declared-name ":>> getNextState: GetNextState") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics::getDifference: GetDifference"))) (name "getDifference: GetDifference") (declared-name "getDifference: GetDifference") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::DurationValue"))) (name "DurationValue") (declared-name "DurationValue"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative"))) (name "GetDerivative") (declared-name "GetDerivative")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::stateSpace"))) (name "stateSpace") (declared-name "stateSpace") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference"))) (name "GetDifference") (declared-name "GetDifference")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::stateSpace"))) (name "stateSpace") (declared-name "stateSpace") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState"))) (name "GetNextState") (declared-name "GetNextState")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState::stateSpace"))) (name "stateSpace") (declared-name "stateSpace") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState::timeStep"))) (name "timeStep") (declared-name "timeStep") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput"))) (name "GetOutput") (declared-name "GetOutput")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput::stateSpace"))) (name "stateSpace") (declared-name "stateSpace") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Input"))) (name "Input") (declared-name "Input") (declared (properties (ordered false) (unique true))))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate"))) (name "Integrate") (declared-name "Integrate")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::getDerivative"))) (name "getDerivative") (declared-name "getDerivative") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::initialState"))) (name "initialState") (declared-name "initialState") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::result"))) (name "result") (declared-name "result") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::timeInterval"))) (name "timeInterval") (declared-name "timeInterval") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::Output"))) (name "Output") (declared-name "Output") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative"))) (name "StateDerivative") (declared-name "StateDerivative") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative::stateSpace"))) (name "stateSpace") (declared-name "stateSpace") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))) (name "StateSpace") (declared-name "StateSpace") (declared (properties (ordered false) (unique true))))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics"))) (name "StateSpaceDynamics") (declared-name "StateSpaceDynamics")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::getNextState: GetNextState"))) (name "getNextState: GetNextState") (declared-name "getNextState: GetNextState") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::getOutput: GetOutput"))) (name "getOutput: GetOutput") (declared-name "getOutput: GetOutput") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::output"))) (name "output") (declared-name "output") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::stateSpace: StateSpace"))) (name "stateSpace: StateSpace") (declared-name "stateSpace: StateSpace") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceEventDef"))) (name "StateSpaceEventDef") (declared-name "StateSpaceEventDef")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceEventDef::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceEventDef")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceItem"))) (name "StateSpaceItem") (declared-name "StateSpaceItem")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceItem::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceItem")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::ZeroCrossingEventDef"))) (name "ZeroCrossingEventDef") (declared-name "ZeroCrossingEventDef"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "StateSpaceRepresentation::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceEventDef::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceEventDef"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceItem::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceItem"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::_documentation"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::ContinuousStateSpaceDynamics"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::DiscreteStateSpaceDynamics"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::ZeroCrossingEventDef"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceEventDef"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::input"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Input"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative::stateSpace"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::input"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Input"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDifference::stateSpace"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState::"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState::input"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Input"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetNextState::stateSpace"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput::"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Output"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput::input"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Input"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::GetOutput::stateSpace"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::getDerivative"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::GetDerivative"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::initialState"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::input"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Input"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::Integrate::result"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::StateDerivative::stateSpace"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpace"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::input"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Input"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "StateSpaceRepresentation::StateSpaceDynamics::output"))) (to (node (document "d0") (qualified-name "StateSpaceRepresentation::Output"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

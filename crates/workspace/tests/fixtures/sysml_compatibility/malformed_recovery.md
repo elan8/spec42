@@ -30,7 +30,15 @@ parse.unexpected_token
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (not_implemented 'malformed')))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

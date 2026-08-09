@@ -604,227 +604,47 @@ standard library package SequenceFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'SequenceFunctions'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Occurrences::SelfSameLifeLink'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'ControlFunctions'[unresolved])
-      (function_def '#' :> 'BaseFunctions::#'[unresolved]
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'index' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1]))))
-      (function_def 'equals'
-        (feature_def in ordered 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'y' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'same'
-        (feature_def in ordered 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'y' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'size'
-        (feature_def in 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'isEmpty'
-        (feature_def in 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'notEmpty'
-        (feature_def in 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'includes'
-        (feature_def in 'seq1' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'seq2' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'includesOnly'
-        (feature_def in 'seq1' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'seq2' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'excludes'
-        (feature_def in 'seq1' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'seq2' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'union'
-        (feature_def in ordered 'seq1' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'seq2' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'intersection'
-        (feature_def in ordered 'seq1' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'seq2' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'including'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'values' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'includingAt'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'values' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'index' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'excluding'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'values' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'excludingAt'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'startIndex' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'endIndex' : 'Positive'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'subsequence'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'startIndex' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'endIndex' : 'Positive'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'head'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=)))))
-      (function_def 'tail'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'last'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=)))))
-      (behavior_def 'add'
-        (feature_def inout ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'values' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def 'newSeq'
-          (feature_value (=)))
-        (feature_def :>> 'endShot'[unresolved] : 'SequenceFunctions::add'[behavior_def]
-          (binding_connector_def
-            (connector_end 'seq')
-            (connector_end 'newSeq'))))
-      (behavior_def 'addAt'
-        (feature_def inout ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'values' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'index' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'newSeq'
-          (feature_value (=)))
-        (feature_def :>> 'endShot'[unresolved] : 'SequenceFunctions::addAt'[behavior_def]
-          (binding_connector_def
-            (connector_end 'seq')
-            (connector_end 'newSeq'))))
-      (behavior_def 'remove'
-        (feature_def inout ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'values' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def 'newSeq'
-          (feature_value (=)))
-        (feature_def :>> 'endShot'[unresolved] : 'SequenceFunctions::remove'[behavior_def]
-          (binding_connector_def
-            (connector_end 'seq')
-            (connector_end 'newSeq'))))
-      (behavior_def 'removeAt'
-        (feature_def inout ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'startIndex' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'endIndex' : 'Positive'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def 'newSeq'
-          (feature_value (=)))
-        (feature_def :>> 'endShot'[unresolved] : 'SequenceFunctions::removeAt'[behavior_def]
-          (binding_connector_def
-            (connector_end 'seq')
-            (connector_end 'newSeq')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SequenceFunctions"))) (name "SequenceFunctions") (declared-name "SequenceFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequenceFunctions::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "SequenceFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::add"))) (name "add") (declared-name "add"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::addAt"))) (name "addAt") (declared-name "addAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::equals"))) (name "equals") (declared-name "equals"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::excludes"))) (name "excludes") (declared-name "excludes"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::excluding"))) (name "excluding") (declared-name "excluding"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::excludingAt"))) (name "excludingAt") (declared-name "excludingAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::head"))) (name "head") (declared-name "head"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::includes"))) (name "includes") (declared-name "includes"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::includesOnly"))) (name "includesOnly") (declared-name "includesOnly"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::including"))) (name "including") (declared-name "including"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::includingAt"))) (name "includingAt") (declared-name "includingAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::intersection"))) (name "intersection") (declared-name "intersection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::last"))) (name "last") (declared-name "last"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::remove"))) (name "remove") (declared-name "remove"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::removeAt"))) (name "removeAt") (declared-name "removeAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::same"))) (name "same") (declared-name "same"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::size"))) (name "size") (declared-name "size"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::subsequence"))) (name "subsequence") (declared-name "subsequence"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::tail"))) (name "tail") (declared-name "tail"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequenceFunctions::union"))) (name "union") (declared-name "union"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequenceFunctions::_documentation"))) (to (node (document "d0") (qualified-name "SequenceFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

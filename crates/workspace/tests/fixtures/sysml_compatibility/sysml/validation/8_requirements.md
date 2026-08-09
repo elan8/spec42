@@ -706,109 +706,209 @@ semantic.unresolved_name 'drivePwrPort'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '8-Requirements'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import public -> '8-Requirements::Vehicle Usages'[package])
-      (namespace_import public -> '8-Requirements::Vehicle Requirements'[package])
-      (package 'Vehicle Definitions'
-        (part_def 'Vehicle'
-          (attribute_usage composite 'mass' : 'MassValue'[unresolved])
-          (attribute_usage composite 'fuelLevel' : 'Real'[unresolved])
-          (attribute_usage composite 'fuelTankCapacity' : 'Real'[unresolved]))
-        (part_def 'Engine'
-          (port_usage composite 'drivePwrPort' : '8-Requirements::Vehicle Definitions::DrivePwrPort'[port_def])
-          (perform_action_usage 'generate torque' : '8-Requirements::Vehicle Definitions::Generate Torque'[action_def]))
-        (part_def 'Transmission'
-          (port_usage composite 'clutchPort' : '8-Requirements::Vehicle Definitions::ClutchPort'[port_def]))
-        (port_def 'DrivePwrPort')
-        (port_def 'ClutchPort')
-        (interface_def 'EngineToTransmissionInterface'
-          (port_usage end 'drivePwrPort' : '8-Requirements::Vehicle Definitions::DrivePwrPort'[port_def])
-          (port_usage end 'clutchPort' : '8-Requirements::Vehicle Definitions::ClutchPort'[port_def]))
-        (action_def 'Generate Torque'))
-      (package 'Vehicle Usages'
-        (namespace_import public -> '8-Requirements::Vehicle Definitions'[package])
-        (action_usage 'provide power'
-          (action_usage composite 'generate torque'))
-        (part_usage 'vehicle1_c1' : '8-Requirements::Vehicle Definitions::Vehicle'[part_def]
-          (attribute_usage composite :>> '8-Requirements::Vehicle Definitions::Vehicle::mass'[attribute_usage]
-            (feature_value (=)))
-          (perform_action_usage :>> '8-Requirements::Vehicle Usages::provide power'[action_usage])
-          (part_usage composite 'engine_v1' : '8-Requirements::Vehicle Definitions::Engine'[part_def]
-            (port_usage composite :>> '8-Requirements::Vehicle Definitions::Engine::drivePwrPort'[port_usage])
-            (perform_action_usage :>> '8-Requirements::Vehicle Usages::provide power::generate torque'[action_usage])
-            (reference_usage reference :>> '8-Requirements::Vehicle Definitions::Engine::generate torque'[perform_action_usage]))
-          (part_usage composite 'transmission' : '8-Requirements::Vehicle Definitions::Transmission'[part_def]
-            (port_usage composite :>> '8-Requirements::Vehicle Definitions::Transmission::clutchPort'[port_usage]))
-          (interface_usage composite 'engineToTransmission' : '8-Requirements::Vehicle Definitions::EngineToTransmissionInterface'[interface_def]
-            (connector_end 'engine_v1.drivePwrPort')
-            (connector_end 'transmission.clutchPort')))
-        (part_usage 'vehicle1_c2' : '8-Requirements::Vehicle Definitions::Vehicle'[part_def]
-          (attribute_usage composite :>> '8-Requirements::Vehicle Definitions::Vehicle::mass'[attribute_usage]
-            (feature_value (=)))))
-      (package 'Vehicle Requirements'
-        (namespace_import public -> '8-Requirements::Vehicle Definitions'[package])
-        (requirement_def 'MassLimitationRequirement'
-          (documentation)
-          (attribute_usage composite 'massActual' : 'MassValue'[unresolved])
-          (attribute_usage composite 'massReqd' : 'MassValue'[unresolved])
-          (require_constraint_usage composite
-            (result_expr_membership)))
-        (requirement_def 'ReliabilityRequirement')
-        (requirement_usage 'vehicleMass1' : '8-Requirements::Vehicle Requirements::MassLimitationRequirement'[requirement_def]
-          (documentation)
-          (subject_membership in 'vehicle' : '8-Requirements::Vehicle Definitions::Vehicle'[part_def])
-          (attribute_usage composite :>> '8-Requirements::Vehicle Requirements::MassLimitationRequirement::massActual'[attribute_usage] : 'MassValue'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> '8-Requirements::Vehicle Requirements::MassLimitationRequirement::massReqd'[attribute_usage]
-            (feature_value (=)))
-          (assume_constraint_usage composite 'fuelConstraint'
-            (documentation)
-            (result_expr_membership)))
-        (requirement_usage 'vehicleMass2' : '8-Requirements::Vehicle Requirements::MassLimitationRequirement'[requirement_def]
-          (documentation)
-          (subject_membership in 'vehicle' : '8-Requirements::Vehicle Definitions::Vehicle'[part_def])
-          (attribute_usage composite :>> '8-Requirements::Vehicle Requirements::MassLimitationRequirement::massActual'[attribute_usage] : 'MassValue'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> '8-Requirements::Vehicle Requirements::MassLimitationRequirement::massReqd'[attribute_usage]
-            (feature_value (=)))
-          (assume_constraint_usage composite 'fuelConstraint'
-            (documentation)
-            (result_expr_membership)))
-        (requirement_usage 'vehicleReliability2' : '8-Requirements::Vehicle Requirements::ReliabilityRequirement'[requirement_def]
-          (subject_membership in 'vehicle' : '8-Requirements::Vehicle Definitions::Vehicle'[part_def]))
-        (requirement_usage 'drivePowerInterface'
-          (documentation)
-          (subject_membership in 'drivePwrPort' : '8-Requirements::Vehicle Definitions::DrivePwrPort'[port_def]))
-        (requirement_usage 'torqueGeneration'
-          (documentation)
-          (subject_membership in 'generateTorque' : '8-Requirements::Vehicle Definitions::Generate Torque'[action_def])))
-      (part_usage 'vehicle1_c1 Specification Context'
-        (namespace_import private -> '8-Requirements::vehicle1_c1 Specification Context::vehicle1-c1 Specification'[satisfy_requirement_usage])
-        (namespace_import private -> '8-Requirements::vehicle1_c1 Specification Context::engine-v1 Specification'[satisfy_requirement_usage])
-        (requirement_usage composite 'vehicle1-c1 Specification'
-          (documentation)
-          (subject_membership in 'vehicle' : '8-Requirements::Vehicle Definitions::Vehicle'[part_def])
-          (requirement_usage composite :> '8-Requirements::Vehicle Requirements::vehicleMass1'[requirement_usage]))
-        (requirement_usage composite 'engine-v1 Specification'
-          (subject_membership in 'engine' : '8-Requirements::Vehicle Definitions::Engine'[part_def])
-          (require_constraint_usage composite 'torqueGeneration'
-            (reference_usage in reference :>> 'generateTorque'[unresolved]
-              (feature_value (=))))
-          (require_constraint_usage composite 'drivePowerInterface'
-            (reference_usage in reference :>> 'drivePwrPort'[unresolved]
-              (feature_value (=)))))
-        (satisfy_requirement_usage 'vehicle1-c1 Specification' by '8-Requirements::Vehicle Usages::vehicle1_c1'[part_usage])
-        (satisfy_requirement_usage 'engine-v1 Specification' by '8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1'[part_usage]))
-      (part_usage 'vehicle1_c2 Specification Context'
-        (namespace_import private -> '8-Requirements::vehicle1_c2 Specification Context::vehicle1-c2 Specification'[satisfy_requirement_usage])
-        (requirement_usage composite 'vehicle1-c2 Specification'
-          (subject_membership in 'vehicle' : '8-Requirements::Vehicle Definitions::Vehicle'[part_def])
-          (require_constraint_usage composite 'vehicleMass2')
-          (require_constraint_usage composite 'vehicleReliability2'))
-        (satisfy_requirement_usage 'vehicle1-c2 Specification' by '8-Requirements::Vehicle Usages::vehicle1_c2'[part_usage])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "8-Requirements"))) (name "8-Requirements") (declared-name "8-Requirements")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "8-Requirements::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "8-Requirements::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "8-Requirements::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "8-Requirements::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "8-Requirements::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions"))) (name "Vehicle Definitions") (declared-name "Vehicle Definitions")
+          (contains
+            (element (kind "port def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort"))) (name "ClutchPort") (declared-name "ClutchPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort::~ClutchPort"))) (name "~ClutchPort") (declared-name "~ClutchPort") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort"))) (name "DrivePwrPort") (declared-name "DrivePwrPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort::~DrivePwrPort"))) (name "~DrivePwrPort") (declared-name "~DrivePwrPort") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine::generate torque"))) (name "generate torque") (declared-name "generate torque") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine")))))
+              )
+            )
+            (element (kind "interface def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface"))) (name "EngineToTransmissionInterface") (declared-name "EngineToTransmissionInterface")
+              (contains
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface")))))
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface")))))
+              )
+            )
+            (element (kind "action def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Generate Torque"))) (name "Generate Torque") (declared-name "Generate Torque"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Transmission")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle::fuelLevel"))) (name "fuelLevel") (declared-name "fuelLevel") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle::fuelTankCapacity"))) (name "fuelTankCapacity") (declared-name "fuelTankCapacity") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements"))) (name "Vehicle Requirements") (declared-name "Vehicle Requirements")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::*"))) (name "*") (declared-name "*"))
+            (element (kind "requirement def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement"))) (name "MassLimitationRequirement") (declared-name "MassLimitationRequirement")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "require constraint") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+              )
+            )
+            (element (kind "requirement def") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::ReliabilityRequirement"))) (name "ReliabilityRequirement") (declared-name "ReliabilityRequirement"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface"))) (name "drivePowerInterface") (declared-name "drivePowerInterface")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface::_documentation"))) (name ""))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort"))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration"))) (name "torqueGeneration") (declared-name "torqueGeneration")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration::_documentation"))) (name ""))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration::generateTorque"))) (name "generateTorque") (declared-name "generateTorque"))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1"))) (name "vehicleMass1") (declared-name "vehicleMass1")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "require constraint") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::_requireConstraint_0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2"))) (name "vehicleMass2") (declared-name "vehicleMass2")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "require constraint") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::_requireConstraint_0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")))))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleReliability2"))) (name "vehicleReliability2") (declared-name "vehicleReliability2")
+              (contains
+                (element (kind "subject") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleReliability2::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::ReliabilityRequirement")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages"))) (name "Vehicle Usages") (declared-name "Vehicle Usages")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::*"))) (name "*") (declared-name "*"))
+            (element (kind "action") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::provide power"))) (name "provide power") (declared-name "provide power") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::provide power::generate torque"))) (name "generate torque") (declared-name "generate torque") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1"))) (name "engine_v1") (declared-name "engine_v1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1::provide power.generate torque"))) (name "provide power.generate torque") (declared-name "provide power.generate torque") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 2000)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::mass"))) (role feature-value))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::provide power"))) (name "provide power") (declared-name "provide power") (effective (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Transmission")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c2"))) (name "vehicle1_c2") (declared-name "vehicle1_c2") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c2::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 2500)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c2::mass"))) (role feature-value))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "8-Requirements::vehicle1_c1 Specification Context"))) (name "vehicle1_c1 Specification Context") (declared-name "vehicle1_c1 Specification Context") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "8-Requirements::vehicle1_c2 Specification Context"))) (name "vehicle1_c2 Specification Context") (declared-name "vehicle1_c2 Specification Context") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "8-Requirements::vehicle1_c1 Specification Context::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "8-Requirements::vehicle1_c1 Specification Context::unresolved_satisfy_source#diagnostic"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "8-Requirements::vehicle1_c2 Specification Context::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::_documentation"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface::_documentation"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration::_documentation"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::_documentation"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::_requireConstraint_0"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::_documentation"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::_requireConstraint_0"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1::drivePwrPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::transmission::clutchPort"))) (connect (source-expression "engine_v1::drivePwrPort") (target-expression "transmission::clutchPort") (container-prefix "8-Requirements::Vehicle Usages::vehicle1_c1") (interface-usage true) (interface-type "EngineToTransmissionInterface")))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine::generate torque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::provide power"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::provide power::generate torque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::provide power"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort::~ClutchPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort::~DrivePwrPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::massActual"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massActual"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::massReqd"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massReqd"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::massActual"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massActual"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::massReqd"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massReqd"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1::drivePwrPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine::drivePwrPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::mass"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle::mass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::transmission::clutchPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Transmission::clutchPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c2::mass"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle::mass"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface::drivePwrPort"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Generate Torque"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration::generateTorque"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleReliability2"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleReliability2"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleReliability2::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine::drivePwrPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine::generate torque"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Generate Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface::clutchPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface::drivePwrPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Transmission::clutchPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::ClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::drivePowerInterface::drivePwrPort"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::torqueGeneration::generateTorque"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Generate Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::vehicle"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::vehicle"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleReliability2"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::ReliabilityRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Requirements::vehicleReliability2::vehicle"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::transmission"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c2"))) (to (node (document "d0") (qualified-name "8-Requirements::Vehicle Definitions::Vehicle"))))
+  )
+  (pending-relationships
+    (perform (status pending) (document "d0") (source-qualified "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1") (target-qualified "8-Requirements::Vehicle Usages::vehicle1_c1::engine_v1::provide power::generate torque"))
+  )
+  (pending-expression-relationships
+    (satisfy (status pending-expression) (document "d0") (source-expression "engine-v1 Specification") (target-expression "vehicle1_c1::engine_v1") (container-prefix "8-Requirements::vehicle1_c1 Specification Context"))
+    (satisfy (status pending-expression) (document "d0") (source-expression "vehicle1-c1 Specification") (target-expression "vehicle1_c1") (container-prefix "8-Requirements::vehicle1_c1 Specification Context"))
+    (satisfy (status pending-expression) (document "d0") (source-expression "vehicle1-c2 Specification") (target-expression "vehicle1_c2") (container-prefix "8-Requirements::vehicle1_c2 Specification Context"))
+  )
+)
 ~~~

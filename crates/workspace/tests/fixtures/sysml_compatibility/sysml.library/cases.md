@@ -235,37 +235,47 @@ standard library package Cases {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Cases'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Requirements::RequirementCheck'[unresolved])
-      (membership_import private -> 'Calculations::Calculation'[unresolved])
-      (membership_import private -> 'Calculations::calculations'[unresolved])
-      (membership_import private -> 'Parts::Part'[unresolved])
-      (membership_import private -> 'Parts::parts'[unresolved])
-      (case_def abstract 'Case' :> 'Calculation'[unresolved]
-        (documentation)
-        (case_usage reference 'self' : 'Cases::Case'[case_def] :>> 'Calculation::self'[unresolved] :> 'Cases::cases'[case_usage][implied])
-        (subject_membership in 'subj' : 'Anything'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (part_usage reference 'actors' : 'Part'[unresolved] :> 'parts'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (objective_membership composite 'obj' : 'RequirementCheck'[unresolved]
-          (documentation)
-          (subject_membership in 'subj'
-            (feature_value (default =))))
-        (return_parameter_membership
-          (reference_usage out reference 'result'
-            (multiplicity_range [0..*])
-            (documentation)))
-        (case_usage abstract composite 'subcases' : 'Cases::Case'[case_def] :> 'Cases::cases'[case_usage] :> 'subcalculations'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (case_usage abstract 'cases' : 'Cases::Case'[case_def] :> 'calculations'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Cases"))) (name "Cases") (declared-name "Cases")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Cases::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Cases::Calculation"))) (name "Calculation") (declared-name "Calculation"))
+        (element (kind "case def") (id (node (document "d0") (qualified-name "Cases::Case"))) (name "Case") (declared-name "Case")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Cases::Case::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Cases::Case::actors"))) (name "actors") (declared-name "actors") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Cases::Case::actors::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case")))))
+              )
+            )
+            (element (kind "objective") (id (node (document "d0") (qualified-name "Cases::Case::obj"))) (name "obj") (declared-name "obj") (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Cases::Case::subj"))) (name "subj") (declared-name "subj") (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Cases::Part"))) (name "Part") (declared-name "Part"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Cases::RequirementCheck"))) (name "RequirementCheck") (declared-name "RequirementCheck"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Cases::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Cases::calculations"))) (name "calculations") (declared-name "calculations"))
+        (element (kind "case") (id (node (document "d0") (qualified-name "Cases::cases"))) (name "cases") (declared-name "cases")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Cases::cases::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Cases::parts"))) (name "parts") (declared-name "parts"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::Case::_documentation"))) (to (node (document "d0") (qualified-name "Cases::Case"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::Case::actors::_documentation"))) (to (node (document "d0") (qualified-name "Cases::Case::actors"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::_documentation"))) (to (node (document "d0") (qualified-name "Cases"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::cases::_documentation"))) (to (node (document "d0") (qualified-name "Cases::cases"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Cases::cases"))) (to (node (document "d0") (qualified-name "Cases::Case"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

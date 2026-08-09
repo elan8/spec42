@@ -255,50 +255,21 @@ semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TimeVaryingSteps'
-      (behavior_def 'TakePicture'
-        (step_def 'merge' : 'ControlPerformances::MergePerformance'[unresolved]
-          (multiplicity_range [0..1])
-          (feature_def 'TakePicture_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]
-            (membership_import public -> 'TimeVaryingSteps::TakePicture::merge'[step_def])))
-        (step_def 'focus'
-          (multiplicity_range [0..1])
-          (feature_def 'TakePicture_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]
-            (membership_import public -> 'TimeVaryingSteps::TakePicture::focus'[step_def])))
-        (step_def 'shoot'
-          (multiplicity_range [0..1])
-          (feature_def 'TakePicture_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]
-            (membership_import public -> 'TimeVaryingSteps::TakePicture::shoot'[step_def])))
-        (step_def 'decide' : 'ControlPerformances::DecisionPerformance'[unresolved]
-          (multiplicity_range [0..1])
-          (feature_def 'TakePicture_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]
-            (membership_import public -> 'TimeVaryingSteps::TakePicture::decide'[step_def])))
-        (succession_def
-          (connector_end 'startShot')
-          (connector_end ''merge'::TakePicture_snapshots.'merge''))
-        (succession_def
-          (connector_end ''merge'::TakePicture_snapshots.'merge'')
-          (connector_end 'focus::TakePicture_snapshots.focus'))
-        (succession_def
-          (connector_end 'focus::TakePicture_snapshots.focus')
-          (connector_end 'shoot::TakePicture_snapshots.shoot'))
-        (succession_def
-          (connector_end 'shoot::TakePicture_snapshots.shoot')
-          (connector_end ''decide'::TakePicture_snapshots.'decide''))
-        (succession_def
-          (connector_end ''decide'::TakePicture_snapshots.'decide'')
-          (connector_end ''merge'::TakePicture_snapshots.'merge''))
-        (succession_def
-          (connector_end ''decide'::TakePicture_snapshots.'decide'')
-          (connector_end 'endShot')))
-      (structure_def 'Camera'
-        (step_def 'takePic' : 'TimeVaryingSteps::TakePicture'[behavior_def]
-          (multiplicity_range [1])
-          (feature_def 'Camera_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved])))
-      (structure_def 'MultiCamera'
-        (step_def 'takePics' : 'TimeVaryingSteps::TakePicture'[behavior_def]
-          (multiplicity_range [0..*])
-          (feature_def 'Camera_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingSteps"))) (name "TimeVaryingSteps") (declared-name "TimeVaryingSteps")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingSteps::Camera"))) (name "Camera") (declared-name "Camera"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingSteps::MultiCamera"))) (name "MultiCamera") (declared-name "MultiCamera"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TimeVaryingSteps::TakePicture"))) (name "TakePicture") (declared-name "TakePicture"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -440,194 +440,47 @@ standard library package RealFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'RealFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (function_def 're' :> 'ComplexFunctions::re'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'im' :> 'ComplexFunctions::im'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'abs' :> 'ComplexFunctions::abs'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'arg' :> 'ComplexFunctions::arg'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def '+' :> 'ComplexFunctions::+'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '-' :> 'ComplexFunctions::-'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '*' :> 'ComplexFunctions::*'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '/' :> 'ComplexFunctions::/'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '**' :> 'ComplexFunctions::**'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '^' :> 'ComplexFunctions::^'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<' :> 'NumericalFunctions::<'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>' :> 'NumericalFunctions::>'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<=' :> 'NumericalFunctions::<='[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>=' :> 'NumericalFunctions::>='[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'max' :> 'NumericalFunctions::max'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'min' :> 'NumericalFunctions::min'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '==' :> 'ComplexFunctions::=='[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Real'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'sqrt'
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'floor'
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'round'
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToString' :> 'ComplexFunctions::ToString'[unresolved]
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToInteger'
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToRational'
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToReal'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'sum' :> 'ComplexFunctions::sum'[unresolved]
-        (feature_def in 'collection' : 'Real'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (feature_value (default =)))))
-      (function_def 'product' :> 'ComplexFunctions::product'[unresolved]
-        (feature_def in 'collection' : 'Real'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (feature_value (default =))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RealFunctions"))) (name "RealFunctions") (declared-name "RealFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "RealFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::ToInteger"))) (name "ToInteger") (declared-name "ToInteger"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::ToRational"))) (name "ToRational") (declared-name "ToRational"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::ToReal"))) (name "ToReal") (declared-name "ToReal"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "RealFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::abs"))) (name "abs") (declared-name "abs"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::arg"))) (name "arg") (declared-name "arg"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::floor"))) (name "floor") (declared-name "floor"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl10"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::function#kermlDecl9"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::im"))) (name "im") (declared-name "im"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::min"))) (name "min") (declared-name "min"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::product"))) (name "product") (declared-name "product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::re"))) (name "re") (declared-name "re"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::round"))) (name "round") (declared-name "round"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::sqrt"))) (name "sqrt") (declared-name "sqrt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RealFunctions::sum"))) (name "sum") (declared-name "sum"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RealFunctions::_documentation"))) (to (node (document "d0") (qualified-name "RealFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

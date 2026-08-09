@@ -278,63 +278,33 @@ semantic.ambiguous_member 'malformed'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Features'
-      (classifier_def 'A')
-      (classifier_def 'B')
-      (feature_def 'f')
-      (feature_def 'g')
-      (feature_def 'x' : 'Features::A'[classifier_def] : 'Features::B'[classifier_def] :> 'Features::f'[feature_def] :> 'Features::g'[feature_def])
-      (feature_def 'x1' :> 'Features::g'[feature_def] : 'Features::A'[classifier_def] :> 'Features::f'[feature_def] : 'Features::B'[classifier_def])
-      (classifier_def 'C')
-      (feature_def 'y')
-      (type_featuring_decl 'F')
-      (feature_def 'y1' : 'Features::A'[classifier_def] :> 'Features::x'[feature_def])
-      (feature_def 'z')
-      (feature_def 'z1')
-      (classifier_def 'Person')
-      (feature_def abstract 'person' : 'Features::Person'[classifier_def])
-      (feature_def 'child' :> 'Features::person'[feature_def])
-      (feature_def 'adult')
-      (classifier_def 'Fuel')
-      (classifier_def 'Tanks'
-        (feature_def 'fuelInPort'
-          (feature_def in 'fuelFlow' : 'Features::Fuel'[classifier_def]))
-        (feature_def 'fuelOutPort' ~ 'Features::Tanks::fuelInPort'[feature_def]))
-      (feature_def 'parent' : 'Features::Person'[classifier_def]
-        (multiplicity_range [1..2]))
-      (feature_def 'mother' : 'Features::Person'[classifier_def] :> 'Features::parent'[feature_def]
-        (multiplicity_range [1]))
-      (feature_typing_decl 't1')
-      (feature_typing_decl 't2')
-      (subsetting_decl 'Sub')
-      (not_implemented 'malformed')
-      (subsetting_decl)
-      (classifier_def 'LegalRecord'
-        (feature_def 'guardian'
-          (multiplicity_range [1])))
-      (class_def 'RegisteredAsset'
-        (feature_def composite 'identifier'
-          (multiplicity_range [0..1])))
-      (classifier_def 'Vehicle' :> 'Features::RegisteredAsset'[class_def]
-        (feature_def derived 'vin'
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (feature_def 'v' : 'Features::Vehicle'[classifier_def])
-        (binding_connector_def
-          (connector_end 'vin')
-          (connector_end 'v.vin'))
-        (feature_def 'w'
-          (feature_value (=)))
-        (feature_def 'x'
-          (feature_value (=)))
-        (binding_connector_def
-          (connector_end 'x')
-          (connector_end 'vin')))
-      (feature_def 'legalIdentification')
-      (redefinition_decl 'Redef')
-      (not_implemented 'malformed')
-      (redefinition_decl)
-      (redefinition_decl))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Features"))) (name "Features") (declared-name "Features")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Features::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Features::B"))) (name "B") (declared-name "B"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Features::C"))) (name "C") (declared-name "C"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Features::Fuel"))) (name "Fuel") (declared-name "Fuel"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Features::Tanks"))) (name "Tanks") (declared-name "Tanks"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::adult"))) (name "adult") (declared-name "adult"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::child"))) (name "child") (declared-name "child"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::f"))) (name "f") (declared-name "f"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::g"))) (name "g") (declared-name "g"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::mother"))) (name "mother") (declared-name "mother"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::parent12"))) (name "parent12") (declared-name "parent12"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::person"))) (name "person") (declared-name "person"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::x"))) (name "x") (declared-name "x"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::x1"))) (name "x1") (declared-name "x1"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Features::y"))) (name "y") (declared-name "y"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -102,23 +102,42 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TradeStudyTest'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'TradeStudies'[unresolved])
-      (part_def 'Engine')
-      (part_usage 'engine1' : 'TradeStudyTest::Engine'[part_def])
-      (part_usage 'engine2' : 'TradeStudyTest::Engine'[part_def])
-      (analysis_case_usage 'engineTradeStudy' : 'TradeStudy'[unresolved]
-        (subject_membership in : 'TradeStudyTest::Engine'[part_def]
-          (multiplicity_range [1..*])
-          (feature_value (=)))
-        (objective_membership composite : 'MaximizeObjective'[unresolved])
-        (calculation_usage composite :>> 'evaluationFunction'[unresolved]
-          (part_usage in : 'TradeStudyTest::Engine'[part_def])
-          (return_parameter_membership
-            (feature_def out : 'Real'[unresolved])))
-        (return_parameter_membership
-          (part_usage out : 'TradeStudyTest::Engine'[part_def]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TradeStudyTest"))) (name "TradeStudyTest") (declared-name "TradeStudyTest")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudyTest::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudyTest::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (name "engine1") (declared-name "engine1") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (name "engine2") (declared-name "engine2") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "analysis") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (name "engineTradeStudy") (declared-name "engineTradeStudy")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (name ""))
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (name ""))
+            (element (kind "calc") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (name "evaluationFunction") (declared-name "evaluationFunction")
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (name "") (declared (properties (direction "in") (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction::"))) (name ""))
+              )
+            )
+            (element (kind "objective") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (name "objective") (declared-name "objective"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (subject (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

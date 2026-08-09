@@ -220,47 +220,88 @@ semantic.unresolved_name 'ISQ::mass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '11a-View-Viewpoint'
-      (package 'SystemModel'
-        (namespace_import private -> 'SI'[unresolved])
-        (part_def 'Vehicle')
-        (part_def 'AxleAssembly')
-        (part_def 'Axle')
-        (part_def 'Wheel')
-        (part_usage 'vehicle' : '11a-View-Viewpoint::SystemModel::Vehicle'[part_def]
-          (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-            (feature_value (=)))
-          (part_usage composite 'frontAxleAssembly' : '11a-View-Viewpoint::SystemModel::AxleAssembly'[part_def]
-            (multiplicity_range [1])
-            (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-              (feature_value (=)))
-            (part_usage composite 'frontWheel' : '11a-View-Viewpoint::SystemModel::Wheel'[part_def]
-              (multiplicity_range [2]))
-            (part_usage composite 'frontAxle' : '11a-View-Viewpoint::SystemModel::Axle'[part_def]
-              (multiplicity_range [1])
-              (attribute_usage composite 'mass')
-              (attribute_usage composite 'steeringAngle')))
-          (part_usage composite 'rearAxleAssembly' : '11a-View-Viewpoint::SystemModel::AxleAssembly'[part_def]
-            (multiplicity_range [1])
-            (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-              (feature_value (=)))
-            (part_usage composite 'rearWheel' : '11a-View-Viewpoint::SystemModel::Wheel'[part_def]
-              (multiplicity_range [2]))
-            (part_usage composite 'rearAxle' : '11a-View-Viewpoint::SystemModel::Axle'[part_def]
-              (multiplicity_range [1])
-              (attribute_usage composite 'mass')))))
-      (package 'ViewModel'
-        (namespace_import private -> 'Views'[unresolved])
-        (part_usage 'systems engineer')
-        (concern_usage 'system breakdown'
-          (subject_membership in)
-          (stakeholder_membership in :>> '11a-View-Viewpoint::ViewModel::systems engineer'[part_usage]))
-        (viewpoint_usage 'system structure perspective'
-          (framed_concern_membership 'system breakdown'))
-        (view_usage 'system structure generation'
-          (satisfy_requirement_usage 'system structure perspective')
-          (namespace_expose all recursive -> '11a-View-Viewpoint::SystemModel::vehicle'[part_usage])
-          (view_rendering_membership -> 'asElementTable'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "11a-View-Viewpoint"))) (name "11a-View-Viewpoint") (declared-name "11a-View-Viewpoint")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel"))) (name "SystemModel") (declared-name "SystemModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Axle"))) (name "Axle") (declared-name "Axle") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly"))) (name "AxleAssembly") (declared-name "AxleAssembly") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
+            (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontAxle"))) (name "frontAxle") (declared-name "frontAxle") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly"))))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontAxle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Axle")))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontAxle::steeringAngle"))) (name "steeringAngle") (declared-name "steeringAngle") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Axle")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontWheel"))) (name "frontWheel") (declared-name "frontWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 150)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::mass"))) (role feature-value))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 2500)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "SI::kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::mass"))) (role feature-value))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Vehicle"))))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 250)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::mass"))) (role feature-value))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly"))))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearAxle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Axle")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel"))) (name "rearWheel") (declared-name "rearWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel"))) (name "ViewModel") (declared-name "ViewModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "concern") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system breakdown"))) (name "system breakdown") (declared-name "system breakdown")
+              (contains
+                (element (kind "stakeholder") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system breakdown::_stakeholder_systems engineer"))) (name "systems engineer") (declared-name "systems engineer"))
+              )
+            )
+            (element (kind "view") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation"))) (name "system structure generation") (declared-name "system structure generation")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation::**"))) (name "**") (declared-name "**"))
+                (element (kind "view rendering") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation::asElementTable"))) (name "asElementTable") (declared-name "asElementTable")
+                  (contains
+                    (element (kind "view column") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system structure generation::asElementTable::columnView[1]"))) (name "columnView[1]") (declared-name "columnView[1]"))
+                  )
+                )
+              )
+            )
+            (element (kind "viewpoint") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective"))) (name "system structure perspective") (declared-name "system structure perspective")
+              (contains
+                (element (kind "frame") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::system structure perspective::system breakdown"))) (name "system breakdown") (declared-name "system breakdown"))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "11a-View-Viewpoint::ViewModel::systems engineer"))) (name "systems engineer") (declared-name "systems engineer") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle"))) (to (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly"))) (to (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontAxle"))) (to (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Axle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::frontAxleAssembly::frontWheel"))) (to (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearAxle"))) (to (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Axle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::vehicle::rearAxleAssembly::rearWheel"))) (to (node (document "d0") (qualified-name "11a-View-Viewpoint::SystemModel::Wheel"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

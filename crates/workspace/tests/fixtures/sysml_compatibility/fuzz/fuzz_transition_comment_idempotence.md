@@ -65,14 +65,15 @@ package j {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'j'
-      (state_def 'S'
-        (state_subaction_membership 'entry'
-          (action_usage))
-        (source_succession
-          (reference_usage reference 'off'))
-        (state_usage composite 'off')
-        (transition_usage 't')))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

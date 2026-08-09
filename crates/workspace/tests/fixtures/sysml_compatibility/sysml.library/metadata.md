@@ -125,18 +125,36 @@ standard library package Metadata {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Metadata'
-      (documentation)
-      (membership_import private -> 'Metaobjects::Metaobject'[unresolved])
-      (membership_import private -> 'Metaobjects::metaobjects'[unresolved])
-      (membership_import private -> 'Items::Item'[unresolved])
-      (membership_import private -> 'Items::items'[unresolved])
-      (metadata_def abstract 'MetadataItem' :> 'Metaobject'[unresolved] :> 'Item'[unresolved]
-        (documentation)
-        (reference_usage reference 'self' : 'Metadata::MetadataItem'[metadata_def] :>> 'Metaobject::self'[unresolved] :>> 'Item::self'[unresolved]))
-      (item_usage abstract 'metadataItems' : 'Metadata::MetadataItem'[metadata_def] :> 'metaobjects'[unresolved] :> 'items'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Metadata"))) (name "Metadata") (declared-name "Metadata")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::Item"))) (name "Item") (declared-name "Item"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (name "MetadataItem") (declared-name "MetadataItem")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Metadata::MetadataItem")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Metadata::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::items"))) (name "items") (declared-name "items"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Metadata::metadataItems"))) (name "metadataItems") (declared-name "metadataItems")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Metadata::metadataItems")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metadata::metaobjects"))) (name "metaobjects") (declared-name "metaobjects"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::MetadataItem"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::_documentation"))) (to (node (document "d0") (qualified-name "Metadata"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::metadataItems"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

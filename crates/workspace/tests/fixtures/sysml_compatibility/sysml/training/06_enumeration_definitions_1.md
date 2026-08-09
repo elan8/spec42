@@ -84,17 +84,39 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Enumeration Definitions-1'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (enum_def 'TrafficLightColor'
-        (enum_usage composite 'green')
-        (enum_usage composite 'yellow')
-        (enum_usage composite 'red'))
-      (part_def 'TrafficLight'
-        (attribute_usage composite 'currentColor' : 'Enumeration Definitions-1::TrafficLightColor'[enum_def]))
-      (part_def 'TrafficLightGo' :> 'Enumeration Definitions-1::TrafficLight'[part_def]
-        (attribute_usage composite :>> 'Enumeration Definitions-1::TrafficLight::currentColor'[attribute_usage]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Enumeration Definitions-1"))) (name "Enumeration Definitions-1") (declared-name "Enumeration Definitions-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight"))) (name "TrafficLight") (declared-name "TrafficLight") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (name "currentColor") (declared-name "currentColor") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))) (name "TrafficLightColor") (declared-name "TrafficLightColor")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor::green"))) (name "green") (declared-name "green") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor::red"))) (name "red") (declared-name "red") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor::yellow"))) (name "yellow") (declared-name "yellow") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (name "TrafficLightGo") (declared-name "TrafficLightGo") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (name "currentColor") (declared-name "currentColor") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "TrafficLightColor::green")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

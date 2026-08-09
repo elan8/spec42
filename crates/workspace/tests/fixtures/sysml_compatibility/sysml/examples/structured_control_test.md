@@ -147,29 +147,46 @@ semantic.unresolved_name 'ScalarValues::Boolean'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'StructuredControlTest'
-      (action_usage
-        (attribute_usage composite 'i' : 'ScalarValues::Integer'[unresolved]
-          (feature_value (:=)))
-        (attribute_usage composite 'b' : 'ScalarValues::Boolean'[unresolved])
-        (if_action_usage
-          (assignment_action_usage))
-        (if_action_usage
-          (assignment_action_usage)
-          (assignment_action_usage))
-        (if_action_usage
-          (assignment_action_usage))
-        (source_succession
-          (action_usage 'aLoop'))
-        (while_loop_action_usage
-          (assignment_action_usage))
-        (source_succession
-          (while_loop_action_usage
-            (assignment_action_usage)))
-        (while_loop_action_usage
-          (assignment_action_usage))
-        (for_loop_action_usage)
-        (not_implemented 'malformed')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "StructuredControlTest"))) (name "StructuredControlTest") (declared-name "StructuredControlTest")
+      (contains
+        (element (kind "action") (id (node (document "d0") (qualified-name "StructuredControlTest::"))) (name "") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "if") (id (node (document "d0") (qualified-name "StructuredControlTest::::_if"))) (name "if") (declared-name "if")
+              (contains
+                (element (kind "assign") (id (node (document "d0") (qualified-name "StructuredControlTest::::_if::_assign"))) (name "assign") (declared-name "assign"))
+              )
+            )
+            (element (kind "if") (id (node (document "d0") (qualified-name "StructuredControlTest::::_if#if"))) (name "if") (declared-name "if")
+              (contains
+                (element (kind "assign") (id (node (document "d0") (qualified-name "StructuredControlTest::::_if#if::_assign"))) (name "assign") (declared-name "assign"))
+              )
+            )
+            (element (kind "loop") (id (node (document "d0") (qualified-name "StructuredControlTest::::_loop"))) (name "loop") (declared-name "loop")
+              (contains
+                (element (kind "assign") (id (node (document "d0") (qualified-name "StructuredControlTest::::_loop::_assign"))) (name "assign") (declared-name "assign"))
+              )
+            )
+            (element (kind "while") (id (node (document "d0") (qualified-name "StructuredControlTest::::_while"))) (name "while") (declared-name "while")
+              (contains
+                (element (kind "assign") (id (node (document "d0") (qualified-name "StructuredControlTest::::_while::_assign"))) (name "assign") (declared-name "assign"))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "StructuredControlTest::::aLoop"))) (name "aLoop") (declared-name "aLoop"))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StructuredControlTest::::b : ScalarValues::Boolean"))) (name "b : ScalarValues::Boolean") (declared-name "b : ScalarValues::Boolean"))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "StructuredControlTest::::i : ScalarValues::Integer := 0"))) (name "i : ScalarValues::Integer := 0") (declared-name "i : ScalarValues::Integer := 0"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "StructuredControlTest::"))) (to (node (document "d0") (qualified-name "StructuredControlTest::::aLoop"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

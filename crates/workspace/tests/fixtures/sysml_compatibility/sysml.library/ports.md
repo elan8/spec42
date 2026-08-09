@@ -184,26 +184,45 @@ standard library package Ports {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Ports'
-      (documentation)
-      (membership_import private -> 'Objects::Object'[unresolved])
-      (membership_import private -> 'Objects::objects'[unresolved])
-      (port_def abstract 'Port' :> 'Object'[unresolved]
-        (documentation)
-        (reference_usage reference 'self' : 'Ports::Port'[port_def] :>> 'Object::self'[unresolved])
-        (port_usage composite 'subports' : 'Ports::Port'[port_def] :> 'Ports::ports'[port_usage] :> 'timeEnclosedOccurrences'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (port_usage abstract reference 'interfacingPorts' : 'Ports::Port'[port_def] :> 'Ports::ports'[port_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (reference_usage reference :>> 'outgoingTransfersFromSelf'[unresolved] :> 'interfacingPorts::incomingTransfersToSelf'[unresolved]
-          (documentation)
-          (port_usage end 'source' :> 'Ports::ports'[port_usage][implied])
-          (port_usage end 'target' :> 'Ports::ports'[port_usage][implied])))
-      (port_usage abstract 'ports' : 'Ports::Port'[port_def] :> 'objects'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Ports"))) (name "Ports") (declared-name "Ports")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Ports::Object"))) (name "Object") (declared-name "Object"))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Ports::Port"))) (name "Port") (declared-name "Port")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Ports::Port::subports"))) (name "subports") (declared-name "subports") (declared (properties (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
+              )
+            )
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Ports::Port::~Port"))) (name "~Port") (declared-name "~Port") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Ports::objects"))) (name "objects") (declared-name "objects"))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Ports::ports"))) (name "ports") (declared-name "ports")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::ports::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::ports")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Ports::ports::~ports"))) (name "~ports") (declared-name "~ports") (effective (featuring-type (node (document "d0") (qualified-name "Ports::ports")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port::subports"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::ports"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::~Port"))) (to (node (document "d0") (qualified-name "Ports::Port"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::~ports"))) (to (node (document "d0") (qualified-name "Ports::ports"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports"))) (to (node (document "d0") (qualified-name "Ports::Port"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -6187,1113 +6187,976 @@ standard library package ISQLight {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQLight'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (membership_import private -> 'ISQThermodynamics::EnergyValue'[unresolved])
-      (attribute_def 'SpeedOfLightInAMediumValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpeedOfLightInAMediumUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'speedOfLightInAMedium' : 'ISQLight::SpeedOfLightInAMediumValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpeedOfLightInAMediumUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RefractiveIndexValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'refractiveIndex' : 'ISQLight::RefractiveIndexValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'radiantEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'SpectralRadiantEnergyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadiantEnergyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiantEnergy' : 'ISQLight::SpectralRadiantEnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadiantEnergyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RadiantEnergyDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::RadiantEnergyDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'radiantEnergyDensity' : 'ISQLight::RadiantEnergyDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RadiantEnergyDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpectralRadiantEnergyDensityInTermsOfWavelengthValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiantEnergyDensityInTermsOfWavelength' : 'ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadiantEnergyDensityInTermsOfWavelengthUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpectralRadiantEnergyDensityInTermsOfWavenumberValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiantEnergyDensityInTermsOfWavenumber' : 'ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadiantEnergyDensityInTermsOfWavenumberUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RadiantFluxValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::RadiantFluxUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'radiantFlux' : 'ISQLight::RadiantFluxValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RadiantFluxUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'RadiantPowerUnit' -> 'ISQLight::RadiantFluxUnit'[attribute_def])
-      (alias_member 'RadiantPowerValue' -> 'ISQLight::RadiantFluxValue'[attribute_def])
-      (alias_member 'radiantPower' -> 'ISQLight::radiantFlux'[attribute_usage])
-      (attribute_def 'SpectralRadiantFluxValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadiantFluxUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiantFlux' : 'ISQLight::SpectralRadiantFluxValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadiantFluxUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'SpectralRadiantPowerUnit' -> 'ISQLight::SpectralRadiantFluxUnit'[attribute_def])
-      (alias_member 'SpectralRadiantPowerValue' -> 'ISQLight::SpectralRadiantFluxValue'[attribute_def])
-      (alias_member 'spectralRadiantPower' -> 'ISQLight::spectralRadiantFlux'[attribute_usage])
-      (attribute_def 'RadiantIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::RadiantIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'radiantIntensity' : 'ISQLight::RadiantIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RadiantIntensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpectralRadiantIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadiantIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiantIntensity' : 'ISQLight::SpectralRadiantIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadiantIntensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RadianceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::RadianceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'radiance' : 'ISQLight::RadianceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RadianceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpectralRadianceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadianceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiance' : 'ISQLight::SpectralRadianceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadianceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'IrradianceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::IrradianceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'irradiance' : 'ISQLight::IrradianceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'IrradianceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpectralIrradianceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralIrradianceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralIrradiance' : 'ISQLight::SpectralIrradianceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralIrradianceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RadiantExitanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::RadiantExitanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'radiantExitance' : 'ISQLight::RadiantExitanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RadiantExitanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'RadiantEmittanceUnit' -> 'ISQLight::RadiantExitanceUnit'[attribute_def])
-      (alias_member 'RadiantEmittanceValue' -> 'ISQLight::RadiantExitanceValue'[attribute_def])
-      (alias_member 'radiantEmittance' -> 'ISQLight::radiantExitance'[attribute_usage])
-      (attribute_def 'SpectralRadiantExitanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadiantExitanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiantExitance' : 'ISQLight::SpectralRadiantExitanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadiantExitanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RadiantExposureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::RadiantExposureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'radiantExposure' : 'ISQLight::RadiantExposureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RadiantExposureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpectralRadiantExposureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralRadiantExposureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralRadiantExposure' : 'ISQLight::SpectralRadiantExposureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralRadiantExposureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LuminousEfficiencyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'luminousEfficiency' : 'ISQLight::LuminousEfficiencyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'SpectralLuminousEfficiencyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'spectralLuminousEfficiency' : 'ISQLight::SpectralLuminousEfficiencyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LuminousEfficacyOfRadiationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LuminousEfficacyOfRadiationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminousEfficacyOfRadiation' : 'ISQLight::LuminousEfficacyOfRadiationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminousEfficacyOfRadiationUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpectralLuminousEfficacyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::SpectralLuminousEfficacyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spectralLuminousEfficacy' : 'ISQLight::SpectralLuminousEfficacyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpectralLuminousEfficacyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MaximumLuminousEfficacyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::MaximumLuminousEfficacyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'maximumLuminousEfficacy' : 'ISQLight::MaximumLuminousEfficacyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MaximumLuminousEfficacyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LuminousEfficacyOfASourceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LuminousEfficacyOfASourceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminousEfficacyOfASource' : 'ISQLight::LuminousEfficacyOfASourceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminousEfficacyOfASourceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LuminousEnergyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LuminousEnergyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminousEnergy' : 'ISQLight::LuminousEnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminousEnergyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'QuantityOfLightUnit' -> 'ISQLight::LuminousEnergyUnit'[attribute_def])
-      (alias_member 'QuantityOfLightValue' -> 'ISQLight::LuminousEnergyValue'[attribute_def])
-      (alias_member 'quantityOfLight' -> 'ISQLight::luminousEnergy'[attribute_usage])
-      (attribute_def 'LuminousFluxValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LuminousFluxUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminousFlux' : 'ISQLight::LuminousFluxValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminousFluxUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LuminanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LuminanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminance' : 'ISQLight::LuminanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'IlluminanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::IlluminanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'illuminance' : 'ISQLight::IlluminanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'IlluminanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LuminousExitanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LuminousExitanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminousExitance' : 'ISQLight::LuminousExitanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminousExitanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LuminousExposureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LuminousExposureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminousExposure' : 'ISQLight::LuminousExposureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminousExposureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'QuantityOfIlluminationUnit' -> 'ISQLight::LuminousExposureUnit'[attribute_def])
-      (alias_member 'QuantityOfIlluminationValue' -> 'ISQLight::LuminousExposureValue'[attribute_def])
-      (alias_member 'quantityOfIllumination' -> 'ISQLight::luminousExposure'[attribute_usage])
-      (alias_member 'LightExposureUnit' -> 'ISQLight::LuminousExposureUnit'[attribute_def])
-      (alias_member 'LightExposureValue' -> 'ISQLight::LuminousExposureValue'[attribute_def])
-      (alias_member 'lightExposure' -> 'ISQLight::luminousExposure'[attribute_usage])
-      (attribute_def 'PhotonNumberValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'photonNumber' : 'ISQLight::PhotonNumberValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'numberOfPhotons' -> 'ISQLight::photonNumber'[attribute_usage])
-      (attribute_usage 'photonEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'PhotonFluxValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::PhotonFluxUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'photonFlux' : 'ISQLight::PhotonFluxValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhotonFluxUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PhotonIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::PhotonIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'photonIntensity' : 'ISQLight::PhotonIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhotonIntensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PhotonRadianceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::PhotonRadianceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'photonRadiance' : 'ISQLight::PhotonRadianceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhotonRadianceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PhotonIrradianceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::PhotonIrradianceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'photonIrradiance' : 'ISQLight::PhotonIrradianceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhotonIrradianceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PhotonExitanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::PhotonExitanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'photonExitance' : 'ISQLight::PhotonExitanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhotonExitanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PhotonExposureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::PhotonExposureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'photonExposure' : 'ISQLight::PhotonExposureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhotonExposureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'TristimulusValuesForTheCie1931StandardColorimetricObserverValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'tristimulusValuesForTheCie1931StandardColorimetricObserver' : 'ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TristimulusValuesForTheCie1931StandardColorimetricObserverUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'TristimulusValuesForTheCie1964StandardColorimetricObserverValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'tristimulusValuesForTheCie1964StandardColorimetricObserver' : 'ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TristimulusValuesForTheCie1964StandardColorimetricObserverUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'cieColourMatchingFunctionsForTheCie1931StandardColorimetricObserver' : 'ISQLight::CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'cieColourMatchingFunctionsForTheCie1964StandardColorimetricObserver' : 'ISQLight::CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'chromaticityCoordinatesInTheCie1931StandardColorimetricSystem' : 'ISQLight::ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'chromaticityCoordinatesInTheCie1964StandardColorimetricSystem' : 'ISQLight::ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'colourTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'correlatedColourTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'EmissivityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'emissivity' : 'ISQLight::EmissivityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'EmissivityAtASpecifiedWavelengthValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'emissivityAtASpecifiedWavelength' : 'ISQLight::EmissivityAtASpecifiedWavelengthValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'AbsorptanceValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'absorptance' : 'ISQLight::AbsorptanceValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LuminousAbsorptanceValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'luminousAbsorptance' : 'ISQLight::LuminousAbsorptanceValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ReflectanceValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'reflectance' : 'ISQLight::ReflectanceValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LuminousReflectanceValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'luminousReflectance' : 'ISQLight::LuminousReflectanceValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'TransmittanceValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'transmittance' : 'ISQLight::TransmittanceValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LuminousTransmittanceValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'luminousTransmittance' : 'ISQLight::LuminousTransmittanceValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'TransmittanceOpticalDensityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'transmittanceOpticalDensity' : 'ISQLight::TransmittanceOpticalDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'opticalDensity' -> 'ISQLight::transmittanceOpticalDensity'[attribute_usage])
-      (alias_member 'transmittanceDensity' -> 'ISQLight::transmittanceOpticalDensity'[attribute_usage])
-      (alias_member 'decadicAbsorbance' -> 'ISQLight::transmittanceOpticalDensity'[attribute_usage])
-      (attribute_def 'NapierianAbsorbanceValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'napierianAbsorbance' : 'ISQLight::NapierianAbsorbanceValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'RadianceFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'radianceFactor' : 'ISQLight::RadianceFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LuminanceFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'luminanceFactor' : 'ISQLight::LuminanceFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ReflectanceFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'reflectanceFactor' : 'ISQLight::ReflectanceFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LinearAttenuationCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LinearAttenuationCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearAttenuationCoefficient' : 'ISQLight::LinearAttenuationCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearAttenuationCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'LinearExtinctionCoefficientUnit' -> 'ISQLight::LinearAttenuationCoefficientUnit'[attribute_def])
-      (alias_member 'LinearExtinctionCoefficientValue' -> 'ISQLight::LinearAttenuationCoefficientValue'[attribute_def])
-      (alias_member 'linearExtinctionCoefficient' -> 'ISQLight::linearAttenuationCoefficient'[attribute_usage])
-      (attribute_def 'LinearAbsorptionCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::LinearAbsorptionCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearAbsorptionCoefficient' : 'ISQLight::LinearAbsorptionCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearAbsorptionCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassAttenuationCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::MassAttenuationCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massAttenuationCoefficient' : 'ISQLight::MassAttenuationCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassAttenuationCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassAbsorptionCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::MassAbsorptionCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massAbsorptionCoefficient' : 'ISQLight::MassAbsorptionCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassAbsorptionCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MolarAbsorptionCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQLight::MolarAbsorptionCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'molarAbsorptionCoefficient' : 'ISQLight::MolarAbsorptionCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MolarAbsorptionCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'amountOfSubstancePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQLight"))) (name "ISQLight") (declared-name "ISQLight")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQLight::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQLight::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQLight::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::AbsorptanceValue"))) (name "AbsorptanceValue") (declared-name "AbsorptanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::AbsorptanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::AbsorptanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue"))) (name "ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue") (declared-name "ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue"))) (name "ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue") (declared-name "ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue"))) (name "CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue") (declared-name "CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue"))) (name "CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue") (declared-name "CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::EmissivityAtASpecifiedWavelengthValue"))) (name "EmissivityAtASpecifiedWavelengthValue") (declared-name "EmissivityAtASpecifiedWavelengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::EmissivityAtASpecifiedWavelengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::EmissivityAtASpecifiedWavelengthValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::EmissivityValue"))) (name "EmissivityValue") (declared-name "EmissivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::EmissivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::EmissivityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQLight::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit"))) (name "IlluminanceUnit") (declared-name "IlluminanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceValue"))) (name "IlluminanceValue") (declared-name "IlluminanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::IlluminanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IlluminanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IlluminanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IlluminanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::IrradianceUnit"))) (name "IrradianceUnit") (declared-name "IrradianceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IrradianceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IrradianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IrradianceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IrradianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IrradianceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IrradianceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::IrradianceValue"))) (name "IrradianceValue") (declared-name "IrradianceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::IrradianceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::IrradianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IrradianceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IrradianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::IrradianceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::IrradianceValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::LightExposureUnit"))) (name "LightExposureUnit") (declared-name "LightExposureUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::LightExposureValue"))) (name "LightExposureValue") (declared-name "LightExposureValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientUnit"))) (name "LinearAbsorptionCoefficientUnit") (declared-name "LinearAbsorptionCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue"))) (name "LinearAbsorptionCoefficientValue") (declared-name "LinearAbsorptionCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientUnit"))) (name "LinearAttenuationCoefficientUnit") (declared-name "LinearAttenuationCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue"))) (name "LinearAttenuationCoefficientValue") (declared-name "LinearAttenuationCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::LinearExtinctionCoefficientUnit"))) (name "LinearExtinctionCoefficientUnit") (declared-name "LinearExtinctionCoefficientUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::LinearExtinctionCoefficientValue"))) (name "LinearExtinctionCoefficientValue") (declared-name "LinearExtinctionCoefficientValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminanceFactorValue"))) (name "LuminanceFactorValue") (declared-name "LuminanceFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminanceFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminanceFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminanceUnit"))) (name "LuminanceUnit") (declared-name "LuminanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminanceUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminanceValue"))) (name "LuminanceValue") (declared-name "LuminanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousAbsorptanceValue"))) (name "LuminousAbsorptanceValue") (declared-name "LuminousAbsorptanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousAbsorptanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousAbsorptanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit"))) (name "LuminousEfficacyOfASourceUnit") (declared-name "LuminousEfficacyOfASourceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue"))) (name "LuminousEfficacyOfASourceValue") (declared-name "LuminousEfficacyOfASourceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit"))) (name "LuminousEfficacyOfRadiationUnit") (declared-name "LuminousEfficacyOfRadiationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue"))) (name "LuminousEfficacyOfRadiationValue") (declared-name "LuminousEfficacyOfRadiationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficiencyValue"))) (name "LuminousEfficiencyValue") (declared-name "LuminousEfficiencyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousEfficiencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEfficiencyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit"))) (name "LuminousEnergyUnit") (declared-name "LuminousEnergyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue"))) (name "LuminousEnergyValue") (declared-name "LuminousEnergyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit"))) (name "LuminousExitanceUnit") (declared-name "LuminousExitanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue"))) (name "LuminousExitanceValue") (declared-name "LuminousExitanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit"))) (name "LuminousExposureUnit") (declared-name "LuminousExposureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue"))) (name "LuminousExposureValue") (declared-name "LuminousExposureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousFluxUnit"))) (name "LuminousFluxUnit") (declared-name "LuminousFluxUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousFluxUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousFluxUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousFluxUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue"))) (name "LuminousFluxValue") (declared-name "LuminousFluxValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousReflectanceValue"))) (name "LuminousReflectanceValue") (declared-name "LuminousReflectanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousReflectanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousReflectanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::LuminousTransmittanceValue"))) (name "LuminousTransmittanceValue") (declared-name "LuminousTransmittanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::LuminousTransmittanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::LuminousTransmittanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit"))) (name "MassAbsorptionCoefficientUnit") (declared-name "MassAbsorptionCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue"))) (name "MassAbsorptionCoefficientValue") (declared-name "MassAbsorptionCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit"))) (name "MassAttenuationCoefficientUnit") (declared-name "MassAttenuationCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue"))) (name "MassAttenuationCoefficientValue") (declared-name "MassAttenuationCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit"))) (name "MaximumLuminousEfficacyUnit") (declared-name "MaximumLuminousEfficacyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue"))) (name "MaximumLuminousEfficacyValue") (declared-name "MaximumLuminousEfficacyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit"))) (name "MolarAbsorptionCoefficientUnit") (declared-name "MolarAbsorptionCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue"))) (name "MolarAbsorptionCoefficientValue") (declared-name "MolarAbsorptionCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::NapierianAbsorbanceValue"))) (name "NapierianAbsorbanceValue") (declared-name "NapierianAbsorbanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::NapierianAbsorbanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::NapierianAbsorbanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit"))) (name "PhotonExitanceUnit") (declared-name "PhotonExitanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue"))) (name "PhotonExitanceValue") (declared-name "PhotonExitanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonExposureUnit"))) (name "PhotonExposureUnit") (declared-name "PhotonExposureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExposureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExposureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExposureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue"))) (name "PhotonExposureValue") (declared-name "PhotonExposureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonFluxUnit"))) (name "PhotonFluxUnit") (declared-name "PhotonFluxUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonFluxUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonFluxUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonFluxUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue"))) (name "PhotonFluxValue") (declared-name "PhotonFluxValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonIntensityUnit"))) (name "PhotonIntensityUnit") (declared-name "PhotonIntensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIntensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIntensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue"))) (name "PhotonIntensityValue") (declared-name "PhotonIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit"))) (name "PhotonIrradianceUnit") (declared-name "PhotonIrradianceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue"))) (name "PhotonIrradianceValue") (declared-name "PhotonIrradianceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonNumberValue"))) (name "PhotonNumberValue") (declared-name "PhotonNumberValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::PhotonNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonNumberValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit"))) (name "PhotonRadianceUnit") (declared-name "PhotonRadianceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue"))) (name "PhotonRadianceValue") (declared-name "PhotonRadianceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::QuantityOfIlluminationUnit"))) (name "QuantityOfIlluminationUnit") (declared-name "QuantityOfIlluminationUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::QuantityOfIlluminationValue"))) (name "QuantityOfIlluminationValue") (declared-name "QuantityOfIlluminationValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::QuantityOfLightUnit"))) (name "QuantityOfLightUnit") (declared-name "QuantityOfLightUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::QuantityOfLightValue"))) (name "QuantityOfLightValue") (declared-name "QuantityOfLightValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadianceFactorValue"))) (name "RadianceFactorValue") (declared-name "RadianceFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RadianceFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RadianceFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadianceUnit"))) (name "RadianceUnit") (declared-name "RadianceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadianceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadianceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadianceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadianceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadianceValue"))) (name "RadianceValue") (declared-name "RadianceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RadianceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RadianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadianceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadianceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadianceValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::RadiantEmittanceUnit"))) (name "RadiantEmittanceUnit") (declared-name "RadiantEmittanceUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::RadiantEmittanceValue"))) (name "RadiantEmittanceValue") (declared-name "RadiantEmittanceValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit"))) (name "RadiantEnergyDensityUnit") (declared-name "RadiantEnergyDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue"))) (name "RadiantEnergyDensityValue") (declared-name "RadiantEnergyDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit"))) (name "RadiantExitanceUnit") (declared-name "RadiantExitanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue"))) (name "RadiantExitanceValue") (declared-name "RadiantExitanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit"))) (name "RadiantExposureUnit") (declared-name "RadiantExposureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue"))) (name "RadiantExposureValue") (declared-name "RadiantExposureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit"))) (name "RadiantFluxUnit") (declared-name "RadiantFluxUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue"))) (name "RadiantFluxValue") (declared-name "RadiantFluxValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit"))) (name "RadiantIntensityUnit") (declared-name "RadiantIntensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue"))) (name "RadiantIntensityValue") (declared-name "RadiantIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::RadiantPowerUnit"))) (name "RadiantPowerUnit") (declared-name "RadiantPowerUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::RadiantPowerValue"))) (name "RadiantPowerValue") (declared-name "RadiantPowerValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQLight::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::ReflectanceFactorValue"))) (name "ReflectanceFactorValue") (declared-name "ReflectanceFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::ReflectanceFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::ReflectanceFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::ReflectanceValue"))) (name "ReflectanceValue") (declared-name "ReflectanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::ReflectanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::ReflectanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::RefractiveIndexValue"))) (name "RefractiveIndexValue") (declared-name "RefractiveIndexValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::RefractiveIndexValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::RefractiveIndexValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit"))) (name "SpectralIrradianceUnit") (declared-name "SpectralIrradianceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue"))) (name "SpectralIrradianceValue") (declared-name "SpectralIrradianceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit"))) (name "SpectralLuminousEfficacyUnit") (declared-name "SpectralLuminousEfficacyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue"))) (name "SpectralLuminousEfficacyValue") (declared-name "SpectralLuminousEfficacyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficiencyValue"))) (name "SpectralLuminousEfficiencyValue") (declared-name "SpectralLuminousEfficiencyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficiencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficiencyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit"))) (name "SpectralRadianceUnit") (declared-name "SpectralRadianceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue"))) (name "SpectralRadianceValue") (declared-name "SpectralRadianceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit"))) (name "SpectralRadiantEnergyDensityInTermsOfWavelengthUnit") (declared-name "SpectralRadiantEnergyDensityInTermsOfWavelengthUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue"))) (name "SpectralRadiantEnergyDensityInTermsOfWavelengthValue") (declared-name "SpectralRadiantEnergyDensityInTermsOfWavelengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit"))) (name "SpectralRadiantEnergyDensityInTermsOfWavenumberUnit") (declared-name "SpectralRadiantEnergyDensityInTermsOfWavenumberUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue"))) (name "SpectralRadiantEnergyDensityInTermsOfWavenumberValue") (declared-name "SpectralRadiantEnergyDensityInTermsOfWavenumberValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit"))) (name "SpectralRadiantEnergyUnit") (declared-name "SpectralRadiantEnergyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue"))) (name "SpectralRadiantEnergyValue") (declared-name "SpectralRadiantEnergyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit"))) (name "SpectralRadiantExitanceUnit") (declared-name "SpectralRadiantExitanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue"))) (name "SpectralRadiantExitanceValue") (declared-name "SpectralRadiantExitanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit"))) (name "SpectralRadiantExposureUnit") (declared-name "SpectralRadiantExposureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue"))) (name "SpectralRadiantExposureValue") (declared-name "SpectralRadiantExposureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit"))) (name "SpectralRadiantFluxUnit") (declared-name "SpectralRadiantFluxUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue"))) (name "SpectralRadiantFluxValue") (declared-name "SpectralRadiantFluxValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit"))) (name "SpectralRadiantIntensityUnit") (declared-name "SpectralRadiantIntensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue"))) (name "SpectralRadiantIntensityValue") (declared-name "SpectralRadiantIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantPowerUnit"))) (name "SpectralRadiantPowerUnit") (declared-name "SpectralRadiantPowerUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::SpectralRadiantPowerValue"))) (name "SpectralRadiantPowerValue") (declared-name "SpectralRadiantPowerValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit"))) (name "SpeedOfLightInAMediumUnit") (declared-name "SpeedOfLightInAMediumUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue"))) (name "SpeedOfLightInAMediumValue") (declared-name "SpeedOfLightInAMediumValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::TransmittanceOpticalDensityValue"))) (name "TransmittanceOpticalDensityValue") (declared-name "TransmittanceOpticalDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::TransmittanceOpticalDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::TransmittanceOpticalDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::TransmittanceValue"))) (name "TransmittanceValue") (declared-name "TransmittanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::TransmittanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::TransmittanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit"))) (name "TristimulusValuesForTheCie1931StandardColorimetricObserverUnit") (declared-name "TristimulusValuesForTheCie1931StandardColorimetricObserverUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue"))) (name "TristimulusValuesForTheCie1931StandardColorimetricObserverValue") (declared-name "TristimulusValuesForTheCie1931StandardColorimetricObserverValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit"))) (name "TristimulusValuesForTheCie1964StandardColorimetricObserverUnit") (declared-name "TristimulusValuesForTheCie1964StandardColorimetricObserverUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue"))) (name "TristimulusValuesForTheCie1964StandardColorimetricObserverValue") (declared-name "TristimulusValuesForTheCie1964StandardColorimetricObserverValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::absorptance"))) (name "absorptance") (declared-name "absorptance") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::chromaticityCoordinatesInTheCie1931StandardColorimetricSystem"))) (name "chromaticityCoordinatesInTheCie1931StandardColorimetricSystem") (declared-name "chromaticityCoordinatesInTheCie1931StandardColorimetricSystem") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::chromaticityCoordinatesInTheCie1964StandardColorimetricSystem"))) (name "chromaticityCoordinatesInTheCie1964StandardColorimetricSystem") (declared-name "chromaticityCoordinatesInTheCie1964StandardColorimetricSystem") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::cieColourMatchingFunctionsForTheCie1931StandardColorimetricObserver"))) (name "cieColourMatchingFunctionsForTheCie1931StandardColorimetricObserver") (declared-name "cieColourMatchingFunctionsForTheCie1931StandardColorimetricObserver") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::cieColourMatchingFunctionsForTheCie1964StandardColorimetricObserver"))) (name "cieColourMatchingFunctionsForTheCie1964StandardColorimetricObserver") (declared-name "cieColourMatchingFunctionsForTheCie1964StandardColorimetricObserver") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::colourTemperature"))) (name "colourTemperature") (declared-name "colourTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::colourTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::colourTemperature")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::correlatedColourTemperature"))) (name "correlatedColourTemperature") (declared-name "correlatedColourTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::correlatedColourTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::correlatedColourTemperature")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::decadicAbsorbance"))) (name "decadicAbsorbance") (declared-name "decadicAbsorbance"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::emissivity"))) (name "emissivity") (declared-name "emissivity") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::emissivityAtASpecifiedWavelength"))) (name "emissivityAtASpecifiedWavelength") (declared-name "emissivityAtASpecifiedWavelength") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::illuminance"))) (name "illuminance") (declared-name "illuminance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::irradiance"))) (name "irradiance") (declared-name "irradiance") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::lightExposure"))) (name "lightExposure") (declared-name "lightExposure"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::linearAbsorptionCoefficient"))) (name "linearAbsorptionCoefficient") (declared-name "linearAbsorptionCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::linearAttenuationCoefficient"))) (name "linearAttenuationCoefficient") (declared-name "linearAttenuationCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::linearExtinctionCoefficient"))) (name "linearExtinctionCoefficient") (declared-name "linearExtinctionCoefficient"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminance"))) (name "luminance") (declared-name "luminance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminanceFactor"))) (name "luminanceFactor") (declared-name "luminanceFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousAbsorptance"))) (name "luminousAbsorptance") (declared-name "luminousAbsorptance") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousEfficacyOfASource"))) (name "luminousEfficacyOfASource") (declared-name "luminousEfficacyOfASource") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousEfficacyOfRadiation"))) (name "luminousEfficacyOfRadiation") (declared-name "luminousEfficacyOfRadiation") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousEfficiency"))) (name "luminousEfficiency") (declared-name "luminousEfficiency") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousEnergy"))) (name "luminousEnergy") (declared-name "luminousEnergy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousExitance"))) (name "luminousExitance") (declared-name "luminousExitance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousExposure"))) (name "luminousExposure") (declared-name "luminousExposure") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousFlux"))) (name "luminousFlux") (declared-name "luminousFlux") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousReflectance"))) (name "luminousReflectance") (declared-name "luminousReflectance") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::luminousTransmittance"))) (name "luminousTransmittance") (declared-name "luminousTransmittance") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::massAbsorptionCoefficient"))) (name "massAbsorptionCoefficient") (declared-name "massAbsorptionCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::massAttenuationCoefficient"))) (name "massAttenuationCoefficient") (declared-name "massAttenuationCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::maximumLuminousEfficacy"))) (name "maximumLuminousEfficacy") (declared-name "maximumLuminousEfficacy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::molarAbsorptionCoefficient"))) (name "molarAbsorptionCoefficient") (declared-name "molarAbsorptionCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::napierianAbsorbance"))) (name "napierianAbsorbance") (declared-name "napierianAbsorbance") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::numberOfPhotons"))) (name "numberOfPhotons") (declared-name "numberOfPhotons"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::opticalDensity"))) (name "opticalDensity") (declared-name "opticalDensity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonEnergy"))) (name "photonEnergy") (declared-name "photonEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::photonEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::photonEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonExitance"))) (name "photonExitance") (declared-name "photonExitance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonExposure"))) (name "photonExposure") (declared-name "photonExposure") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonFlux"))) (name "photonFlux") (declared-name "photonFlux") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonIntensity"))) (name "photonIntensity") (declared-name "photonIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonIrradiance"))) (name "photonIrradiance") (declared-name "photonIrradiance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonNumber"))) (name "photonNumber") (declared-name "photonNumber") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::photonRadiance"))) (name "photonRadiance") (declared-name "photonRadiance") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::quantityOfIllumination"))) (name "quantityOfIllumination") (declared-name "quantityOfIllumination"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::quantityOfLight"))) (name "quantityOfLight") (declared-name "quantityOfLight"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radiance"))) (name "radiance") (declared-name "radiance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radianceFactor"))) (name "radianceFactor") (declared-name "radianceFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::radiantEmittance"))) (name "radiantEmittance") (declared-name "radiantEmittance"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radiantEnergy"))) (name "radiantEnergy") (declared-name "radiantEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQLight::radiantEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQLight::radiantEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radiantEnergyDensity"))) (name "radiantEnergyDensity") (declared-name "radiantEnergyDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radiantExitance"))) (name "radiantExitance") (declared-name "radiantExitance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radiantExposure"))) (name "radiantExposure") (declared-name "radiantExposure") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radiantFlux"))) (name "radiantFlux") (declared-name "radiantFlux") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::radiantIntensity"))) (name "radiantIntensity") (declared-name "radiantIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::radiantPower"))) (name "radiantPower") (declared-name "radiantPower"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::reflectance"))) (name "reflectance") (declared-name "reflectance") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::reflectanceFactor"))) (name "reflectanceFactor") (declared-name "reflectanceFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::refractiveIndex"))) (name "refractiveIndex") (declared-name "refractiveIndex") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralIrradiance"))) (name "spectralIrradiance") (declared-name "spectralIrradiance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralLuminousEfficacy"))) (name "spectralLuminousEfficacy") (declared-name "spectralLuminousEfficacy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralLuminousEfficiency"))) (name "spectralLuminousEfficiency") (declared-name "spectralLuminousEfficiency") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiance"))) (name "spectralRadiance") (declared-name "spectralRadiance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantEnergy"))) (name "spectralRadiantEnergy") (declared-name "spectralRadiantEnergy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantEnergyDensityInTermsOfWavelength"))) (name "spectralRadiantEnergyDensityInTermsOfWavelength") (declared-name "spectralRadiantEnergyDensityInTermsOfWavelength") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantEnergyDensityInTermsOfWavenumber"))) (name "spectralRadiantEnergyDensityInTermsOfWavenumber") (declared-name "spectralRadiantEnergyDensityInTermsOfWavenumber") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantExitance"))) (name "spectralRadiantExitance") (declared-name "spectralRadiantExitance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantExposure"))) (name "spectralRadiantExposure") (declared-name "spectralRadiantExposure") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantFlux"))) (name "spectralRadiantFlux") (declared-name "spectralRadiantFlux") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantIntensity"))) (name "spectralRadiantIntensity") (declared-name "spectralRadiantIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::spectralRadiantPower"))) (name "spectralRadiantPower") (declared-name "spectralRadiantPower"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::speedOfLightInAMedium"))) (name "speedOfLightInAMedium") (declared-name "speedOfLightInAMedium") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::transmittance"))) (name "transmittance") (declared-name "transmittance") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQLight::transmittanceDensity"))) (name "transmittanceDensity") (declared-name "transmittanceDensity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::transmittanceOpticalDensity"))) (name "transmittanceOpticalDensity") (declared-name "transmittanceOpticalDensity") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::tristimulusValuesForTheCie1931StandardColorimetricObserver"))) (name "tristimulusValuesForTheCie1931StandardColorimetricObserver") (declared-name "tristimulusValuesForTheCie1931StandardColorimetricObserver") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQLight::tristimulusValuesForTheCie1964StandardColorimetricObserver"))) (name "tristimulusValuesForTheCie1964StandardColorimetricObserver") (declared-name "tristimulusValuesForTheCie1964StandardColorimetricObserver") (declared (properties (ordered false) (unique false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::AbsorptanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::AbsorptanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::EmissivityAtASpecifiedWavelengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::EmissivityAtASpecifiedWavelengthValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::EmissivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::EmissivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::IlluminanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::IlluminanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::IrradianceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::IrradianceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminanceFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminanceFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousAbsorptanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousAbsorptanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousEfficiencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficiencyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousReflectanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousReflectanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousTransmittanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousTransmittanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::NapierianAbsorbanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::NapierianAbsorbanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonNumberValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadianceFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RadianceFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadianceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RadianceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::ReflectanceFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::ReflectanceFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::ReflectanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::ReflectanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RefractiveIndexValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::RefractiveIndexValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficiencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficiencyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::TransmittanceOpticalDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::TransmittanceOpticalDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::TransmittanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::TransmittanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::colourTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::colourTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::correlatedColourTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::correlatedColourTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::photonEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radiantEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQLight::radiantEnergy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::IlluminanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::IlluminanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::IrradianceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::IrradianceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LuminanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEnergyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousExitanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousExposureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousFluxUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonExitanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonExposureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonFluxUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonRadianceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadianceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::RadianceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantExitanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantExposureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantFluxUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadianceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue::mRef"))) (to (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::absorptance"))) (to (node (document "d0") (qualified-name "ISQLight::AbsorptanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::chromaticityCoordinatesInTheCie1931StandardColorimetricSystem"))) (to (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1931StandardColorimetricSystemValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::chromaticityCoordinatesInTheCie1964StandardColorimetricSystem"))) (to (node (document "d0") (qualified-name "ISQLight::ChromaticityCoordinatesInTheCie1964StandardColorimetricSystemValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::cieColourMatchingFunctionsForTheCie1931StandardColorimetricObserver"))) (to (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1931StandardColorimetricObserverValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::cieColourMatchingFunctionsForTheCie1964StandardColorimetricObserver"))) (to (node (document "d0") (qualified-name "ISQLight::CieColourMatchingFunctionsForTheCie1964StandardColorimetricObserverValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::emissivity"))) (to (node (document "d0") (qualified-name "ISQLight::EmissivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::emissivityAtASpecifiedWavelength"))) (to (node (document "d0") (qualified-name "ISQLight::EmissivityAtASpecifiedWavelengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::illuminance"))) (to (node (document "d0") (qualified-name "ISQLight::IlluminanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::irradiance"))) (to (node (document "d0") (qualified-name "ISQLight::IrradianceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::linearAbsorptionCoefficient"))) (to (node (document "d0") (qualified-name "ISQLight::LinearAbsorptionCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::linearAttenuationCoefficient"))) (to (node (document "d0") (qualified-name "ISQLight::LinearAttenuationCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminance"))) (to (node (document "d0") (qualified-name "ISQLight::LuminanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminanceFactor"))) (to (node (document "d0") (qualified-name "ISQLight::LuminanceFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousAbsorptance"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousAbsorptanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousEfficacyOfASource"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfASourceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousEfficacyOfRadiation"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficacyOfRadiationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousEfficiency"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEfficiencyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousEnergy"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousEnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousExitance"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousExitanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousExposure"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousExposureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousFlux"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousFluxValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousReflectance"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousReflectanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::luminousTransmittance"))) (to (node (document "d0") (qualified-name "ISQLight::LuminousTransmittanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::massAbsorptionCoefficient"))) (to (node (document "d0") (qualified-name "ISQLight::MassAbsorptionCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::massAttenuationCoefficient"))) (to (node (document "d0") (qualified-name "ISQLight::MassAttenuationCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::maximumLuminousEfficacy"))) (to (node (document "d0") (qualified-name "ISQLight::MaximumLuminousEfficacyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::molarAbsorptionCoefficient"))) (to (node (document "d0") (qualified-name "ISQLight::MolarAbsorptionCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::napierianAbsorbance"))) (to (node (document "d0") (qualified-name "ISQLight::NapierianAbsorbanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonExitance"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonExitanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonExposure"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonExposureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonFlux"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonFluxValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonIntensity"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonIrradiance"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonIrradianceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonNumber"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonNumberValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::photonRadiance"))) (to (node (document "d0") (qualified-name "ISQLight::PhotonRadianceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radiance"))) (to (node (document "d0") (qualified-name "ISQLight::RadianceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radianceFactor"))) (to (node (document "d0") (qualified-name "ISQLight::RadianceFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radiantEnergyDensity"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantEnergyDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radiantExitance"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantExitanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radiantExposure"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantExposureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radiantFlux"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantFluxValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::radiantIntensity"))) (to (node (document "d0") (qualified-name "ISQLight::RadiantIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::reflectance"))) (to (node (document "d0") (qualified-name "ISQLight::ReflectanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::reflectanceFactor"))) (to (node (document "d0") (qualified-name "ISQLight::ReflectanceFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::refractiveIndex"))) (to (node (document "d0") (qualified-name "ISQLight::RefractiveIndexValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralIrradiance"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralIrradianceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralLuminousEfficacy"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficacyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralLuminousEfficiency"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralLuminousEfficiencyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiance"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadianceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiantEnergy"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiantEnergyDensityInTermsOfWavelength"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavelengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiantEnergyDensityInTermsOfWavenumber"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantEnergyDensityInTermsOfWavenumberValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiantExitance"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExitanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiantExposure"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantExposureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiantFlux"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantFluxValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::spectralRadiantIntensity"))) (to (node (document "d0") (qualified-name "ISQLight::SpectralRadiantIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::speedOfLightInAMedium"))) (to (node (document "d0") (qualified-name "ISQLight::SpeedOfLightInAMediumValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::transmittance"))) (to (node (document "d0") (qualified-name "ISQLight::TransmittanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::transmittanceOpticalDensity"))) (to (node (document "d0") (qualified-name "ISQLight::TransmittanceOpticalDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::tristimulusValuesForTheCie1931StandardColorimetricObserver"))) (to (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1931StandardColorimetricObserverValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQLight::tristimulusValuesForTheCie1964StandardColorimetricObserver"))) (to (node (document "d0") (qualified-name "ISQLight::TristimulusValuesForTheCie1964StandardColorimetricObserverValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

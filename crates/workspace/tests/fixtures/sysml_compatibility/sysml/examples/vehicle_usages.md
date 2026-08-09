@@ -383,77 +383,116 @@ semantic.unresolved_name 'DriveIF'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleUsages'
-      (documentation)
-      (membership_import private -> 'SI::N'[unresolved])
-      (membership_import private -> 'SI::m'[unresolved])
-      (namespace_import private -> 'ScalarFunctions'[unresolved])
-      (namespace_import public -> 'VehicleDefinitions'[unresolved])
-      (feature_def 'T1'
-        (feature_value (=)))
-      (feature_def 'T2'
-        (feature_value (=)))
-      (part_usage 'narrowRimWheel' : 'Wheel'[unresolved]
-        (documentation)
-        (part_usage composite 'lugbolt' : 'Lugbolt'[unresolved]
-          (multiplicity_range [4..5])))
-      (part_usage 'wideRimWheel' : 'Wheel'[unresolved]
-        (documentation)
-        (part_usage composite 'lugbolt' : 'Lugbolt'[unresolved]
-          (multiplicity_range [4..6])))
-      (part_usage 'vehicle_C1' : 'Vehicle'[unresolved]
-        (documentation)
-        (part_usage composite 'frontAxleAssembly' : 'AxleAssembly'[unresolved]
-          (part_usage composite 'frontWheel' :> 'VehicleUsages::narrowRimWheel'[part_usage]
-            (multiplicity_range [2])
-            (part_usage composite :>> 'VehicleUsages::narrowRimWheel::lugbolt'[part_usage]
-              (multiplicity_range [4])
-              (attribute_usage composite :>> 'tighteningTorque'[unresolved]
-                (feature_value (=)))))
-          (part_usage composite 'frontAxle' : 'Axle'[unresolved]))
-        (part_usage composite 'rearAxleAssembly' : 'AxleAssembly'[unresolved]
-          (part_usage composite 'rearWheel' :> 'VehicleUsages::wideRimWheel'[part_usage]
-            (multiplicity_range [2])
-            (part_usage composite :>> 'VehicleUsages::wideRimWheel::lugbolt'[part_usage]
-              (multiplicity_range [6])
-              (attribute_usage composite :>> 'tighteningTorque'[unresolved]
-                (feature_value (=)))))
-          (part_usage composite 'rearAxle' : 'Axle'[unresolved])))
-      (part_usage 'vehicle_C2' :> 'VehicleUsages::vehicle_C1'[part_usage]
-        (documentation)
-        (part_usage composite :>> 'VehicleUsages::vehicle_C1::frontAxleAssembly'[part_usage]
-          (part_usage composite 'leftFrontWheel' :> 'VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel'[part_usage]
-            (feature_value (=)))
-          (part_usage composite 'rightFrontWheel' :> 'VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel'[part_usage]
-            (feature_value (=)))
-          (interface_usage composite 'leftFrontMount' : 'Mounting'[unresolved]
-            (connector_end 'frontAxle.leftMountingPoint')
-            (connector_end 'leftFrontWheel.hub'))
-          (interface_usage composite 'rightFrontMount' : 'Mounting'[unresolved]
-            (connector_end 'frontAxle.rightMountingPoint')
-            (connector_end 'rightFrontWheel.hub')))
-        (part_usage composite 'rearAxleAssembly' :>> 'VehicleUsages::vehicle_C1::rearAxleAssembly'[part_usage]
-          (part_usage composite 'leftRearWheel' :> 'VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel'[part_usage]
-            (feature_value (=)))
-          (part_usage composite 'rightRearWheel' :> 'VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel'[part_usage]
-            (feature_value (=)))
-          (interface_usage composite 'leftRearMount' : 'Mounting'[unresolved]
-            (connector_end 'rearAxle.leftMountingPoint')
-            (connector_end 'leftRearWheel.hub'))
-          (interface_usage composite 'rightRearMount' : 'Mounting'[unresolved]
-            (connector_end 'rearAxle.rightMountingPoint')
-            (connector_end 'rightRearWheel.hub'))))
-      (part_usage 'vehicle_C3' :> 'VehicleUsages::vehicle_C2'[part_usage]
-        (documentation)
-        (part_usage composite 'transmission' : 'Transmission'[unresolved]
-          (port_usage composite 'drive' : 'DriveIF'[unresolved] ~ 'DriveIF'[unresolved]))
-        (part_usage composite :>> 'VehicleUsages::vehicle_C2::rearAxleAssembly'[part_usage]
-          (part_usage composite :>> 'VehicleUsages::vehicle_C1::rearAxleAssembly::rearAxle'[part_usage]
-            (port_usage composite 'drive' : 'DriveIF'[unresolved])))
-        (interface_usage composite 'driveShaft'
-          (connector_end 'transDrive' :> 'VehicleUsages::vehicle_C3::transmission::drive'[port_usage])
-          (connector_end 'axleDrive' :> 'drive'[port_usage])
-          (flow_usage composite 'transDrive'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleUsages"))) (name "VehicleUsages") (declared-name "VehicleUsages")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::N"))) (name "N") (declared-name "N"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::m"))) (name "m") (declared-name "m"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (name "narrowRimWheel") (declared-name "narrowRimWheel") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::_documentation"))) (name ""))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::lugbolt"))) (name "lugbolt") (declared-name "lugbolt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 5) (ordered false) (provenance authored))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (name "vehicle_C1") (declared-name "vehicle_C1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::_documentation"))) (name ""))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontAxle"))) (name "frontAxle") (declared-name "frontAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel"))) (name "frontWheel") (declared-name "frontWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt"))) (name "lugbolt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored)))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (name "tighteningTorque") (declared-name "tighteningTorque") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "T1")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel::lugbolt::tighteningTorque"))) (role feature-value))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel"))) (name "rearWheel") (declared-name "rearWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt"))) (name "lugbolt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored)))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (name "tighteningTorque") (declared-name "tighteningTorque") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "T2")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel::lugbolt::tighteningTorque"))) (role feature-value))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (name "vehicle_C2") (declared-name "vehicle_C2") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::_documentation"))) (name ""))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly"))) (name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::leftFrontWheel"))) (name "leftFrontWheel") (declared-name "leftFrontWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::frontAxleAssembly::rightFrontWheel"))) (name "rightFrontWheel") (declared-name "rightFrontWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearWheel"))) (name "leftRearWheel") (declared-name "leftRearWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::rightRearWheel"))) (name "rightRearWheel") (declared-name "rightRearWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (name "vehicle_C3") (declared-name "vehicle_C3") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::_documentation"))) (name ""))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly"))) (name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::rearAxleAssembly::rearAxle::drive"))) (name "drive") (declared-name "drive") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::transmission::drive"))) (name "drive") (declared-name "drive") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (name "wideRimWheel") (declared-name "wideRimWheel") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::_documentation"))) (name ""))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::lugbolt"))) (name "lugbolt") (declared-name "lugbolt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (to (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (connection (status pending-expression) (document "d0") (source-expression "frontAxle::leftMountingPoint") (target-expression "leftFrontWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::frontAxleAssembly") (interface-usage true) (interface-type "Mounting"))
+    (connection (status pending-expression) (document "d0") (source-expression "frontAxle::rightMountingPoint") (target-expression "rightFrontWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::frontAxleAssembly") (interface-usage true) (interface-type "Mounting"))
+    (connection (status pending-expression) (document "d0") (source-expression "rearAxle::leftMountingPoint") (target-expression "leftRearWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::rearAxleAssembly") (interface-usage true) (interface-type "Mounting"))
+    (connection (status pending-expression) (document "d0") (source-expression "rearAxle::rightMountingPoint") (target-expression "rightRearWheel::hub") (container-prefix "VehicleUsages::vehicle_C2::rearAxleAssembly") (interface-usage true) (interface-type "Mounting"))
+  )
+)
 ~~~

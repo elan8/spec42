@@ -51,11 +51,19 @@ semantic.unresolved_name 'Pkg::β'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'αβ'
-      (class_def '漢字')
-      (type_def '🧪' :> 'Base::Anything'[unresolved])
-      (class_def 'é')
-      (class_def 'Ω' :> 'Pkg::β'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "αβ"))) (name "αβ") (declared-name "αβ")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "αβ::class"))) (name "class") (declared-name "class"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

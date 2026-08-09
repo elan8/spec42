@@ -159,28 +159,51 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'IndividualTest'
-      (occurrence_def individual 'IO1')
-      (occurrence_def individual 'IO2'
-        (occurrence_usage individual composite 'io' : 'IndividualTest::IO1'[occurrence_def]))
-      (item_def individual 'II1'
-        (item_usage individual composite 'ii' : 'IndividualTest::II1'[item_def]))
-      (item_def 'I'
-        (part_usage composite 'i' : 'IndividualTest::I'[item_def]))
-      (item_def individual 'II2' :> 'IndividualTest::I'[item_def]
-        (item_usage individual composite :>> 'IndividualTest::I::i'[part_usage] : 'IndividualTest::II2'[item_def]))
-      (part_def individual 'IP1'
-        (part_usage individual composite 'p' : 'IndividualTest::IP1'[part_def]))
-      (part_def 'P'
-        (part_usage composite 'p' : 'IndividualTest::P'[part_def]))
-      (part_def individual 'IP2' :> 'IndividualTest::P'[part_def]
-        (part_usage individual composite :>> 'IndividualTest::P::p'[part_usage] : 'IndividualTest::IP2'[part_def]))
-      (action_def individual 'AP1'
-        (action_usage individual composite 'a' : 'IndividualTest::AP1'[action_def]))
-      (action_def 'A'
-        (action_usage composite 'a' : 'IndividualTest::A'[action_def]))
-      (action_def individual 'IA2' :> 'IndividualTest::A'[action_def]
-        (action_usage individual composite :>> 'IndividualTest::A::a'[action_usage] : 'IndividualTest::IA2'[action_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "IndividualTest"))) (name "IndividualTest") (declared-name "IndividualTest")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "IndividualTest::A"))) (name "A") (declared-name "A")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "IndividualTest::A::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "IndividualTest::A")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "IndividualTest::I"))) (name "I") (declared-name "I")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::I::i"))) (name "i") (declared-name "i") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::I")))))
+          )
+        )
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "IndividualTest::IO1"))) (name "IO1") (declared-name "IO1"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::IP1"))) (name "IP1") (declared-name "IP1") (declared (properties (individual true)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP1")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::IP2"))) (name "IP2") (declared-name "IP2") (declared (properties (individual true)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP2")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::P"))) (name "P") (declared-name "P") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::P::p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::P")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::A"))) (to (node (document "d0") (qualified-name "IndividualTest::A::a"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::IP2"))) (to (node (document "d0") (qualified-name "IndividualTest::P"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::A::a"))) (to (node (document "d0") (qualified-name "IndividualTest::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::I::i"))) (to (node (document "d0") (qualified-name "IndividualTest::I"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (to (node (document "d0") (qualified-name "IndividualTest::IP1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (to (node (document "d0") (qualified-name "IndividualTest::IP2"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IndividualTest::P::p"))) (to (node (document "d0") (qualified-name "IndividualTest::P"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

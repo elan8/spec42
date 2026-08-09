@@ -140,28 +140,41 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'OccurrenceTest'
-      (occurrence_def 'Occ'
-        (attribute_usage composite 'a')
-        (occurrence_usage reference 'occ1' : 'OccurrenceTest::Occ'[occurrence_def])
-        (occurrence_usage composite 'occ2' : 'OccurrenceTest::Occ'[occurrence_def])
-        (item_usage composite 'x')
-        (part_usage composite 'y')
-        (occurrence_usage individual composite 's' : 'OccurrenceTest::Ind'[occurrence_def])
-        (occurrence_usage composite 't'))
-      (occurrence_usage 'occ' : 'OccurrenceTest::Occ'[occurrence_def]
-        (occurrence_usage composite 'o1' : 'OccurrenceTest::Occ'[occurrence_def])
-        (occurrence_usage reference 'o2' : 'OccurrenceTest::Occ'[occurrence_def])
-        (item_usage composite 'z'))
-      (occurrence_def individual 'Ind'
-        (occurrence_usage composite 's2')
-        (occurrence_usage composite 't2'))
-      (occurrence_usage individual 'ind' : 'OccurrenceTest::Ind'[occurrence_def] : 'OccurrenceTest::Occ'[occurrence_def]
-        (occurrence_usage composite 's3')
-        (occurrence_usage individual composite 't3' :> 'OccurrenceTest::ind'[occurrence_usage])
-        (occurrence_usage individual composite 's4' : 'OccurrenceTest::Ind'[occurrence_def]))
-      (occurrence_usage 'o1'
-        (occurrence_usage composite 'o2')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "OccurrenceTest"))) (name "OccurrenceTest") (declared-name "OccurrenceTest")
+      (contains
+        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (name "Occ") (declared-name "Occ") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::a"))) (name "a") (declared-name "a") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (name "occ2") (declared-name "occ2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::t"))) (name "t") (declared-name "t") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "OccurrenceTest::Occ::y"))) (name "y") (declared-name "y") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+          )
+        )
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::o1"))) (name "o1") (declared-name "o1") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::o1::o2"))) (name "o2") (declared-name "o2") (declared (properties (composite true) (reference false))))
+          )
+        )
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (name "occ") (declared-name "occ") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (name "o1") (declared-name "o1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (name "o2") (declared-name "o2") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

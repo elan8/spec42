@@ -486,58 +486,76 @@ standard library package TradeStudies {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'TradeStudies'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'ScalarFunctions'[unresolved])
-      (namespace_import private -> 'ControlFunctions'[unresolved])
-      (calculation_def abstract 'EvaluationFunction'
-        (documentation)
-        (reference_usage in reference 'alternative' : 'Anything'[unresolved]
-          (documentation))
-        (return_parameter_membership
-          (attribute_usage out 'result' : 'ScalarValue'[unresolved]
-            (multiplicity_range [1])
-            (documentation))))
-      (requirement_def abstract 'TradeStudyObjective'
-        (documentation)
-        (subject_membership in 'selectedAlternative' : 'Anything'[unresolved]
-          (documentation))
-        (reference_usage in reference 'alternatives' : 'Anything'[unresolved]
-          (multiplicity_range [1..*])
-          (documentation))
-        (calculation_usage in 'eval' : 'TradeStudies::EvaluationFunction'[calculation_def]
-          (documentation))
-        (attribute_usage composite 'best' : 'ScalarValue'[unresolved]
-          (documentation))
-        (require_constraint_usage composite
-          (result_expr_membership)))
-      (requirement_def 'MinimizeObjective' :> 'TradeStudies::TradeStudyObjective'[requirement_def]
-        (documentation)
-        (attribute_usage composite :>> 'TradeStudies::TradeStudyObjective::best'[attribute_usage]
-          (feature_value (=))))
-      (requirement_def 'MaximizeObjective' :> 'TradeStudies::TradeStudyObjective'[requirement_def]
-        (documentation)
-        (attribute_usage composite :>> 'TradeStudies::TradeStudyObjective::best'[attribute_usage]
-          (feature_value (=))))
-      (analysis_case_def abstract 'TradeStudy'
-        (documentation)
-        (subject_membership in 'studyAlternatives' : 'Anything'[unresolved]
-          (multiplicity_range [1..*])
-          (documentation))
-        (calculation_usage abstract composite 'evaluationFunction' : 'TradeStudies::EvaluationFunction'[calculation_def]
-          (documentation))
-        (objective_membership composite 'tradeStudyObjective' : 'TradeStudies::TradeStudyObjective'[requirement_def]
-          (documentation)
-          (subject_membership in :>> 'TradeStudies::TradeStudyObjective::selectedAlternative'[subject_membership])
-          (reference_usage in reference :>> 'TradeStudies::TradeStudyObjective::alternatives'[reference_usage]
-            (feature_value (=)))
-          (calculation_usage in :>> 'TradeStudies::TradeStudyObjective::eval'[calculation_usage]
-            (feature_value (=))))
-        (return_parameter_membership
-          (feature_def out 'selectedAlternative' : 'Anything'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TradeStudies"))) (name "TradeStudies") (declared-name "TradeStudies")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudies::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudies::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudies::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudies::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction"))) (name "EvaluationFunction") (declared-name "EvaluationFunction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction::ref"))) (name "ref") (declared-name "ref") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective"))) (name "MaximizeObjective") (declared-name "MaximizeObjective")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective::best"))) (name "best") (declared-name "best") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective"))) (name "MinimizeObjective") (declared-name "MinimizeObjective")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective::best"))) (name "best") (declared-name "best") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective")))))
+          )
+        )
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudy"))) (name "TradeStudy") (declared-name "TradeStudy")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudy")))))
+            (element (kind "calc") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudy::evaluationFunction"))) (name "evaluationFunction") (declared-name "evaluationFunction") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudy"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudy::evaluationFunction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction")))))
+              )
+            )
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudy::selectedAlternative"))) (name "selectedAlternative") (declared-name "selectedAlternative") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudy")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudy::studyAlternatives"))) (name "studyAlternatives") (declared-name "studyAlternatives") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudy")))))
+            (element (kind "objective") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudy::tradeStudyObjective"))) (name "tradeStudyObjective") (declared-name "tradeStudyObjective") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudy")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective"))) (name "TradeStudyObjective") (declared-name "TradeStudyObjective")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective")))))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::best"))) (name "best") (declared-name "best") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::selectedAlternative"))) (name "selectedAlternative") (declared-name "selectedAlternative") (effective (featuring-type (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "TradeStudies::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction::_documentation"))) (to (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective::_documentation"))) (to (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective::_documentation"))) (to (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::TradeStudy::_documentation"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::TradeStudy::evaluationFunction::_documentation"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudy::evaluationFunction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::_documentation"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::_documentation"))) (to (node (document "d0") (qualified-name "TradeStudies"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective::best"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::best"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective::best"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::best"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::MaximizeObjective"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::MinimizeObjective"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective::selectedAlternative"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::TradeStudy::evaluationFunction"))) (to (node (document "d0") (qualified-name "TradeStudies::EvaluationFunction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudies::TradeStudy::tradeStudyObjective"))) (to (node (document "d0") (qualified-name "TradeStudies::TradeStudyObjective"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

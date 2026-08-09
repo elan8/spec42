@@ -156,22 +156,49 @@ standard library package Constraints {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Constraints'
-      (documentation)
-      (membership_import private -> 'Performances::BooleanEvaluation'[unresolved])
-      (membership_import private -> 'Performances::booleanEvaluations'[unresolved])
-      (membership_import private -> 'Performances::trueEvaluations'[unresolved])
-      (membership_import private -> 'Performances::falseEvaluations'[unresolved])
-      (constraint_def abstract 'ConstraintCheck' :> 'BooleanEvaluation'[unresolved]
-        (documentation)
-        (constraint_usage reference 'self' : 'Constraints::ConstraintCheck'[constraint_def] :>> 'BooleanEvaluation::self'[unresolved] :> 'Constraints::constraintChecks'[constraint_usage][implied]))
-      (constraint_usage abstract 'constraintChecks' : 'Constraints::ConstraintCheck'[constraint_def] :> 'booleanEvaluations'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (constraint_usage abstract 'assertedConstraintChecks' :> 'Constraints::constraintChecks'[constraint_usage] :> 'trueEvaluations'[unresolved]
-        (documentation))
-      (constraint_usage abstract 'negatedConstraintChecks' :> 'Constraints::constraintChecks'[constraint_usage] :> 'falseEvaluations'[unresolved]
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Constraints"))) (name "Constraints") (declared-name "Constraints")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Constraints::BooleanEvaluation"))) (name "BooleanEvaluation") (declared-name "BooleanEvaluation"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))) (name "ConstraintCheck") (declared-name "ConstraintCheck")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Constraints::ConstraintCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Constraints::ConstraintCheck")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Constraints::_documentation"))) (name ""))
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks"))) (name "assertedConstraintChecks") (declared-name "assertedConstraintChecks")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks::_documentation"))) (name ""))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Constraints::booleanEvaluations"))) (name "booleanEvaluations") (declared-name "booleanEvaluations"))
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "Constraints::constraintChecks"))) (name "constraintChecks") (declared-name "constraintChecks")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Constraints::constraintChecks::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Constraints::ConstraintCheck")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Constraints::falseEvaluations"))) (name "falseEvaluations") (declared-name "falseEvaluations"))
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks"))) (name "negatedConstraintChecks") (declared-name "negatedConstraintChecks")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks::_documentation"))) (name ""))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Constraints::trueEvaluations"))) (name "trueEvaluations") (declared-name "trueEvaluations"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::ConstraintCheck::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::_documentation"))) (to (node (document "d0") (qualified-name "Constraints"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::constraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::constraintChecks"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints::constraintChecks"))) (to (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

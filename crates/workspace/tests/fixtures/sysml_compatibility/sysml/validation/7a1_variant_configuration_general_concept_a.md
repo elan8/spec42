@@ -303,74 +303,124 @@ parse.expected_semicolon_or_body
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '7a1-Variant Configuration - General Concept-a'
-      (action_usage 'doX')
-      (action_usage 'doY')
-      (part_usage 'part1')
-      (part_usage 'part2')
-      (part_usage 'part3'
-        (port_usage composite 'p1'))
-      (part_usage 'part4')
-      (part_usage 'part5'
-        (port_usage composite 'p2')
-        (perform_action_usage variation 'doXorY'
-          (variant_usage
-            (perform_action_usage :>> '7a1-Variant Configuration - General Concept-a::doX'[action_usage]))
-          (variant_usage
-            (perform_action_usage :>> '7a1-Variant Configuration - General Concept-a::doY'[action_usage]))))
-      (part_usage 'part6')
-      (part_def abstract 'SubsystemA'
-        (part_usage abstract composite :>> '7a1-Variant Configuration - General Concept-a::part3'[part_usage]
-          (multiplicity_range [0..1])))
-      (part_def abstract 'SubsystemB'
-        (part_usage abstract composite :>> '7a1-Variant Configuration - General Concept-a::part5'[part_usage]
-          (multiplicity_range [1])))
-      (part_usage 'anyVehicleConfig'
-        (part_usage variation composite 'subsystemA' : '7a1-Variant Configuration - General Concept-a::SubsystemA'[part_def]
-          (variant_usage
-            (part_usage composite 'subsystem1' : '7a1-Variant Configuration - General Concept-a::SubsystemA'[part_def]
-              (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::part1'[part_usage]
-                (multiplicity_range [1]))
-              (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::part2'[part_usage]
-                (multiplicity_range [1]))))
-          (variant_usage
-            (part_usage composite 'subsystem2' : '7a1-Variant Configuration - General Concept-a::SubsystemA'[part_def]
-              (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::part2'[part_usage]
-                (multiplicity_range [1]))
-              (part_usage composite :>> ''[part_usage]
-                (multiplicity_range [1])))))
-        (part_usage variation composite 'subsystemB' : '7a1-Variant Configuration - General Concept-a::SubsystemB'[part_def]
-          (variant_usage
-            (part_usage composite 'subsystem3' : '7a1-Variant Configuration - General Concept-a::SubsystemB'[part_def]
-              (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::part4'[part_usage]
-                (multiplicity_range [1]))
-              (part_usage composite :>> ''[part_usage]
-                (multiplicity_range [1]))))
-          (variant_usage
-            (part_usage composite 'subsystem4' : '7a1-Variant Configuration - General Concept-a::SubsystemB'[part_def]
-              (part_usage composite :>> ''[part_usage]
-                (multiplicity_range [1]))
-              (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::part6'[part_usage]
-                (multiplicity_range [1])))))
-        (connection_usage composite
-          (connector_end 'subsystemA.part3.p1')
-          (connector_end 'subsystemB.part5.p2'))
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (part_usage 'vehicleConfigA' :> '7a1-Variant Configuration - General Concept-a::anyVehicleConfig'[part_usage]
-        (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA'[part_usage]
-          (feature_value (=)))
-        (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB'[part_usage]
-          (feature_value (=))
-          (part_usage composite :>> ''[part_usage]
-            (not_implemented 'malformed'))))
-      (part_usage 'VehicleConfigB' :> '7a1-Variant Configuration - General Concept-a::anyVehicleConfig'[part_usage]
-        (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA'[part_usage]
-          (feature_value (=)))
-        (part_usage composite :>> '7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB'[part_usage]
-          (feature_value (=))
-          (part_usage composite :>> ''[part_usage]
-            (not_implemented 'malformed')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a"))) (name "7a1-Variant Configuration - General Concept-a") (declared-name "7a1-Variant Configuration - General Concept-a")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))) (name "SubsystemA") (declared-name "SubsystemA") (declared (properties (abstract true)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))) (name "part3") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))) (name "SubsystemB") (declared-name "SubsystemB") (declared (properties (abstract true)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))) (name "part5") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (name "VehicleConfigB") (declared-name "VehicleConfigB") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (name "subsystemA") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemA::subsystem2")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemA"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (name "subsystemB") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemB::subsystem4")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB"))) (role feature-value)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (name "part5") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::"))) (name ""))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))) (name "anyVehicleConfig") (declared-name "anyVehicleConfig") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (name "subsystemA") (declared-name "subsystemA") (declared (properties (variation true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (name "subsystem1") (declared-name "subsystem1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part1"))) (name "part1") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1::part2"))) (name "part2") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (name "subsystem2") (declared-name "subsystem2") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part2"))) (name "part2") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (name "part3") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (name "subsystemB") (declared-name "subsystemB") (declared (properties (variation true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (name "subsystem3") (declared-name "subsystem3") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part4"))) (name "part4") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (name "part5") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (name "subsystem4") (declared-name "subsystem4") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (name "part5") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part6"))) (name "part6") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doX"))) (name "doX") (declared-name "doX") (declared (properties (composite true) (reference false))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::doY"))) (name "doY") (declared-name "doY") (declared (properties (composite true) (reference false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part1"))) (name "part1") (declared-name "part1") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part2"))) (name "part2") (declared-name "part2") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3"))) (name "part3") (declared-name "part3") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part3::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part4"))) (name "part4") (declared-name "part4") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (name "part5") (declared-name "part5") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY"))) (name "doXorY") (declared-name "doXorY"))
+            (element (kind "port") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::p2"))) (name "p2") (declared-name "p2") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part6"))) (name "part6") (declared-name "part6") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (name "vehicleConfigA") (declared-name "vehicleConfigA") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (name "subsystemA") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemA::subsystem1")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemA"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (name "subsystemB") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "subsystemB::subsystem3")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB"))) (role feature-value)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (name "part5") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::"))) (name ""))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB::subsystemB::part5::"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::part5::doXorY"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA::subsystemB::part5::"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2::part3"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA::part3"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4::part5"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB::part5"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::VehicleConfigB"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::vehicleConfigA"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem1"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemA"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem4"))) (to (node (document "d0") (qualified-name "7a1-Variant Configuration - General Concept-a::SubsystemB"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (connection (status pending-expression) (document "d0") (source-expression "subsystemA::part3::p1") (target-expression "subsystemB::part5::p2") (container-prefix "7a1-Variant Configuration - General Concept-a::anyVehicleConfig"))
+  )
+)
 ~~~

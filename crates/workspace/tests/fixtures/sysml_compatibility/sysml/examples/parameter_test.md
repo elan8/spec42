@@ -91,24 +91,39 @@ semantic.unresolved_name 'ScalarValues::Integer'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ParameterTest'
-      (attribute_def 'A'
-        (attribute_usage composite 'x' : 'ScalarValues::String'[unresolved])
-        (attribute_usage composite 'y' : 'ParameterTest::A'[attribute_def]))
-      (attribute_usage 'a' : 'ParameterTest::A'[attribute_def])
-      (calculation_def 'F'
-        (reference_usage in reference 'p' : 'ParameterTest::A'[attribute_def])
-        (reference_usage in reference 'q' : 'ScalarValues::Integer'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'ScalarValues::Integer'[unresolved])))
-      (attribute_usage 'f'
-        (feature_value (=)))
-      (attribute_usage 'g'
-        (feature_value (=)))
-      (attribute_usage 'b'
-        (feature_value (=)))
-      (attribute_usage 'c'
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ParameterTest"))) (name "ParameterTest") (declared-name "ParameterTest")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParameterTest::A"))) (name "A") (declared-name "A") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ParameterTest::A::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ParameterTest::A")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ParameterTest::A::y"))) (name "y") (declared-name "y") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ParameterTest::A")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "ParameterTest::F"))) (name "F") (declared-name "F")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "ParameterTest::F::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ParameterTest::F")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ParameterTest::F::p"))) (name "p") (declared-name "p") (effective (featuring-type (node (document "d0") (qualified-name "ParameterTest::F")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ParameterTest::F::q"))) (name "q") (declared-name "q") (effective (featuring-type (node (document "d0") (qualified-name "ParameterTest::F")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParameterTest::a"))) (name "a") (declared-name "a") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParameterTest::b"))) (name "b") (declared-name "b") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "constructor") (reference "A") (arguments (argument (name "y") (expression (kind "featureReference") (reference "a"))) (argument (name "x") (expression (kind "stringLiteral") (literal ""))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "ParameterTest::b"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParameterTest::c"))) (name "c") (declared-name "c") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "constructor") (reference "A") (arguments (argument (expression (kind "stringLiteral") (literal "test2"))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "ParameterTest::c"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParameterTest::f"))) (name "f") (declared-name "f") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "F"))) (arguments (argument (expression (kind "featureReference") (reference "a"))) (argument (expression (kind "integerLiteral") (literal 2))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "ParameterTest::f"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParameterTest::g"))) (name "g") (declared-name "g") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "F"))) (arguments (argument (name "q") (expression (kind "integerLiteral") (literal 1))) (argument (name "p") (expression (kind "featureReference") (reference "a"))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "ParameterTest::g"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::A::y"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::F::p"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::a"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

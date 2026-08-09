@@ -397,77 +397,95 @@ standard library package SampledFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'SampledFunctions'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'ScalarValues::Positive'[unresolved])
-      (membership_import private -> 'Collections::KeyValuePair'[unresolved])
-      (membership_import private -> 'Collections::OrderedMap'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (membership_import private -> 'ControlFunctions::collect'[unresolved])
-      (membership_import private -> 'ControlFunctions::select'[unresolved])
-      (attribute_def 'SamplePair' :> 'KeyValuePair'[unresolved]
-        (documentation)
-        (attribute_usage composite 'domainValue' :>> 'key'[unresolved])
-        (attribute_usage composite 'rangeValue' :>> 'val'[unresolved]))
-      (attribute_def 'SampledFunction' :> 'OrderedMap'[unresolved]
-        (documentation)
-        (attribute_usage composite ordered 'samples' : 'SampledFunctions::SamplePair'[attribute_def] :>> 'elements'[unresolved]
-          (multiplicity_range [0..*]))
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (calculation_def 'Domain'
-        (documentation)
-        (reference_usage in reference 'fn' : 'SampledFunctions::SampledFunction'[attribute_def])
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (calculation_def 'Range'
-        (documentation)
-        (reference_usage in reference 'fn' : 'SampledFunctions::SampledFunction'[attribute_def])
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (calculation_def 'Sample'
-        (documentation)
-        (calculation_usage in 'calculation'
-          (reference_usage in reference 'x'))
-        (attribute_usage in 'domainValues'
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out 'sampling'
-            (feature_value (=)))))
-      (calculation_def 'Interpolate'
-        (documentation)
-        (attribute_usage in 'fn' : 'SampledFunctions::SampledFunction'[attribute_def])
-        (attribute_usage in 'value')
-        (return_parameter_membership
-          (attribute_usage out 'result')))
-      (calculation_usage 'interpolateLinear' : 'SampledFunctions::Interpolate'[calculation_def]
-        (documentation)
-        (attribute_usage in 'fn' : 'SampledFunctions::SampledFunction'[attribute_def])
-        (attribute_usage in 'value')
-        (attribute_usage composite 'domainValues'
-          (feature_value (=)))
-        (attribute_usage composite 'index' : 'Positive'[unresolved]
-          (multiplicity_range [0..1])
-          (feature_value (=)))
-        (calculation_def 'Linear'
-          (attribute_usage in 'lowerSample' : 'SampledFunctions::SamplePair'[attribute_def])
-          (attribute_usage in 'upperSample' : 'SampledFunctions::SamplePair'[attribute_def])
-          (attribute_usage in 'value')
-          (attribute_usage composite 'f'
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'result'
-              (feature_value (=)))))
-        (return_parameter_membership
-          (feature_def out 'result'
-            (multiplicity_range [0..1])
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SampledFunctions"))) (name "SampledFunctions") (declared-name "SampledFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SampledFunctions::Domain"))) (name "Domain") (declared-name "Domain")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::Domain::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Domain")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Domain::fn"))) (name "fn") (declared-name "fn") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Domain")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SampledFunctions::Interpolate"))) (name "Interpolate") (declared-name "Interpolate")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::Interpolate::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Interpolate")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Interpolate::fn"))) (name "fn") (declared-name "fn") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Interpolate")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Interpolate::value"))) (name "value") (declared-name "value") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Interpolate")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::KeyValuePair"))) (name "KeyValuePair") (declared-name "KeyValuePair"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::OrderedMap"))) (name "OrderedMap") (declared-name "OrderedMap"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::Positive"))) (name "Positive") (declared-name "Positive"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SampledFunctions::Range"))) (name "Range") (declared-name "Range")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::Range::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Range")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Range::fn"))) (name "fn") (declared-name "fn") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Range")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SampledFunctions::Sample"))) (name "Sample") (declared-name "Sample")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::Sample::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Sample")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Sample::calc"))) (name "calc") (declared-name "calc") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Sample")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Sample::domainValues"))) (name "domainValues") (declared-name "domainValues") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Sample")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SampledFunctions::SamplePair"))) (name "SamplePair") (declared-name "SamplePair") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::SamplePair::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::SamplePair")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SampledFunctions::SamplePair::domainValue"))) (name "domainValue") (declared-name "domainValue") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SampledFunctions::SamplePair")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SampledFunctions::SamplePair::rangeValue"))) (name "rangeValue") (declared-name "rangeValue") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SampledFunctions::SamplePair")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "SampledFunctions::SampledFunction"))) (name "SampledFunction") (declared-name "SampledFunction") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::SampledFunction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::SampledFunction")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SampledFunctions::SampledFunction::samples"))) (name "samples") (declared-name "samples") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SampledFunctions::SampledFunction")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::collect"))) (name "collect") (declared-name "collect"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear"))) (name "interpolateLinear") (declared-name "interpolateLinear")
+          (contains
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "SampledFunctions::Linear"))) (name "Linear") (declared-name "Linear") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Linear::lowerSample"))) (name "lowerSample") (declared-name "lowerSample") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Linear")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Linear::upperSample"))) (name "upperSample") (declared-name "upperSample") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Linear")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::Linear::value"))) (name "value") (declared-name "value") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::Linear")))))
+              )
+            )
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear::fn"))) (name "fn") (declared-name "fn") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear::value"))) (name "value") (declared-name "value") (effective (featuring-type (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::select"))) (name "select") (declared-name "select"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SampledFunctions::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Domain::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions::Domain"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Interpolate::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions::Interpolate"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Range::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions::Range"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Sample::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions::Sample"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::SamplePair::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions::SamplePair"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::SampledFunction::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions::SampledFunction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear::_documentation"))) (to (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Domain::fn"))) (to (node (document "d0") (qualified-name "SampledFunctions::SampledFunction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Interpolate::fn"))) (to (node (document "d0") (qualified-name "SampledFunctions::SampledFunction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Linear::lowerSample"))) (to (node (document "d0") (qualified-name "SampledFunctions::SamplePair"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Linear::upperSample"))) (to (node (document "d0") (qualified-name "SampledFunctions::SamplePair"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::Range::fn"))) (to (node (document "d0") (qualified-name "SampledFunctions::SampledFunction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::SampledFunction::samples"))) (to (node (document "d0") (qualified-name "SampledFunctions::SamplePair"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SampledFunctions::interpolateLinear::fn"))) (to (node (document "d0") (qualified-name "SampledFunctions::SampledFunction"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

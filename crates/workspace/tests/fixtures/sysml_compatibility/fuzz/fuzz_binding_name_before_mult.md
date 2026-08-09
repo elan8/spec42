@@ -39,11 +39,15 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (binding_connector_def 'b'
-        (multiplicity_range [5])
-        (connector_end 'a')
-        (connector_end 'c')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

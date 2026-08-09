@@ -156,39 +156,41 @@ semantic.invalid_connection_end_count
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ProductSelection_UnownedEnds_SysML'
-      (item_def 'SelectionInfo')
-      (item_def 'ShoppingCart'
-        (item_usage composite 'selectedProducts' : 'ProductSelection_UnownedEnds_SysML::Product'[item_def]
-          (multiplicity_range [0..*])))
-      (item_def 'Product'
-        (item_usage composite 'inCart' : 'ProductSelection_UnownedEnds_SysML::ShoppingCart'[item_def]
-          (multiplicity_range [0..1])))
-      (connection_def 'ProductSelection'
-        (item_usage composite 'info' : 'ProductSelection_UnownedEnds_SysML::SelectionInfo'[item_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (not_implemented 'malformed'))
-      (connection_def 'SingleProductSelection' :> 'ProductSelection_UnownedEnds_SysML::ProductSelection'[connection_def]
-        (port_usage end 'cart' : 'ProductSelection_UnownedEnds_SysML::ShoppingCart'[item_def])
-        (port_usage end 'selectedProduct' : 'ProductSelection_UnownedEnds_SysML::Product'[item_def]
-          (multiplicity_range [0..1])))
-      (item_def 'OnlineCustomer'
-        (item_usage composite 'info1' : 'ProductSelection_UnownedEnds_SysML::SelectionInfo'[item_def])
-        (item_usage composite 'myCart' : 'ProductSelection_UnownedEnds_SysML::ShoppingCart'[item_def]
-          (multiplicity_range [1]))
-        (item_usage composite 'products' : 'ProductSelection_UnownedEnds_SysML::Product'[item_def]
-          (multiplicity_range [0..*]))
-        (connection_usage composite 'ps1' : 'ProductSelection_UnownedEnds_SysML::ProductSelection'[connection_def]
-          (connector_end 'myCart')
-          (connector_end 'products')
-          (reference_usage reference :>> 'ProductSelection_UnownedEnds_SysML::ProductSelection::info'[item_usage]
-            (feature_value (=))))
-        (connection_usage composite 'ps2' : 'ProductSelection_UnownedEnds_SysML::ProductSelection'[connection_def]
-          (connector_end 'myCart')
-          (connector_end 'products')
-          (reference_usage reference :>> 'ProductSelection_UnownedEnds_SysML::ProductSelection::info'[item_usage]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML"))) (name "ProductSelection_UnownedEnds_SysML") (declared-name "ProductSelection_UnownedEnds_SysML")
+      (contains
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))) (name "Product") (declared-name "Product"))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (name "cart") (declared-name "cart") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (name "selectedProduct") (declared-name "selectedProduct") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SelectionInfo"))) (name "SelectionInfo") (declared-name "SelectionInfo"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (name "cart") (declared-name "cart") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (name "selectedProduct") (declared-name "selectedProduct") (declared (properties (end true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ShoppingCart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::Product"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -180,26 +180,55 @@ semantic.unresolved_name 'dimensions'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_11-Variable Length Collection Types'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'Collections'[unresolved])
-      (part_def 'SparePart')
-      (part_def 'Person')
-      (attribute_def 'Bag<SparePart>' :> 'Bag'[unresolved]
-        (part_usage reference :>> 'elements'[unresolved] : '15_11-Variable Length Collection Types::SparePart'[part_def]))
-      (attribute_def 'List<Integer>' :> 'List'[unresolved]
-        (reference_usage reference 'value' :>> 'elements'[unresolved] : 'Integer'[unresolved]))
-      (attribute_def 'Set<String>' :> 'Set'[unresolved]
-        (attribute_usage composite :>> 'elements'[unresolved] : 'String'[unresolved]))
-      (attribute_def 'OrderedSet<Person>' :> 'OrderedSet'[unresolved]
-        (part_usage reference :>> 'elements'[unresolved] : '15_11-Variable Length Collection Types::Person'[part_def]))
-      (attribute_def 'List<Set<Person>>' :> 'List'[unresolved]
-        (attribute_usage composite :>> 'elements'[unresolved] : 'Set'[unresolved]
-          (part_usage reference :>> 'elements'[unresolved] : '15_11-Variable Length Collection Types::Person'[part_def])))
-      (attribute_def 'Array<Real>[4]' :> 'Array'[unresolved]
-        (attribute_usage composite :>> 'elements'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types"))) (name "15_11-Variable Length Collection Types") (declared-name "15_11-Variable Length Collection Types")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]"))) (name "Array<Real>[4]") (declared-name "Array<Real>[4]") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]::elements"))) (name "elements") (declared-name "elements") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Bag<SparePart>"))) (name "Bag<SparePart>") (declared-name "Bag<SparePart>") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Bag<SparePart>::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Bag<SparePart>")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Integer>"))) (name "List<Integer>") (declared-name "List<Integer>") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Integer>::elements"))) (name "elements") (declared-name "elements") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Integer>")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Set<Person>>"))) (name "List<Set<Person>>") (declared-name "List<Set<Person>>") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Set<Person>>::elements"))) (name "elements") (declared-name "elements") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Set<Person>>")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::OrderedSet<Person>"))) (name "OrderedSet<Person>") (declared-name "OrderedSet<Person>") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::OrderedSet<Person>::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::OrderedSet<Person>")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Person"))) (name "Person") (declared-name "Person") (declared))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Set<String>"))) (name "Set<String>") (declared-name "Set<String>") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Set<String>::elements"))) (name "elements") (declared-name "elements") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Set<String>")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::SparePart"))) (name "SparePart") (declared-name "SparePart") (declared))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Bag<SparePart>::"))) (to (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::SparePart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::OrderedSet<Person>::"))) (to (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Person"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

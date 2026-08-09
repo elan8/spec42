@@ -108,23 +108,61 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Redefinition Example'
-      (part_def 'Vehicle'
-        (part_usage composite 'eng' : 'Redefinition Example::Engine'[part_def]))
-      (part_def 'SmallVehicle' :> 'Redefinition Example::Vehicle'[part_def]
-        (part_usage composite 'smallEng' : 'Redefinition Example::SmallEngine'[part_def] :>> 'Redefinition Example::Vehicle::eng'[part_usage]))
-      (part_def 'BigVehicle' :> 'Redefinition Example::Vehicle'[part_def]
-        (part_usage composite 'bigEng' : 'Redefinition Example::BigEngine'[part_def] :>> 'Redefinition Example::Vehicle::eng'[part_usage]))
-      (part_def 'Engine'
-        (part_usage composite 'cyl' : 'Redefinition Example::Cylinder'[part_def]
-          (multiplicity_range [4..6])))
-      (part_def 'SmallEngine' :> 'Redefinition Example::Engine'[part_def]
-        (part_usage composite :>> 'Redefinition Example::Engine::cyl'[part_usage]
-          (multiplicity_range [4])))
-      (part_def 'BigEngine' :> 'Redefinition Example::Engine'[part_def]
-        (part_usage composite :>> 'Redefinition Example::Engine::cyl'[part_usage]
-          (multiplicity_range [6])))
-      (part_def 'Cylinder'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Redefinition Example"))) (name "Redefinition Example") (declared-name "Redefinition Example")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::BigEngine"))) (name "BigEngine") (declared-name "BigEngine") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::BigEngine::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Redefinition Example::BigEngine")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::BigVehicle"))) (name "BigVehicle") (declared-name "BigVehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::BigVehicle::bigEng"))) (name "bigEng") (declared-name "bigEng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::BigVehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::Engine::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Redefinition Example::Engine")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::SmallEngine"))) (name "SmallEngine") (declared-name "SmallEngine") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::SmallEngine::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Redefinition Example::SmallEngine")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle"))) (name "SmallVehicle") (declared-name "SmallVehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle::smallEng"))) (name "smallEng") (declared-name "smallEng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::Vehicle")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::BigEngine::cyl"))) (to (node (document "d0") (qualified-name "Redefinition Example::Engine::cyl"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::BigVehicle::bigEng"))) (to (node (document "d0") (qualified-name "Redefinition Example::Vehicle::eng"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::SmallEngine::cyl"))) (to (node (document "d0") (qualified-name "Redefinition Example::Engine::cyl"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle::smallEng"))) (to (node (document "d0") (qualified-name "Redefinition Example::Vehicle::eng"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::BigEngine"))) (to (node (document "d0") (qualified-name "Redefinition Example::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::BigVehicle"))) (to (node (document "d0") (qualified-name "Redefinition Example::Vehicle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::SmallEngine"))) (to (node (document "d0") (qualified-name "Redefinition Example::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle"))) (to (node (document "d0") (qualified-name "Redefinition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::BigVehicle::bigEng"))) (to (node (document "d0") (qualified-name "Redefinition Example::BigEngine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::Engine::cyl"))) (to (node (document "d0") (qualified-name "Redefinition Example::Cylinder"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle::smallEng"))) (to (node (document "d0") (qualified-name "Redefinition Example::SmallEngine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Redefinition Example::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Redefinition Example::Engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

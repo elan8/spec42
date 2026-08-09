@@ -355,89 +355,32 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'HSUVDynamics'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (namespace_import private -> 'ControlFunctions'[unresolved])
-      (attribute_def 'Horsepwr' :> 'Real'[unresolved])
-      (attribute_def 'Weight' :> 'Real'[unresolved])
-      (attribute_def 'Accel' :> 'Real'[unresolved])
-      (attribute_def 'Vel' :> 'Real'[unresolved])
-      (attribute_def 'Dist' :> 'Real'[unresolved])
-      (attribute_def 'Time' :> 'Real'[unresolved])
-      (constraint_def 'PowerEquation'
-        (attribute_usage composite 'whlpwr' : 'HSUVDynamics::Horsepwr'[attribute_def])
-        (attribute_usage composite 'Cd' : 'Real'[unresolved])
-        (attribute_usage composite 'Cf' : 'Real'[unresolved])
-        (attribute_usage composite 'tw' : 'HSUVDynamics::Weight'[attribute_def])
-        (attribute_usage composite 'tp' : 'HSUVDynamics::Horsepwr'[attribute_def])
-        (attribute_usage composite 'v' : 'HSUVDynamics::Vel'[attribute_def])
-        (result_expr_membership))
-      (constraint_def 'PositionEquation'
-        (attribute_usage composite 'dt' : 'HSUVDynamics::Time'[attribute_def])
-        (attribute_usage composite ordered 'v' : 'HSUVDynamics::Vel'[attribute_def]
-          (multiplicity_range [0..*]))
-        (attribute_usage composite ordered 'x' : 'HSUVDynamics::Dist'[attribute_def]
-          (multiplicity_range [0..*]))
-        (result_expr_membership))
-      (constraint_def 'VelocityEquation'
-        (attribute_usage composite 'dt' : 'HSUVDynamics::Time'[attribute_def])
-        (attribute_usage composite ordered 'v' : 'HSUVDynamics::Vel'[attribute_def]
-          (multiplicity_range [0..*]))
-        (attribute_usage composite 'a' : 'HSUVDynamics::Accel'[attribute_def])
-        (result_expr_membership))
-      (constraint_def 'AccelerationEquation'
-        (attribute_usage composite 'tw' : 'HSUVDynamics::Weight'[attribute_def])
-        (attribute_usage composite 'dt' : 'HSUVDynamics::Time'[attribute_def])
-        (attribute_usage composite 'tp' : 'HSUVDynamics::Horsepwr'[attribute_def])
-        (attribute_usage composite 'a' : 'HSUVDynamics::Accel'[attribute_def])
-        (result_expr_membership))
-      (constraint_def 'StraightLineVehicleDynamics'
-        (attribute_usage composite 'dt' : 'HSUVDynamics::Time'[attribute_def])
-        (attribute_usage composite 'whlpwr' : 'HSUVDynamics::Horsepwr'[attribute_def])
-        (attribute_usage composite 'Cd' : 'Real'[unresolved])
-        (attribute_usage composite 'Cf' : 'Real'[unresolved])
-        (attribute_usage composite 'tw' : 'HSUVDynamics::Weight'[attribute_def])
-        (attribute_usage composite 'a' : 'HSUVDynamics::Accel'[attribute_def])
-        (attribute_usage composite ordered 'v' : 'HSUVDynamics::Vel'[attribute_def]
-          (multiplicity_range [0..*]))
-        (attribute_usage composite ordered 'x' : 'HSUVDynamics::Dist'[attribute_def]
-          (multiplicity_range [0..*]))
-        (constraint_usage composite 'pwr' : 'HSUVDynamics::PowerEquation'[constraint_def]
-          (attribute_usage composite :>> 'HSUVDynamics::PowerEquation::whlpwr'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::PowerEquation::Cd'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::PowerEquation::Cf'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::PowerEquation::tw'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::PowerEquation::v'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::PowerEquation::tp'[attribute_usage]))
-        (constraint_usage composite 'acc' : 'HSUVDynamics::AccelerationEquation'[constraint_def]
-          (attribute_usage composite :>> 'HSUVDynamics::AccelerationEquation::tp'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::AccelerationEquation::tw'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::AccelerationEquation::dt'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::AccelerationEquation::a'[attribute_usage]
-            (feature_value (=))))
-        (constraint_usage composite 'vel' : 'HSUVDynamics::VelocityEquation'[constraint_def]
-          (attribute_usage composite :>> 'HSUVDynamics::VelocityEquation::a'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::VelocityEquation::v'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::VelocityEquation::dt'[attribute_usage]
-            (feature_value (=))))
-        (constraint_usage composite 'pos' : 'HSUVDynamics::PositionEquation'[constraint_def]
-          (attribute_usage composite :>> 'HSUVDynamics::PositionEquation::v'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::PositionEquation::x'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'HSUVDynamics::PositionEquation::dt'[attribute_usage]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "HSUVDynamics"))) (name "HSUVDynamics") (declared-name "HSUVDynamics")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVDynamics::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVDynamics::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Accel"))) (name "Accel") (declared-name "Accel") (declared (properties (ordered false) (unique true))))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::AccelerationEquation"))) (name "AccelerationEquation") (declared-name "AccelerationEquation"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Dist"))) (name "Dist") (declared-name "Dist") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Horsepwr"))) (name "Horsepwr") (declared-name "Horsepwr") (declared (properties (ordered false) (unique true))))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::PositionEquation"))) (name "PositionEquation") (declared-name "PositionEquation"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::PowerEquation"))) (name "PowerEquation") (declared-name "PowerEquation"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics"))) (name "StraightLineVehicleDynamics") (declared-name "StraightLineVehicleDynamics"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Time"))) (name "Time") (declared-name "Time") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Vel"))) (name "Vel") (declared-name "Vel") (declared (properties (ordered false) (unique true))))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "HSUVDynamics::VelocityEquation"))) (name "VelocityEquation") (declared-name "VelocityEquation"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "HSUVDynamics::Weight"))) (name "Weight") (declared-name "Weight") (declared (properties (ordered false) (unique true))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVDynamics::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

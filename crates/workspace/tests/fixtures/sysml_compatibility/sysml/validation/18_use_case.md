@@ -330,68 +330,100 @@ semantic.unresolved_name 'done'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '18-Use Case'
-      (part_def 'Vehicle')
-      (part_def 'Person')
-      (part_def 'Environment')
-      (part_def 'Fuel Station')
-      (use_case_usage 'provide transportation'
-        (subject_membership in 'vehicle' : '18-Use Case::Vehicle'[part_def])
-        (actor_membership in 'driver' : '18-Use Case::Person'[part_def])
-        (actor_membership in 'passengers' : '18-Use Case::Person'[part_def]
-          (multiplicity_range [0..4]))
-        (actor_membership in 'environment' : '18-Use Case::Environment'[part_def])
-        (objective_membership composite
-          (documentation))
-        (reference_usage reference :>> 'start'[unresolved]
-          (documentation)
-          (assert_constraint_usage
-            (documentation)))
-        (initial_node)
-        (source_succession
-          (include_use_case_usage 'enter vehicle'
-            (subject_membership in)
-            (actor_membership in :>> '18-Use Case::provide transportation::driver'[actor_membership]
-              (feature_value (=)))
-            (actor_membership in :>> '18-Use Case::provide transportation::passengers'[actor_membership]
-              (feature_value (=)))))
-        (source_succession
-          (use_case_usage 'drive vehicle'
-            (include_use_case_usage 'add fuel'
-              (multiplicity_range [0..*])
-              (documentation)
-              (subject_membership in)
-              (actor_membership in :>> 'fueler'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'start'[unresolved]
-                (documentation)))))
-        (source_succession
-          (include_use_case_usage 'exit vehicle'
-            (subject_membership in)
-            (actor_membership in :>> '18-Use Case::provide transportation::driver'[actor_membership]
-              (feature_value (=)))
-            (actor_membership in :>> '18-Use Case::provide transportation::passengers'[actor_membership]
-              (feature_value (=)))))
-        (source_succession
-          (reference_usage reference 'done'))
-        (reference_usage reference :>> 'done'[unresolved]
-          (documentation)
-          (assert_constraint_usage
-            (documentation))))
-      (use_case_usage 'enter vehicle'
-        (subject_membership in 'vehicle' : '18-Use Case::Vehicle'[part_def])
-        (actor_membership in 'driver' : '18-Use Case::Person'[part_def])
-        (actor_membership in 'passengers' : '18-Use Case::Person'[part_def]
-          (multiplicity_range [0..4])))
-      (use_case_usage 'exit vehicle'
-        (subject_membership in 'vehicle' : '18-Use Case::Vehicle'[part_def])
-        (actor_membership in 'driver' : '18-Use Case::Person'[part_def])
-        (actor_membership in 'passengers' : '18-Use Case::Person'[part_def]
-          (multiplicity_range [0..4])))
-      (use_case_usage 'add fuel'
-        (subject_membership in 'vehicle' : '18-Use Case::Vehicle'[part_def])
-        (actor_membership in 'fueler' : '18-Use Case::Person'[part_def])
-        (actor_membership in 'fuel station' : '18-Use Case::Fuel Station'[part_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "18-Use Case"))) (name "18-Use Case") (declared-name "18-Use Case")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "18-Use Case::Environment"))) (name "Environment") (declared-name "Environment") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "18-Use Case::Fuel Station"))) (name "Fuel Station") (declared-name "Fuel Station") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "18-Use Case::Person"))) (name "Person") (declared-name "Person") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "18-Use Case::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "use case") (id (node (document "d0") (qualified-name "18-Use Case::add fuel"))) (name "add fuel") (declared-name "add fuel")
+          (contains
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::add fuel::fuel station"))) (name "fuel station") (declared-name "fuel station"))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::add fuel::fueler"))) (name "fueler") (declared-name "fueler"))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "18-Use Case::add fuel::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "use case") (id (node (document "d0") (qualified-name "18-Use Case::enter vehicle"))) (name "enter vehicle") (declared-name "enter vehicle")
+          (contains
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::enter vehicle::driver"))) (name "driver") (declared-name "driver"))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::enter vehicle::passengers"))) (name "passengers") (declared-name "passengers"))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "18-Use Case::enter vehicle::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "use case") (id (node (document "d0") (qualified-name "18-Use Case::exit vehicle"))) (name "exit vehicle") (declared-name "exit vehicle")
+          (contains
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::exit vehicle::driver"))) (name "driver") (declared-name "driver"))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::exit vehicle::passengers"))) (name "passengers") (declared-name "passengers"))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "18-Use Case::exit vehicle::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "use case") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation"))) (name "provide transportation") (declared-name "provide transportation")
+          (contains
+            (element (kind "verdict") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::_verdict"))) (name "done") (declared-name "done"))
+            (element (kind "ref redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::done"))) (name "done") (declared-name "done"))
+            (element (kind "use case") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle"))) (name "drive vehicle") (declared-name "drive vehicle")
+              (contains
+                (element (kind "include use case") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle::add fuel"))) (name "add fuel") (declared-name "add fuel")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle::add fuel::_documentation"))) (name ""))
+                    (element (kind "actor redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle::add fuel::fueler"))) (name "fueler") (declared-name "fueler"))
+                    (element (kind "ref redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle::add fuel::start"))) (name "start") (declared-name "start"))
+                  )
+                )
+              )
+            )
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::driver"))) (name "driver") (declared-name "driver"))
+            (element (kind "include use case") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::enter vehicle"))) (name "enter vehicle") (declared-name "enter vehicle")
+              (contains
+                (element (kind "actor redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::enter vehicle::driver"))) (name "driver") (declared-name "driver"))
+                (element (kind "actor redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::enter vehicle::passengers"))) (name "passengers") (declared-name "passengers"))
+              )
+            )
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::environment"))) (name "environment") (declared-name "environment"))
+            (element (kind "include use case") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::exit vehicle"))) (name "exit vehicle") (declared-name "exit vehicle")
+              (contains
+                (element (kind "actor redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::exit vehicle::driver"))) (name "driver") (declared-name "driver"))
+                (element (kind "actor redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::exit vehicle::passengers"))) (name "passengers") (declared-name "passengers"))
+              )
+            )
+            (element (kind "objective") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::objective"))) (name "objective") (declared-name "objective"))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::passengers"))) (name "passengers") (declared-name "passengers"))
+            (element (kind "ref redefinition") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::start"))) (name "start") (declared-name "start"))
+            (element (kind "succession") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::start#succession"))) (name "start") (declared-name "start"))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "18-Use Case::provide transportation::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle::add fuel::_documentation"))) (to (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle::add fuel"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation"))) (to (node (document "d0") (qualified-name "18-Use Case::provide transportation::start#succession"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle"))) (to (node (document "d0") (qualified-name "18-Use Case::provide transportation::_verdict"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation::start#succession"))) (to (node (document "d0") (qualified-name "18-Use Case::provide transportation::drive vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::add fuel"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::enter vehicle"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::exit vehicle"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::add fuel::fuel station"))) (to (node (document "d0") (qualified-name "18-Use Case::Fuel Station"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::add fuel::fueler"))) (to (node (document "d0") (qualified-name "18-Use Case::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::add fuel::vehicle"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::enter vehicle::driver"))) (to (node (document "d0") (qualified-name "18-Use Case::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::enter vehicle::passengers"))) (to (node (document "d0") (qualified-name "18-Use Case::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::enter vehicle::vehicle"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::exit vehicle::driver"))) (to (node (document "d0") (qualified-name "18-Use Case::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::exit vehicle::passengers"))) (to (node (document "d0") (qualified-name "18-Use Case::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::exit vehicle::vehicle"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation::driver"))) (to (node (document "d0") (qualified-name "18-Use Case::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation::environment"))) (to (node (document "d0") (qualified-name "18-Use Case::Environment"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation::passengers"))) (to (node (document "d0") (qualified-name "18-Use Case::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "18-Use Case::provide transportation::vehicle"))) (to (node (document "d0") (qualified-name "18-Use Case::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

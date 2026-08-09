@@ -122,24 +122,38 @@ semantic.unresolved_name 'Boolean'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_04-Logical Expressions'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (part_def 'Engine')
-      (part_def '4CylEngine' :> '15_04-Logical Expressions::Engine'[part_def])
-      (part_def '6CylEngine' :> '15_04-Logical Expressions::Engine'[part_def])
-      (part_def 'Transmission')
-      (part_def 'ManualTransmission' :> '15_04-Logical Expressions::Transmission'[part_def])
-      (part_def 'AutomaticTransmission' :> '15_04-Logical Expressions::Transmission'[part_def])
-      (part_def 'Vehicle'
-        (attribute_usage composite 'isHighPerformance' : 'Boolean'[unresolved])
-        (part_usage composite 'engine' : '15_04-Logical Expressions::Engine'[part_def]
-          (multiplicity_range [1]))
-        (part_usage composite 'transmission' : '15_04-Logical Expressions::Transmission'[part_def]
-          (multiplicity_range [1]))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (assert_constraint_usage
-          (result_expr_membership))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_04-Logical Expressions"))) (name "15_04-Logical Expressions") (declared-name "15_04-Logical Expressions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (name "4CylEngine") (declared-name "4CylEngine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (name "6CylEngine") (declared-name "6CylEngine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (name "AutomaticTransmission") (declared-name "AutomaticTransmission") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (name "ManualTransmission") (declared-name "ManualTransmission") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::isHighPerformance"))) (name "isHighPerformance") (declared-name "isHighPerformance") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::4CylEngine"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::6CylEngine"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::AutomaticTransmission"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::ManualTransmission"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))) (to (node (document "d0") (qualified-name "15_04-Logical Expressions::Transmission"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -60,8 +60,15 @@ parse.expected_close_curly
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ers'
-      (not_implemented 'malformed'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ers"))) (name "ers") (declared-name "ers"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -190,36 +190,67 @@ semantic.unresolved_name 'VerdictKind'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Verification Case Definition Example'
-      (part_def 'Vehicle'
-        (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]))
-      (requirement_usage 'vehicleMassRequirement'
-        (subject_membership in 'vehicle' : 'Verification Case Definition Example::Vehicle'[part_def])
-        (reference_usage in reference 'massActual' :> 'ISQ::mass'[unresolved])
-        (documentation)
-        (require_constraint_usage composite
-          (result_expr_membership)))
-      (verification_case_def 'VehicleMassTest'
-        (namespace_import private -> 'VerificationCases'[unresolved])
-        (subject_membership in 'testVehicle' : 'Verification Case Definition Example::Vehicle'[part_def])
-        (objective_membership composite 'vehicleMassVerificationObjective'
-          (verify_requirement_membership 'vehicleMassRequirement'))
-        (action_usage composite 'collectData'
-          (part_usage in 'testVehicle' : 'Verification Case Definition Example::Vehicle'[part_def]
-            (feature_value (=)))
-          (reference_usage out reference 'massMeasured' :> 'ISQ::mass'[unresolved]))
-        (action_usage composite 'processData'
-          (reference_usage in reference 'massMeasured' :> 'ISQ::mass'[unresolved]
-            (feature_value (=)))
-          (reference_usage out reference 'massProcessed' :> 'ISQ::mass'[unresolved]))
-        (action_usage composite 'evaluateData'
-          (reference_usage in reference 'massProcessed' :> 'ISQ::mass'[unresolved]
-            (feature_value (=)))
-          (reference_usage out reference 'verdict' : 'VerdictKind'[unresolved]
-            (feature_value (=))))
-        (return_parameter_membership
-          (feature_def out 'verdict' : 'VerdictKind'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Verification Case Definition Example"))) (name "Verification Case Definition Example") (declared-name "Verification Case Definition Example")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle")))))
+          )
+        )
+        (element (kind "verification def") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))) (name "VehicleMassTest") (declared-name "VehicleMassTest")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData"))) (name "collectData") (declared-name "collectData") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData::massMeasured"))) (name "massMeasured") (declared-name "massMeasured") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData::testVehicle"))) (name "testVehicle") (declared-name "testVehicle") (declared (properties (direction "in") (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "VehicleMassTest::testVehicle")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData::testVehicle"))) (role feature-value))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData"))) (name "evaluateData") (declared-name "evaluateData") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::massProcessed"))) (name "massProcessed") (declared-name "massProcessed") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::verdict"))) (name "verdict") (declared-name "verdict") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData"))) (name "processData") (declared-name "processData") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData::massMeasured"))) (name "massMeasured") (declared-name "massMeasured") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::processData::massProcessed"))) (name "massProcessed") (declared-name "massProcessed") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest")))))
+              )
+            )
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle"))) (name "testVehicle") (declared-name "testVehicle") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest")))))
+            (element (kind "objective") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::vehicleMassVerificationObjective"))) (name "vehicleMassVerificationObjective") (declared-name "vehicleMassVerificationObjective") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))))
+              (contains
+                (element (kind "verified requirement") (id (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::vehicleMassVerificationObjective::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest")))))
+              )
+            )
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::_documentation"))) (name ""))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0"))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData::testVehicle"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::vehicleMassVerificationObjective::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Definition Example::vehicleMassRequirement::vehicle"))) (to (node (document "d0") (qualified-name "Verification Case Definition Example::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

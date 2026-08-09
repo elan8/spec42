@@ -124,25 +124,54 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Event Occurrence Example'
-      (part_def 'Driver')
-      (part_def 'CruiseController')
-      (part_def 'Speedometer')
-      (part_def 'Engine')
-      (part_def 'Vehicle')
-      (part_usage 'driver' : 'Event Occurrence Example::Driver'[part_def]
-        (event_occurrence_usage 'setSpeedSent'))
-      (part_usage 'vehicle' : 'Event Occurrence Example::Vehicle'[part_def]
-        (part_usage composite 'cruiseController' : 'Event Occurrence Example::CruiseController'[part_def]
-          (event_occurrence_usage 'setSpeedReceived')
-          (source_succession
-            (event_occurrence_usage 'sensedSpeedReceived'))
-          (source_succession
-            (event_occurrence_usage 'fuelCommandSent')))
-        (part_usage composite 'speedometer' : 'Event Occurrence Example::Speedometer'[part_def]
-          (event_occurrence_usage 'sensedSpeedSent'))
-        (part_usage composite 'engine' : 'Event Occurrence Example::Engine'[part_def]
-          (event_occurrence_usage 'fuelCommandReceived'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Event Occurrence Example"))) (name "Event Occurrence Example") (declared-name "Event Occurrence Example")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Event Occurrence Example::CruiseController"))) (name "CruiseController") (declared-name "CruiseController") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Event Occurrence Example::Driver"))) (name "Driver") (declared-name "Driver") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Event Occurrence Example::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Event Occurrence Example::Speedometer"))) (name "Speedometer") (declared-name "Speedometer") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Event Occurrence Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Event Occurrence Example::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Event Occurrence Example::driver::setSpeedSent"))) (name "setSpeedSent") (declared-name "setSpeedSent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::Driver")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::cruiseController"))) (name "cruiseController") (declared-name "cruiseController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::Vehicle"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::cruiseController::fuelCommandSent"))) (name "fuelCommandSent") (declared-name "fuelCommandSent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::CruiseController")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::cruiseController::sensedSpeedReceived"))) (name "sensedSpeedReceived") (declared-name "sensedSpeedReceived") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::CruiseController")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::cruiseController::setSpeedReceived"))) (name "setSpeedReceived") (declared-name "setSpeedReceived") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::CruiseController")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::Vehicle"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::engine::fuelCommandReceived"))) (name "fuelCommandReceived") (declared-name "fuelCommandReceived") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::Engine")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::speedometer"))) (name "speedometer") (declared-name "speedometer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::Vehicle"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::speedometer::sensedSpeedSent"))) (name "sensedSpeedSent") (declared-name "sensedSpeedSent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Event Occurrence Example::Speedometer")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Event Occurrence Example::driver"))) (to (node (document "d0") (qualified-name "Event Occurrence Example::Driver"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Event Occurrence Example::vehicle"))) (to (node (document "d0") (qualified-name "Event Occurrence Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::cruiseController"))) (to (node (document "d0") (qualified-name "Event Occurrence Example::CruiseController"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::engine"))) (to (node (document "d0") (qualified-name "Event Occurrence Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Event Occurrence Example::vehicle::speedometer"))) (to (node (document "d0") (qualified-name "Event Occurrence Example::Speedometer"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

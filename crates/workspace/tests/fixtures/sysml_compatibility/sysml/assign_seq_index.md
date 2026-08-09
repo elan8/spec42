@@ -52,11 +52,25 @@ package AssignTest {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AssignTest'
-      (action_def 'A'
-        (assignment_action_usage)
-        (assignment_action_usage)
-        (assignment_action_usage)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AssignTest"))) (name "AssignTest") (declared-name "AssignTest")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "AssignTest::A"))) (name "A") (declared-name "A")
+          (contains
+            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignTest::A::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignTest::A")))))
+            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignTest::A::_assign#assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignTest::A")))))
+            (element (kind "assign") (id (node (document "d0") (qualified-name "AssignTest::A::_assign#assign2"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignTest::A")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -549,98 +549,36 @@ standard library package Observation {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Observation'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::Life'[unresolved])
-      (membership_import private -> 'SequenceFunctions::including'[unresolved])
-      (membership_import private -> 'SequenceFunctions::excluding'[unresolved])
-      (membership_import private -> 'ControlFunctions::select'[unresolved])
-      (membership_import private -> 'ControlPerformances::DecisionPerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::IfThenPerformance'[unresolved])
-      (membership_import private -> 'FeatureReferencingPerformances::FeatureWritePerformance'[unresolved])
-      (membership_import private -> 'FeatureReferencingPerformances::BooleanEvaluationResultToMonitorPerformance'[unresolved])
-      (membership_import private -> 'Transfers::TransferBefore'[unresolved])
-      (structure_def 'DefaultMonitorLife' :> 'Observation::ChangeMonitor'[structure_def] :> 'Life'[unresolved]
-        (multiplicity_range [1])
-        (documentation))
-      (feature_def 'defaultMonitor' : 'Observation::DefaultMonitorLife'[structure_def]
-        (multiplicity_range [1])
-        (documentation))
-      (structure_def 'ChangeSignal'
-        (documentation)
-        (boolean_expr_def 'signalCondition'
-          (documentation))
-        (feature_def 'signalMonitor' : 'Observation::ChangeMonitor'[structure_def]
-          (documentation)))
-      (behavior_def 'ObserveChange'
-        (documentation)
-        (feature_def in 'changeObserver' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'changeSignal' : 'Observation::ChangeSignal'[structure_def]
-          (multiplicity_range [1]))
-        (step_def composite 'wait' : 'IfThenPerformance'[unresolved]
-          (documentation)
-          (boolean_expr_usage in :>> 'ifTest'[unresolved]
-            (result_expr_membership))
-          (step_def in :>> 'thenClause'[unresolved] : 'BooleanEvaluationResultToMonitorPerformance'[unresolved]
-            (boolean_expr_usage in 'onOccurrence'
-              (feature_value (=)))))
-        (succession_def
-          (connector_end 'wait')
-          (connector_end 'transfer'))
-        (step_def 'transfer' : 'TransferBefore'[unresolved] :>> 'outgoingTransfersFromSelf'[unresolved] :> 'changeObserver::incomingTransfers'[unresolved]
-          (multiplicity_range [1])
-          (documentation)
-          (feature_def end 'source'
-            (feature_def :>> 'sourceOutput'[unresolved]
-              (feature_value (=))))
-          (feature_def end 'target')))
-      (structure_def 'ChangeMonitor'
-        (documentation)
-        (feature_def 'thisMonitor' : 'Observation::ChangeMonitor'[structure_def] :>> 'self'[unresolved])
-        (feature_def composite 'observations' : 'Observation::ObserveChange'[behavior_def]
-          (multiplicity_range [0..*]))
-        (behavior_def 'AssignObservations' :> 'FeatureWritePerformance'[unresolved]
-          (documentation)
-          (feature_def in 'monitor' : 'Observation::ChangeMonitor'[structure_def] :>> 'onOccurrence'[unresolved]
-            (feature_def :>> 'startingAt'[unresolved]
-              (feature_def :>> 'accessedFeature'[unresolved] :>> 'Observation::ChangeMonitor::observations'[feature_def])))
-          (feature_def inout :>> 'replacementValues'[unresolved] : 'Observation::ObserveChange'[behavior_def]
-            (multiplicity_range [0..*])))
-        (step_def 'startObservation'
-          (documentation)
-          (feature_def in 'observer' : 'Occurrence'[unresolved]
-            (multiplicity_range [1]))
-          (feature_def in 'signal' : 'Observation::ChangeSignal'[structure_def]
-            (multiplicity_range [1]))
-          (step_def composite 'observation' : 'Observation::ObserveChange'[behavior_def]
-            (feature_def in 'changeObserver'
-              (feature_value (=)))
-            (feature_def in 'changeSignal'
-              (feature_value (=))))
-          (step_def composite 'addObservation' : 'Observation::ChangeMonitor::AssignObservations'[behavior_def]
-            (multiplicity_range [1])
-            (feature_def in 'monitor'
-              (feature_value (=)))
-            (feature_def inout 'replacementValues'
-              (feature_value (=)))))
-        (step_def 'cancelObservation'
-          (documentation)
-          (feature_def in 'observer' : 'Occurrence'[unresolved]
-            (multiplicity_range [1]))
-          (feature_def in 'signal' : 'Observation::ChangeSignal'[structure_def]
-            (multiplicity_range [1]))
-          (feature_def 'observations' : 'Observation::ObserveChange'[behavior_def]
-            (multiplicity_range [0..*])
-            (feature_value (=)))
-          (step_def composite 'removeObservation' : 'Observation::ChangeMonitor::AssignObservations'[behavior_def]
-            (multiplicity_range [1])
-            (feature_def in 'monitor'
-              (feature_value (=)))
-            (feature_def inout 'replacementValues'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Observation"))) (name "Observation") (declared-name "Observation")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::BooleanEvaluationResultToMonitorPerformance"))) (name "BooleanEvaluationResultToMonitorPerformance") (declared-name "BooleanEvaluationResultToMonitorPerformance"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Observation::ChangeMonitor"))) (name "ChangeMonitor") (declared-name "ChangeMonitor"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Observation::ChangeSignal"))) (name "ChangeSignal") (declared-name "ChangeSignal"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::DecisionPerformance"))) (name "DecisionPerformance") (declared-name "DecisionPerformance"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Observation::DefaultMonitorLife1"))) (name "DefaultMonitorLife1") (declared-name "DefaultMonitorLife1"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::IfThenPerformance"))) (name "IfThenPerformance") (declared-name "IfThenPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::Life"))) (name "Life") (declared-name "Life"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Observation::ObserveChange"))) (name "ObserveChange") (declared-name "ObserveChange"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::TransferBefore"))) (name "TransferBefore") (declared-name "TransferBefore"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Observation::_documentation"))) (name ""))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Observation::defaultMonitor1"))) (name "defaultMonitor1") (declared-name "defaultMonitor1"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::excluding"))) (name "excluding") (declared-name "excluding"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::including"))) (name "including") (declared-name "including"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Observation::select"))) (name "select") (declared-name "select"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Observation::_documentation"))) (to (node (document "d0") (qualified-name "Observation"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

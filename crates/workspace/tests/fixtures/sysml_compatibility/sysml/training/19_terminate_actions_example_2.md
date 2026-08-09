@@ -89,15 +89,34 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Terminate Actions Example-2'
-      (action_def 'WorkflowProcess')
-      (part_def 'Processor'
-        (action_usage reference 'workflowProcess' : 'Terminate Actions Example-2::WorkflowProcess'[action_def])
-        (action_usage composite 'internalProcess'))
-      (action_usage 'terminateProcessing'
-        (reference_usage in reference 'processor' : 'Terminate Actions Example-2::Processor'[part_def])
-        (terminate_action_usage)
-        (terminate_action_usage)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Terminate Actions Example-2"))) (name "Terminate Actions Example-2") (declared-name "Terminate Actions Example-2")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (name "Processor") (declared-name "Processor") (declared)
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::internalProcess"))) (name "internalProcess") (declared-name "internalProcess") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (name "workflowProcess") (declared-name "workflowProcess") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (name "WorkflowProcess") (declared-name "WorkflowProcess"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (name "terminateProcessing") (declared-name "terminateProcessing") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate"))) (name "terminate") (declared-name "terminate"))
+            (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate#terminate"))) (name "terminate") (declared-name "terminate"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (name "processor") (declared-name "processor"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

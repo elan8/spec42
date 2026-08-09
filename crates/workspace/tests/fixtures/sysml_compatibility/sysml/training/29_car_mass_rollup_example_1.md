@@ -168,27 +168,53 @@ semantic.unresolved_name 'simpleMass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Car Mass Rollup Example 1'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'MassRollup1'[unresolved])
-      (part_def 'CarPart' :> 'MassedThing'[unresolved]
-        (attribute_usage composite 'serialNumber' : 'String'[unresolved]))
-      (part_usage 'car' : 'Car Mass Rollup Example 1::CarPart'[part_def] :> 'compositeThing'[unresolved]
-        (attribute_usage composite 'vin' :>> 'Car Mass Rollup Example 1::CarPart::serialNumber'[attribute_usage])
-        (part_usage composite 'carParts' : 'Car Mass Rollup Example 1::CarPart'[part_def] :>> 'subcomponents'[unresolved]
-          (multiplicity_range [*]))
-        (part_usage composite 'engine' :> 'simpleThing'[unresolved] :> 'Car Mass Rollup Example 1::car::carParts'[part_usage])
-        (part_usage composite 'transmission' :> 'simpleThing'[unresolved] :> 'Car Mass Rollup Example 1::car::carParts'[part_usage]))
-      (membership_import private -> 'SI::kg'[unresolved])
-      (part_usage 'c' :> 'Car Mass Rollup Example 1::car'[part_usage]
-        (attribute_usage composite :>> 'simpleMass'[unresolved]
-          (feature_value (=)))
-        (part_usage composite :>> 'Car Mass Rollup Example 1::car::engine'[part_usage]
-          (attribute_usage composite :>> 'simpleMass'[unresolved]
-            (feature_value (=))))
-        (part_usage composite :>> 'Car Mass Rollup Example 1::car::transmission'[part_usage]
-          (attribute_usage composite :>> 'simpleMass'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1"))) (name "Car Mass Rollup Example 1") (declared-name "Car Mass Rollup Example 1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart"))) (name "CarPart") (declared-name "CarPart") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart::serialNumber"))) (name "serialNumber") (declared-name "serialNumber") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c"))) (name "c") (declared-name "c") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::engine::simpleMass"))) (name "simpleMass") (declared-name "simpleMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 100)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::engine::simpleMass"))) (role feature-value))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::simpleMass"))) (name "simpleMass") (declared-name "simpleMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1000)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::simpleMass"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::transmission"))) (name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::transmission::simpleMass"))) (name "simpleMass") (declared-name "simpleMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 50)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c::transmission::simpleMass"))) (role feature-value))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car"))) (name "car") (declared-name "car") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car::carParts"))) (name "carParts") (declared-name "carParts") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car::vin"))) (name "vin") (declared-name "vin") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Car Mass Rollup Example 1::kg"))) (name "kg") (declared-name "kg"))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car::vin"))) (to (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart::serialNumber"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Car Mass Rollup Example 1::c"))) (to (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car"))) (to (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Car Mass Rollup Example 1::car::carParts"))) (to (node (document "d0") (qualified-name "Car Mass Rollup Example 1::CarPart"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

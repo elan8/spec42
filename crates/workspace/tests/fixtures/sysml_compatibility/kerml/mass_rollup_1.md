@@ -64,14 +64,20 @@ semantic.unresolved_name 'ScalarValues::Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MassRollup_1'
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (class_def 'MassedThing'
-        (feature_def 'mass' : 'ScalarValues::Real'[unresolved])
-        (feature_def composite 'subcomponents' : 'MassRollup_1::MassedThing'[class_def]
-          (multiplicity_range [0..*]))
-        (feature_def 'totalMass' : 'ScalarValues::Real'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MassRollup_1"))) (name "MassRollup_1") (declared-name "MassRollup_1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassRollup_1::*"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MassRollup_1::MassedThing"))) (name "MassedThing") (declared-name "MassedThing"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

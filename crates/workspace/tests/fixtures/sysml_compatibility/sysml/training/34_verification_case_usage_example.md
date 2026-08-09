@@ -216,37 +216,48 @@ semantic.unresolved_name 'mass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Verification Case Usage Example'
-      (namespace_import private -> 'Verification Case Definition Example'[unresolved])
-      (part_def 'MassVerificationSystem')
-      (part_def 'Scale')
-      (part_usage 'vehicleTestConfig' : 'Vehicle'[unresolved])
-      (verification_case_usage 'vehicleMassTest' : 'VehicleMassTest'[unresolved]
-        (subject_membership in 'testVehicle' :> 'Verification Case Usage Example::vehicleTestConfig'[part_usage]))
-      (part_usage 'massVerificationSystem' : 'Verification Case Usage Example::MassVerificationSystem'[part_def]
-        (perform_action_usage :>> 'Verification Case Usage Example::vehicleMassTest'[verification_case_usage])
-        (part_usage composite 'scale' : 'Verification Case Usage Example::Scale'[part_def]
-          (perform_action_usage :>> 'vehicleMassTest::collectData'[unresolved]
-            (part_usage in :>> 'testVehicle'[unresolved])
-            (reference_usage reference 'measurement'
-              (feature_value (=)))
-            (reference_usage out reference :>> 'massMeasured'[unresolved]
-              (feature_value (=))))))
-      (occurrence_def individual 'TestSystem' :> 'Verification Case Usage Example::MassVerificationSystem'[part_def])
-      (occurrence_def individual 'TestVehicle1' :> 'Vehicle'[unresolved])
-      (occurrence_def individual 'TestVehicle2' :> 'Vehicle'[unresolved])
-      (occurrence_usage individual 'testSystem' : 'Verification Case Usage Example::TestSystem'[occurrence_def] :> 'Verification Case Usage Example::massVerificationSystem'[part_usage]
-        (occurrence_usage composite 'test1'
-          (perform_action_usage :>> ''[perform_action_usage]
-            (occurrence_usage in individual :>> 'Verification Case Usage Example::vehicleMassTest::testVehicle'[subject_membership] : 'Verification Case Usage Example::TestVehicle1'[occurrence_def]
-              (reference_usage reference :>> 'mass'[unresolved]
-                (feature_value (=))))))
-        (source_succession
-          (occurrence_usage 'test2'
-            (perform_action_usage :>> ''[perform_action_usage]
-              (occurrence_usage in individual :>> 'Verification Case Usage Example::vehicleMassTest::testVehicle'[subject_membership] : 'Verification Case Usage Example::TestVehicle2'[occurrence_def]
-                (reference_usage reference :>> 'mass'[unresolved]
-                  (feature_value (=)))))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Verification Case Usage Example"))) (name "Verification Case Usage Example") (declared-name "Verification Case Usage Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Verification Case Usage Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))) (name "MassVerificationSystem") (declared-name "MassVerificationSystem") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::Scale"))) (name "Scale") (declared-name "Scale") (declared))
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (name "TestSystem") (declared-name "TestSystem"))
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle1"))) (name "TestVehicle1") (declared-name "TestVehicle1"))
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "Verification Case Usage Example::TestVehicle2"))) (name "TestVehicle2") (declared-name "TestVehicle2"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (name "massVerificationSystem") (declared-name "massVerificationSystem") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (name "scale") (declared-name "scale") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest.collectData"))) (name "vehicleMassTest.collectData") (declared-name "vehicleMassTest.collectData") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Usage Example::Scale")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest"))) (name "vehicleMassTest") (declared-name "vehicleMassTest") (effective (featuring-type (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem")))))
+          )
+        )
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (name "testSystem") (declared-name "testSystem") (declared (properties (individual true) (composite true) (reference false)))
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test1"))) (name "test1") (declared-name "test1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem::test2"))) (name "test2") (declared-name "test2") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))))
+          )
+        )
+        (element (kind "verification") (id (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleMassTest"))) (name "vehicleMassTest") (declared-name "vehicleMassTest"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Verification Case Usage Example::vehicleTestConfig"))) (name "vehicleTestConfig") (declared-name "vehicleTestConfig") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::vehicleMassTest"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::TestSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::testSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::MassVerificationSystem"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Verification Case Usage Example::massVerificationSystem::scale"))) (to (node (document "d0") (qualified-name "Verification Case Usage Example::Scale"))))
+  )
+  (pending-relationships
+    (perform (status pending) (document "d0") (source-qualified "Verification Case Usage Example::massVerificationSystem::scale") (target-qualified "Verification Case Usage Example::massVerificationSystem::scale::vehicleMassTest::collectData"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

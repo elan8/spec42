@@ -50,10 +50,20 @@ semantic.unresolved_name 'ISQ::TorqueValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'FeatureInheritance'
-      (feature_def 's'
-        (feature_def 't' : 'ISQ::TorqueValue'[unresolved]))
-      (feature_def 'u' :> 'FeatureInheritance::s'[feature_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureInheritance"))) (name "FeatureInheritance") (declared-name "FeatureInheritance")
+      (contains
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureInheritance::s"))) (name "s") (declared-name "s"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureInheritance::u"))) (name "u") (declared-name "u"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

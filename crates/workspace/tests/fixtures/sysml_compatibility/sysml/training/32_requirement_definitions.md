@@ -180,34 +180,77 @@ semantic.unresolved_name 'MassValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Requirement Definitions'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (requirement_def 'MassLimitationRequirement'
-        (documentation)
-        (attribute_usage composite 'massActual' : 'MassValue'[unresolved])
-        (attribute_usage composite 'massReqd' : 'MassValue'[unresolved])
-        (require_constraint_usage composite
-          (result_expr_membership)))
-      (part_def 'Vehicle'
-        (attribute_usage composite 'dryMass' : 'MassValue'[unresolved])
-        (attribute_usage composite 'fuelMass' : 'MassValue'[unresolved])
-        (attribute_usage composite 'fuelFullMass' : 'MassValue'[unresolved]))
-      (requirement_def 'VehicleMassLimitationRequirement' :> 'Requirement Definitions::MassLimitationRequirement'[requirement_def]
-        (documentation)
-        (subject_membership in 'vehicle' : 'Requirement Definitions::Vehicle'[part_def])
-        (attribute_usage composite :>> 'Requirement Definitions::MassLimitationRequirement::massActual'[attribute_usage]
-          (feature_value (=)))
-        (assume_constraint_usage composite
-          (result_expr_membership)))
-      (port_def 'ClutchPort')
-      (action_def 'GenerateTorque')
-      (requirement_def 'DrivePowerInterface'
-        (documentation)
-        (subject_membership in 'clutchPort' : 'Requirement Definitions::ClutchPort'[port_def]))
-      (requirement_def 'TorqueGeneration'
-        (documentation)
-        (subject_membership in 'generateTorque' : 'Requirement Definitions::GenerateTorque'[action_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Requirement Definitions"))) (name "Requirement Definitions") (declared-name "Requirement Definitions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Definitions::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Definitions::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Requirement Definitions::ClutchPort"))) (name "ClutchPort") (declared-name "ClutchPort")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Requirement Definitions::ClutchPort::~ClutchPort"))) (name "~ClutchPort") (declared-name "~ClutchPort") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::ClutchPort")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface"))) (name "DrivePowerInterface") (declared-name "DrivePowerInterface")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Requirement Definitions::GenerateTorque"))) (name "GenerateTorque") (declared-name "GenerateTorque"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement"))) (name "MassLimitationRequirement") (declared-name "MassLimitationRequirement")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement")))))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration"))) (name "TorqueGeneration") (declared-name "TorqueGeneration")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Requirement Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Definitions::Vehicle::dryMass"))) (name "dryMass") (declared-name "dryMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Definitions::Vehicle::fuelFullMass"))) (name "fuelFullMass") (declared-name "fuelFullMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Definitions::Vehicle::fuelMass"))) (name "fuelMass") (declared-name "fuelMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::Vehicle")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))) (name "VehicleMassLimitationRequirement") (declared-name "VehicleMassLimitationRequirement")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement")))))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::ClutchPort::~ClutchPort"))) (to (node (document "d0") (qualified-name "Requirement Definitions::ClutchPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::massActual"))) (to (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement::massActual"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))) (to (node (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface"))) (to (node (document "d0") (qualified-name "Requirement Definitions::ClutchPort"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface"))) (to (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface::clutchPort"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration"))) (to (node (document "d0") (qualified-name "Requirement Definitions::GenerateTorque"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration"))) (to (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration::generateTorque"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))) (to (node (document "d0") (qualified-name "Requirement Definitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))) (to (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::DrivePowerInterface::clutchPort"))) (to (node (document "d0") (qualified-name "Requirement Definitions::ClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::TorqueGeneration::generateTorque"))) (to (node (document "d0") (qualified-name "Requirement Definitions::GenerateTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::vehicle"))) (to (node (document "d0") (qualified-name "Requirement Definitions::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

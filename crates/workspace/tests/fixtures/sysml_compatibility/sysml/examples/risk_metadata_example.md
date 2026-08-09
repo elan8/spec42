@@ -96,23 +96,34 @@ semantic.unresolved_name 'Risk'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'RiskMetadataExample'
-      (namespace_import private -> 'RiskMetadata'[unresolved])
-      (namespace_import private -> 'RiskLevelEnum'[unresolved])
-      (part_usage 'engine4cyl'
-        (metadata_usage :> 'Risk'[unresolved]
-          (feature_def 'totalRisk'
-            (feature_value (=)))
-          (feature_def 'technicalRisk'
-            (feature_value (=)))
-          (feature_def 'scheduleRisk'
-            (feature_value (=))))
-        (metadata_usage :> 'Risk'[unresolved]
-          (feature_def 'totalRisk'
-            (feature_def 'probability'
-              (feature_value (=)))
-            (feature_def 'impact'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RiskMetadataExample"))) (name "RiskMetadataExample") (declared-name "RiskMetadataExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "RiskMetadataExample::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (name "Risk") (declared-name "Risk")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::scheduleRisk"))) (name "scheduleRisk") (declared-name "scheduleRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::technicalRisk"))) (name "technicalRisk") (declared-name "technicalRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::totalRisk"))) (name "totalRisk") (declared-name "totalRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (name "Risk") (declared-name "Risk"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

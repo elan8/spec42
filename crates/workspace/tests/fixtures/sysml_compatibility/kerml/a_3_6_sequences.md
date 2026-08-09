@@ -255,61 +255,50 @@ semantic.unresolved_name 'timeEnclosedOccurrences'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'SequencesModelToBeExecuted'
-      (documentation)
-      (behavior_def 'Manufacture'
-        (step_def 'paint' : 'SequencesModelToBeExecuted::Paint'[behavior_def]
-          (multiplicity_range [1]))
-        (step_def 'dry' : 'SequencesModelToBeExecuted::Dry'[behavior_def]
-          (multiplicity_range [*]))
-        (succession_def 'p_before_d'
-          (connector_end 'paint')
-          (connector_end 'dry'))
-        (step_def 'ship' : 'SequencesModelToBeExecuted::Ship'[behavior_def]
-          (multiplicity_range [*]))
-        (succession_def 'd_before_s'
-          (connector_end 'dry')
-          (connector_end 'ship')))
-      (behavior_def 'Paint')
-      (behavior_def 'Dry')
-      (behavior_def 'Ship'))
-    (package 'SequencesExecution'
-      (documentation)
-      (namespace_import private -> 'Atoms'[unresolved])
-      (namespace_import private -> 'SequencesModelToBeExecuted'[package])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensBefore'[unresolved])
-      (behavior_def 'MyPaint' :> 'SequencesModelToBeExecuted::Paint'[behavior_def])
-      (behavior_def 'MyDry' :> 'SequencesModelToBeExecuted::Dry'[behavior_def])
-      (association_def 'MyPaint_Before_Dry_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'SequencesExecution::MyPaint'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'SequencesExecution::MyDry'[behavior_def]))
-      (behavior_def 'MyManufactureStepsPD'
-        (unioning)
-        (unioning))
-      (behavior_def 'MyShip' :> 'SequencesModelToBeExecuted::Ship'[behavior_def])
-      (association_def 'MyDry_Before_Ship_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'SequencesExecution::MyDry'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'SequencesExecution::MyShip'[behavior_def]))
-      (behavior_def 'MyManufactureStepsPDS'
-        (unioning)
-        (unioning))
-      (behavior_def 'MyManufacture' :> 'SequencesModelToBeExecuted::Manufacture'[behavior_def]
-        (feature_def :>> 'timeEnclosedOccurrences'[unresolved] : 'SequencesExecution::MyManufactureStepsPDS'[behavior_def]
-          (multiplicity_range [3]))
-        (step_def :>> 'SequencesModelToBeExecuted::Manufacture::paint'[step_def] : 'SequencesExecution::MyPaint'[behavior_def])
-        (step_def :>> 'SequencesModelToBeExecuted::Manufacture::dry'[step_def] : 'SequencesExecution::MyDry'[behavior_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'paint')
-          (connector_end 'dry'))
-        (step_def :>> 'SequencesModelToBeExecuted::Manufacture::ship'[step_def] : 'SequencesExecution::MyShip'[behavior_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'dry')
-          (connector_end 'ship'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SequencesExecution"))) (name "SequencesExecution") (declared-name "SequencesExecution")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyDry"))) (name "MyDry") (declared-name "MyDry"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyDry_Before_Ship_Link"))) (name "MyDry_Before_Ship_Link") (declared-name "MyDry_Before_Ship_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyManufacture"))) (name "MyManufacture") (declared-name "MyManufacture"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyManufactureStepsPD"))) (name "MyManufactureStepsPD") (declared-name "MyManufactureStepsPD"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyManufactureStepsPDS"))) (name "MyManufactureStepsPDS") (declared-name "MyManufactureStepsPDS"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyPaint"))) (name "MyPaint") (declared-name "MyPaint"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyPaint_Before_Dry_Link"))) (name "MyPaint_Before_Dry_Link") (declared-name "MyPaint_Before_Dry_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesExecution::MyShip"))) (name "MyShip") (declared-name "MyShip"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SequencesExecution::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword5"))) (name "atom") (declared-name "atom"))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted"))) (name "SequencesModelToBeExecuted") (declared-name "SequencesModelToBeExecuted")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Dry"))) (name "Dry") (declared-name "Dry"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Manufacture"))) (name "Manufacture") (declared-name "Manufacture"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Paint"))) (name "Paint") (declared-name "Paint"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SequencesModelToBeExecuted::Ship"))) (name "Ship") (declared-name "Ship"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom"))) (to (node (document "d0") (qualified-name "SequencesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "SequencesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "SequencesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "SequencesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "SequencesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequencesExecution::_atom#metadata_keyword5"))) (to (node (document "d0") (qualified-name "SequencesExecution"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

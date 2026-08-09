@@ -72,17 +72,20 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (namespace_import private -> 'ScalarValues'[unresolved])
-    (package 'MassedThings'
-      (class_def 'MassedThing'
-        (feature_def 'name' : 'String'[unresolved])
-        (feature_def 'mass' : 'Real'[unresolved]
-          (feature_value (=))))
-      (association_def 'MassedThingAssembly'
-        (feature_def end 'assembly' : 'MassedThings::MassedThing'[class_def]
-          (multiplicity_range [0..1]))
-        (feature_def end 'parts' : 'MassedThings::MassedThing'[class_def]
-          (multiplicity_range [0..*]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MassedThings"))) (name "MassedThings") (declared-name "MassedThings")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MassedThings::MassedThing"))) (name "MassedThing") (declared-name "MassedThing"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MassedThings::MassedThingAssembly"))) (name "MassedThingAssembly") (declared-name "MassedThingAssembly"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -227,40 +227,52 @@ semantic.invalid_connection_end_count
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '3e-Function-based Behavior-item'
-      (namespace_import public -> '3e-Function-based Behavior-item::Definitions'[package])
-      (package 'Definitions'
-        (item_def 'VehicleAssembly')
-        (item_def 'AssembledVehicle' :> '3e-Function-based Behavior-item::Definitions::VehicleAssembly'[item_def])
-        (part_def 'Vehicle' :> '3e-Function-based Behavior-item::Definitions::AssembledVehicle'[item_def])
-        (part_def 'Transmission')
-        (part_def 'Engine'))
-      (package 'Usages'
-        (part_usage 'AssemblyLine'
-          (perform_action_usage 'assemble vehicle'
-            (action_usage 'assemble transmission into vehicle'
-              (item_usage in 'vehicle assy without transmission or engine' : '3e-Function-based Behavior-item::Definitions::VehicleAssembly'[item_def])
-              (item_usage in 'transmission' : '3e-Function-based Behavior-item::Definitions::Transmission'[part_def])
-              (item_usage out 'vehicle assy without engine' : '3e-Function-based Behavior-item::Definitions::VehicleAssembly'[item_def]
-                (feature_value (=))
-                (part_usage composite 'transmission' : '3e-Function-based Behavior-item::Definitions::Transmission'[part_def]
-                  (feature_value (=)))))
-            (flow_usage 'assemble transmission into vehicle')
-            (action_usage 'assemble engine into vehicle'
-              (item_usage in 'vehicle assy without engine' : '3e-Function-based Behavior-item::Definitions::VehicleAssembly'[item_def]
-                (part_usage composite 'transmission' : '3e-Function-based Behavior-item::Definitions::Transmission'[part_def]))
-              (item_usage in 'engine' : '3e-Function-based Behavior-item::Definitions::Engine'[part_def])
-              (item_usage out 'assembledVehicle' : '3e-Function-based Behavior-item::Definitions::AssembledVehicle'[item_def]
-                (feature_value (=))
-                (part_usage composite 'engine' : '3e-Function-based Behavior-item::Definitions::Engine'[part_def]
-                  (feature_value (=))))))
-          (binding_connector_def
-            (connector_end ''assemble vehicle'.'assemble engine into vehicle'.assembledVehicle')
-            (connector_end 'vehicle'))
-          (part_usage composite 'vehicle' : '3e-Function-based Behavior-item::Definitions::Vehicle'[part_def]
-            (part_usage composite 'transmission' : '3e-Function-based Behavior-item::Definitions::Transmission'[part_def])
-            (part_usage composite 'engine' : '3e-Function-based Behavior-item::Definitions::Engine'[part_def])
-            (perform_action_usage 'providePower')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item"))) (name "3e-Function-based Behavior-item") (declared-name "3e-Function-based Behavior-item")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::*"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "item def") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::AssembledVehicle"))) (name "AssembledVehicle") (declared-name "AssembledVehicle"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+            (element (kind "item def") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::VehicleAssembly"))) (name "VehicleAssembly") (declared-name "VehicleAssembly"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine"))) (name "AssemblyLine") (declared-name "AssemblyLine") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::assemble vehicle"))) (name "assemble vehicle") (declared-name "assemble vehicle"))
+                (element (kind "part") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Vehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::providePower"))) (name "providePower") (declared-name "providePower") (effective (featuring-type (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Vehicle")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Vehicle")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine"))) (to (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::assemble vehicle"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle"))) (to (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::providePower"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::AssembledVehicle"))) (to (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::VehicleAssembly"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Vehicle"))) (to (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::AssembledVehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle"))) (to (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::engine"))) (to (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Usages::AssemblyLine::vehicle::transmission"))) (to (node (document "d0") (qualified-name "3e-Function-based Behavior-item::Definitions::Transmission"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "assemble vehicle::assemble engine into vehicle::assembledVehicle") (target-expression "vehicle") (container-prefix "3e-Function-based Behavior-item::Usages::AssemblyLine"))
+  )
+)
 ~~~

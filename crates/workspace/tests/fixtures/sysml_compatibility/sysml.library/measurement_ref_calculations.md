@@ -220,68 +220,68 @@ standard library package MeasurementRefCalculations {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'MeasurementRefCalculations'
-      (documentation)
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'MeasurementReferences::MeasurementUnit'[unresolved])
-      (membership_import private -> 'MeasurementReferences::ScalarMeasurementReference'[unresolved])
-      (membership_import private -> 'MeasurementReferences::CoordinateFrame'[unresolved])
-      (calculation_def '*' :> 'DataFunctions::*'[unresolved]
-        (reference_usage in reference 'x' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'MeasurementUnit'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '/' :> 'DataFunctions::/'[unresolved]
-        (reference_usage in reference 'x' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'MeasurementUnit'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '**' :> 'DataFunctions::**'[unresolved]
-        (reference_usage in reference 'x' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'MeasurementUnit'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '^' :> 'DataFunctions::^'[unresolved]
-        (reference_usage in reference 'x' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'MeasurementUnit'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'CoordinateFrame*' :> 'DataFunctions::*'[unresolved]
-        (reference_usage in reference 'x' : 'CoordinateFrame'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'CoordinateFrame'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'CoordinateFrame/' :> 'DataFunctions::/'[unresolved]
-        (reference_usage in reference 'x' : 'CoordinateFrame'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'MeasurementUnit'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'CoordinateFrame'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'ToString' :> 'BaseFunctions::ToString'[unresolved]
-        (documentation)
-        (reference_usage in reference 'x' : 'ScalarMeasurementReference'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MeasurementRefCalculations"))) (name "MeasurementRefCalculations") (declared-name "MeasurementRefCalculations")
+      (contains
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::*"))) (name "*") (declared-name "*")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::*::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::*")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::*::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::*")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::**"))) (name "**") (declared-name "**")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::**::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::**")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::**::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::**")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::/"))) (name "/") (declared-name "/")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::/::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::/")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::/::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::/")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame"))) (name "CoordinateFrame") (declared-name "CoordinateFrame"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame*"))) (name "CoordinateFrame*") (declared-name "CoordinateFrame*")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame*::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame*")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame*::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame*")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame/"))) (name "CoordinateFrame/") (declared-name "CoordinateFrame/")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame/::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame/")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame/::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame/")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::MeasurementUnit"))) (name "MeasurementUnit") (declared-name "MeasurementUnit"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::ScalarMeasurementReference"))) (name "ScalarMeasurementReference") (declared-name "ScalarMeasurementReference"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::String"))) (name "String") (declared-name "String"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString"))) (name "ToString") (declared-name "ToString")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::^"))) (name "^") (declared-name "^")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::^::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::^")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::^::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementRefCalculations::^")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementRefCalculations::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementRefCalculations::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementRefCalculations"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -143,31 +143,24 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'FeatureChains'
-      (classifier_def 'F'
-        (feature_def 'a' : 'FeatureChains::A'[classifier_def]))
-      (feature_def 'f' : 'FeatureChains::F'[classifier_def])
-      (classifier_def 'A'
-        (feature_def 'g'
-          (feature_value (=))))
-      (classifier_def 'B'
-        (feature_def 'f' : 'FeatureChains::F'[classifier_def])
-        (feature_def 'a' : 'FeatureChains::A'[classifier_def]))
-      (feature_def 'b' : 'FeatureChains::B'[classifier_def]
-        (connector_def
-          (connector_end 'f.a')
-          (connector_end 'a.g'))
-        (binding_connector_def
-          (connector_end 'f.a')
-          (connector_end 'a.g')))
-      (feature_def 'g' :> 'FeatureChains::F::a'[feature_def])
-      (subsetting_decl)
-      (redefinition_decl)
-      (specialization_decl)
-      (disjoining_decl)
-      (feature_def 'h1')
-      (feature_def 'h2')
-      (feature_def 'b_f_a' :> 'FeatureChains::b'[feature_def] :> 'FeatureChains::B::f'[feature_def] :> 'FeatureChains::B::a'[feature_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureChains"))) (name "FeatureChains") (declared-name "FeatureChains")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureChains::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureChains::B"))) (name "B") (declared-name "B"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureChains::F"))) (name "F") (declared-name "F"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureChains::b"))) (name "b") (declared-name "b"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureChains::f"))) (name "f") (declared-name "f"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureChains::g"))) (name "g") (declared-name "g"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

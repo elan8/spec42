@@ -191,48 +191,90 @@ semantic.duplicate_name 'continue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Merge Example'
-      (part_def 'Scene')
-      (part_def 'Image')
-      (part_def 'Picture')
-      (action_def 'Focus'
-        (item_usage in 'scene' : 'Merge Example::Scene'[part_def])
-        (item_usage out 'image' : 'Merge Example::Image'[part_def]))
-      (action_def 'Shoot'
-        (item_usage in 'image' : 'Merge Example::Image'[part_def])
-        (item_usage out 'picture' : 'Merge Example::Picture'[part_def]))
-      (action_def 'Display'
-        (item_usage in 'picture' : 'Merge Example::Picture'[part_def]))
-      (action_def 'TakePicture')
-      (action_usage 'takePicture' : 'Merge Example::TakePicture'[action_def]
-        (initial_node)
-        (source_succession
-          (merge_node 'continue'))
-        (source_succession
-          (action_usage 'trigger'
-            (item_usage out 'scene' : 'Merge Example::Scene'[part_def])))
-        (flow_usage composite
-          (connector_end 'trigger.scene')
-          (connector_end 'focus.scene'))
-        (source_succession
-          (action_usage 'focus' : 'Merge Example::Focus'[action_def]
-            (item_usage in 'scene')
-            (item_usage out 'image')))
-        (flow_usage composite
-          (connector_end 'focus.image')
-          (connector_end 'shoot.image'))
-        (source_succession
-          (action_usage 'shoot' : 'Merge Example::Shoot'[action_def]
-            (item_usage in 'image')
-            (item_usage out 'picture')))
-        (flow_usage composite
-          (connector_end 'shoot.picture')
-          (connector_end 'display.picture'))
-        (source_succession
-          (action_usage 'display' : 'Merge Example::Display'[action_def]
-            (item_usage in 'picture')))
-        (source_succession
-          (reference_usage reference 'continue'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Merge Example"))) (name "Merge Example") (declared-name "Merge Example")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Merge Example::Display"))) (name "Display") (declared-name "Display")
+          (contains
+            (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::Display::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Display")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Merge Example::Focus"))) (name "Focus") (declared-name "Focus")
+          (contains
+            (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Focus")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Focus")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Merge Example::Image"))) (name "Image") (declared-name "Image") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Merge Example::Picture"))) (name "Picture") (declared-name "Picture") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Merge Example::Scene"))) (name "Scene") (declared-name "Scene") (declared))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Merge Example::Shoot"))) (name "Shoot") (declared-name "Shoot")
+          (contains
+            (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Shoot")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Shoot")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Merge Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Merge Example::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "initial") (id (node (document "d0") (qualified-name "Merge Example::takePicture::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture")))))
+            (element (kind "merge") (id (node (document "d0") (qualified-name "Merge Example::takePicture::continue"))) (name "merge") (declared-name "merge") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Merge Example::takePicture::display"))) (name "display") (declared-name "display") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::takePicture::display::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Display")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Merge Example::takePicture::focus"))) (name "focus") (declared-name "focus") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::takePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Focus")))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Focus")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Merge Example::takePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture")))))
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Merge Example::takePicture::from#flow"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture")))))
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Merge Example::takePicture::from#flow2"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Merge Example::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::takePicture::shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Shoot")))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::Shoot")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Merge Example::takePicture::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Merge Example::takePicture::trigger::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Merge Example::TakePicture")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::continue"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::trigger"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::display"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::continue"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::focus"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::shoot"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::shoot"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::display"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::trigger"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::display"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::shoot"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture"))) (to (node (document "d0") (qualified-name "Merge Example::takePicture::trigger"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::Display::picture"))) (to (node (document "d0") (qualified-name "Merge Example::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::Focus::image"))) (to (node (document "d0") (qualified-name "Merge Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::Focus::scene"))) (to (node (document "d0") (qualified-name "Merge Example::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::Shoot::image"))) (to (node (document "d0") (qualified-name "Merge Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::Shoot::picture"))) (to (node (document "d0") (qualified-name "Merge Example::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture"))) (to (node (document "d0") (qualified-name "Merge Example::TakePicture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::display"))) (to (node (document "d0") (qualified-name "Merge Example::Display"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::focus"))) (to (node (document "d0") (qualified-name "Merge Example::Focus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::shoot"))) (to (node (document "d0") (qualified-name "Merge Example::Shoot"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Merge Example::takePicture::trigger::scene"))) (to (node (document "d0") (qualified-name "Merge Example::Scene"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "Merge Example::takePicture::_initial") (target-qualified "Merge Example::takePicture::start"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

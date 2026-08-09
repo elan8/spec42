@@ -155,33 +155,33 @@ semantic.unresolved_name 'fuelEconomy_highway'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Analysis Case Usage Example'
-      (namespace_import private -> 'Analysis Case Definition Example'[unresolved])
-      (part_usage 'vehicleFuelEconomyAnalysisContext'
-        (requirement_usage composite 'vehicleFuelEconomyRequirements'
-          (subject_membership in 'vehicle' : 'Vehicle'[unresolved]))
-        (attribute_usage composite 'cityScenario' : 'WayPoint'[unresolved]
-          (multiplicity_range [*])
-          (feature_value (=)))
-        (attribute_usage composite 'highwayScenario' : 'WayPoint'[unresolved]
-          (multiplicity_range [*])
-          (feature_value (=)))
-        (analysis_case_usage composite 'cityAnalysis' : 'FuelEconomyAnalysis'[unresolved]
-          (subject_membership in 'vehicle'
-            (feature_value (=)))
-          (reference_usage in reference 'scenario'
-            (feature_value (=))))
-        (analysis_case_usage composite 'highwayAnalysis' : 'FuelEconomyAnalysis'[unresolved]
-          (subject_membership in 'vehicle'
-            (feature_value (=)))
-          (reference_usage in reference 'scenario'
-            (feature_value (=))))
-        (part_usage composite 'vehicle_c1' : 'Vehicle'[unresolved]
-          (attribute_usage composite :>> 'fuelEconomy_city'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'fuelEconomy_highway'[unresolved]
-            (feature_value (=))))
-        (satisfy_requirement_usage 'vehicleFuelEconomyRequirements' by 'Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1'[part_usage])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Analysis Case Usage Example"))) (name "Analysis Case Usage Example") (declared-name "Analysis Case Usage Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (name "vehicleFuelEconomyAnalysisContext") (declared-name "vehicleFuelEconomyAnalysisContext") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (name "cityScenario") (declared-name "cityScenario") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "null")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (name "highwayScenario") (declared-name "highwayScenario") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "null")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "fuelEconomyResult") (children (expression (kind "featureReference") (reference "cityAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (role feature-value))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "fuelEconomyResult") (children (expression (kind "featureReference") (reference "highwayAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (role feature-value))))
+              )
+            )
+          )
+        )
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (satisfy (status pending-expression) (document "d0") (source-expression "vehicleFuelEconomyRequirements") (target-expression "vehicle_c1") (container-prefix "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))
+  )
+)
 ~~~

@@ -128,23 +128,31 @@ semantic.unresolved_name 'ForceValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Derivation Constraints'
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'Constraints Example-1'[unresolved])
-      (part_usage 'vehicle1' : 'Vehicle'[unresolved]
-        (attribute_usage composite 'totalMass' : 'MassValue'[unresolved])
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (part_usage 'vehicle2' : 'Vehicle'[unresolved]
-        (attribute_usage composite 'totalMass' : 'MassValue'[unresolved]
-          (feature_value (=))))
-      (constraint_def 'Dynamics'
-        (reference_usage in reference 'mass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'initialSpeed' : 'SpeedValue'[unresolved])
-        (reference_usage in reference 'finalSpeed' : 'SpeedValue'[unresolved])
-        (reference_usage in reference 'deltaT' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'force' : 'ForceValue'[unresolved])
-        (result_expr_membership)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Derivation Constraints"))) (name "Derivation Constraints") (declared-name "Derivation Constraints")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Derivation Constraints::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Derivation Constraints::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Derivation Constraints::Dynamics"))) (name "Dynamics") (declared-name "Dynamics"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (name "totalMass") (declared-name "totalMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle2"))) (name "vehicle2") (declared-name "vehicle2") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (name "totalMass") (declared-name "totalMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "chassisMass")) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "engine")))))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "transmission")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -225,47 +225,72 @@ semantic.unresolved_name 'p4'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'PartTest'
-      (part_usage 'f' : 'PartTest::A'[part_def])
-      (part_def 'A'
-        (part_usage composite 'b' : 'PartTest::B'[part_def])
-        (port_usage composite 'c' : 'PartTest::C'[port_def])
-        (attribute_usage composite 'x'
-          (multiplicity_range [0..2]))
-        (attribute_usage derived reference 'y' :> 'PartTest::A::x'[attribute_usage])
-        (reference_usage reference 'z' : 'ScalarValues::Integer'[unresolved]))
-      (item_def 'S')
-      (part_def abstract 'B'
-        (part_usage abstract composite 'a' : 'PartTest::A'[part_def]
-          (multiplicity_range [1..2]))
-        (part_usage abstract composite 'b' :> 'PartTest::B::a'[part_usage])
-        (part_usage abstract composite 'c' :> 'PartTest::B::a'[part_usage]
-          (multiplicity_range [0..1]))
-        (port_usage composite 'x' : 'PartTest::C'[port_def] ~ 'PartTest::C'[port_def]
-          (port_usage composite 'p')
-          (port_usage reference 'q'))
-        (package 'P')
-        (succession_flow_usage composite 'x')
-        (action_usage composite 'a1'
-          (accept_action_usage)
-          (action_usage composite 'aa')
-          (accept_action_usage))
-        (perform_action_usage 'a2')
-        (state_usage composite 's1')
-        (state_usage composite 's2'))
-      (port_def 'C'
-        (reference_usage in reference 'y' : 'PartTest::A'[part_def] : 'PartTest::B'[part_def]
-          (part_usage composite 'B_b' :>> 'PartTest::B::b'[part_usage])
-          (part_usage composite 'B_c' :>> 'PartTest::B::c'[part_usage])
-          (port_usage composite 'B_x' :>> 'PartTest::B::x'[port_usage]))
-        (alias_member 'z1' -> 'PartTest::C::y'[reference_usage])
-        (alias_member 'z2' -> 'PartTest::C::y'[reference_usage])
-        (port_usage composite 'c1' : 'PartTest::C'[port_def])
-        (port_usage reference 'c2' : 'PartTest::C'[port_def]))
-      (part_usage 'p1' :> 'PartTest::p2'[part_usage])
-      (part_usage 'p2' :> 'PartTest::p3'[part_usage])
-      (part_usage 'p3' :> 'PartTest::p1'[part_usage])
-      (part_usage 'p4' :> 'p4'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "PartTest"))) (name "PartTest") (declared-name "PartTest")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "PartTest::A"))) (name "A") (declared-name "A") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::A::b"))) (name "b") (declared-name "b") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "PartTest::A")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "PartTest::A::c"))) (name "c") (declared-name "c") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "PartTest::A")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "PartTest::A::x"))) (name "x") (declared-name "x") (declared (properties (constant true) (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 0) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::A")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "PartTest::A::z"))) (name "z") (declared-name "z") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::A")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "PartTest::B"))) (name "B") (declared-name "B") (declared (properties (abstract true)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::B::a"))) (name "a") (declared-name "a") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "PartTest::B::a1"))) (name "a1") (declared-name "a1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B"))))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "PartTest::B::a1::aa"))) (name "aa") (declared-name "aa") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "PartTest::B::a2"))) (name "a2") (declared-name "a2") (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::B::b"))) (name "b") (declared-name "b") (declared (properties (abstract true) (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::B::c"))) (name "c") (declared-name "c") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "PartTest::B::s1"))) (name "s1") (declared-name "s1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+            (element (kind "exhibit state") (id (node (document "d0") (qualified-name "PartTest::B::s2"))) (name "s2") (declared-name "s2") (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "PartTest::B::x"))) (name "x") (declared-name "x") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "PartTest::B"))))
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "PartTest::B::x::p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "PartTest::C::~C")))))
+              )
+            )
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "PartTest::C"))) (name "C") (declared-name "C")
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "PartTest::C::c1"))) (name "c1") (declared-name "c1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "PartTest::C")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "PartTest::C::~C"))) (name "~C") (declared-name "~C") (effective (featuring-type (node (document "d0") (qualified-name "PartTest::C")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "PartTest::S"))) (name "S") (declared-name "S"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::f"))) (name "f") (declared-name "f") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::p2"))) (name "p2") (declared-name "p2") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::p3"))) (name "p3") (declared-name "p3") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::p4"))) (name "p4") (declared-name "p4") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "PartTest::B"))) (to (node (document "d0") (qualified-name "PartTest::B::a2"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "PartTest::B::a1"))) (to (node (document "d0") (qualified-name "PartTest::B::a1::aa"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "PartTest::C::~C"))) (to (node (document "d0") (qualified-name "PartTest::C"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "PartTest::B::b"))) (to (node (document "d0") (qualified-name "PartTest::B::a"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "PartTest::B::c"))) (to (node (document "d0") (qualified-name "PartTest::B::a"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "PartTest::p1"))) (to (node (document "d0") (qualified-name "PartTest::p2"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "PartTest::p2"))) (to (node (document "d0") (qualified-name "PartTest::p3"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "PartTest::p3"))) (to (node (document "d0") (qualified-name "PartTest::p1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PartTest::A::b"))) (to (node (document "d0") (qualified-name "PartTest::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PartTest::A::c"))) (to (node (document "d0") (qualified-name "PartTest::C"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PartTest::B::a"))) (to (node (document "d0") (qualified-name "PartTest::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PartTest::B::x"))) (to (node (document "d0") (qualified-name "PartTest::C::~C"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PartTest::C::c1"))) (to (node (document "d0") (qualified-name "PartTest::C"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PartTest::f"))) (to (node (document "d0") (qualified-name "PartTest::A"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

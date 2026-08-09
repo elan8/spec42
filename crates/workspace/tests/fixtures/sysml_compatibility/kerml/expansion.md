@@ -41,10 +41,20 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Expansion'
-      (membership_import private -> 'ControlFunctions::select'[unresolved])
-      (feature_def 'x'
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Expansion"))) (name "Expansion") (declared-name "Expansion")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Expansion::select"))) (name "select") (declared-name "select"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Expansion::x"))) (name "x") (declared-name "x"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

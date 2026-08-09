@@ -110,17 +110,15 @@ semantic.unresolved_name 'ISQ::mass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MassRollup2'
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (part_def 'MassedThing'
-        (attribute_usage composite 'simpleMass' :> 'ISQ::mass'[unresolved])
-        (attribute_usage composite 'totalMass' :> 'ISQ::mass'[unresolved]
-          (feature_value (default =))))
-      (part_usage 'composicomackagteThing' : 'MassRollup2::MassedThing'[part_def]
-        (not_implemented 'malformed')
-        (reference_usage reference 'arValuete' :>> 'MassRollup2::MassedThing::totalMass'[attribute_usage]
-          (feature_value (default =))))
-      (not_implemented 'malformed'))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

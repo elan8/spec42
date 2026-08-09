@@ -154,59 +154,28 @@ standard library package BooleanFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'BooleanFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (function_def 'not' :> 'ScalarFunctions::not'[unresolved]
-        (feature_def in 'x' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'xor' :> 'ScalarFunctions::xor'[unresolved]
-        (feature_def in 'x' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '|' :> 'ScalarFunctions::|'[unresolved]
-        (feature_def in 'x' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '&' :> 'ScalarFunctions::&'[unresolved]
-        (feature_def in 'x' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '==' :> 'DataFunctions::=='[unresolved]
-        (feature_def in 'x' : 'Boolean'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Boolean'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToString' :> 'BaseFunctions::ToString'[unresolved]
-        (feature_def in 'x' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToBoolean'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "BooleanFunctions"))) (name "BooleanFunctions") (declared-name "BooleanFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "BooleanFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::ToBoolean"))) (name "ToBoolean") (declared-name "ToBoolean"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "BooleanFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BooleanFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "BooleanFunctions::_documentation"))) (to (node (document "d0") (qualified-name "BooleanFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

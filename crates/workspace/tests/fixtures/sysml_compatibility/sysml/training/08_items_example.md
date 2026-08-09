@@ -80,15 +80,28 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Items Example'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (item_def 'Fuel')
-      (item_def 'Person')
-      (part_def 'Vehicle'
-        (attribute_usage composite 'mass' : 'Real'[unresolved])
-        (item_usage reference 'driver' : 'Items Example::Person'[item_def])
-        (part_usage composite 'fuelTank'
-          (item_usage composite 'fuel' : 'Items Example::Fuel'[item_def]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Items Example"))) (name "Items Example") (declared-name "Items Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Items Example::Fuel"))) (name "Fuel") (declared-name "Fuel"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Items Example::Person"))) (name "Person") (declared-name "Person"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Items Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Items Example::Vehicle::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Items Example::Vehicle::item"))) (name "item") (declared-name "item") (effective (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Items Example::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -197,50 +197,41 @@ semantic.unresolved_name 'Position'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Calculation Usages-1'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'Calculation Definitions'[unresolved])
-      (part_def 'VehicleDynamics'
-        (attribute_usage composite 'C_d' : 'Real'[unresolved])
-        (attribute_usage composite 'C_f' : 'Real'[unresolved])
-        (attribute_usage composite 'wheelPower' : 'PowerValue'[unresolved])
-        (attribute_usage composite 'mass' : 'MassValue'[unresolved])
-        (action_usage composite 'straightLineDynamics'
-          (reference_usage in reference 'delta_t' : 'TimeValue'[unresolved])
-          (reference_usage in reference 'v_in' : 'SpeedValue'[unresolved])
-          (reference_usage in reference 'x_in' : 'LengthValue'[unresolved])
-          (reference_usage out reference 'v_out' : 'SpeedValue'[unresolved]
-            (feature_value (=)))
-          (reference_usage out reference 'x_out' : 'LengthValue'[unresolved]
-            (feature_value (=)))
-          (calculation_usage composite 'acc' : 'Acceleration'[unresolved]
-            (reference_usage in reference 'tp'
-              (feature_value (=)))
-            (reference_usage in reference 'tm'
-              (feature_value (=)))
-            (reference_usage in reference 'v'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'a')))
-          (calculation_usage composite 'vel' : 'Velocity'[unresolved]
-            (reference_usage in reference 'dt'
-              (feature_value (=)))
-            (reference_usage in reference 'v0'
-              (feature_value (=)))
-            (reference_usage in reference 'a'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'v')))
-          (calculation_usage composite 'pos' : 'Position'[unresolved]
-            (reference_usage in reference 'dt'
-              (feature_value (=)))
-            (reference_usage in reference 'x0'
-              (feature_value (=)))
-            (reference_usage in reference 'v0'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'x'))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Calculation Usages-1"))) (name "Calculation Usages-1") (declared-name "Calculation Usages-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Usages-1::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Usages-1::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Usages-1::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics"))) (name "VehicleDynamics") (declared-name "VehicleDynamics") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::C_d"))) (name "C_d") (declared-name "C_d") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::C_f"))) (name "C_f") (declared-name "C_f") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics"))) (name "straightLineDynamics") (declared-name "straightLineDynamics") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics"))))
+              (contains
+                (element (kind "action body decl") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::acc : Acceleration"))) (name "acc : Acceleration") (declared-name "acc : Acceleration") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::delta_t"))) (name "delta_t") (declared-name "delta_t") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+                (element (kind "action body decl") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::pos : Position"))) (name "pos : Position") (declared-name "pos : Position") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::v_out"))) (name "v_out") (declared-name "v_out") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+                (element (kind "action body decl") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::vel : Velocity"))) (name "vel : Velocity") (declared-name "vel : Velocity") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::straightLineDynamics::x_out"))) (name "x_out") (declared-name "x_out") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics::wheelPower"))) (name "wheelPower") (declared-name "wheelPower") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-1::VehicleDynamics")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -169,26 +169,49 @@ semantic.unresolved_name 'PerformanceRequirementCheck'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'HSUVRequirements'
-      (namespace_import private -> 'Requirements'[unresolved])
-      (requirement_usage 'Load' : 'FunctionalRequirementCheck'[unresolved]
-        (requirement_usage composite 'Passengers')
-        (requirement_usage composite 'FuelCapacity')
-        (requirement_usage composite 'Cargo'))
-      (requirement_usage 'EcoFriendliness' : 'PerformanceRequirementCheck'[unresolved]
-        (requirement_usage composite 'Emissions' : 'PerformanceRequirementCheck'[unresolved]))
-      (requirement_usage 'Performance' : 'PerformanceRequirementCheck'[unresolved]
-        (requirement_usage composite 'Acceleration')
-        (requirement_usage composite 'FuelEconomy' : 'PerformanceRequirementCheck'[unresolved])
-        (requirement_usage composite 'Braking')
-        (requirement_usage composite 'Range')
-        (requirement_usage composite 'Power'))
-      (requirement_usage 'Ergonomics')
-      (requirement_usage 'HybridSUVSpec'
-        (require_constraint_usage composite 'Load')
-        (require_constraint_usage composite 'EcoFriendliness')
-        (require_constraint_usage composite 'Performance')
-        (require_constraint_usage composite 'Ergonomics')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "HSUVRequirements"))) (name "HSUVRequirements") (declared-name "HSUVRequirements")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "HSUVRequirements::*"))) (name "*") (declared-name "*"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness"))) (name "EcoFriendliness") (declared-name "EcoFriendliness")
+          (contains
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (name "Emissions") (declared-name "Emissions"))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Ergonomics"))) (name "Ergonomics") (declared-name "Ergonomics"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))) (name "HybridSUVSpec") (declared-name "HybridSUVSpec")
+          (contains
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0"))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_1"))) (name "_requireConstraint_1") (declared-name "_requireConstraint_1"))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_2"))) (name "_requireConstraint_2") (declared-name "_requireConstraint_2"))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_3"))) (name "_requireConstraint_3") (declared-name "_requireConstraint_3"))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load"))) (name "Load") (declared-name "Load")
+          (contains
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load::Cargo"))) (name "Cargo") (declared-name "Cargo"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load::FuelCapacity"))) (name "FuelCapacity") (declared-name "FuelCapacity"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Load::Passengers"))) (name "Passengers") (declared-name "Passengers"))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance"))) (name "Performance") (declared-name "Performance")
+          (contains
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Acceleration"))) (name "Acceleration") (declared-name "Acceleration"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Braking"))) (name "Braking") (declared-name "Braking"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::FuelEconomy"))) (name "FuelEconomy") (declared-name "FuelEconomy"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Power"))) (name "Power") (declared-name "Power"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "HSUVRequirements::Performance::Range"))) (name "Range") (declared-name "Range"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

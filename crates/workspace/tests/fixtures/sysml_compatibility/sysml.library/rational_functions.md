@@ -416,191 +416,46 @@ standard library package RationalFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'RationalFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (function_def 'rat'
-        (feature_def in 'numer' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'denum' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'numer'
-        (feature_def in 'rat' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'denom'
-        (feature_def in 'rat' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'abs' :> 'RealFunctions::abs'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '+' :> 'RealFunctions::+'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '-' :> 'RealFunctions::-'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '*' :> 'RealFunctions::*'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '/' :> 'RealFunctions::/'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '**' :> 'RealFunctions::**'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '^' :> 'RealFunctions::^'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<' :> 'RealFunctions::<'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>' :> 'RealFunctions::>'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<=' :> 'RealFunctions::<='[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>=' :> 'RealFunctions::>='[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'max' :> 'RealFunctions::max'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'min' :> 'RealFunctions::min'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '==' :> 'RealFunctions::=='[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'gcd'
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'floor' :> 'RealFunctions::floor'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'round' :> 'RealFunctions::round'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToString' :> 'RealFunctions::ToString'[unresolved]
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToInteger'
-        (feature_def in 'x' : 'Rational'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToRational'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'sum' :> 'RealFunctions::sum'[unresolved]
-        (feature_def in 'collection' : 'Rational'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (default =)))))
-      (function_def 'product' :> 'RealFunctions::product'[unresolved]
-        (feature_def in 'collection' : 'Rational'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (default =))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RationalFunctions"))) (name "RationalFunctions") (declared-name "RationalFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "RationalFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::ToInteger"))) (name "ToInteger") (declared-name "ToInteger"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::ToRational"))) (name "ToRational") (declared-name "ToRational"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "RationalFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::abs"))) (name "abs") (declared-name "abs"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::denom"))) (name "denom") (declared-name "denom"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::floor"))) (name "floor") (declared-name "floor"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl10"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::function#kermlDecl9"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::gcd"))) (name "gcd") (declared-name "gcd"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::min"))) (name "min") (declared-name "min"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::numer"))) (name "numer") (declared-name "numer"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::product"))) (name "product") (declared-name "product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::rat"))) (name "rat") (declared-name "rat"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::round"))) (name "round") (declared-name "round"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "RationalFunctions::sum"))) (name "sum") (declared-name "sum"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RationalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "RationalFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

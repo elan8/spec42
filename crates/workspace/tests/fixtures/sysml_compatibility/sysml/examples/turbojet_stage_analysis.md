@@ -445,104 +445,113 @@ semantic.unresolved_name 'done'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Turbojet Stage Analysis'
-      (membership_import private -> 'Quantities::ScalarQuantityValue'[unresolved])
-      (membership_import private -> 'MeasurementReferences::DimensionOneValue'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (package 'Thermodynamic Functions'
-        (calculation_def 'Ideal Gas Law'
-          (reference_usage in reference 'rho')
-          (reference_usage in reference 'R_bar')
-          (reference_usage in reference 'T')
-          (return_parameter_membership
-            (feature_def out 'p'
-              (feature_value (=)))))
-        (calculation_def 'Reversible Adiabatic Compression Density'
-          (reference_usage in reference 'rho_1')
-          (reference_usage in reference 'p_1')
-          (reference_usage in reference 'p_2')
-          (reference_usage in reference 'gamma')
-          (return_parameter_membership
-            (feature_def out 'rho_2'
-              (feature_value (=)))))
-        (calculation_def 'Reversible Adiabatic Compression Temperature'
-          (reference_usage in reference 'T_1')
-          (reference_usage in reference 'p_1')
-          (reference_usage in reference 'p_2')
-          (reference_usage in reference 'gamma')
-          (return_parameter_membership
-            (feature_def out 'T_2'
-              (feature_value (=)))))
-        (calculation_def 'Total Pressure'
-          (reference_usage in reference 'P_static')
-          (reference_usage in reference 'rho')
-          (reference_usage in reference 'V')
-          (result_expr_membership))
-        (calculation_def 'Total Temperature'
-          (reference_usage in reference 'T_static' : 'TemperatureValue'[unresolved])
-          (reference_usage in reference 'Cp' : 'DimensionOneValue'[unresolved])
-          (reference_usage in reference 'V' : 'VolumeValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'TemperatureValue'[unresolved]
-              (feature_value (=)))))
-        (calculation_def 'Total Enthalpy'
-          (reference_usage in reference 'h_total')
-          (reference_usage in reference 'h_static')
-          (reference_usage in reference 'V')
-          (return_parameter_membership
-            (feature_def out 'H_total'
-              (feature_value (=))))))
-      (package 'Thermodynamics Structure'
-        (part_def 'Ideal Gas Parcel'
-          (comment_annotating)
-          (attribute_usage composite 'Molar Mass')
-          (attribute_usage composite 'Density')
-          (attribute_usage composite 'Pressure')
-          (attribute_usage composite 'Temperature')
-          (attribute_usage composite 'Enthalpy')
-          (attribute_usage composite 'Specific Gas Constant'))
-        (part_def 'Moving Ideal Gas Parcel' :> 'Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel'[part_def]
-          (comment_annotating)
-          (attribute_usage composite 'Stagnation Pressure')
-          (attribute_usage composite 'Stagnation Temperature')
-          (attribute_usage composite 'Stagnation Enthalpy')
-          (comment_annotating)
-          (attribute_usage composite 'Static Pressure' :>> 'Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Pressure'[attribute_usage])
-          (attribute_usage composite 'Static Temperature' :>> 'Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Temperature'[attribute_usage])
-          (attribute_usage composite 'Static Enthalpy' :>> 'Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Enthalpy'[attribute_usage]))
-        (action_def 'Thermodynamic Process')
-        (action_def 'Adiabatic Process' :> 'Turbojet Stage Analysis::Thermodynamics Structure::Thermodynamic Process'[action_def]
-          (action_usage composite 'Stage 1' :>> 'start'[unresolved])
-          (action_usage composite 'Stage 2' :>> 'done'[unresolved]))
-        (action_def 'Reversible Adiabatic Process' :> 'Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process'[action_def]))
-      (package 'Low-Pressure Compressor Analysis'
-        (part_usage 'Analysis Context'
-          (namespace_import private -> 'Turbojet Stage Analysis::Thermodynamic Functions'[package])
-          (part_usage composite 'Inlet Gas' : 'Turbojet Stage Analysis::Thermodynamics Structure::Moving Ideal Gas Parcel'[part_def]
-            (calculation_usage composite 'Solve for Pressure1' : 'Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law'[calculation_def])
-            (binding_connector_def
-              (connector_end ''Density'')
-              (connector_end ''Solve for Pressure1'.rho'))
-            (binding_connector_def
-              (connector_end ''Specific Gas Constant'')
-              (connector_end ''Solve for Pressure1'.R_bar'))
-            (binding_connector_def
-              (connector_end ''Static Temperature'')
-              (connector_end ''Solve for Pressure1'.T'))
-            (binding_connector_def
-              (connector_end ''Static Pressure'')
-              (connector_end ''Solve for Pressure1'.p'))
-            (calculation_usage composite 'Solve for Pressure2' : 'Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law'[calculation_def]
-              (reference_usage in reference 'rho'
-                (feature_value (=)))
-              (reference_usage in reference 'R_bar'
-                (feature_value (=)))
-              (reference_usage in reference 'T'
-                (feature_value (=))))
-            (attribute_usage composite :>> 'Turbojet Stage Analysis::Thermodynamics Structure::Moving Ideal Gas Parcel::Static Pressure'[attribute_usage]
-              (feature_value (=)))
-            (constraint_usage composite
-              (result_expr_membership))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis"))) (name "Turbojet Stage Analysis") (declared-name "Turbojet Stage Analysis")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::DimensionOneValue"))) (name "DimensionOneValue") (declared-name "DimensionOneValue"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Low-Pressure Compressor Analysis"))) (name "Low-Pressure Compressor Analysis") (declared-name "Low-Pressure Compressor Analysis")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context"))) (name "Analysis Context") (declared-name "Analysis Context") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas"))) (name "Inlet Gas") (declared-name "Inlet Gas") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas::Static Pressure"))) (name "Static Pressure") (declared-name "Static Pressure") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "Ideal Gas Law"))) (arguments (argument (expression (kind "featureReference") (reference "Density"))) (argument (expression (kind "featureReference") (reference "Specific Gas Constant"))) (argument (expression (kind "featureReference") (reference "Static Temperature"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas::Static Pressure"))) (role feature-value))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions"))) (name "Thermodynamic Functions") (declared-name "Thermodynamic Functions")
+          (contains
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law"))) (name "Ideal Gas Law") (declared-name "Ideal Gas Law")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law::R_bar"))) (name "R_bar") (declared-name "R_bar") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law::T"))) (name "T") (declared-name "T") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law::rho"))) (name "rho") (declared-name "rho") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Ideal Gas Law")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density"))) (name "Reversible Adiabatic Compression Density") (declared-name "Reversible Adiabatic Compression Density")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density::gamma"))) (name "gamma") (declared-name "gamma") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density::p_1"))) (name "p_1") (declared-name "p_1") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density::p_2"))) (name "p_2") (declared-name "p_2") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density::rho_1"))) (name "rho_1") (declared-name "rho_1") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Density")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature"))) (name "Reversible Adiabatic Compression Temperature") (declared-name "Reversible Adiabatic Compression Temperature")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature::T_1"))) (name "T_1") (declared-name "T_1") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature::gamma"))) (name "gamma") (declared-name "gamma") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature::p_1"))) (name "p_1") (declared-name "p_1") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature::p_2"))) (name "p_2") (declared-name "p_2") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Reversible Adiabatic Compression Temperature")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy"))) (name "Total Enthalpy") (declared-name "Total Enthalpy")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy::V"))) (name "V") (declared-name "V") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy::h_static"))) (name "h_static") (declared-name "h_static") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy::h_total"))) (name "h_total") (declared-name "h_total") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Enthalpy")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Pressure"))) (name "Total Pressure") (declared-name "Total Pressure")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Pressure::P_static"))) (name "P_static") (declared-name "P_static") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Pressure")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Pressure::V"))) (name "V") (declared-name "V") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Pressure")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Pressure::rho"))) (name "rho") (declared-name "rho") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Pressure")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature"))) (name "Total Temperature") (declared-name "Total Temperature")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature::Cp"))) (name "Cp") (declared-name "Cp") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature::T_static"))) (name "T_static") (declared-name "T_static") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature::V"))) (name "V") (declared-name "V") (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamic Functions::Total Temperature")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure"))) (name "Thermodynamics Structure") (declared-name "Thermodynamics Structure")
+          (contains
+            (element (kind "action def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process"))) (name "Adiabatic Process") (declared-name "Adiabatic Process")
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process::Stage 1"))) (name "Stage 1") (declared-name "Stage 1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process::Stage 2"))) (name "Stage 2") (declared-name "Stage 2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel"))) (name "Ideal Gas Parcel") (declared-name "Ideal Gas Parcel") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Stagnation Enthalpy"))) (name "Stagnation Enthalpy") (declared-name "Stagnation Enthalpy") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Stagnation Pressure"))) (name "Stagnation Pressure") (declared-name "Stagnation Pressure") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Stagnation Temperature"))) (name "Stagnation Temperature") (declared-name "Stagnation Temperature") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Static Enthalpy"))) (name "Static Enthalpy") (declared-name "Static Enthalpy") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Static Pressure"))) (name "Static Pressure") (declared-name "Static Pressure") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel::Static Temperature"))) (name "Static Temperature") (declared-name "Static Temperature") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Ideal Gas Parcel")))))
+              )
+            )
+            (element (kind "action def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Reversible Adiabatic Process"))) (name "Reversible Adiabatic Process") (declared-name "Reversible Adiabatic Process"))
+            (element (kind "action def") (id (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Thermodynamic Process"))) (name "Thermodynamic Process") (declared-name "Thermodynamic Process"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process"))) (to (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process::Stage 1"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process"))) (to (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process::Stage 2"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process"))) (to (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Thermodynamic Process"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Reversible Adiabatic Process"))) (to (node (document "d0") (qualified-name "Turbojet Stage Analysis::Thermodynamics Structure::Adiabatic Process"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "Density") (target-expression "Solve for Pressure1::rho") (container-prefix "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas"))
+    (bind (status pending-expression) (document "d0") (source-expression "Specific Gas Constant") (target-expression "Solve for Pressure1::R_bar") (container-prefix "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas"))
+    (bind (status pending-expression) (document "d0") (source-expression "Static Pressure") (target-expression "Solve for Pressure1::p") (container-prefix "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas"))
+    (bind (status pending-expression) (document "d0") (source-expression "Static Temperature") (target-expression "Solve for Pressure1::T") (container-prefix "Turbojet Stage Analysis::Low-Pressure Compressor Analysis::Analysis Context::Inlet Gas"))
+  )
+)
 ~~~

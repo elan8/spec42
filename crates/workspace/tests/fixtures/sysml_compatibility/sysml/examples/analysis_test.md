@@ -149,29 +149,51 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AnalysisTest'
-      (part_def 'V'
-        (reference_usage reference 'm'))
-      (part_usage 'vv' : 'AnalysisTest::V'[part_def])
-      (requirement_def 'AnalysisObjective'
-        (documentation))
-      (analysis_case_def 'AnalysisCase'
-        (subject_membership in 'v' : 'AnalysisTest::V'[part_def])
-        (objective_membership composite 'obj' : 'AnalysisTest::AnalysisObjective'[requirement_def]
-          (subject_membership in
-            (feature_value (=))))
-        (result_expr_membership))
-      (analysis_case_def 'AnalysisPlan'
-        (subject_membership in 'v' : 'AnalysisTest::V'[part_def])
-        (objective_membership composite
-          (documentation))
-        (analysis_case_usage composite 'analysisCase' : 'AnalysisTest::AnalysisCase'[analysis_case_def]
-          (return_parameter_membership
-            (feature_def out 'mass'))))
-      (part_usage 'analysisContext'
-        (analysis_case_usage composite 'analysisPlan' : 'AnalysisTest::AnalysisPlan'[analysis_case_def]
-          (subject_membership in 'v'
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisTest"))) (name "AnalysisTest") (declared-name "AnalysisTest")
+      (contains
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (name "AnalysisCase") (declared-name "AnalysisCase")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (name "obj") (declared-name "obj") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))) (name "AnalysisObjective") (declared-name "AnalysisObjective")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective")))))
+          )
+        )
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (name "AnalysisPlan") (declared-name "AnalysisPlan")
+          (contains
+            (element (kind "analysis") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (name "analysisCase") (declared-name "analysisCase") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))))
+              (contains
+                (element (kind "analysis result") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase")))))
+              )
+            )
+            (element (kind "objective") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisTest::V"))) (name "V") (declared-name "V") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisTest::analysisContext"))) (name "analysisContext") (declared-name "analysisContext") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisTest::vv"))) (name "vv") (declared-name "vv") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::obj"))) (to (node (document "d0") (qualified-name "AnalysisTest::AnalysisObjective"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase::v"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::analysisCase"))) (to (node (document "d0") (qualified-name "AnalysisTest::AnalysisCase"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::AnalysisPlan::v"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisTest::vv"))) (to (node (document "d0") (qualified-name "AnalysisTest::V"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -354,176 +354,44 @@ standard library package DataFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'DataFunctions'
-      (documentation)
-      (membership_import private -> 'Base::DataValue'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ControlFunctions::reduce'[unresolved])
-      (function_def abstract '==' :> 'BaseFunctions::=='[unresolved]
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '===' :> 'BaseFunctions::==='[unresolved]
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def abstract '+'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '-'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '*'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '/'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '**'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '^'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '%'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'not'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'xor'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '~'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '|'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '&'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '<'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '>'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '<='
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '>='
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'max'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'min'
-        (feature_def in 'x' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DataValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '..'
-        (feature_def in 'lower' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'upper' : 'DataValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out ordered : 'DataValue'[unresolved]
-            (multiplicity_range [0..*])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "DataFunctions"))) (name "DataFunctions") (declared-name "DataFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "DataFunctions::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DataFunctions::DataValue"))) (name "DataValue") (declared-name "DataValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "DataFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl10"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl11"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl12"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl13"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl14"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl15"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl16"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl17"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl18"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::function#kermlDecl9"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DataFunctions::min"))) (name "min") (declared-name "min"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DataFunctions::reduce"))) (name "reduce") (declared-name "reduce"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DataFunctions::_documentation"))) (to (node (document "d0") (qualified-name "DataFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

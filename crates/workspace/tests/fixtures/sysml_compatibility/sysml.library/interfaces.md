@@ -307,49 +307,68 @@ standard library package Interfaces {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Interfaces'
-      (documentation)
-      (membership_import private -> 'Connections::Connection'[unresolved])
-      (membership_import private -> 'Connections::connections'[unresolved])
-      (membership_import private -> 'Connections::BinaryConnection'[unresolved])
-      (membership_import private -> 'Connections::binaryConnections'[unresolved])
-      (membership_import private -> 'Ports::Port'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'SequenceFunctions::excludingAt'[unresolved])
-      (membership_import private -> 'ControlFunctions::selectOne'[unresolved])
-      (membership_import private -> 'SequenceFunctions::notEmpty'[unresolved])
-      (calculation_def 'excludingOnce'
-        (documentation)
-        (reference_usage in reference ordered 'seq'
-          (multiplicity_range [1..*]))
-        (reference_usage in reference 'value' :> 'Interfaces::excludingOnce::seq'[reference_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'position' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (result_expr_membership))
-      (interface_def abstract 'Interface' :> 'Connection'[unresolved]
-        (documentation)
-        (port_usage reference ordered :>> 'participant'[unresolved] : 'Port'[unresolved]
-          (multiplicity_range [2..*])
-          (documentation)
-          (reference_usage reference 'thisParticipant' :>> 'self'[unresolved])
-          (reference_usage reference 'otherParticipants' : 'Port'[unresolved] :> 'interfacingPorts'[unresolved]
-            (multiplicity_range [1..*])
-            (feature_value (default =)))))
-      (interface_def abstract 'BinaryInterface' :> 'Interfaces::Interface'[interface_def] :> 'BinaryConnection'[unresolved]
-        (documentation)
-        (port_usage reference ordered :>> 'Interface::participant'[unresolved] :>> 'BinaryConnection::participant'[unresolved]
-          (multiplicity_range [2]))
-        (port_usage end 'source' : 'Port'[unresolved] :>> 'BinaryConnection::source'[unresolved])
-        (port_usage end 'target' : 'Port'[unresolved] :>> 'BinaryConnection::target'[unresolved]))
-      (interface_usage abstract 'interfaces' : 'Interfaces::Interface'[interface_def] :> 'connections'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (interface_usage abstract 'binaryInterfaces' : 'Interfaces::BinaryInterface'[interface_def] :> 'Interfaces::interfaces'[interface_usage] :> 'binaryConnections'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Interfaces"))) (name "Interfaces") (declared-name "Interfaces")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::BinaryConnection"))) (name "BinaryConnection") (declared-name "BinaryConnection"))
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (name "BinaryInterface") (declared-name "BinaryInterface")
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Interfaces::BinaryInterface::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::BinaryInterface")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::Connection"))) (name "Connection") (declared-name "Connection"))
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::Interface"))) (name "Interface") (declared-name "Interface")
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Interfaces::Interface::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::Interface")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::Interface::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::Interface")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::Port"))) (name "Port") (declared-name "Port"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::binaryConnections"))) (name "binaryConnections") (declared-name "binaryConnections"))
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (name "binaryInterfaces") (declared-name "binaryInterfaces")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::binaryInterfaces::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::binaryInterfaces")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::connections"))) (name "connections") (declared-name "connections"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::excludingAt"))) (name "excludingAt") (declared-name "excludingAt"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce"))) (name "excludingOnce") (declared-name "excludingOnce")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::excludingOnce")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::seq"))) (name "seq") (declared-name "seq") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::excludingOnce")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interfaces::excludingOnce::value"))) (name "value") (declared-name "value") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::excludingOnce")))))
+          )
+        )
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interfaces::interfaces"))) (name "interfaces") (declared-name "interfaces")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Interfaces::interfaces::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Interfaces::interfaces")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::selectOne"))) (name "selectOne") (declared-name "selectOne"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interfaces::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::BinaryInterface::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::Interface::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::Interface"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::binaryInterfaces::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::excludingOnce::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::excludingOnce"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Interfaces::interfaces::_documentation"))) (to (node (document "d0") (qualified-name "Interfaces::interfaces"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Interfaces::BinaryInterface"))) (to (node (document "d0") (qualified-name "Interfaces::Interface"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Interfaces::binaryInterfaces"))) (to (node (document "d0") (qualified-name "Interfaces::interfaces"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

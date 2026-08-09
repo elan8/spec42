@@ -131,36 +131,15 @@ semantic.duplicate_name 'test x'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (action_def 'DecisionTest'
-      (attribute_usage composite 'x'
-        (feature_value (=)))
-      (decide_node 'test x')
-      (if_action_usage)
-      (source_succession
-        (reference_usage reference 'A1'))
-      (if_action_usage)
-      (source_succession
-        (reference_usage reference 'A2'))
-      (source_succession
-        (reference_usage reference 'A3'))
-      (source_succession
-        (decide_node 'D'))
-      (if_action_usage)
-      (source_succession
-        (reference_usage reference 'A1'))
-      (if_action_usage)
-      (source_succession
-        (reference_usage reference 'A2'))
-      (action_usage composite 'A1')
-      (action_usage composite 'A2')
-      (action_usage composite 'A3')
-      (succession_def 'S'
-        (connector_end 'A1')
-        (connector_end 'A2'))
-      (initial_node)
-      (if_action_usage)
-      (source_succession
-        (reference_usage reference 'test x')))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -360,162 +360,42 @@ standard library package NumericalFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'NumericalFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'ControlFunctions::reduce'[unresolved])
-      (function_def abstract 'isZero'
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved])))
-      (function_def abstract 'isUnit'
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved])))
-      (function_def abstract 'abs'
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '+' :> 'ScalarFunctions::+'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '-' :> 'ScalarFunctions::-'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '*' :> 'ScalarFunctions::*'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '/' :> 'ScalarFunctions::/'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '**' :> 'ScalarFunctions::**'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '^' :> 'ScalarFunctions::^'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '%' :> 'ScalarFunctions::%'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '<' :> 'ScalarFunctions::<'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '>' :> 'ScalarFunctions::>'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '<=' :> 'ScalarFunctions::<='[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '>=' :> 'ScalarFunctions::>='[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'max' :> 'ScalarFunctions::max'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'min' :> 'ScalarFunctions::min'[unresolved]
-        (feature_def in 'x' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'NumericalValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'sum'
-        (feature_def in 'collection' : 'ScalarValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'product'
-        (feature_def in 'collection' : 'ScalarValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'sum0'
-        (feature_def in 'collection' : 'NumericalValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'zero' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (invariant_def
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (feature_value (=)))))
-      (function_def 'product1'
-        (feature_def in 'collection' : 'ScalarValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'one' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (invariant_def
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "NumericalFunctions"))) (name "NumericalFunctions") (declared-name "NumericalFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "NumericalFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "NumericalFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::abs"))) (name "abs") (declared-name "abs"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl10"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::function#kermlDecl9"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::isUnit"))) (name "isUnit") (declared-name "isUnit"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::isZero"))) (name "isZero") (declared-name "isZero"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::min"))) (name "min") (declared-name "min"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::product"))) (name "product") (declared-name "product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::product1"))) (name "product1") (declared-name "product1"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "NumericalFunctions::reduce"))) (name "reduce") (declared-name "reduce"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::sum"))) (name "sum") (declared-name "sum"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NumericalFunctions::sum0"))) (name "sum0") (declared-name "sum0"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "NumericalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "NumericalFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

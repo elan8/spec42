@@ -138,27 +138,22 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Classes'
-      (feature_def 'f' : 'Classes::A'[class_def])
-      (class_def 'A'
-        (feature_def 'b' : 'Classes::B'[class_def])
-        (feature_def in 'c' : 'Classes::C'[structure_def])
-        (feature_def 'p' : 'Classes::A'[class_def]))
-      (class_def abstract 'B'
-        (feature_def abstract 'a' : 'Classes::A'[class_def]
-          (feature_def composite 'aa' : 'Classes::A'[class_def]))
-        (feature_def composite 'a1' : 'Classes::A'[class_def])
-        (feature_def 'x'
-          (feature_def composite 'a' : 'Classes::A'[class_def]
-            (feature_def 'q' : 'Classes::A'[class_def]))
-          (feature_def 'q' : 'Classes::A'[class_def]))
-        (package 'P'))
-      (structure_def 'C' :> 'Classes::B'[class_def]
-        (feature_def 'y' : 'Classes::A'[class_def] : 'Classes::B'[class_def]
-          (multiplicity_range [0..*]))
-        (alias_member 'z' -> 'Classes::C::y'[feature_def])
-        (feature_def composite 'c' : 'Classes::C'[structure_def]
-          (feature_def composite 'cc' : 'Classes::C'[structure_def]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Classes"))) (name "Classes") (declared-name "Classes")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classes::1"))) (name "1") (declared-name "1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classes::2"))) (name "2") (declared-name "2"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classes::C"))) (name "C") (declared-name "C"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Classes::f"))) (name "f") (declared-name "f"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

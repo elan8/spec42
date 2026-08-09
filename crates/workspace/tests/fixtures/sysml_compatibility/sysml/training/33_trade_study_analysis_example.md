@@ -243,66 +243,103 @@ semantic.unresolved_name 'selectedAlternative'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Trade Study Analysis Example'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'TradeStudies'[unresolved])
-      (part_def 'Engine')
-      (part_usage 'engine4cyl' : 'Trade Study Analysis Example::Engine'[part_def])
-      (part_usage 'engine6cyl' : 'Trade Study Analysis Example::Engine'[part_def])
-      (calculation_def 'PowerRollup'
-        (reference_usage in reference 'engine' : 'Trade Study Analysis Example::Engine'[part_def])
-        (return_parameter_membership
-          (feature_def out : 'ISQ::PowerValue'[unresolved])))
-      (calculation_def 'MassRollup'
-        (reference_usage in reference 'engine' : 'Trade Study Analysis Example::Engine'[part_def])
-        (return_parameter_membership
-          (feature_def out : 'ISQ::MassValue'[unresolved])))
-      (calculation_def 'EfficiencyRollup'
-        (reference_usage in reference 'engine' : 'Trade Study Analysis Example::Engine'[part_def])
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved])))
-      (calculation_def 'CostRollup'
-        (reference_usage in reference 'engine' : 'Trade Study Analysis Example::Engine'[part_def])
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved])))
-      (calculation_def 'EngineEvaluation'
-        (reference_usage in reference 'power' : 'ISQ::PowerValue'[unresolved])
-        (reference_usage in reference 'mass' : 'ISQ::MassValue'[unresolved])
-        (reference_usage in reference 'efficiency' : 'Real'[unresolved])
-        (reference_usage in reference 'cost' : 'Real'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'evaluation' : 'Real'[unresolved])))
-      (analysis_case_usage 'engineTradeStudy' : 'TradeStudy'[unresolved]
-        (subject_membership in : 'Trade Study Analysis Example::Engine'[part_def]
-          (feature_value (=)))
-        (objective_membership composite : 'MaximizeObjective'[unresolved])
-        (calculation_usage composite :>> 'evaluationFunction'[unresolved]
-          (part_usage in 'anEngine' :>> 'alternative'[unresolved] : 'Trade Study Analysis Example::Engine'[part_def])
-          (calculation_usage composite 'powerRollup' : 'Trade Study Analysis Example::PowerRollup'[calculation_def]
-            (reference_usage in reference 'engine'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'power')))
-          (calculation_usage composite 'massRollup' : 'Trade Study Analysis Example::MassRollup'[calculation_def]
-            (reference_usage in reference 'engine'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'mass')))
-          (calculation_usage composite 'efficiencyRollup' : 'Trade Study Analysis Example::EfficiencyRollup'[calculation_def]
-            (reference_usage in reference 'engine'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'efficiency')))
-          (calculation_usage composite 'costRollup' : 'Trade Study Analysis Example::CostRollup'[calculation_def]
-            (reference_usage in reference 'engine'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'cost')))
-          (return_parameter_membership
-            (feature_def out :>> 'result'[unresolved] : 'Real'[unresolved]
-              (feature_value (=)))))
-        (return_parameter_membership
-          (part_usage out :>> 'selectedAlternative'[unresolved] : 'Trade Study Analysis Example::Engine'[part_def]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Trade Study Analysis Example"))) (name "Trade Study Analysis Example") (declared-name "Trade Study Analysis Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup"))) (name "CostRollup") (declared-name "CostRollup")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup"))) (name "EfficiencyRollup") (declared-name "EfficiencyRollup")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation"))) (name "EngineEvaluation") (declared-name "EngineEvaluation")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation::cost"))) (name "cost") (declared-name "cost") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation::efficiency"))) (name "efficiency") (declared-name "efficiency") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation::evaluation"))) (name "evaluation") (declared-name "evaluation") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EngineEvaluation")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup"))) (name "MassRollup") (declared-name "MassRollup")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup"))) (name "PowerRollup") (declared-name "PowerRollup")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engine6cyl"))) (name "engine6cyl") (declared-name "engine6cyl") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "analysis") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy"))) (name "engineTradeStudy") (declared-name "engineTradeStudy")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::"))) (name ""))
+            (element (kind "calc") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction"))) (name "evaluationFunction") (declared-name "evaluationFunction")
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::anEngine"))) (name "anEngine") (declared-name "anEngine") (declared (properties (direction "in") (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "calc") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::costRollup"))) (name "costRollup") (declared-name "costRollup")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::costRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup")))))
+                  )
+                )
+                (element (kind "calc") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::efficiencyRollup"))) (name "efficiencyRollup") (declared-name "efficiencyRollup")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::efficiencyRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup")))))
+                  )
+                )
+                (element (kind "calc") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::massRollup"))) (name "massRollup") (declared-name "massRollup")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::massRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup")))))
+                  )
+                )
+                (element (kind "calc") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::powerRollup"))) (name "powerRollup") (declared-name "powerRollup")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::powerRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup")))))
+                  )
+                )
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::result"))) (name "result") (declared-name "result"))
+              )
+            )
+            (element (kind "objective") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::objective"))) (name "objective") (declared-name "objective"))
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::selectedAlternative"))) (name "selectedAlternative") (declared-name "selectedAlternative"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup::engine"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup::engine"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup::engine"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup::engine"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engine4cyl"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engine6cyl"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::anEngine"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::costRollup"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::efficiencyRollup"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::EfficiencyRollup"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::massRollup"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::MassRollup"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::powerRollup"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::PowerRollup"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::selectedAlternative"))) (to (node (document "d0") (qualified-name "Trade Study Analysis Example::Engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

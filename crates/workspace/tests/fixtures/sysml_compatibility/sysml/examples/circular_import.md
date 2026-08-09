@@ -119,23 +119,52 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'CircularImport'
-      (package 'P1'
-        (namespace_import public -> 'CircularImport::P2'[package])
-        (part_def 'A'))
-      (package 'P2'
-        (namespace_import public -> 'CircularImport::P1'[package])
-        (part_def 'B'))
-      (package 'Test1'
-        (namespace_import public -> 'CircularImport::P1'[package])
-        (part_usage 'x' : 'CircularImport::P1::A'[part_def])
-        (part_usage 'y' : 'CircularImport::P2::B'[part_def]))
-      (package 'Test2'
-        (namespace_import public -> 'CircularImport::P2'[package])
-        (part_usage 'x' : 'CircularImport::P1::A'[part_def])
-        (part_usage 'y' : 'CircularImport::P2::B'[part_def]))
-      (part_usage 'x' : 'CircularImport::P1::A'[part_def])
-      (part_usage 'y' : 'CircularImport::P2::B'[part_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CircularImport"))) (name "CircularImport") (declared-name "CircularImport")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "CircularImport::P1"))) (name "P1") (declared-name "P1")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "CircularImport::P1::*"))) (name "*") (declared-name "*"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "CircularImport::P1::A"))) (name "A") (declared-name "A") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "CircularImport::P2"))) (name "P2") (declared-name "P2")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "CircularImport::P2::*"))) (name "*") (declared-name "*"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "CircularImport::P2::B"))) (name "B") (declared-name "B") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "CircularImport::Test1"))) (name "Test1") (declared-name "Test1")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "CircularImport::Test1::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "CircularImport::Test1::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "CircularImport::Test1::y"))) (name "y") (declared-name "y") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "CircularImport::Test2"))) (name "Test2") (declared-name "Test2")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "CircularImport::Test2::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "CircularImport::Test2::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "CircularImport::Test2::y"))) (name "y") (declared-name "y") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "CircularImport::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "CircularImport::y"))) (name "y") (declared-name "y") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test1::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test1::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test2::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test2::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

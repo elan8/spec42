@@ -301,45 +301,98 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '3d-Function-based Behavior-item'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import public -> '3d-Function-based Behavior-item::Definitions'[package])
-      (namespace_import public -> '3d-Function-based Behavior-item::Usages'[package])
-      (package 'Definitions'
-        (item_def 'Fuel')
-        (port_def 'FuelPort'
-          (item_usage out 'fuel' : '3d-Function-based Behavior-item::Definitions::Fuel'[item_def]))
-        (part_def 'Pump'
-          (port_usage composite 'fuelInPort' : '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def] ~ '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def])
-          (port_usage composite 'fuelOutPort' : '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def]))
-        (part_def 'StorageTank'
-          (port_usage composite 'fuelOutPort' : '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def]))
-        (part_def 'FuelTank'
-          (port_usage composite 'fuelInPort' : '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def] ~ '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def]))
-        (part_def 'Vehicle'
-          (port_usage composite 'fuelInPort' : '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def] ~ '3d-Function-based Behavior-item::Definitions::FuelPort'[port_def]))
-        (action_def 'PumpFuel'
-          (reference_usage in reference 'fuelIn' : '3d-Function-based Behavior-item::Definitions::Fuel'[item_def])
-          (reference_usage out reference 'fuelOut' : '3d-Function-based Behavior-item::Definitions::Fuel'[item_def])))
-      (package 'Usages'
-        (part_usage 'context'
-          (part_usage composite 'storageTank' : '3d-Function-based Behavior-item::Definitions::StorageTank'[part_def])
-          (flow_usage composite 'of')
-          (part_usage composite 'pump' : '3d-Function-based Behavior-item::Definitions::Pump'[part_def]
-            (perform_action_usage 'pumpFuel' : '3d-Function-based Behavior-item::Definitions::PumpFuel'[action_def]
-              (reference_usage in reference 'fuelIn'
-                (feature_value (=)))
-              (reference_usage out reference 'fuelOut'
-                (feature_value (=)))))
-          (flow_usage composite 'of')
-          (part_usage composite 'vehicle' : '3d-Function-based Behavior-item::Definitions::Vehicle'[part_def]
-            (flow_usage composite 'fuelInPort')
-            (part_usage composite 'fuelTank' : '3d-Function-based Behavior-item::Definitions::FuelTank'[part_def]
-              (attribute_usage composite 'volumeMax' : 'Real'[unresolved])
-              (attribute_usage composite 'fuelLevel' : 'Real'[unresolved]
-                (feature_value (=)))
-              (item_usage composite 'fuel' : '3d-Function-based Behavior-item::Definitions::Fuel'[item_def]
-                (attribute_usage composite 'volume' : 'Real'[unresolved])))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item"))) (name "3d-Function-based Behavior-item") (declared-name "3d-Function-based Behavior-item")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "item def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))) (name "Fuel") (declared-name "Fuel"))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))) (name "FuelPort") (declared-name "FuelPort")
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (name "fuel") (declared-name "fuel") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (name "~FuelPort") (declared-name "~FuelPort") (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (name "FuelTank") (declared-name "FuelTank") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))) (name "Pump") (declared-name "Pump") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (name "fuelOutPort") (declared-name "fuelOutPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump")))))
+              )
+            )
+            (element (kind "action def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))) (name "PumpFuel") (declared-name "PumpFuel")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (name "fuelIn") (declared-name "fuelIn") (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (name "fuelOut") (declared-name "fuelOut") (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))) (name "StorageTank") (declared-name "StorageTank") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (name "fuelOutPort") (declared-name "fuelOutPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context"))) (name "context") (declared-name "context") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (name "pump") (declared-name "pump") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (name "pumpFuel") (declared-name "pumpFuel") (effective (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (name "storageTank") (declared-name "storageTank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (name "fuelLevel") (declared-name "fuelLevel") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "memberAccess") (reference "volume") (children (expression (kind "featureReference") (reference "fuel")))) (expression (kind "featureReference") (reference "volumeMax")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::fuelLevel"))) (role feature-value))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank::volumeMax"))) (name "volumeMax") (declared-name "volumeMax") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank")))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank::fuelInPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelInPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump::fuelOutPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelIn"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel::fuelOut"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Fuel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank::fuelOutPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle::fuelInPort"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Pump"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::pump::pumpFuel"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::PumpFuel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::storageTank"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::StorageTank"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Usages::context::vehicle::fuelTank"))) (to (node (document "d0") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelTank"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -174,38 +174,15 @@ semantic.unresolved_name 'Base::Anything'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Types'
-      (type_def abstract 'A' :> 'Base::Anything'[unresolved])
-      (type_def sufficient 'x' :> 'Types::A'[type_def] :> 'Base::things'[unresolved])
-      (type_def 'Singleton' :> 'Base::Anything'[unresolved]
-        (multiplicity_range [1]))
-      (type_def 'Super' :> 'Base::Anything'[unresolved]
-        (package 'P'
-          (type_def 'Sub' :> 'Types::Super'[type_def]))
-        (feature_def 'f' : 'Types::Super::P::Sub'[type_def]))
-      (type_def 'B' :> 'Base::Anything'[unresolved])
-      (specialization_decl 'Gen')
-      (not_implemented 'malformed')
-      (specialization_decl)
-      (type_def 'Original' :> 'Base::Anything'[unresolved]
-        (feature_def in 'Input'))
-      (type_def 'Conjugate1' :> 'Base::Anything'[unresolved])
-      (type_def 'Conjugate2' :> 'Base::Anything'[unresolved])
-      (conjugation_decl 'c1')
-      (conjugation_decl 'c2')
-      (type_def 'Conjugate3' ~ 'Types::Original'[type_def])
-      (type_def 'Conjugate4' ~ 'Types::Conjugate1'[type_def])
-      (type_def 'C' :> 'Types::B'[type_def]
-        (disjoining_decl))
-      (type_def 'D' :> 'Base::Anything'[unresolved]
-        (unioning)
-        (unioning))
-      (type_def 'E' :> 'Base::Anything'[unresolved]
-        (intersecting)
-        (intersecting))
-      (type_def 'F' :> 'Base::Anything'[unresolved]
-        (differencing)
-        (differencing)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Types"))) (name "Types") (declared-name "Types"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -73,14 +73,31 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P1'
-      (part_def 'A'))
-    (package 'P2'
-      (namespace_import private -> 'P1'[package])
-      (part_usage 'a' : 'P1::A'[part_def]))
-    (namespace_import private -> 'P2'[package])
-    (package 'P3'
-      (part_usage 'b' :> 'P2::a'[part_usage]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P1"))) (name "P1") (declared-name "P1")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "P1::A"))) (name "A") (declared-name "A") (declared))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "P2"))) (name "P2") (declared-name "P2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "P2::*"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "P2::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "P3"))) (name "P3") (declared-name "P3")
+      (contains
+        (element (kind "part") (id (node (document "d0") (qualified-name "P3::b"))) (name "b") (declared-name "b") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "P2::a"))) (to (node (document "d0") (qualified-name "P1::A"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

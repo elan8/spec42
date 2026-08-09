@@ -189,36 +189,87 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '14b-Language-Extensions'
-      (package 'LibraryModel'
-        (part_def 'ECU'))
-      (package 'UserModel'
-        (package 'Definitions'
-          (namespace_import private -> '14b-Language-Extensions::LibraryModel'[package])
-          (part_def 'VehicleControlUnit' :> '14b-Language-Extensions::LibraryModel::ECU'[part_def])
-          (part_def 'EngineControlUnit' :> '14b-Language-Extensions::LibraryModel::ECU'[part_def])
-          (part_def 'Vehicle')
-          (part_def 'Engine')
-          (part_def 'CanBus')
-          (port_def 'BusIF'))
-        (package 'Usages'
-          (namespace_import private -> '14b-Language-Extensions::UserModel::Definitions'[package])
-          (part_usage 'vehicle1' : '14b-Language-Extensions::UserModel::Definitions::Vehicle'[part_def]
-            (part_usage composite 'vehicleControlUnit' : '14b-Language-Extensions::UserModel::Definitions::VehicleControlUnit'[part_def]
-              (port_usage composite 'busIF' : '14b-Language-Extensions::UserModel::Definitions::BusIF'[port_def] ~ '14b-Language-Extensions::UserModel::Definitions::BusIF'[port_def]))
-            (connection_usage composite
-              (connector_end 'vehicleControlUnit.busIF')
-              (connector_end 'canBus.vehicleControlIF'))
-            (part_usage composite 'canBus' : '14b-Language-Extensions::UserModel::Definitions::CanBus'[part_def]
-              (port_usage composite 'vehicleControlIF' : '14b-Language-Extensions::UserModel::Definitions::BusIF'[port_def])
-              (port_usage composite 'engineControlIF' : '14b-Language-Extensions::UserModel::Definitions::BusIF'[port_def])
-              (port_usage composite 'sensorIF' : '14b-Language-Extensions::UserModel::Definitions::BusIF'[port_def]))
-            (connection_usage composite
-              (connector_end 'engine.engineControlUnit.busIF')
-              (connector_end 'canBus.engineControlIF'))
-            (part_usage composite 'engine' : '14b-Language-Extensions::UserModel::Definitions::Engine'[part_def]
-              (part_usage composite 'engineControlUnit' : '14b-Language-Extensions::UserModel::Definitions::EngineControlUnit'[part_def]
-                (port_usage composite 'busIF' : '14b-Language-Extensions::UserModel::Definitions::BusIF'[port_def] ~ '14b-Language-Extensions::UserModel::Definitions::BusIF'[port_def])))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "14b-Language-Extensions"))) (name "14b-Language-Extensions") (declared-name "14b-Language-Extensions")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "14b-Language-Extensions::LibraryModel"))) (name "LibraryModel") (declared-name "LibraryModel")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "14b-Language-Extensions::LibraryModel::ECU"))) (name "ECU") (declared-name "ECU") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel"))) (name "UserModel") (declared-name "UserModel")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions"))) (name "Definitions") (declared-name "Definitions")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::*"))) (name "*") (declared-name "*"))
+                (element (kind "port def") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF"))) (name "BusIF") (declared-name "BusIF")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF::~BusIF"))) (name "~BusIF") (declared-name "~BusIF") (effective (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::CanBus"))) (name "CanBus") (declared-name "CanBus") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::EngineControlUnit"))) (name "EngineControlUnit") (declared-name "EngineControlUnit") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::VehicleControlUnit"))) (name "VehicleControlUnit") (declared-name "VehicleControlUnit") (declared))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages"))) (name "Usages") (declared-name "Usages")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::*"))) (name "*") (declared-name "*"))
+                (element (kind "part") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus"))) (name "canBus") (declared-name "canBus") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Vehicle"))))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::engineControlIF"))) (name "engineControlIF") (declared-name "engineControlIF") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::CanBus")))))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::sensorIF"))) (name "sensorIF") (declared-name "sensorIF") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::CanBus")))))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::vehicleControlIF"))) (name "vehicleControlIF") (declared-name "vehicleControlIF") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::CanBus")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Vehicle"))))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine::engineControlUnit"))) (name "engineControlUnit") (declared-name "engineControlUnit") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Engine"))))
+                          (contains
+                            (element (kind "port") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine::engineControlUnit::busIF"))) (name "busIF") (declared-name "busIF") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::EngineControlUnit")))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::vehicleControlUnit"))) (name "vehicleControlUnit") (declared-name "vehicleControlUnit") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Vehicle"))))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::vehicleControlUnit::busIF"))) (name "busIF") (declared-name "busIF") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::VehicleControlUnit")))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (connection (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine::engineControlUnit::busIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::engineControlIF"))) (connect (source-expression "engine::engineControlUnit::busIF") (target-expression "canBus::engineControlIF") (container-prefix "14b-Language-Extensions::UserModel::Usages::vehicle1")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::vehicleControlUnit::busIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::vehicleControlIF"))) (connect (source-expression "vehicleControlUnit::busIF") (target-expression "canBus::vehicleControlIF") (container-prefix "14b-Language-Extensions::UserModel::Usages::vehicle1")))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF::~BusIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::EngineControlUnit"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::LibraryModel::ECU"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::VehicleControlUnit"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::LibraryModel::ECU"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::CanBus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::engineControlIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::sensorIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::vehicleControlIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine::engineControlUnit"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::EngineControlUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine::engineControlUnit::busIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF::~BusIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::vehicleControlUnit"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::VehicleControlUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::vehicleControlUnit::busIF"))) (to (node (document "d0") (qualified-name "14b-Language-Extensions::UserModel::Definitions::BusIF::~BusIF"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

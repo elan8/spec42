@@ -153,42 +153,20 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Connectors'
-      (class_def 'A'
-        (feature_def 'a' : 'Connectors::A'[class_def])
-        (feature_def 'b' : 'Connectors::A'[class_def])
-        (connector_def 'c1'
-          (connector_end 'a')
-          (connector_end 'b'))
-        (connector_def abstract 'c2'
-          (feature_value (=)))
-        (connector_def
-          (feature_value (=))
-          (feature_def end :> 'Connectors::A::a'[feature_def])
-          (feature_def end :> 'Connectors::A::b'[feature_def]))
-        (binding_connector_def
-          (connector_end 'a')
-          (connector_end 'b'))
-        (binding_connector_def 'ab'
-          (connector_end 'a')
-          (connector_end 'b'))
-        (binding_connector_def
-          (feature_def end :> 'Connectors::A::a'[feature_def])
-          (feature_def end :> 'Connectors::A::b'[feature_def]))
-        (succession_def
-          (connector_end 'a')
-          (connector_end 'b'))
-        (succession_def 's'
-          (connector_end 'a')
-          (connector_end 'b'))
-        (succession_def
-          (feature_def end :> 'Connectors::A::a'[feature_def])
-          (feature_def end :> 'Connectors::A::b'[feature_def])))
-      (class_def 'B'
-        (feature_def 'a' : 'Connectors::A'[class_def])
-        (connector_def :> 'Connectors::A::c1'[connector_def]
-          (connector_end 'a.a' :>> 'Connectors::A::c1::a'[connector_end][implied])
-          (connector_end 'a.b' :>> 'Connectors::A::c1::b'[connector_end][implied]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Connectors"))) (name "Connectors") (declared-name "Connectors")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Connectors::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Connectors::B"))) (name "B") (declared-name "B"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -304,50 +304,97 @@ standard library package RiskMetadata {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'RiskMetadata'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (attribute_def 'Level' :> 'Real'[unresolved]
-        (documentation)
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (enum_def 'LevelEnum' :> 'RiskMetadata::Level'[attribute_def]
-        (documentation)
-        (enum_usage composite 'low'
-          (feature_value (=)))
-        (enum_usage composite 'medium'
-          (feature_value (=)))
-        (enum_usage composite 'high'
-          (feature_value (=))))
-      (attribute_def 'RiskLevel'
-        (documentation)
-        (attribute_usage composite 'probability' : 'RiskMetadata::Level'[attribute_def]
-          (documentation))
-        (attribute_usage composite 'impact' : 'RiskMetadata::Level'[attribute_def]
-          (multiplicity_range [0..1])
-          (documentation)))
-      (enum_def 'RiskLevelEnum' :> 'RiskMetadata::RiskLevel'[attribute_def]
-        (documentation)
-        (enum_usage composite 'low'
-          (feature_value (=)))
-        (enum_usage composite 'medium'
-          (feature_value (=)))
-        (enum_usage composite 'high'
-          (feature_value (=))))
-      (metadata_def 'Risk'
-        (documentation)
-        (attribute_usage composite 'totalRisk' : 'RiskMetadata::RiskLevel'[attribute_def]
-          (multiplicity_range [0..1])
-          (documentation))
-        (attribute_usage composite 'technicalRisk' : 'RiskMetadata::RiskLevel'[attribute_def]
-          (multiplicity_range [0..1])
-          (documentation))
-        (attribute_usage composite 'scheduleRisk' : 'RiskMetadata::RiskLevel'[attribute_def]
-          (multiplicity_range [0..1])
-          (documentation))
-        (attribute_usage composite 'costRisk' : 'RiskMetadata::RiskLevel'[attribute_def]
-          (multiplicity_range [0..1])
-          (documentation))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RiskMetadata"))) (name "RiskMetadata") (declared-name "RiskMetadata")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "RiskMetadata::Level"))) (name "Level") (declared-name "Level") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::Level::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Level")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "RiskMetadata::LevelEnum"))) (name "LevelEnum") (declared-name "LevelEnum")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "RiskMetadata::LevelEnum::high"))) (name "high") (declared-name "high") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::LevelEnum")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "RiskMetadata::LevelEnum::low"))) (name "low") (declared-name "low") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::LevelEnum")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "RiskMetadata::LevelEnum::medium"))) (name "medium") (declared-name "medium") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::LevelEnum")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "RiskMetadata::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "RiskMetadata::Risk"))) (name "Risk") (declared-name "Risk")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Risk")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::costRisk"))) (name "costRisk") (declared-name "costRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Risk"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::costRisk::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevel")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::scheduleRisk"))) (name "scheduleRisk") (declared-name "scheduleRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Risk"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::scheduleRisk::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevel")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::technicalRisk"))) (name "technicalRisk") (declared-name "technicalRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Risk"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::technicalRisk::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevel")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::totalRisk"))) (name "totalRisk") (declared-name "totalRisk") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Risk"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::Risk::totalRisk::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevel")))))
+              )
+            )
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))) (name "RiskLevel") (declared-name "RiskLevel") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevel")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::impact"))) (name "impact") (declared-name "impact") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::impact::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Level")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::probability"))) (name "probability") (declared-name "probability") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::probability::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::Level")))))
+              )
+            )
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum"))) (name "RiskLevelEnum") (declared-name "RiskLevelEnum")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum::high"))) (name "high") (declared-name "high") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum::low"))) (name "low") (declared-name "low") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum::medium"))) (name "medium") (declared-name "medium") (effective (featuring-type (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "RiskMetadata::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Level::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::Level"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::Risk"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::costRisk::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::Risk::costRisk"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::scheduleRisk::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::Risk::scheduleRisk"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::technicalRisk::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::Risk::technicalRisk"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::totalRisk::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::Risk::totalRisk"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::impact::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::impact"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::probability::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::probability"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::_documentation"))) (to (node (document "d0") (qualified-name "RiskMetadata"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::LevelEnum"))) (to (node (document "d0") (qualified-name "RiskMetadata::Level"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::costRisk"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::scheduleRisk"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::technicalRisk"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::Risk::totalRisk"))) (to (node (document "d0") (qualified-name "RiskMetadata::RiskLevel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::impact"))) (to (node (document "d0") (qualified-name "RiskMetadata::Level"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RiskMetadata::RiskLevel::probability"))) (to (node (document "d0") (qualified-name "RiskMetadata::Level"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

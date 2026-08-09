@@ -379,64 +379,104 @@ standard library package Quantities {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Quantities'
-      (documentation)
-      (namespace_import private -> 'Collections'[unresolved])
-      (membership_import private -> 'ScalarValues::NumericalValue'[unresolved])
-      (membership_import private -> 'ScalarValues::Number'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (membership_import private -> 'VectorValues::NumericalVectorValue'[unresolved])
-      (membership_import private -> 'VectorValues::ThreeVectorValue'[unresolved])
-      (attribute_def abstract 'TensorQuantityValue' :> 'Array'[unresolved]
-        (documentation)
-        (attribute_usage composite 'isBound' : 'Boolean'[unresolved])
-        (attribute_usage composite ordered 'num' : 'Number'[unresolved] :>> 'elements'[unresolved]
-          (multiplicity_range [1..*]))
-        (attribute_usage composite 'mRef' : 'MeasurementReferences::TensorMeasurementReference'[unresolved])
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'order' :>> 'rank'[unresolved])
-        (attribute_usage composite 'contravariantOrder' : 'Natural'[unresolved])
-        (attribute_usage composite 'covariantOrder' : 'Natural'[unresolved])
-        (assert_constraint_usage 'orderSum'
-          (result_expr_membership))
-        (assert_constraint_usage 'boundMatch'
-          (result_expr_membership)))
-      (attribute_def abstract 'VectorQuantityValue' :> 'Quantities::TensorQuantityValue'[attribute_def] :> 'NumericalVectorValue'[unresolved]
-        (attribute_usage composite :>> 'Quantities::TensorQuantityValue::mRef'[attribute_usage] : 'MeasurementReferences::VectorMeasurementReference'[unresolved]))
-      (attribute_def abstract 'ScalarQuantityValue' :> 'Quantities::VectorQuantityValue'[attribute_def] :> 'NumericalValue'[unresolved]
-        (attribute_usage composite :>> ''[attribute_usage] : 'MeasurementReferences::ScalarMeasurementReference'[unresolved]))
-      (attribute_usage abstract 'tensorQuantities' : 'Quantities::TensorQuantityValue'[attribute_def]
-        (multiplicity_range [*])
-        (documentation))
-      (attribute_usage abstract 'vectorQuantities' : 'Quantities::VectorQuantityValue'[attribute_def] :> 'Quantities::tensorQuantities'[attribute_usage]
-        (multiplicity_range [*]))
-      (attribute_usage abstract 'scalarQuantities' : 'Quantities::ScalarQuantityValue'[attribute_def] :> 'Quantities::vectorQuantities'[attribute_usage]
-        (multiplicity_range [*]))
-      (attribute_def abstract '3dVectorQuantityValue' :> 'Quantities::VectorQuantityValue'[attribute_def] :> 'ThreeVectorValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'Quantities::TensorQuantityValue::num'[attribute_usage] : 'Real'[unresolved]
-          (multiplicity_range [3])))
-      (alias_member 'ThreeDVectorQuantityValue' -> 'Quantities::3dVectorQuantityValue'[attribute_def])
-      (alias_member 'QuantityValue' -> 'Quantities::TensorQuantityValue'[attribute_def])
-      (alias_member 'quantities' -> 'Quantities::tensorQuantities'[attribute_usage])
-      (attribute_def 'SystemOfQuantities'
-        (documentation)
-        (attribute_usage composite ordered 'baseQuantities' : 'Quantities::ScalarQuantityValue'[attribute_def] :> 'Quantities::scalarQuantities'[attribute_usage]
-          (multiplicity_range [*])))
-      (attribute_def 'QuantityPowerFactor'
-        (documentation)
-        (attribute_usage composite 'quantity' : 'Quantities::ScalarQuantityValue'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'exponent' : 'Real'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_def 'QuantityDimension'
-        (documentation)
-        (attribute_usage composite ordered 'quantityPowerFactors' : 'Quantities::QuantityPowerFactor'[attribute_def]
-          (multiplicity_range [*]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Quantities"))) (name "Quantities") (declared-name "Quantities")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::*"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue"))) (name "3dVectorQuantityValue") (declared-name "3dVectorQuantityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::Number"))) (name "Number") (declared-name "Number"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::NumericalVectorValue"))) (name "NumericalVectorValue") (declared-name "NumericalVectorValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::QuantityDimension"))) (name "QuantityDimension") (declared-name "QuantityDimension") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Quantities::QuantityDimension::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Quantities::QuantityDimension")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::QuantityDimension::quantityPowerFactors"))) (name "quantityPowerFactors") (declared-name "quantityPowerFactors") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::QuantityDimension")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor"))) (name "QuantityPowerFactor") (declared-name "QuantityPowerFactor") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor::exponent"))) (name "exponent") (declared-name "exponent") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor::quantity"))) (name "quantity") (declared-name "quantity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Quantities::QuantityValue"))) (name "QuantityValue") (declared-name "QuantityValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::String"))) (name "String") (declared-name "String"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::SystemOfQuantities"))) (name "SystemOfQuantities") (declared-name "SystemOfQuantities") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Quantities::SystemOfQuantities::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Quantities::SystemOfQuantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::SystemOfQuantities::baseQuantities"))) (name "baseQuantities") (declared-name "baseQuantities") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::SystemOfQuantities")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::contravariantOrder"))) (name "contravariantOrder") (declared-name "contravariantOrder") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::covariantOrder"))) (name "covariantOrder") (declared-name "covariantOrder") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::order"))) (name "order") (declared-name "order") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::TensorQuantityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Quantities::ThreeDVectorQuantityValue"))) (name "ThreeDVectorQuantityValue") (declared-name "ThreeDVectorQuantityValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Quantities::ThreeVectorValue"))) (name "ThreeVectorValue") (declared-name "ThreeVectorValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Quantities::VectorQuantityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Quantities::VectorQuantityValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Quantities::_documentation"))) (name ""))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Quantities::quantities"))) (name "quantities") (declared-name "quantities"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::scalarQuantities"))) (name "scalarQuantities") (declared-name "scalarQuantities") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::tensorQuantities"))) (name "tensorQuantities") (declared-name "tensorQuantities") (declared (properties (ordered false) (unique false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Quantities::tensorQuantities::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Quantities::tensorQuantities")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Quantities::vectorQuantities"))) (name "vectorQuantities") (declared-name "vectorQuantities") (declared (properties (ordered false) (unique false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue::_documentation"))) (to (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Quantities::QuantityDimension::_documentation"))) (to (node (document "d0") (qualified-name "Quantities::QuantityDimension"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor::_documentation"))) (to (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Quantities::SystemOfQuantities::_documentation"))) (to (node (document "d0") (qualified-name "Quantities::SystemOfQuantities"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::_documentation"))) (to (node (document "d0") (qualified-name "Quantities::TensorQuantityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Quantities::_documentation"))) (to (node (document "d0") (qualified-name "Quantities"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Quantities::tensorQuantities::_documentation"))) (to (node (document "d0") (qualified-name "Quantities::tensorQuantities"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue::num"))) (to (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::num"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue::mRef"))) (to (node (document "d0") (qualified-name "Quantities::VectorQuantityValue::mRef"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Quantities::VectorQuantityValue::mRef"))) (to (node (document "d0") (qualified-name "Quantities::TensorQuantityValue::mRef"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::3dVectorQuantityValue"))) (to (node (document "d0") (qualified-name "Quantities::VectorQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::QuantityDimension::quantityPowerFactors"))) (to (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::QuantityPowerFactor::quantity"))) (to (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue"))) (to (node (document "d0") (qualified-name "Quantities::VectorQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::SystemOfQuantities::baseQuantities"))) (to (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::VectorQuantityValue"))) (to (node (document "d0") (qualified-name "Quantities::TensorQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::scalarQuantities"))) (to (node (document "d0") (qualified-name "Quantities::ScalarQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::tensorQuantities"))) (to (node (document "d0") (qualified-name "Quantities::TensorQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Quantities::vectorQuantities"))) (to (node (document "d0") (qualified-name "Quantities::VectorQuantityValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

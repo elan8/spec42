@@ -687,88 +687,206 @@ semantic.unresolved_name 'TemperatureValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '5-State-based Behavior-1'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> '3a-Function-based Behavior-1'[unresolved])
-      (package 'Definitions'
-        (part_def 'VehicleA'
-          (perform_action_usage 'provide power' : 'Provide Power'[unresolved])
-          (state_usage composite 'vehicle states' : '5-State-based Behavior-1::Definitions::Vehicle States'[state_def]))
-        (part_def 'VehicleController'
-          (state_usage composite 'controller states' : '5-State-based Behavior-1::Definitions::Controller States'[state_def]))
-        (state_def 'Vehicle States')
-        (state_def 'Controller States')
-        (action_def 'Perform Self Test')
-        (action_def 'Apply Parking Brake')
-        (action_def 'Sense Temperature'
-          (reference_usage out reference 'temp' : 'TemperatureValue'[unresolved]))
-        (attribute_def 'Vehicle Start Signal')
-        (attribute_def 'Vehicle On Signal')
-        (attribute_def 'Vehicle Off Signal')
-        (attribute_def 'Start Signal')
-        (attribute_def 'Off Signal')
-        (attribute_def 'Over Temp')
-        (attribute_def 'Return to Normal'))
-      (package 'Usages'
-        (namespace_import private -> '5-State-based Behavior-1::Definitions'[package])
-        (action_usage 'perform self test' : '5-State-based Behavior-1::Definitions::Perform Self Test'[action_def])
-        (action_usage 'apply parking brake' : '5-State-based Behavior-1::Definitions::Apply Parking Brake'[action_def])
-        (action_usage 'sense temperature' : '5-State-based Behavior-1::Definitions::Sense Temperature'[action_def])
-        (state_usage parallel 'vehicle states' : '5-State-based Behavior-1::Definitions::Vehicle States'[state_def]
-          (reference_usage reference 'vehicle' : '5-State-based Behavior-1::Definitions::VehicleA'[part_def])
-          (state_usage composite 'operational states'
-            (documentation)
-            (state_subaction_membership 'entry'
-              (action_usage 'initial'
-                (documentation)))
-            (transition_usage)
-            (state_usage composite 'off')
-            (transition_usage)
-            (transition_usage)
-            (state_usage composite 'on'
-              (state_subaction_membership 'entry'
-                (action_usage 'perform self test'))
-              (state_subaction_membership 'do'
-                (action_usage 'provide power'))
-              (state_subaction_membership 'exit'
-                (action_usage 'apply parking brake')))
-            (transition_usage))
-          (state_usage composite 'health states'
-            (state_subaction_membership 'entry'
-              (action_usage 'initial'))
-            (state_subaction_membership 'do'
-              (action_usage 'sense temperature'
-                (reference_usage out reference 'temp')))
-            (transition_usage)
-            (state_usage composite 'normal')
-            (transition_usage)
-            (transition_usage)
-            (state_usage composite 'maintenance')
-            (transition_usage)
-            (state_usage composite 'degraded')
-            (transition_usage)))
-        (state_usage parallel 'controller states' : '5-State-based Behavior-1::Definitions::Controller States'[state_def]
-          (state_usage composite 'operational controller states'
-            (state_subaction_membership 'entry'
-              (action_usage 'initial'))
-            (transition_usage)
-            (state_usage composite 'off')
-            (transition_usage)
-            (state_usage composite 'on')
-            (transition_usage)))
-        (part_usage 'vehicle1_c1' : '5-State-based Behavior-1::Definitions::VehicleA'[part_def]
-          (port_usage composite 'fuelCmdPort'
-            (reference_usage in reference 'fuelCmd' : 'FuelCmd'[unresolved]))
-          (attribute_usage composite 'brake pedal depressed' : 'Boolean'[unresolved])
-          (attribute_usage composite 'maintenanceTime' : 'Time::DateTime'[unresolved])
-          (attribute_usage composite 'Tmax' : 'TemperatureValue'[unresolved])
-          (perform_action_usage 'provide power' :>> '5-State-based Behavior-1::Definitions::VehicleA::provide power'[perform_action_usage]
-            (reference_usage in reference 'fuelCmd'
-              (feature_value (=))))
-          (state_usage composite 'vehicle states' :>> '5-State-based Behavior-1::Definitions::VehicleA::vehicle states'[state_usage])
-          (part_usage composite 'vehicleController' : '5-State-based Behavior-1::Definitions::VehicleController'[part_def]
-            (state_usage composite 'controller states' :>> '5-State-based Behavior-1::Definitions::VehicleController::controller states'[state_usage])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "5-State-based Behavior-1"))) (name "5-State-based Behavior-1") (declared-name "5-State-based Behavior-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "action def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Apply Parking Brake"))) (name "Apply Parking Brake") (declared-name "Apply Parking Brake"))
+            (element (kind "state def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States"))) (name "Controller States") (declared-name "Controller States"))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Off Signal"))) (name "Off Signal") (declared-name "Off Signal") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Over Temp"))) (name "Over Temp") (declared-name "Over Temp") (declared (properties (ordered false) (unique true))))
+            (element (kind "action def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Perform Self Test"))) (name "Perform Self Test") (declared-name "Perform Self Test"))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Return to Normal"))) (name "Return to Normal") (declared-name "Return to Normal") (declared (properties (ordered false) (unique true))))
+            (element (kind "action def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Sense Temperature"))) (name "Sense Temperature") (declared-name "Sense Temperature")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Sense Temperature::temp"))) (name "temp") (declared-name "temp") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Sense Temperature")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Start Signal"))) (name "Start Signal") (declared-name "Start Signal") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle Off Signal"))) (name "Vehicle Off Signal") (declared-name "Vehicle Off Signal") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle On Signal"))) (name "Vehicle On Signal") (declared-name "Vehicle On Signal") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle Start Signal"))) (name "Vehicle Start Signal") (declared-name "Vehicle Start Signal") (declared (properties (ordered false) (unique true))))
+            (element (kind "state def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))) (name "Vehicle States") (declared-name "Vehicle States"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA"))) (name "VehicleA") (declared-name "VehicleA") (declared)
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA::provide power"))) (name "provide power") (declared-name "provide power") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+                (element (kind "exhibit state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA::vehicle states"))) (name "vehicle states") (declared-name "vehicle states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleController"))) (name "VehicleController") (declared-name "VehicleController") (declared)
+              (contains
+                (element (kind "exhibit state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleController::controller states"))) (name "controller states") (declared-name "controller states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleController")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::*"))) (name "*") (declared-name "*"))
+            (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::apply parking brake"))) (name "apply parking brake") (declared-name "apply parking brake") (declared (properties (composite true) (reference false))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states"))) (name "controller states") (declared-name "controller states") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states"))) (name "operational controller states") (declared-name "operational controller states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States"))))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::initial"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States")))))
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off-on"))) (name "off-on") (declared-name "off-on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States"))))
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off-on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States")))))
+                      )
+                    )
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::on-off"))) (name "on-off") (declared-name "on-off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States"))))
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::on-off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States")))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::perform self test"))) (name "perform self test") (declared-name "perform self test") (declared (properties (composite true) (reference false))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::sense temperature"))) (name "sense temperature") (declared-name "sense temperature") (declared (properties (composite true) (reference false))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states"))) (name "vehicle states") (declared-name "vehicle states") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states"))) (name "health states") (declared-name "health states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::_do::temp"))) (name "temp") (declared-name "temp") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::degraded"))) (name "degraded") (declared-name "degraded") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::degraded-normal"))) (name "degraded-normal") (declared-name "degraded-normal") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::degraded-normal::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::initial"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance"))) (name "maintenance") (declared-name "maintenance") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance-normal"))) (name "maintenance-normal") (declared-name "maintenance-normal") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance-normal::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal"))) (name "normal") (declared-name "normal") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal-degraded"))) (name "normal-degraded") (declared-name "normal-degraded") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "transition effect") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal-degraded::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal-degraded::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal-maintenance"))) (name "normal-maintenance") (declared-name "normal-maintenance") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal-maintenance::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))) (name "operational states") (declared-name "operational states") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "documentation") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::_entry::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::initial"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off-starting"))) (name "off-starting") (declared-name "off-starting") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "transition effect") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off-starting::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                        (element (kind "transition guard") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off-starting::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "memberAccess") (reference "brake pedal depressed") (children (expression (kind "featureReference") (reference "vehicle1_c1")))))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off-starting::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                        (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                        (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on::_exit"))) (name "exit") (declared-name "exit") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on-off"))) (name "on-off") (declared-name "on-off") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on-off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::starting"))) (name "starting") (declared-name "starting") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::starting-on"))) (name "starting-on") (declared-name "starting-on") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::starting-on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "ref") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::Tmax"))) (name "Tmax") (declared-name "Tmax") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::brake pedal depressed"))) (name "brake pedal depressed") (declared-name "brake pedal depressed") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::fuelCmdPort::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::provide power"))) (name "provide power") (declared-name "provide power") (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+                (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::vehicle states"))) (name "vehicle states") (declared-name "vehicle states") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::vehicleController"))) (name "vehicleController") (declared-name "vehicleController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA"))))
+                  (contains
+                    (element (kind "state") (id (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::vehicleController::controller states"))) (name "controller states") (declared-name "controller states") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleController")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::_documentation"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::_entry::_documentation"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::_entry"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA::provide power"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::provide power"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::vehicle states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA::vehicle states"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::vehicleController::controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleController::controller states"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::on"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::on"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states::operational controller states::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::degraded"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::degraded"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::normal"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::health states::maintenance"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::starting"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::starting"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::operational states::on"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA::vehicle states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleController::controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::apply parking brake"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Apply Parking Brake"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::controller states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Controller States"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::perform self test"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Perform Self Test"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::sense temperature"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Sense Temperature"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::Vehicle States"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle states::vehicle"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleA"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "5-State-based Behavior-1::Usages::vehicle1_c1::vehicleController"))) (to (node (document "d0") (qualified-name "5-State-based Behavior-1::Definitions::VehicleController"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

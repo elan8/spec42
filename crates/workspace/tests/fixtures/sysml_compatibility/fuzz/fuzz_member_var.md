@@ -44,10 +44,19 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (requirement_usage 'r'
-        (feature_def 'x' :>> 'y'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "P::r"))) (name "r") (declared-name "r"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

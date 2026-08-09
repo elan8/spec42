@@ -1136,229 +1136,250 @@ semantic.unresolved_name 'AccelerationValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Vehicle Analysis Demo'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'USCustomaryUnits'[unresolved])
-      (namespace_import private -> 'Vehicle Analysis Demo::VehicleQuantities'[package])
-      (namespace_import private -> 'Vehicle Analysis Demo::VehicleModel'[package])
-      (namespace_import private -> 'Vehicle Analysis Demo::FuelEconomyRequirementsModel'[package])
-      (namespace_import private -> 'Vehicle Analysis Demo::DynamicsModel'[package])
-      (namespace_import private -> 'Vehicle Analysis Demo::FuelEconomyAnalysisModel'[package])
-      (package 'VehicleQuantities'
-        (namespace_import private -> 'Quantities'[unresolved])
-        (namespace_import private -> 'MeasurementReferences'[unresolved])
-        (attribute_def 'DistancePerVolumeUnit' :> 'DerivedUnit'[unresolved]
-          (attribute_usage composite 'distancePF' : 'QuantityPowerFactor'[unresolved]
-            (multiplicity_range [1])
-            (reference_usage reference :>> 'quantity'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'exponent'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite 'volumePF' : 'QuantityPowerFactor'[unresolved]
-            (multiplicity_range [1])
-            (reference_usage reference :>> 'quantity'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'exponent'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite :>> 'quantityDimension'[unresolved]
-            (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-              (feature_value (=)))))
-        (attribute_def 'DistancePerVolumeValue' :> 'ScalarQuantityValue'[unresolved]
-          (reference_usage reference :>> 'num'[unresolved] : 'Real'[unresolved])
-          (reference_usage reference :>> 'mRef'[unresolved] : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit'[attribute_def]))
-        (attribute_usage 'gallon' : 'VolumeUnit'[unresolved]
-          (feature_value (=)))
-        (attribute_usage 'mpg' : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit'[attribute_def]
-          (feature_value (=))))
-      (package 'VehicleModel'
-        (item_def 'Fuel')
-        (port_def 'FuelPort'
-          (item_usage out 'fuel' : 'Vehicle Analysis Demo::VehicleModel::Fuel'[item_def]))
-        (part_def 'FuelTank'
-          (attribute_usage composite 'volumeMax' : 'VolumeValue'[unresolved])
-          (attribute_usage composite 'fuelVolume' : 'VolumeValue'[unresolved])
-          (attribute_usage composite 'fuelLevel' : 'Real'[unresolved]
-            (feature_value (=)))
-          (port_usage composite 'fuelInPort' : 'Vehicle Analysis Demo::VehicleModel::FuelPort'[port_def] ~ 'Vehicle Analysis Demo::VehicleModel::FuelPort'[port_def])
-          (port_usage composite 'fuelOutPort' : 'Vehicle Analysis Demo::VehicleModel::FuelPort'[port_def]))
-        (part_def 'Wheel'
-          (attribute_usage composite 'diameter' : 'LengthValue'[unresolved]))
-        (part_def 'Vehicle'
-          (attribute_usage composite 'mass' : 'MassValue'[unresolved])
-          (attribute_usage composite 'cargoMass' : 'MassValue'[unresolved])
-          (attribute_usage composite 'wheelDiameter' : 'LengthValue'[unresolved])
-          (attribute_usage composite 'driveTrainEfficiency' : 'Real'[unresolved])
-          (attribute_usage composite 'fuelEconomy_city' : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue'[attribute_def])
-          (attribute_usage composite 'fuelEconomy_highway' : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue'[attribute_def])
-          (port_usage composite 'fuelInPort' : 'Vehicle Analysis Demo::VehicleModel::FuelPort'[port_def] ~ 'Vehicle Analysis Demo::VehicleModel::FuelPort'[port_def]))
-        (part_usage 'vehicle_c1' : 'Vehicle Analysis Demo::VehicleModel::Vehicle'[part_def]
-          (port_usage composite :>> 'Vehicle Analysis Demo::VehicleModel::Vehicle::fuelInPort'[port_usage]
-            (item_usage in :>> 'Vehicle Analysis Demo::VehicleModel::FuelPort::fuel'[item_usage]))
-          (part_usage composite 'fuelTank' : 'Vehicle Analysis Demo::VehicleModel::FuelTank'[part_def]
-            (port_usage composite :>> 'Vehicle Analysis Demo::VehicleModel::FuelTank::fuelInPort'[port_usage]
-              (item_usage in :>> 'Vehicle Analysis Demo::VehicleModel::FuelPort::fuel'[item_usage])))
-          (binding_connector_def
-            (connector_end 'fuelInPort.fuel')
-            (connector_end 'fuelTank.fuelInPort.fuel'))
-          (part_usage composite 'wheel' : 'Vehicle Analysis Demo::VehicleModel::Wheel'[part_def]
-            (multiplicity_range [4])
-            (reference_usage reference :>> 'Vehicle Analysis Demo::VehicleModel::Wheel::diameter'[attribute_usage]
-              (feature_value (=))))))
-      (package 'FuelEconomyRequirementsModel'
-        (requirement_def 'FuelEconomyRequirement'
-          (attribute_usage composite 'actualFuelEconomy' : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue'[attribute_def])
-          (attribute_usage composite 'requiredFuelEconomy' : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue'[attribute_def])
-          (require_constraint_usage composite
-            (result_expr_membership)))
-        (requirement_usage 'cityFuelEconomyRequirement' : 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement'[requirement_def]
-          (reference_usage reference :>> 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy'[attribute_usage]
-            (feature_value (=))))
-        (requirement_usage 'highwayFuelEconomyRequirement' : 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement'[requirement_def]
-          (reference_usage reference :>> 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy'[attribute_usage]
-            (feature_value (=)))))
-      (package 'DynamicsModel'
-        (calculation_def 'Acceleration'
-          (reference_usage in reference 'p' : 'PowerValue'[unresolved])
-          (reference_usage in reference 'm' : 'MassValue'[unresolved])
-          (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'AccelerationValue'[unresolved]
-              (feature_value (=)))))
-        (calculation_def 'Velocity'
-          (reference_usage in reference 'v0' : 'SpeedValue'[unresolved])
-          (reference_usage in reference 'a' : 'AccelerationValue'[unresolved])
-          (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'SpeedValue'[unresolved]
-              (feature_value (=)))))
-        (calculation_def 'Position'
-          (reference_usage in reference 'x0' : 'LengthValue'[unresolved])
-          (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-          (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'LengthValue'[unresolved]
-              (feature_value (=)))))
-        (constraint_def 'StraightLineDynamicsEquations'
-          (reference_usage in reference 'p' : 'PowerValue'[unresolved])
-          (reference_usage in reference 'm' : 'MassValue'[unresolved])
-          (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-          (reference_usage in reference 'x_i' : 'LengthValue'[unresolved])
-          (reference_usage in reference 'v_i' : 'SpeedValue'[unresolved])
-          (reference_usage in reference 'x_f' : 'LengthValue'[unresolved])
-          (reference_usage in reference 'v_f' : 'SpeedValue'[unresolved])
-          (reference_usage in reference 'a' : 'AccelerationValue'[unresolved])
-          (attribute_usage composite 'v_avg' : 'SpeedValue'[unresolved]
-            (feature_value (=)))
-          (result_expr_membership))
-        (action_def 'StraightLineDynamics'
-          (reference_usage in reference 'power' : 'PowerValue'[unresolved])
-          (reference_usage in reference 'mass' : 'MassValue'[unresolved])
-          (reference_usage in reference 'delta_t' : 'TimeValue'[unresolved])
-          (reference_usage in reference 'x_in' : 'LengthValue'[unresolved])
-          (reference_usage in reference 'v_in' : 'SpeedValue'[unresolved])
-          (reference_usage out reference 'x_out' : 'LengthValue'[unresolved])
-          (reference_usage out reference 'v_out' : 'SpeedValue'[unresolved])
-          (reference_usage out reference 'a_out' : 'AccelerationValue'[unresolved])
-          (assert_constraint_usage 'dynamics' : 'Vehicle Analysis Demo::DynamicsModel::StraightLineDynamicsEquations'[constraint_def]
-            (reference_usage in reference 'p'
-              (feature_value (=)))
-            (reference_usage in reference 'm'
-              (feature_value (=)))
-            (reference_usage in reference 'dt'
-              (feature_value (=)))
-            (reference_usage in reference 'x_i'
-              (feature_value (=)))
-            (reference_usage in reference 'v_i'
-              (feature_value (=)))
-            (reference_usage in reference 'x_f'
-              (feature_value (=)))
-            (reference_usage in reference 'v_f'
-              (feature_value (=)))
-            (reference_usage in reference 'a'
-              (feature_value (=))))))
-      (package 'FuelEconomyAnalysisModel'
-        (membership_import private -> 'SequenceFunctions::size'[unresolved])
-        (membership_import private -> 'SampledFunctions::SampledFunction'[unresolved])
-        (membership_import private -> 'SampledFunctions::SamplePair'[unresolved])
-        (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-        (attribute_def 'ScenarioState'
-          (reference_usage reference 'position' : 'LengthValue'[unresolved])
-          (reference_usage reference 'velocity' : 'SpeedValue'[unresolved]))
-        (attribute_def 'NominalScenario' :> 'SampledFunction'[unresolved]
-          (attribute_def 'TimeStateRecord' :> 'SamplePair'[unresolved]
-            (reference_usage reference 't' : 'TimeValue'[unresolved] :>> 'domainValue'[unresolved])
-            (reference_usage reference 's' : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::ScenarioState'[attribute_def] :>> 'rangeValue'[unresolved]))
-          (reference_usage reference :>> 'samples'[unresolved] : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario::TimeStateRecord'[attribute_def])
-          (reference_usage reference 'n' : 'Natural'[unresolved]
-            (feature_value (=))))
-        (analysis_case_def 'FuelEconomyAnalysis'
-          (subject_membership in 'vehicle' : 'Vehicle Analysis Demo::VehicleModel::Vehicle'[part_def])
-          (attribute_usage in 'scenario' : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario'[attribute_def])
-          (requirement_usage in 'fuelEconomyRequirement' : 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement'[requirement_def])
-          (return_parameter_membership
-            (feature_def out 'calculatedFuelEconomy' : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue'[attribute_def]))
-          (objective_membership composite 'fuelEconomyAnalysisObjective'
-            (documentation)
-            (assume_constraint_usage composite
-              (result_expr_membership))
-            (require_constraint_usage composite 'fuelEconomyRequirement'
-              (reference_usage reference :>> 'actualFuelEconomy'[unresolved]
-                (feature_value (=)))))
-          (action_usage composite 'dynamicsAnalysis'
-            (reference_usage in reference 'sc' : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario'[attribute_def])
-            (reference_usage out reference 'power' : 'PowerValue'[unresolved]
-              (multiplicity_range [*]))
-            (reference_usage out reference 'acceleration' : 'AccelerationValue'[unresolved]
-              (multiplicity_range [*]))
-            (assert_constraint_usage 'straightLineDynamics'
-              (result_expr_membership)))
-          (action_usage composite 'fuelConsumptionAnalysis'
-            (reference_usage in reference 'power' : 'PowerValue'[unresolved]
-              (multiplicity_range [*])
-              (feature_value (=)))
-            (reference_usage in reference 'acceleration' : 'AccelerationValue'[unresolved]
-              (multiplicity_range [*])
-              (feature_value (=)))
-            (reference_usage out reference 'fuelEconomy' : 'Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue'[attribute_def]
-              (feature_value (=))))))
-      (part_usage 'vehicleFuelEconomyAnalysisContext'
-        (requirement_usage composite 'vehicleFuelEconomyRequirementsGroup'
-          (subject_membership in 'vehicle' : 'Vehicle Analysis Demo::VehicleModel::Vehicle'[part_def])
-          (requirement_usage composite 'vehicleFuelEconomyRequirement_city' :> 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::cityFuelEconomyRequirement'[requirement_usage]
-            (documentation)
-            (reference_usage reference :>> 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::actualFuelEconomy'[attribute_usage]
-              (feature_value (=)))
-            (assume_constraint_usage composite
-              (result_expr_membership)))
-          (requirement_usage composite 'vehicleFuelEconomyRequirement_highway' :> 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement'[requirement_usage]
-            (documentation)
-            (reference_usage reference :>> 'Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::actualFuelEconomy'[attribute_usage]
-              (feature_value (=)))
-            (assume_constraint_usage composite
-              (result_expr_membership))))
-        (attribute_usage composite 'cityScenario' : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario'[attribute_def])
-        (attribute_usage composite 'highwayScenario' : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario'[attribute_def])
-        (analysis_case_usage composite 'cityFuelEconomyAnalysis' : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis'[analysis_case_def]
-          (subject_membership in 'vehicle'
-            (feature_value (=)))
-          (attribute_usage in 'scenario'
-            (feature_value (=)))
-          (requirement_usage in 'fuelEconomyRequirement'
-            (feature_value (=))))
-        (analysis_case_usage composite 'highwayFuelEconomyAnalysis' : 'Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis'[analysis_case_def]
-          (subject_membership in 'vehicle'
-            (feature_value (=)))
-          (attribute_usage in 'scenario'
-            (feature_value (=)))
-          (requirement_usage in 'fuelEconomyRequirement'
-            (feature_value (=))))
-        (part_usage composite 'vehicle_c1_analysized' :> 'Vehicle Analysis Demo::VehicleModel::vehicle_c1'[part_usage]
-          (attribute_usage composite :>> 'Vehicle Analysis Demo::VehicleModel::Vehicle::fuelEconomy_city'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'Vehicle Analysis Demo::VehicleModel::Vehicle::fuelEconomy_highway'[attribute_usage]
-            (feature_value (=))))
-        (satisfy_requirement_usage 'vehicleFuelEconomyRequirementsGroup' by 'Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::vehicle_c1_analysized'[part_usage])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo"))) (name "Vehicle Analysis Demo") (declared-name "Vehicle Analysis Demo")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*#import4"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*#import5"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*#import6"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::*#import7"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel"))) (name "DynamicsModel") (declared-name "DynamicsModel")
+          (contains
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration"))) (name "Acceleration") (declared-name "Acceleration")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration::m"))) (name "m") (declared-name "m") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration::p"))) (name "p") (declared-name "p") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Acceleration")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position"))) (name "Position") (declared-name "Position")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position::x0"))) (name "x0") (declared-name "x0") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Position")))))
+              )
+            )
+            (element (kind "action def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics"))) (name "StraightLineDynamics") (declared-name "StraightLineDynamics")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::a_out"))) (name "a_out") (declared-name "a_out") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::delta_t"))) (name "delta_t") (declared-name "delta_t") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::v_out"))) (name "v_out") (declared-name "v_out") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics::x_out"))) (name "x_out") (declared-name "x_out") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamics")))))
+              )
+            )
+            (element (kind "constraint def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::StraightLineDynamicsEquations"))) (name "StraightLineDynamicsEquations") (declared-name "StraightLineDynamicsEquations"))
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity"))) (name "Velocity") (declared-name "Velocity")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity::v0"))) (name "v0") (declared-name "v0") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::DynamicsModel::Velocity")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel"))) (name "FuelEconomyAnalysisModel") (declared-name "FuelEconomyAnalysisModel")
+          (contains
+            (element (kind "analysis def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (name "FuelEconomyAnalysis") (declared-name "FuelEconomyAnalysis")
+              (contains
+                (element (kind "analysis result") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (name "calculatedFuelEconomy") (declared-name "calculatedFuelEconomy") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::dynamicsAnalysis"))) (name "dynamicsAnalysis") (declared-name "dynamicsAnalysis") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::dynamicsAnalysis::acceleration"))) (name "acceleration") (declared-name "acceleration") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::dynamicsAnalysis::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::dynamicsAnalysis::sc"))) (name "sc") (declared-name "sc") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                  )
+                )
+                (element (kind "action") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumptionAnalysis"))) (name "fuelConsumptionAnalysis") (declared-name "fuelConsumptionAnalysis") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumptionAnalysis::acceleration"))) (name "acceleration") (declared-name "acceleration") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumptionAnalysis::fuelEconomy"))) (name "fuelEconomy") (declared-name "fuelEconomy") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumptionAnalysis::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                  )
+                )
+                (element (kind "objective") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyAnalysisObjective"))) (name "fuelEconomyAnalysisObjective") (declared-name "fuelEconomyAnalysisObjective") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "requirement") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyRequirement"))) (name "fuelEconomyRequirement") (declared-name "fuelEconomyRequirement") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::scenario"))) (name "scenario") (declared-name "scenario") (declared (properties (direction "in") (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario"))) (name "NominalScenario") (declared-name "NominalScenario") (declared (properties (ordered false) (unique true)))
+              (contains
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario::TimeStateRecord"))) (name "TimeStateRecord") (declared-name "TimeStateRecord") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario::n"))) (name "n") (declared-name "n") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario::samples"))) (name "samples") (declared-name "samples") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario")))))
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::SamplePair"))) (name "SamplePair") (declared-name "SamplePair"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::SampledFunction"))) (name "SampledFunction") (declared-name "SampledFunction"))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::ScenarioState"))) (name "ScenarioState") (declared-name "ScenarioState") (declared (properties (ordered false) (unique true)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::ScenarioState::position"))) (name "position") (declared-name "position") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::ScenarioState")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::ScenarioState::velocity"))) (name "velocity") (declared-name "velocity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::ScenarioState")))))
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::forAll"))) (name "forAll") (declared-name "forAll"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::size"))) (name "size") (declared-name "size"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel"))) (name "FuelEconomyRequirementsModel") (declared-name "FuelEconomyRequirementsModel")
+          (contains
+            (element (kind "requirement def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement"))) (name "FuelEconomyRequirement") (declared-name "FuelEconomyRequirement")
+              (contains
+                (element (kind "require constraint") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::actualFuelEconomy"))) (name "actualFuelEconomy") (declared-name "actualFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy"))) (name "requiredFuelEconomy") (declared-name "requiredFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::cityFuelEconomyRequirement"))) (name "cityFuelEconomyRequirement") (declared-name "cityFuelEconomyRequirement")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::cityFuelEconomyRequirement::requiredFuelEconomy"))) (name "requiredFuelEconomy") (declared-name "requiredFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement"))) (name "highwayFuelEconomyRequirement") (declared-name "highwayFuelEconomyRequirement")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement::requiredFuelEconomy"))) (name "requiredFuelEconomy") (declared-name "requiredFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel"))) (name "VehicleModel") (declared-name "VehicleModel")
+          (contains
+            (element (kind "item def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Fuel"))) (name "Fuel") (declared-name "Fuel"))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort"))) (name "FuelPort") (declared-name "FuelPort")
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort::fuel"))) (name "fuel") (declared-name "fuel") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort")))))
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort::~FuelPort"))) (name "~FuelPort") (declared-name "~FuelPort") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank"))) (name "FuelTank") (declared-name "FuelTank") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelLevel"))) (name "fuelLevel") (declared-name "fuelLevel") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "fuelVolume")) (expression (kind "featureReference") (reference "volumeMax")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelLevel"))) (role feature-value))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelOutPort"))) (name "fuelOutPort") (declared-name "fuelOutPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelVolume"))) (name "fuelVolume") (declared-name "fuelVolume") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::volumeMax"))) (name "volumeMax") (declared-name "volumeMax") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::cargoMass"))) (name "cargoMass") (declared-name "cargoMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::driveTrainEfficiency"))) (name "driveTrainEfficiency") (declared-name "driveTrainEfficiency") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::fuelEconomy_city"))) (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::fuelEconomy_highway"))) (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::wheelDiameter"))) (name "wheelDiameter") (declared-name "wheelDiameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Wheel::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Wheel")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle"))))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::fuelTank::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle"))))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::wheel::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "wheelDiameter")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::wheel::diameter"))) (role feature-value))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities"))) (name "VehicleQuantities") (declared-name "VehicleQuantities")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit"))) (name "DistancePerVolumeUnit") (declared-name "DistancePerVolumeUnit") (declared (properties (ordered false) (unique true)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit::distancePF"))) (name "distancePF") (declared-name "distancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit::volumePF"))) (name "volumePF") (declared-name "volumePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue"))) (name "DistancePerVolumeValue") (declared-name "DistancePerVolumeValue") (declared (properties (ordered false) (unique true)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::gallon"))) (name "gallon") (declared-name "gallon") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "**") (children (expression (kind "binary") (operator "*") (children (expression (kind "realLiteral") (literal "231.0")) (expression (kind "featureReference") (reference "in")))) (expression (kind "integerLiteral") (literal 3)))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::gallon"))) (role feature-value))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::mpg"))) (name "mpg") (declared-name "mpg") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "mi")) (expression (kind "featureReference") (reference "gallon")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::mpg"))) (role feature-value))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext"))) (name "vehicleFuelEconomyAnalysisContext") (declared-name "vehicleFuelEconomyAnalysisContext") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::cityScenario"))) (name "cityScenario") (declared-name "cityScenario") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (name "highwayScenario") (declared-name "highwayScenario") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::vehicle_c1_analysized"))) (name "vehicle_c1_analysized") (declared-name "vehicle_c1_analysized") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::vehicle_c1_analysized::fuelEconomy_city"))) (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "calculatedFuelEconomy") (children (expression (kind "featureReference") (reference "cityFuelEconomyAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::vehicle_c1_analysized::fuelEconomy_city"))) (role feature-value))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::vehicle_c1_analysized::fuelEconomy_highway"))) (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "calculatedFuelEconomy") (children (expression (kind "featureReference") (reference "highwayFuelEconomyAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::vehicle_c1_analysized::fuelEconomy_highway"))) (role feature-value))))
+              )
+            )
+          )
+        )
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+  )
+  (relationships
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort::~FuelPort"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::cityFuelEconomyRequirement::requiredFuelEconomy"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement::requiredFuelEconomy"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::fuelInPort"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::fuelInPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::fuelTank::fuelInPort"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelInPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::wheel::diameter"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Wheel::diameter"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::dynamicsAnalysis::sc"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumptionAnalysis::fuelEconomy"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::scenario"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario::samples"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario::TimeStateRecord"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::actualFuelEconomy"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::cityFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyRequirementsModel::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort::fuel"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Fuel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelInPort"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank::fuelOutPort"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::fuelEconomy_city"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::fuelEconomy_highway"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle::fuelInPort"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::fuelTank"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::FuelTank"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::vehicle_c1::wheel"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleModel::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeValue::mRef"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::mpg"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::VehicleQuantities::DistancePerVolumeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::cityScenario"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (to (node (document "d0") (qualified-name "Vehicle Analysis Demo::FuelEconomyAnalysisModel::NominalScenario"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "fuelInPort::fuel") (target-expression "fuelTank::fuelInPort::fuel") (container-prefix "Vehicle Analysis Demo::VehicleModel::vehicle_c1"))
+    (satisfy (status pending-expression) (document "d0") (source-expression "vehicleFuelEconomyRequirementsGroup") (target-expression "vehicle_c1_analysized") (container-prefix "Vehicle Analysis Demo::vehicleFuelEconomyAnalysisContext"))
+  )
+)
 ~~~

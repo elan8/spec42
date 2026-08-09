@@ -131,31 +131,23 @@ package CoverageIndividual {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'CoverageIndividual'
-      (occurrence_def individual 'D1')
-      (occurrence_def individual 'D2')
-      (item_def individual 'D3')
-      (part_def individual 'D4')
-      (action_def individual 'D5')
-      (state_def individual 'D6')
-      (connection_def individual 'D7')
-      (calculation_def individual 'D8')
-      (constraint_def individual 'D9')
-      (requirement_def individual 'D10')
-      (concern_def individual 'D11')
-      (case_def individual 'D12')
-      (analysis_case_def individual 'D13')
-      (verification_case_def individual 'D14')
-      (view_def individual 'D15')
-      (viewpoint_def individual 'D16')
-      (rendering_def individual 'D17')
-      (occurrence_usage individual 'p1')
-      (occurrence_usage individual 'o1')
-      (item_usage individual 'i1')
-      (part_usage individual 'p2')
-      (port_usage individual 'po1')
-      (action_usage individual 'a1')
-      (state_usage individual 's1'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CoverageIndividual"))) (name "CoverageIndividual") (declared-name "CoverageIndividual")
+      (contains
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (name "D1") (declared-name "D1"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (name "D4") (declared-name "D4") (declared (properties (individual true))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (name "p1") (declared-name "p1") (declared (properties (individual true) (composite true) (reference false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (name "p2") (declared-name "p2") (declared (properties (individual true) (composite true) (reference false) (ordered false))))
+        (element (kind "state") (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (name "s1") (declared-name "s1") (declared (properties (composite true) (reference false))))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

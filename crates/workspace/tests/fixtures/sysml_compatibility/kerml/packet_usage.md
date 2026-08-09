@@ -88,15 +88,21 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (namespace_import private -> 'Packets'[unresolved])
-    (membership_import private -> 'ScalarValues::Real'[unresolved])
-    (package 'Packet Usage'
-      (feature_def 'packet1' : 'Thermal Data Packet'[unresolved])
-      (feature_def 'packet2' : 'Thermal Data Packet'[unresolved])
-      (feature_def 'packet3' : 'Thermal Data Packet'[unresolved]
-        (feature_def 'special data field' :>> 'packet data field'[unresolved]
-          (feature_def :>> 'user data field'[unresolved]
-            (feature_def 'special data' : 'Real'[unresolved])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Packet Usage"))) (name "Packet Usage") (declared-name "Packet Usage")
+      (contains
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Packet Usage::packet1"))) (name "packet1") (declared-name "packet1"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Packet Usage::packet2"))) (name "packet2") (declared-name "packet2"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Packet Usage::packet3"))) (name "packet3") (declared-name "packet3"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -55,14 +55,25 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (state_def 'S'
-        (state_subaction_membership 'entry'
-          (action_usage))
-        (source_succession
-          (reference_usage reference 'off'))
-        (state_usage composite 'off')
-        (transition_usage 't')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "state def") (id (node (document "d0") (qualified-name "P::S"))) (name "S") (declared-name "S")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "P::S::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "P::S")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "P::S::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "P::S")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "P::S"))) (to (node (document "d0") (qualified-name "P::S::off"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

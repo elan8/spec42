@@ -93,18 +93,38 @@ semantic.unresolved_name 'self'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_08-Range Restriction'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (membership_import private -> '15_01-Constants::Mathematical Constants::pi'[unresolved])
-      (part_def 'HeadLightsTiltKnob'
-        (attribute_usage composite 'headLightsTile' : '15_08-Range Restriction::LightBeamTiltAngleValue'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_def 'LightBeamTiltAngleValue' :> 'PlaneAngleValue'[unresolved]
-        (attribute_usage composite 'angle' : '15_08-Range Restriction::LightBeamTiltAngleValue'[attribute_def] :>> 'self'[unresolved]
-          (documentation))
-        (assert_constraint_usage
-          (result_expr_membership))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_08-Range Restriction"))) (name "15_08-Range Restriction") (declared-name "15_08-Range Restriction")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_08-Range Restriction::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_08-Range Restriction::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob"))) (name "HeadLightsTiltKnob") (declared-name "HeadLightsTiltKnob") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (name "headLightsTile") (declared-name "headLightsTile") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (name "LightBeamTiltAngleValue") (declared-name "LightBeamTiltAngleValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (name "angle") (declared-name "angle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_08-Range Restriction::pi"))) (name "pi") (declared-name "pi"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle::_documentation"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -97,27 +97,15 @@ part def System {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (part_def 'A'
-      (port_usage composite 'p1')
-      (port_usage composite 'p2'))
-    (part_def 'B'
-      (port_usage composite 'q1')
-      (port_usage composite 'q2'))
-    (part_def 'System'
-      (part_usage composite 'a' : 'A'[part_def])
-      (part_usage composite 'b' : 'B'[part_def])
-      (connector_def 'c1'
-        (connector_end 'a.p1')
-        (connector_end 'b.q1'))
-      (not_implemented 'malformed')
-      (binding_connector_def 'b1'
-        (connector_end 'a.p1')
-        (connector_end 'b.q1'))
-      (binding_connector_def
-        (connector_end 'a.p2')
-        (connector_end 'b.q2'))
-      (part_usage reference 'engine' : 'A'[part_def])
-      (part_usage individual composite 'myA' : 'A'[part_def]))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

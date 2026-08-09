@@ -187,50 +187,25 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ProductSelection_UnownedEnds'
-      (class_def 'SelectionInfo')
-      (class_def 'ShoppingCart'
-        (feature_def 'selectedProducts' : 'ProductSelection_UnownedEnds::Product'[class_def]
-          (multiplicity_range [0..*])))
-      (class_def 'Product'
-        (feature_def 'inCart' : 'ProductSelection_UnownedEnds::ShoppingCart'[class_def]
-          (multiplicity_range [0..1])))
-      (association_def 'ProductSelection'
-        (feature_def 'info' : 'ProductSelection_UnownedEnds::SelectionInfo'[class_def]
-          (multiplicity_range [1]))
-        (feature_def end 'cart' : 'ProductSelection_UnownedEnds::ShoppingCart'[class_def] :> 'ProductSelection_UnownedEnds::Product::inCart'[feature_def]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_UnownedEnds::Product'[class_def] :> 'ProductSelection_UnownedEnds::ShoppingCart::selectedProducts'[feature_def]
-          (multiplicity_range [1])))
-      (association_def 'SingleProductSelection' :> 'ProductSelection_UnownedEnds::ProductSelection'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_UnownedEnds::ShoppingCart'[class_def] :>> 'ProductSelection_UnownedEnds::ProductSelection::cart'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_UnownedEnds::Product'[class_def] :>> 'ProductSelection_UnownedEnds::ProductSelection::selectedProduct'[feature_def][implied]
-          (multiplicity_range [1])))
-      (association_def 'SingleProductSelection1' :> 'ProductSelection_UnownedEnds::ProductSelection'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_UnownedEnds::ShoppingCart'[class_def] :>> 'ProductSelection_UnownedEnds::ProductSelection::cart'[feature_def]
-          (multiplicity_range [1])
-          (membership_import public -> 'ProductSelection_UnownedEnds::SingleProductSelection1::selectedProduct::selectedProduct1'[feature_def]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_UnownedEnds::Product'[class_def] :>> 'ProductSelection_UnownedEnds::ProductSelection::selectedProduct'[feature_def] :> 'ProductSelection_UnownedEnds::SingleProductSelection1::selectedProduct::selectedProduct1'[feature_def]
-          (multiplicity_range [1])
-          (feature_def 'selectedProduct1' :> 'ProductSelection_UnownedEnds::ShoppingCart::selectedProducts'[feature_def]
-            (multiplicity_range [0..1]))))
-      (class_def 'OnlineCustomer'
-        (feature_def 'info1' : 'ProductSelection_UnownedEnds::SelectionInfo'[class_def])
-        (feature_def 'myCart' : 'ProductSelection_UnownedEnds::ShoppingCart'[class_def]
-          (multiplicity_range [1]))
-        (feature_def 'products' : 'ProductSelection_UnownedEnds::Product'[class_def]
-          (multiplicity_range [0..*]))
-        (connector_def 'ps1' : 'ProductSelection_UnownedEnds::ProductSelection'[association_def]
-          (connector_end 'myCart')
-          (connector_end 'products')
-          (feature_def :>> 'ProductSelection_UnownedEnds::ProductSelection::info'[feature_def]
-            (feature_value (=))))
-        (connector_def 'ps2' : 'ProductSelection_UnownedEnds::ProductSelection'[association_def]
-          (connector_end 'myCart')
-          (connector_end 'products')
-          (feature_def :>> 'ProductSelection_UnownedEnds::ProductSelection::info'[feature_def]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds"))) (name "ProductSelection_UnownedEnds") (declared-name "ProductSelection_UnownedEnds")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::Product"))) (name "Product") (declared-name "Product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SelectionInfo"))) (name "SelectionInfo") (declared-name "SelectionInfo"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_UnownedEnds::SingleProductSelection1"))) (name "SingleProductSelection1") (declared-name "SingleProductSelection1"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

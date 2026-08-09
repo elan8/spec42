@@ -378,63 +378,68 @@ standard library package States {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'States'
-      (documentation)
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'StatePerformances::StatePerformance'[unresolved])
-      (membership_import private -> 'StatePerformances::StateTransitionPerformance'[unresolved])
-      (membership_import private -> 'Actions::Action'[unresolved])
-      (membership_import private -> 'Actions::TransitionAction'[unresolved])
-      (membership_import private -> 'Actions::transitionActions'[unresolved])
-      (membership_import private -> 'Actions::AcceptAction'[unresolved])
-      (membership_import private -> 'Actions::actions'[unresolved])
-      (membership_import private -> 'SequenceFunctions::notEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (state_def abstract 'StateAction' :> 'Action'[unresolved] :> 'StatePerformance'[unresolved]
-        (documentation)
-        (state_subaction_membership 'entry'
-          (action_usage 'entryAction' :>> 'States::StateAction::entry'[state_subaction_membership]))
-        (state_subaction_membership 'do'
-          (action_usage 'doAction' : 'Action'[unresolved] :>> 'States::StateAction::do'[state_subaction_membership]))
-        (state_subaction_membership 'exit'
-          (action_usage 'exitAction' : 'Action'[unresolved] :>> 'States::StateAction::exit'[state_subaction_membership]))
-        (attribute_usage composite :>> 'isTriggerDuring'[unresolved])
-        (state_usage reference 'self' : 'States::StateAction'[state_def] :>> 'Action::self'[unresolved] :>> 'StatePerformance::self'[unresolved] :> 'States::stateActions'[state_usage][implied])
-        (state_usage reference 'start' : 'States::StateAction'[state_def] :>> 'Action::start'[unresolved] :>> 'StatePerformance::startShot'[unresolved] :> 'States::stateActions'[state_usage][implied])
-        (state_usage reference 'done' : 'States::StateAction'[state_def] :>> 'Action::done'[unresolved] :>> 'StatePerformance::endShot'[unresolved] :> 'States::stateActions'[state_usage][implied])
-        (action_usage composite :>> 'subactions'[unresolved] :> 'middle'[unresolved]
-          (documentation))
-        (action_usage composite 'substates' : 'States::StateAction'[state_def] :> 'States::stateActions'[state_usage] :> 'subactions'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (state_usage abstract composite 'exclusiveStates' : 'States::StateAction'[state_def] :> 'States::StateAction::substates'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'stateTransitions' : 'States::StateTransitionAction'[action_def] :> 'transitions'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (succession_def 'stateSequencing'
-          (connector_end 'exclusiveStates')
-          (connector_end 'exclusiveStates')
-          (documentation))
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (action_def 'StateTransitionAction' :> 'TransitionAction'[unresolved] :> 'StateTransitionPerformance'[unresolved]
-        (documentation)
-        (reference_usage in reference 'transitionLinkSource' : 'States::StateAction'[state_def] :>> 'TransitionAction::transitionLinkSource'[unresolved] :>> 'StateTransitionPerformance::transitionLinkSource'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage inout reference 'payload'
-          (multiplicity_range [0..*]))
-        (reference_usage in reference :>> 'receiver'[unresolved])
-        (binding_connector_def
-          (connector_end 'payload')
-          (connector_end 'accepter.payload'))
-        (binding_connector_def
-          (connector_end 'receiver')
-          (connector_end 'accepter.receiver')))
-      (state_usage abstract 'stateActions' : 'States::StateAction'[state_def] :> 'actions'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "States"))) (name "States") (declared-name "States")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::AcceptAction"))) (name "AcceptAction") (declared-name "AcceptAction"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::Action"))) (name "Action") (declared-name "Action"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "state def") (id (node (document "d0") (qualified-name "States::StateAction"))) (name "StateAction") (declared-name "StateAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "States::StateAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "States::StateAction::done"))) (name "done") (declared-name "done") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "States::StateAction::exclusiveStates"))) (name "exclusiveStates") (declared-name "exclusiveStates") (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "States::StateAction::exclusiveStates::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction")))))
+              )
+            )
+            (element (kind "ref") (id (node (document "d0") (qualified-name "States::StateAction::self"))) (name "self") (declared-name "self") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "States::StateAction::start"))) (name "start") (declared-name "start") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::StatePerformance"))) (name "StatePerformance") (declared-name "StatePerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "States::StateTransitionAction"))) (name "StateTransitionAction") (declared-name "StateTransitionAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "States::StateTransitionAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "States::StateTransitionAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "States::StateTransitionAction::payload"))) (name "payload") (declared-name "payload") (effective (featuring-type (node (document "d0") (qualified-name "States::StateTransitionAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "States::StateTransitionAction::receiver"))) (name "receiver") (declared-name "receiver") (effective (featuring-type (node (document "d0") (qualified-name "States::StateTransitionAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (name "transitionLinkSource") (declared-name "transitionLinkSource") (effective (featuring-type (node (document "d0") (qualified-name "States::StateTransitionAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::StateTransitionPerformance"))) (name "StateTransitionPerformance") (declared-name "StateTransitionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::TransitionAction"))) (name "TransitionAction") (declared-name "TransitionAction"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "States::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::actions"))) (name "actions") (declared-name "actions"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::size"))) (name "size") (declared-name "size"))
+        (element (kind "state") (id (node (document "d0") (qualified-name "States::stateActions"))) (name "stateActions") (declared-name "stateActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "States::stateActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "States::transitionActions"))) (name "transitionActions") (declared-name "transitionActions"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "States::StateAction::_documentation"))) (to (node (document "d0") (qualified-name "States::StateAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "States::StateAction::exclusiveStates::_documentation"))) (to (node (document "d0") (qualified-name "States::StateAction::exclusiveStates"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "States::StateTransitionAction::_documentation"))) (to (node (document "d0") (qualified-name "States::StateTransitionAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "States::_documentation"))) (to (node (document "d0") (qualified-name "States"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "States::stateActions::_documentation"))) (to (node (document "d0") (qualified-name "States::stateActions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "States::stateActions"))) (to (node (document "d0") (qualified-name "States::actions"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "States::StateAction::done"))) (to (node (document "d0") (qualified-name "States::StateAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "States::StateAction::exclusiveStates"))) (to (node (document "d0") (qualified-name "States::StateAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "States::StateAction::self"))) (to (node (document "d0") (qualified-name "States::StateAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "States::StateAction::start"))) (to (node (document "d0") (qualified-name "States::StateAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "States::stateActions"))) (to (node (document "d0") (qualified-name "States::StateAction"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "payload") (target-expression "accepter::payload") (container-prefix "States::StateTransitionAction"))
+    (bind (status pending-expression) (document "d0") (source-expression "receiver") (target-expression "accepter::receiver") (container-prefix "States::StateTransitionAction"))
+  )
+)
 ~~~

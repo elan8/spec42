@@ -344,114 +344,104 @@ standard library package TensorCalculations {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'TensorCalculations'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Number'[unresolved])
-      (membership_import private -> 'Quantities::ScalarQuantityValue'[unresolved])
-      (membership_import private -> 'Quantities::VectorQuantityValue'[unresolved])
-      (membership_import private -> 'Quantities::TensorQuantityValue'[unresolved])
-      (membership_import private -> 'MeasurementReferences::TensorMeasurementReference'[unresolved])
-      (membership_import private -> 'MeasurementReferences::CoordinateTransformation'[unresolved])
-      (calculation_def '[' :> 'BaseFunctions::['[unresolved]
-        (reference_usage in reference ordered 'elements' : 'Number'[unresolved]
-          (multiplicity_range [1..?]))
-        (reference_usage in reference 'mRef' : 'TensorMeasurementReference'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'quantity' : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1])))
-        (attribute_usage composite 'n'
-          (feature_value (=))))
-      (calculation_def 'isZeroTensorQuantity'
-        (reference_usage in reference 'x' : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'isUnitTensorQuantity'
-        (reference_usage in reference 'x' : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '+' :> 'DataFunctions::+'[unresolved]
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '-' :> 'DataFunctions::-'[unresolved]
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'scalarTensorMult'
-        (reference_usage in reference : 'Number'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'TensorScalarMult'
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'Number'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'scalarQuantityTensorMult'
-        (reference_usage in reference : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'TensorScalarQuantityMult'
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'tensorVectorMult'
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'VectorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'VectorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'vectorTensorMult'
-        (reference_usage in reference : 'VectorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'VectorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'tensorTensorMult'
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference : 'TensorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TensorQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'transform'
-        (reference_usage in reference 'transformation' : 'CoordinateTransformation'[unresolved])
-        (reference_usage in reference 'sourceTensor' : 'TensorQuantityValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'targetTensor' : 'TensorQuantityValue'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TensorCalculations"))) (name "TensorCalculations") (declared-name "TensorCalculations")
+      (contains
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::+"))) (name "+") (declared-name "+")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::+::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::+")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::+::TensorQuantityValue#in_out_parameter"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::+")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::-"))) (name "-") (declared-name "-")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::-::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::-")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::-::TensorQuantityValue#in_out_parameter"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::-")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "TensorCalculations::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TensorCalculations::CoordinateTransformation"))) (name "CoordinateTransformation") (declared-name "CoordinateTransformation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TensorCalculations::Number"))) (name "Number") (declared-name "Number"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TensorCalculations::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TensorCalculations::TensorMeasurementReference"))) (name "TensorMeasurementReference") (declared-name "TensorMeasurementReference"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TensorCalculations::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::TensorScalarMult"))) (name "TensorScalarMult") (declared-name "TensorScalarMult")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::TensorScalarMult::Number"))) (name "Number") (declared-name "Number") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::TensorScalarMult")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::TensorScalarMult::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::TensorScalarMult")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::TensorScalarQuantityMult"))) (name "TensorScalarQuantityMult") (declared-name "TensorScalarQuantityMult")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::TensorScalarQuantityMult::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::TensorScalarQuantityMult")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::TensorScalarQuantityMult::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::TensorScalarQuantityMult")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "TensorCalculations::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::["))) (name "[") (declared-name "[")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::[::elements"))) (name "elements") (declared-name "elements") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::[")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::[::mRef"))) (name "mRef") (declared-name "mRef") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::[")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "TensorCalculations::_documentation"))) (name ""))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::isUnitTensorQuantity"))) (name "isUnitTensorQuantity") (declared-name "isUnitTensorQuantity")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::isUnitTensorQuantity::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::isUnitTensorQuantity")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::isZeroTensorQuantity"))) (name "isZeroTensorQuantity") (declared-name "isZeroTensorQuantity")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::isZeroTensorQuantity::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::isZeroTensorQuantity")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::scalarQuantityTensorMult"))) (name "scalarQuantityTensorMult") (declared-name "scalarQuantityTensorMult")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::scalarQuantityTensorMult::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::scalarQuantityTensorMult")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::scalarQuantityTensorMult::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::scalarQuantityTensorMult")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::scalarTensorMult"))) (name "scalarTensorMult") (declared-name "scalarTensorMult")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::scalarTensorMult::Number"))) (name "Number") (declared-name "Number") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::scalarTensorMult")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::scalarTensorMult::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::scalarTensorMult")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::tensorTensorMult"))) (name "tensorTensorMult") (declared-name "tensorTensorMult")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::tensorTensorMult::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::tensorTensorMult")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::tensorTensorMult::TensorQuantityValue#in_out_parameter"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::tensorTensorMult")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::tensorVectorMult"))) (name "tensorVectorMult") (declared-name "tensorVectorMult")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::tensorVectorMult::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::tensorVectorMult")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::tensorVectorMult::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::tensorVectorMult")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::transform"))) (name "transform") (declared-name "transform")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::transform::sourceTensor"))) (name "sourceTensor") (declared-name "sourceTensor") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::transform")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "TensorCalculations::transform::targetTensor"))) (name "targetTensor") (declared-name "targetTensor") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::transform")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::transform::transformation"))) (name "transformation") (declared-name "transformation") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::transform")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "TensorCalculations::vectorTensorMult"))) (name "vectorTensorMult") (declared-name "vectorTensorMult")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::vectorTensorMult::TensorQuantityValue"))) (name "TensorQuantityValue") (declared-name "TensorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::vectorTensorMult")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TensorCalculations::vectorTensorMult::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue") (effective (featuring-type (node (document "d0") (qualified-name "TensorCalculations::vectorTensorMult")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TensorCalculations::_documentation"))) (to (node (document "d0") (qualified-name "TensorCalculations"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

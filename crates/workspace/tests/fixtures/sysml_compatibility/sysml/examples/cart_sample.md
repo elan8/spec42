@@ -288,43 +288,67 @@ semantic.unresolved_name 'getOutput'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'CartSample'
-      (namespace_import private -> 'StateSpaceRepresentation'[unresolved])
-      (part_def 'Cart'
-        (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])
-        (attribute_def 'CartInput' :> 'Input'[unresolved]
-          (attribute_usage composite 'force' :> 'ISQ::force'[unresolved]))
-        (attribute_def 'CartOutput' :> 'Output'[unresolved]
-          (attribute_usage composite 'velocity' :> 'ISQ::speed'[unresolved]))
-        (attribute_def 'CartState' :> 'StateSpace'[unresolved]
-          (attribute_usage composite 'velocity' :> 'ISQ::speed'[unresolved]))
-        (attribute_def 'CartStateDerivative' :> 'StateDerivative'[unresolved]
-          (reference_usage reference :>> 'stateSpace'[unresolved] : 'CartSample::Cart::CartState'[attribute_def])
-          (attribute_usage composite 'accel' :> 'ISQ::acceleration'[unresolved])))
-      (part_def 'Pusher'
-        (attribute_def 'PusherOutput' :> 'Output'[unresolved]
-          (attribute_usage composite 'force' :> 'ISQ::force'[unresolved])))
-      (part_usage 'context'
-        (part_usage composite 'cart' : 'CartSample::Cart'[part_def]
-          (action_usage composite 'cartBehavior' : 'ContinuousStateSpaceDynamics'[unresolved]
-            (reference_usage in reference 'input' : 'CartSample::Cart::CartInput'[attribute_def])
-            (reference_usage out reference 'output' : 'CartSample::Cart::CartOutput'[attribute_def])
-            (reference_usage reference :>> 'stateSpace'[unresolved] : 'CartSample::Cart::CartState'[attribute_def])
-            (calculation_usage composite :>> 'getDerivative'[unresolved]
-              (reference_usage in reference 'input' : 'CartSample::Cart::CartInput'[attribute_def])
-              (reference_usage in reference 'stateSpace' : 'CartSample::Cart::CartState'[attribute_def])
-              (result_expr_membership))
-            (calculation_usage composite :>> 'getOutput'[unresolved]
-              (reference_usage in reference :>> 'stateSpace'[unresolved] : 'CartSample::Cart::CartState'[attribute_def])
-              (result_expr_membership))))
-        (part_usage composite 'pusher' : 'CartSample::Pusher'[part_def]
-          (attribute_usage composite 'pusherForce' :> 'ISQ::force'[unresolved])
-          (action_usage composite 'pusherBehavior' : 'ContinuousStateSpaceDynamics'[unresolved]
-            (reference_usage in reference 'input')
-            (reference_usage out reference 'output' : 'CartSample::Pusher::PusherOutput'[attribute_def])
-            (calculation_usage composite :>> 'getOutput'[unresolved]
-              (result_expr_membership))))
-        (flow_usage composite 'pusher')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CartSample"))) (name "CartSample") (declared-name "CartSample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "CartSample::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CartSample::Cart"))) (name "Cart") (declared-name "Cart") (declared)
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "CartSample::Cart::CartInput"))) (name "CartInput") (declared-name "CartInput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "CartSample::Cart::CartOutput"))) (name "CartOutput") (declared-name "CartOutput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "CartSample::Cart::CartState"))) (name "CartState") (declared-name "CartState") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "CartSample::Cart::CartStateDerivative"))) (name "CartStateDerivative") (declared-name "CartStateDerivative") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CartSample::Cart::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CartSample::Pusher"))) (name "Pusher") (declared-name "Pusher") (declared)
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "CartSample::Pusher::PusherOutput"))) (name "PusherOutput") (declared-name "PusherOutput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Pusher")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "CartSample::context"))) (name "context") (declared-name "context") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "CartSample::context::cart"))) (name "cart") (declared-name "cart") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior"))) (name "cartBehavior") (declared-name "cartBehavior") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart"))))
+                  (contains
+                    (element (kind "action body decl") (id (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior:::>> getDerivative"))) (name ":>> getDerivative") (declared-name ":>> getDerivative") (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+                    (element (kind "action body decl") (id (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior:::>> getOutput"))) (name ":>> getOutput") (declared-name ":>> getOutput") (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior::output"))) (name "output") (declared-name "output") (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Cart")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "CartSample::context::pusher"))) (name "pusher") (declared-name "pusher") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "CartSample::context::pusher::pusherBehavior"))) (name "pusherBehavior") (declared-name "pusherBehavior") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Pusher"))))
+                  (contains
+                    (element (kind "action body decl") (id (node (document "d0") (qualified-name "CartSample::context::pusher::pusherBehavior:::>> getOutput"))) (name ":>> getOutput") (declared-name ":>> getOutput") (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Pusher")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CartSample::context::pusher::pusherBehavior::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Pusher")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CartSample::context::pusher::pusherBehavior::output"))) (name "output") (declared-name "output") (effective (featuring-type (node (document "d0") (qualified-name "CartSample::Pusher")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "CartSample::context::pusher::pusherForce"))) (name "pusherForce") (declared-name "pusherForce") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CartSample::Pusher")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "CartSample::context::pusher::pusherBehavior::output"))) (to (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior::input"))) (flow (source-expression "pusher::pusherBehavior::output") (target-expression "cart::cartBehavior::input")))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CartSample::context::cart"))) (to (node (document "d0") (qualified-name "CartSample::Cart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior::input"))) (to (node (document "d0") (qualified-name "CartSample::Cart::CartInput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CartSample::context::cart::cartBehavior::output"))) (to (node (document "d0") (qualified-name "CartSample::Cart::CartOutput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CartSample::context::pusher"))) (to (node (document "d0") (qualified-name "CartSample::Pusher"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CartSample::context::pusher::pusherBehavior::output"))) (to (node (document "d0") (qualified-name "CartSample::Pusher::PusherOutput"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

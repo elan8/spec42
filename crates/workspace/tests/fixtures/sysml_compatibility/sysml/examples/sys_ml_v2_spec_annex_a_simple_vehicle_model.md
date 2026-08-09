@@ -6356,1429 +6356,2190 @@ semantic.unresolved_name 'LengthValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'SimpleVehicleModel'
-      (namespace_import public -> 'SimpleVehicleModel::Definitions'[package])
-      (namespace_import public -> 'ISQ'[unresolved])
-      (package 'Definitions'
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::PartDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::PortDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::ItemDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::SignalDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::InterfaceDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::AllocationDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::ActionDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::StateDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::RequirementDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::AttributeDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::IndividualDefinitions'[package])
-        (membership_import public recursive -> 'SimpleVehicleModel::Definitions::MetadataDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions'[package])
-        (package 'PartDefinitions'
-          (part_def 'Vehicle'
-            (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])
-            (attribute_usage composite 'dryMass' :> 'ISQ::mass'[unresolved])
-            (attribute_usage composite 'cargoMass' :> 'ISQ::mass'[unresolved])
-            (attribute_usage composite 'position' :> 'ISQ::length'[unresolved])
-            (attribute_usage composite 'velocity' :> 'ISQ::speed'[unresolved])
-            (attribute_usage composite 'acceleration' :> 'ISQ::acceleration'[unresolved])
-            (attribute_usage composite 'electricalPower' :> 'ISQ::power'[unresolved])
-            (attribute_usage composite 'Tmax' :> 'ISQ::temperature'[unresolved])
-            (attribute_usage composite 'maintenanceTime' : 'Time::DateTime'[unresolved])
-            (attribute_usage composite 'brakePedalDepressed' : 'Boolean'[unresolved])
-            (port_usage composite 'ignitionCmdPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort'[port_def])
-            (port_usage composite 'pwrCmdPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort'[port_def])
-            (port_usage composite 'vehicleToRoadPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::VehicleToRoadPort'[port_def])
-            (port_usage composite 'statusPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::StatusPort'[port_def])
-            (perform_action_usage 'providePower')
-            (perform_action_usage 'provideBraking')
-            (perform_action_usage 'controlDirection')
-            (perform_action_usage 'performSelfTest')
-            (perform_action_usage 'applyParkingBrake')
-            (perform_action_usage 'senseTemperature')
-            (state_usage parallel composite 'vehicleStates'
-              (reference_usage reference 'controller' : 'SimpleVehicleModel::Definitions::PartDefinitions::VehicleController'[part_def])
-              (state_usage composite 'operatingStates'
-                (state_subaction_membership 'entry'
-                  (action_usage 'initial'))
-                (state_usage composite 'off')
-                (state_usage composite 'starting')
-                (state_usage composite 'on'
-                  (state_subaction_membership 'entry'
-                    (action_usage 'performSelfTest'))
-                  (state_subaction_membership 'do'
-                    (action_usage 'providePower'))
-                  (state_subaction_membership 'exit'
-                    (action_usage 'applyParkingBrake'))
-                  (constraint_usage composite
-                    (result_expr_membership)))
-                (transition_usage)
-                (transition_usage 'off_To_starting')
-                (transition_usage 'starting_To_on')
-                (transition_usage 'on_To_off'))
-              (state_usage composite 'healthStates'
-                (state_subaction_membership 'entry'
-                  (action_usage 'initial'))
-                (state_subaction_membership 'do'
-                  (action_usage 'senseTemperature'
-                    (reference_usage out reference 'temp')))
-                (state_usage composite 'normal')
-                (state_usage composite 'maintenance')
-                (state_usage composite 'degraded')
-                (transition_usage)
-                (transition_usage 'normal_To_maintenance')
-                (transition_usage 'normal_To_degraded')
-                (transition_usage 'maintenance_To_normal')
-                (transition_usage 'degraded_To_normal'))))
-          (part_def 'Engine'
-            (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])
-            (attribute_usage composite 'peakHorsePower' :> 'ISQ::power'[unresolved])
-            (attribute_usage composite 'fuelEfficiency' : 'Real'[unresolved])
-            (attribute_usage composite 'cost' : 'Real'[unresolved])
-            (attribute_usage composite 'displacement' :> 'ISQ::volume'[unresolved])
-            (port_usage composite 'engineControlPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::ControlPort'[port_def] ~ 'SimpleVehicleModel::Definitions::PortDefinitions::ControlPort'[port_def])
-            (port_usage composite 'fuelInPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::FuelPort'[port_def] ~ 'SimpleVehicleModel::Definitions::PortDefinitions::FuelPort'[port_def])
-            (port_usage composite 'fuelCmdPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort'[port_def])
-            (port_usage composite 'drivePwrPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort'[port_def])
-            (port_usage composite 'ignitionCmdPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort'[port_def])
-            (port_usage composite 'flyWheelPort')
-            (perform_action_usage 'generateTorque')
-            (state_usage composite 'engineStates'
-              (state_usage composite 'off')
-              (state_usage composite 'starting')
-              (state_usage composite 'on'
-                (state_subaction_membership 'do'
-                  (action_usage 'generateTorque')))))
-          (part_def 'StarterMotor'
-            (port_usage composite 'gearPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::GearPort'[port_def]))
-          (part_def 'Cylinder')
-          (part_def 'Transmission'
-            (attribute_usage composite 'gearRatio' : 'Real'[unresolved])
-            (port_usage composite 'clutchPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort'[port_def] ~ 'SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort'[port_def])
-            (state_usage composite 'transmissionStates'))
-          (part_def 'Driveshaft')
-          (part_def 'AxleAssembly')
-          (part_def 'Axle'
-            (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]))
-          (part_def 'FrontAxle' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Axle'[part_def]
-            (attribute_usage composite 'steeringAngle' :> 'ISQ::angularMeasure'[unresolved]))
-          (part_def 'HalfAxle'
-            (port_usage composite 'shankCompositePort' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort'[port_def]))
-          (part_def 'Differential')
-          (part_def 'Wheel'
-            (attribute_usage composite 'diameter' : 'LengthValue'[unresolved])
-            (port_usage composite 'lugNutCompositePort' : 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort'[port_def]))
-          (part_def 'Hub'
-            (port_usage composite 'shankCompositePort' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort'[port_def]))
-          (part_def abstract 'Software')
-          (part_def 'VehicleSoftware' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Software'[part_def])
-          (part_def 'VehicleController' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Software'[part_def]
-            (port_usage composite 'controlPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::ControlPort'[port_def])
-            (state_usage parallel composite 'controllerStates'
-              (state_usage composite 'operatingStates'
-                (state_subaction_membership 'entry'
-                  (action_usage 'initial'))
-                (state_usage composite 'off')
-                (state_usage composite 'on')
-                (transition_usage)
-                (transition_usage)
-                (transition_usage))))
-          (part_def 'CruiseController' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Software'[part_def]
-            (port_usage composite 'setSpeedPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort'[port_def] ~ 'SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort'[port_def])
-            (port_usage composite 'speedSensorPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort'[port_def] ~ 'SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort'[port_def])
-            (port_usage composite 'cruiseControlPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort'[port_def])
-            (state_usage composite 'cruiseControllerStates'))
-          (part_def 'SpeedSensor'
-            (port_usage composite 'speedSensorPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort'[port_def]))
-          (part_def 'FuelTank'
-            (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])
-            (item_usage reference 'fuel' : 'SimpleVehicleModel::Definitions::ItemDefinitions::Fuel'[item_def]
-              (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::ItemDefinitions::Fuel::fuelMass'[attribute_usage]))
-            (attribute_usage composite 'fuelKind' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::FuelKind'[enum_def])
-            (attribute_usage composite 'fuelMassMax' :> 'ISQ::mass'[unresolved])
-            (assert_constraint_usage 'fuelConstraint'
-              (result_expr_membership))
-            (port_usage composite 'fuelOutPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::FuelPort'[port_def])
-            (port_usage composite 'fuelInPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::FuelPort'[port_def] ~ 'SimpleVehicleModel::Definitions::PortDefinitions::FuelPort'[port_def]))
-          (part_def 'BodyAssy')
-          (part_def 'Body'
-            (attribute_usage composite 'color' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Colors'[enum_def]))
-          (part_def 'Thermostat')
-          (part_def 'WaterHose')
-          (part_def 'Road'
-            (attribute_usage composite 'incline' : 'Real'[unresolved])
-            (attribute_usage composite 'friction' : 'Real'[unresolved]))
-          (part_def 'Engine4Cyl')
-          (part_def 'Engine6Cyl')
-          (part_def 'TransmissionChoices')
-          (part_def 'TransmissionAutomatic')
-          (part_def 'TransmissionManual')
-          (part_def 'Sunroof')
-          (part_def 'ElectricalGenerator')
-          (part_def 'TorqueGenerator')
-          (part_def 'SteeringSubsystem')
-          (part_def 'BrakingSubsystem'))
-        (package 'PortDefinitions'
-          (port_def 'IgnitionCmdPort'
-            (item_usage in 'ignitionCmd' : 'SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd'[item_def]))
-          (port_def 'StatusPort')
-          (port_def 'GearPort')
-          (port_def 'PwrCmdPort'
-            (item_usage in 'pwrCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd'[item_def]))
-          (port_def 'FuelCmdPort' :> 'SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort'[port_def]
-            (item_usage in 'fuelCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd'[item_def] :>> 'SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort::pwrCmd'[item_usage]))
-          (port_def 'FuelPort'
-            (item_usage out 'fuel' : 'SimpleVehicleModel::Definitions::ItemDefinitions::Fuel'[item_def]))
-          (port_def 'DrivePwrPort'
-            (reference_usage out reference 'torque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member]))
-          (port_def 'ShaftPort_a')
-          (port_def 'ShaftPort_b')
-          (port_def 'ShaftPort_c')
-          (port_def 'ShaftPort_d')
-          (port_def 'DiffPort')
-          (port_def 'AxlePort')
-          (port_def 'AxleToWheelPort')
-          (port_def 'WheelToAxlePort')
-          (port_def 'WheelToRoadPort')
-          (port_def 'LugNutCompositePort'
-            (port_usage composite 'lugNutPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort'[port_def]
-              (multiplicity_range [*])))
-          (port_def 'ShankCompositePort'
-            (port_usage composite 'shankPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShankPort'[port_def]
-              (multiplicity_range [*])))
-          (port_def 'LugNutPort'
-            (attribute_usage composite 'threadDia')
-            (attribute_usage composite 'threadPitch'))
-          (port_def 'ShankPort'
-            (attribute_usage composite 'threadDia')
-            (attribute_usage composite 'threadPitch')
-            (attribute_usage composite 'shaftLength'))
-          (port_def 'VehicleToRoadPort')
-          (port_def 'ControlPort')
-          (port_def 'CruiseControlPort' :> 'SimpleVehicleModel::Definitions::PortDefinitions::ControlPort'[port_def])
-          (port_def 'SpeedSensorPort')
-          (port_def 'SetSpeedPort')
-          (port_def 'DriverCmdPort'
-            (item_usage out 'driverCmd' : 'SimpleVehicleModel::Definitions::SignalDefinitions::DriverCmd'[item_def]
-              (multiplicity_range [*])))
-          (port_def 'HandPort' :> 'SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort'[port_def]
-            (item_usage out 'ignitionCmd' : 'SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd'[item_def] :> 'driverCmd'[unresolved] :>> 'SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort::driverCmd'[item_usage][implied])
-            (item_usage out 'pwrCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd'[item_def] :> 'driverCmd'[unresolved])))
-        (package 'ItemDefinitions'
-          (item_def 'PwrCmd'
-            (attribute_usage composite 'throttleLevel' : 'Real'[unresolved]))
-          (item_def 'FuelCmd' :> 'SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd'[item_def])
-          (item_def 'Fuel'
-            (attribute_usage composite 'fuelMass' :> 'ISQ::mass'[unresolved]))
-          (item_def 'SensedSpeed'
-            (attribute_usage composite 'speed' :> 'ISQ::speed'[unresolved])))
-        (package 'SignalDefinitions'
-          (item_def 'Cmd')
-          (item_def 'DriverCmd')
-          (item_def 'IgnitionCmd' :> 'SimpleVehicleModel::Definitions::SignalDefinitions::DriverCmd'[item_def]
-            (attribute_usage composite 'ignitionOnOff' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::IgnitionOnOff'[enum_def]))
-          (item_def 'EngineStatus')
-          (attribute_def 'VehicleStartSignal')
-          (attribute_def 'VehicleOnSignal')
-          (attribute_def 'VehicleOffSignal')
-          (attribute_def 'StartSignal')
-          (attribute_def 'OffSignal')
-          (attribute_def 'OverTemp')
-          (attribute_def 'ReturnToNormal')
-          (attribute_def 'SetSpeed' :> 'Real'[unresolved]))
-        (package 'InterfaceDefinitions'
-          (interface_def 'EngineToTransmissionInterface'
-            (port_usage end 'p1' : 'SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort'[port_def])
-            (port_usage end 'p2' : 'SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort'[port_def])
-            (flow_usage composite 'p1'))
-          (interface_def 'FuelInterface'
-            (port_usage end 'fuelOutPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::FuelPort'[port_def])
-            (port_usage end 'fuelInPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::FuelPort'[port_def])
-            (flow_usage composite 'of'))
-          (interface_def 'WheelFastenerInterface'
-            (port_usage end 'lugNutPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort'[port_def])
-            (port_usage end 'shankPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShankPort'[port_def])
-            (attribute_usage composite 'maxTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member])
-            (constraint_usage composite
-              (result_expr_membership)))
-          (interface_def 'WheelHubInterface'
-            (port_usage end 'lugNutCompositePort' : 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort'[port_def])
-            (port_usage end 'shankCompositePort' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort'[port_def])
-            (interface_usage composite 'wheelFastenerInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface'[interface_def]
-              (multiplicity_range [5])
-              (connector_end 'lugNutCompositePort.lugNutPort')
-              (connector_end 'shankCompositePort.shankPort'))))
-        (package 'AllocationDefinitions'
-          (allocation_def 'LogicalToPhysical'
-            (port_usage end 'logicalEnd')
-            (port_usage end 'physicalEnd')))
-        (package 'ActionDefinitions'
-          (action_def 'ProvidePower'
-            (item_usage in 'pwrCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd'[item_def])
-            (reference_usage out reference 'wheelToRoadTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member]
-              (multiplicity_range [2])))
-          (action_def 'GenerateTorque'
-            (item_usage in 'fuelCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd'[item_def])
-            (reference_usage out reference 'engineTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member]))
-          (action_def 'AmplifyTorque'
-            (reference_usage in reference 'engineTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member])
-            (reference_usage out reference 'transmissionTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member]))
-          (action_def 'TransferTorque'
-            (reference_usage in reference 'transmissionTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member])
-            (reference_usage out reference 'driveshaftTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member]))
-          (action_def 'DistributeTorque'
-            (reference_usage in reference 'driveshaftTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member])
-            (reference_usage out reference 'wheelToRoadTorque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member]
-              (multiplicity_range [2])))
-          (action_def 'PerformSelfTest')
-          (action_def 'ApplyParkingBrake')
-          (action_def 'SenseTemperature'
-            (reference_usage out reference 'temp' : 'ISQ::TemperatureValue'[unresolved])))
-        (package 'StateDefinitions'
-          (state_def 'VehicleStates')
-          (state_def 'ControllerStates')
-          (state_def 'CruiseControllerStates'))
-        (package 'RequirementDefinitions'
-          (requirement_def 'MassRequirement'
-            (documentation)
-            (attribute_usage composite 'massRequired' :> 'ISQ::mass'[unresolved])
-            (attribute_usage composite 'massActual' :> 'ISQ::mass'[unresolved])
-            (require_constraint_usage composite
-              (result_expr_membership)))
-          (requirement_def 'ReliabilityRequirement'
-            (documentation)
-            (attribute_usage composite 'reliabilityRequired' : 'Real'[unresolved])
-            (attribute_usage composite 'reliabilityActual' : 'Real'[unresolved])
-            (require_constraint_usage composite
-              (result_expr_membership)))
-          (requirement_def 'TorqueGenerationRequirement'
-            (documentation)
-            (subject_membership in 'generateTorque' : 'SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque'[action_def]))
-          (requirement_def 'DrivePowerOutputRequirement'
-            (documentation))
-          (requirement_def 'FuelEconomyRequirement'
-            (documentation)
-            (attribute_usage composite 'actualFuelEconomy' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::distancePerVolume'[feature_def])
-            (attribute_usage composite 'requiredFuelEconomy' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::distancePerVolume'[feature_def])
-            (require_constraint_usage composite
-              (result_expr_membership))))
-        (package 'AttributeDefinitions'
-          (namespace_import public -> 'ScalarValues'[unresolved])
-          (namespace_import public -> 'Quantities'[unresolved])
-          (membership_import public -> 'MeasurementReferences::DerivedUnit'[unresolved])
-          (membership_import public -> 'SIPrefixes::kilo'[unresolved])
-          (namespace_import public -> 'NumericalFunctions'[unresolved])
-          (namespace_import public -> 'SI'[unresolved])
-          (namespace_import public -> 'USCustomaryUnits'[unresolved])
-          (alias_member 'Torque' -> 'ISQ::TorqueValue'[unresolved])
-          (enum_def 'Colors'
-            (enum_usage composite 'black')
-            (enum_usage composite 'grey')
-            (enum_usage composite 'red'))
-          (enum_def 'DiameterChoices' :> 'ISQ::LengthValue'[unresolved]
-            (not_implemented 'malformed')
-            (not_implemented 'malformed')
-            (not_implemented 'malformed'))
-          (attribute_usage 'cylinderDiameter' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::DiameterChoices'[enum_def]
-            (feature_value (=)))
-          (enum_def 'IgnitionOnOff'
-            (enum_usage composite 'on')
-            (enum_usage composite 'off'))
-          (enum_def 'FuelKind'
-            (enum_usage composite 'gas')
-            (enum_usage composite 'diesel'))
-          (feature_def 'distancePerVolume' :> 'scalarQuantities'[unresolved]
-            (feature_value (=)))
-          (feature_def 'timePerDistance' :> 'scalarQuantities'[unresolved]
-            (feature_value (=)))
-          (feature_def 'volumePerDistance' :> 'scalarQuantities'[unresolved]
-            (feature_value (=)))
-          (feature_def 'volumePerTime' :> 'scalarQuantities'[unresolved]
-            (feature_value (=)))
-          (feature_def 'kpl' : 'DerivedUnit'[unresolved]
-            (feature_value (=)))
-          (feature_def 'rpm' : 'DerivedUnit'[unresolved]
-            (feature_value (=)))
-          (feature_def 'kW' : 'DerivedUnit'[unresolved]
-            (feature_value (=))))
-        (package 'IndividualDefinitions'
-          (occurrence_def individual 'VehicleRoadContext_1' :> 'SimpleVehicleModel::Definitions::GenericContext::Context'[part_def])
-          (occurrence_def individual 'Vehicle_1' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def])
-          (occurrence_def individual 'FrontAxleAssembly_1' :> 'SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly'[part_def])
-          (occurrence_def individual 'FrontAxle_1' :> 'SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle'[part_def])
-          (occurrence_def individual 'Wheel_1' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def])
-          (occurrence_def individual 'Wheel_2' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def])
-          (occurrence_def individual 'RearAxleAssembly_1' :> 'SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly'[part_def])
-          (occurrence_def individual 'Road_1' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Road'[part_def]))
-        (package 'MetadataDefinitions'
-          (namespace_import public -> 'AnalysisTooling'[unresolved])
-          (metadata_def 'Safety'
-            (attribute_usage composite 'isMandatory' : 'Boolean'[unresolved]))
-          (metadata_def 'Security'))
-        (package 'KeyWord_MetadataDefinitions'
-          (membership_import public -> 'Metaobjects::SemanticMetadata'[unresolved])
-          (state_usage 'failureModes'
-            (multiplicity_range [*]))
-          (metadata_def 'failureMode' :> 'SemanticMetadata'[unresolved]
-            (reference_usage reference :>> 'baseType'[unresolved]
-              (feature_value (=))))
-          (occurrence_usage 'logicalOccurrences'
-            (multiplicity_range [*]))
-          (metadata_def 'logical' :> 'SemanticMetadata'[unresolved]
-            (reference_usage reference :>> 'baseType'[unresolved]
-              (feature_value (=))))
-          (occurrence_usage 'physicalOccurrences'
-            (multiplicity_range [*]))
-          (metadata_def 'physical' :> 'SemanticMetadata'[unresolved]
-            (reference_usage reference :>> 'baseType'[unresolved]
-              (feature_value (=)))))
-        (package 'GenericContext'
-          (part_def 'Context'
-            (attribute_usage composite 'time' : 'TimeValue'[unresolved])
-            (attribute_usage composite 'spatialCF' : 'CartesianSpatial3dCoordinateFrame'[unresolved]
-              (multiplicity_range [1])
-              (reference_usage reference :>> 'mRefs'[unresolved]
-                (feature_value (=))))
-            (attribute_usage composite 'velocityCF' : 'CartesianVelocity3dCoordinateFrame'[unresolved]
-              (multiplicity_range [1])
-              (feature_value (=)))
-            (attribute_usage composite 'accelarationCF' : 'CartesianAcceleration3dCoordinateFrame'[unresolved]
-              (multiplicity_range [1])
-              (feature_value (=))))))
-      (package 'VehicleLogicalConfiguration'
-        (package 'PartsTree'
-          (part_usage 'vehicleLogical' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def]
-            (part_usage composite 'torqueGenerator' : 'SimpleVehicleModel::Definitions::PartDefinitions::TorqueGenerator'[part_def]
-              (action_usage composite 'generateTorque'))
-            (part_usage composite 'electricalGenerator' : 'SimpleVehicleModel::Definitions::PartDefinitions::ElectricalGenerator'[part_def]
-              (action_usage composite 'generateElectricity'))
-            (part_usage composite 'steeringSystem' : 'SimpleVehicleModel::Definitions::PartDefinitions::SteeringSubsystem'[part_def])
-            (part_usage composite 'brakingSubsystem' : 'SimpleVehicleModel::Definitions::PartDefinitions::BrakingSubsystem'[part_def]))))
-      (package 'VehicleLogicalToPhysicalAllocation'
-        (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree'[package])
-        (namespace_import public -> 'SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree'[package])
-        (allocation_usage 'vehicleLogicalToPhysicalAllocation' : 'SimpleVehicleModel::Definitions::AllocationDefinitions::LogicalToPhysical'[allocation_def]
-          (connector_end 'vehicleLogical')
-          (connector_end 'vehicle_b')
-          (allocation_usage composite
-            (connector_end 'vehicleLogical.torqueGenerator')
-            (connector_end 'vehicle_b.engine')
-            (allocation_usage composite
-              (connector_end 'vehicleLogical.torqueGenerator.generateTorque')
-              (connector_end 'vehicle_b.engine.generateTorque')))
-          (allocation_usage composite
-            (connector_end 'vehicleLogical.electricalGenerator')
-            (connector_end 'vehicle_b.engine')
-            (allocation_usage composite
-              (connector_end 'vehicleLogical.electricalGenerator.generateElectricity')
-              (connector_end 'vehicle_b.engine.alternator.generateElectricity')))))
-      (package 'VehicleConfigurations'
-        (package 'VehicleConfiguration_a'
-          (package 'PartsTree'
-            (part_usage 'vehicle_a' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def]
-              (attribute_usage composite 'mass' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::mass'[attribute_usage]
-                (feature_value (=)))
-              (attribute_usage composite 'dryMass' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::dryMass'[attribute_usage]
-                (feature_value (=)))
-              (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::cargoMass'[attribute_usage]
-                (feature_value (=)))
-              (attribute_usage composite 'partMasses' :> 'ISQ::mass'[unresolved]
-                (multiplicity_range [*]))
-              (part_usage composite 'fuelTank' : 'SimpleVehicleModel::Definitions::PartDefinitions::FuelTank'[part_def]
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::mass'[attribute_usage]
-                  (feature_value (=)))
-                (item_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuel'[item_usage]
-                  (attribute_usage composite :>> ''[attribute_usage]
-                    (feature_value (=)))))
-              (part_usage composite 'frontAxleAssembly' : 'SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly'[part_def]
-                (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-                  (feature_value (=)))
-                (part_usage composite 'frontAxle' : 'SimpleVehicleModel::Definitions::PartDefinitions::Axle'[part_def])
-                (part_usage composite 'frontWheels' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-                  (multiplicity_range [2])))
-              (part_usage composite 'rearAxleAssembly' : 'SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly'[part_def]
-                (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-                  (feature_value (=)))
-                (attribute_usage composite 'driveTrainEfficiency' : 'Real'[unresolved]
-                  (feature_value (=)))
-                (part_usage composite 'rearAxle' : 'SimpleVehicleModel::Definitions::PartDefinitions::Axle'[part_def])
-                (part_usage composite 'rearWheels' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-                  (multiplicity_range [2])
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::diameter'[attribute_usage])))))
-          (package 'ActionTree')
-          (package 'Requirements'))
-        (package 'VehicleConfiguration_b'
-          (membership_import public -> 'ShapeItems::Box'[unresolved])
-          (membership_import public -> 'ParametersOfInterestMetadata::mop'[unresolved])
-          (namespace_import public -> 'ModelingMetadata'[unresolved])
-          (package 'PartsTree'
-            (part_usage 'vehicle_b' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def]
-              (attribute_usage composite 'mass' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::mass'[attribute_usage]
-                (feature_value (=)))
-              (attribute_usage composite 'dryMass' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::dryMass'[attribute_usage]
-                (feature_value (=)))
-              (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::cargoMass'[attribute_usage]
-                (feature_value (default =)))
-              (attribute_usage composite 'partMasses'
-                (feature_value (=)))
-              (attribute_usage composite 'avgFuelEconomy' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::distancePerVolume'[feature_def])
-              (port_usage composite 'fuelCmdPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort'[port_def] :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::pwrCmdPort'[port_usage]
-                (item_usage in 'fuelCmd' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort::pwrCmd'[item_usage]))
-              (port_usage composite 'setSpeedPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort'[port_def] ~ 'SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort'[port_def])
-              (port_usage composite 'vehicleToRoadPort' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleToRoadPort'[port_usage]
-                (port_usage composite 'wheelToRoadPort1' : 'SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort'[port_def])
-                (port_usage composite 'wheelToRoadPort2' : 'SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort'[port_def]))
-              (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower'[action_usage])
-              (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::providePower'[perform_action_usage])
-              (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::performSelfTest'[action_usage])
-              (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::performSelfTest'[perform_action_usage])
-              (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::applyParkingBrake'[action_usage])
-              (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::applyParkingBrake'[perform_action_usage])
-              (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::senseTemperature'[action_usage])
-              (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::senseTemperature'[perform_action_usage])
-              (state_usage composite 'vehicleStates' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates'[state_usage])
-              (item_usage composite :> 'envelopingShapes'[unresolved] : 'Box'[unresolved]
-                (multiplicity_range [1])
-                (reference_usage reference 'length1' :>> 'length'[unresolved]
-                  (feature_value (=)))
-                (reference_usage reference 'width1' :>> 'width'[unresolved]
-                  (feature_value (=)))
-                (reference_usage reference 'height1' :>> 'height'[unresolved]
-                  (feature_value (=))))
-              (part_usage composite 'fuelTank' : 'SimpleVehicleModel::Definitions::PartDefinitions::FuelTank'[part_def]
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::mass'[attribute_usage]
-                  (feature_value (=)))
-                (item_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuel'[item_usage]
-                  (attribute_usage composite :>> ''[attribute_usage]
-                    (feature_value (=))))
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelMassMax'[attribute_usage]
-                  (feature_value (=))))
-              (part_usage composite 'frontAxleAssembly' : 'SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly'[part_def]
-                (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-                  (feature_value (=)))
-                (port_usage composite 'shaftPort_d' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d'[port_def])
-                (part_usage composite 'frontAxle' : 'SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle'[part_def])
-                (part_usage composite 'frontWheels' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-                  (multiplicity_range [2])))
-              (part_usage composite 'rearAxleAssembly' : 'SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly'[part_def]
-                (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-                  (feature_value (=)))
-                (attribute_usage composite 'driveTrainEfficiency' : 'Real'[unresolved]
-                  (feature_value (=)))
-                (port_usage composite 'shaftPort_d' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d'[port_def])
-                (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::distributeTorque'[action_usage])
-                (part_usage composite 'rearWheel1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::diameter'[attribute_usage])
-                  (port_usage composite 'wheelToRoadPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort'[port_def])
-                  (port_usage composite 'lugNutCompositePort' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort'[port_usage]
-                    (port_usage composite 'lugNutPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort'[port_usage]
-                      (multiplicity_range [5]))))
-                (part_usage composite 'rearWheel2' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::diameter'[attribute_usage])
-                  (port_usage composite 'wheelToRoadPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort'[port_def])
-                  (port_usage composite 'lugNutCompositePort' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort'[port_usage]
-                    (port_usage composite 'lugNutPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort'[port_usage]
-                      (multiplicity_range [5]))))
-                (part_usage composite 'differential' : 'SimpleVehicleModel::Definitions::PartDefinitions::Differential'[part_def]
-                  (port_usage composite 'shaftPort_d' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d'[port_def])
-                  (port_usage composite 'leftDiffPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::DiffPort'[port_def])
-                  (port_usage composite 'rightDiffPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::DiffPort'[port_def]))
-                (part_usage composite 'rearAxle'
-                  (part_usage composite 'leftHalfAxle' : 'SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle'[part_def]
-                    (port_usage composite 'leftAxleToDiffPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::AxlePort'[port_def])
-                    (port_usage composite 'shankCompositePort' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle::shankCompositePort'[port_usage]
-                      (port_usage composite 'shankPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort'[port_usage]
-                        (multiplicity_range [5]))))
-                  (part_usage composite 'rightHalfAxle' : 'SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle'[part_def]
-                    (port_usage composite 'rightAxleToDiffPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::AxlePort'[port_def])
-                    (port_usage composite 'shankCompositePort' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle::shankCompositePort'[port_usage]
-                      (port_usage composite 'shankPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort'[port_usage]
-                        (multiplicity_range [5])))))
-                (binding_connector_def
-                  (connector_end 'shaftPort_d')
-                  (connector_end 'differential.shaftPort_d'))
-                (connection_usage composite
-                  (connector_end 'differential.leftDiffPort')
-                  (connector_end 'rearAxle.leftHalfAxle.leftAxleToDiffPort'))
-                (connection_usage composite
-                  (connector_end 'differential.rightDiffPort')
-                  (connector_end 'rearAxle.rightHalfAxle.rightAxleToDiffPort'))
-                (interface_usage composite 'wheelToleftHalAxleInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface'[interface_def]
-                  (connector_end 'rearWheel1.lugNutCompositePort')
-                  (connector_end 'rearAxle.leftHalfAxle.shankCompositePort'))
-                (interface_usage composite 'wheelTorightHalAxleInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface'[interface_def]
-                  (connector_end 'rearWheel2.lugNutCompositePort')
-                  (connector_end 'rearAxle.rightHalfAxle.shankCompositePort')))
-              (part_usage composite 'starterMotor' : 'SimpleVehicleModel::Definitions::PartDefinitions::StarterMotor'[part_def])
-              (part_usage composite 'engine' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine'[part_def]
-                (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::generateTorque'[action_usage])
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::generateTorque'[perform_action_usage])
-                (part_usage composite 'cylinders' : 'SimpleVehicleModel::Definitions::PartDefinitions::Cylinder'[part_def]
-                  (multiplicity_range [4..6]))
-                (part_usage composite 'alternator'
-                  (action_usage composite 'generateElectricity'))
-                (not_implemented 'malformed'))
-              (part_usage composite 'transmission' : 'SimpleVehicleModel::Definitions::PartDefinitions::Transmission'[part_def]
-                (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-                  (feature_value (=)))
-                (port_usage composite 'shaftPort_a' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_a'[port_def])
-                (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::amplifyTorque'[action_usage]))
-              (part_usage composite 'driveshaft' : 'SimpleVehicleModel::Definitions::PartDefinitions::Driveshaft'[part_def]
-                (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-                  (feature_value (=)))
-                (port_usage composite 'shaftPort_b' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_b'[port_def])
-                (port_usage composite 'shaftPort_c' : 'SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_c'[port_def])
-                (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::transferTorque'[action_usage]))
-              (part_usage composite 'vehicleSoftware' : 'SimpleVehicleModel::Definitions::PartDefinitions::VehicleSoftware'[part_def]
-                (part_usage composite 'vehicleController' : 'SimpleVehicleModel::Definitions::PartDefinitions::VehicleController'[part_def]
-                  (state_usage composite 'controllerStates' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates'[state_usage])
-                  (part_usage composite 'cruiseController' : 'SimpleVehicleModel::Definitions::PartDefinitions::CruiseController'[part_def])))
-              (part_usage composite 'speedSensor' : 'SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor'[part_def])
-              (part_usage composite 'bodyAssy' : 'SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy'[part_def]
-                (part_usage composite 'body' : 'SimpleVehicleModel::Definitions::PartDefinitions::Body'[part_def]
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Body::color'[attribute_usage]
-                    (feature_value (=))))
-                (part_usage composite 'bumper'
-                  (metadata_usage :> 'Safety'[unresolved]
-                    (feature_def 'isMandatory'
-                      (feature_value (=)))))
-                (part_usage composite 'keylessEntry'
-                  (metadata_usage :> 'Security'[unresolved])))
-              (part_usage composite 'interior'
-                (part_usage composite 'alarm'
-                  (metadata_usage :> 'Security'[unresolved]))
-                (part_usage composite 'seatBelt'
-                  (multiplicity_range [2])
-                  (metadata_usage :> 'Safety'[unresolved]
-                    (feature_def 'isMandatory'
-                      (feature_value (=)))))
-                (part_usage composite 'frontSeat'
-                  (multiplicity_range [2]))
-                (part_usage composite 'driverAirBag'
-                  (metadata_usage :> 'Safety'[unresolved]
-                    (feature_def 'isMandatory'
-                      (feature_value (=))))))
-              (binding_connector_def
-                (connector_end 'engine.fuelCmdPort')
-                (connector_end 'fuelCmdPort'))
-              (interface_usage composite 'engineToTransmissionInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface'[interface_def]
-                (connector_end 'engine.drivePwrPort')
-                (connector_end 'transmission.clutchPort'))
-              (interface_usage composite 'fuelInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface'[interface_def]
-                (connector_end 'fuelTank.fuelOutPort')
-                (connector_end 'engine.fuelInPort'))
-              (allocation_usage composite
-                (connector_end 'ActionTree::providePower.generateToAmplify')
-                (connector_end 'engineToTransmissionInterface'))
-              (binding_connector_def
-                (connector_end 'engine.ignitionCmdPort')
-                (connector_end 'ignitionCmdPort'))
-              (connection_usage composite
-                (connector_end 'starterMotor.gearPort')
-                (connector_end 'engine.flyWheelPort'))
-              (connection_usage composite
-                (connector_end 'vehicleSoftware.vehicleController.controlPort')
-                (connector_end 'engine.engineControlPort'))
-              (binding_connector_def
-                (connector_end 'vehicle_b.setSpeedPort')
-                (connector_end 'vehicleSoftware.vehicleController.cruiseController.setSpeedPort'))
-              (connection_usage composite
-                (connector_end 'speedSensor.speedSensorPort')
-                (connector_end 'vehicleSoftware.vehicleController.cruiseController.speedSensorPort'))
-              (binding_connector_def
-                (connector_end 'vehicleSoftware.vehicleController.cruiseController.cruiseControlPort')
-                (connector_end 'vehicleSoftware.vehicleController.controlPort'))
-              (connection_usage composite
-                (connector_end 'transmission.shaftPort_a')
-                (connector_end 'driveshaft.shaftPort_b'))
-              (connection_usage composite
-                (connector_end 'driveshaft.shaftPort_c')
-                (connector_end 'rearAxleAssembly.shaftPort_d'))
-              (binding_connector_def
-                (connector_end 'rearAxleAssembly.rearWheel1.wheelToRoadPort')
-                (connector_end 'vehicleToRoadPort.wheelToRoadPort1'))
-              (binding_connector_def
-                (connector_end 'rearAxleAssembly.rearWheel2.wheelToRoadPort')
-                (connector_end 'vehicleToRoadPort.wheelToRoadPort2'))
-              (not_implemented 'malformed')))
-          (package 'ActionTree'
-            (action_usage 'providePower' : 'SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower'[action_def]
-              (item_usage in 'fuelCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd'[item_def] :>> 'SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower::pwrCmd'[item_usage])
-              (reference_usage out reference 'wheelToRoadTorque' :>> 'SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower::wheelToRoadTorque'[reference_usage]
-                (multiplicity_range [2])
-                (feature_value (=)))
-              (action_usage composite 'generateTorque' : 'SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque'[action_def]
-                (not_implemented 'malformed')
-                (not_implemented 'malformed'))
-              (action_usage composite 'amplifyTorque' : 'SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque'[action_def])
-              (action_usage composite 'transferTorque' : 'SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque'[action_def])
-              (action_usage composite 'distributeTorque' : 'SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque'[action_def])
-              (flow_usage composite 'generateToAmplify'
-                (connector_end 'generateTorque.engineTorque')
-                (connector_end 'amplifyTorque.engineTorque'))
-              (flow_usage composite 'amplifyTorque')
-              (flow_usage composite 'transferTorque'))
-            (action_usage 'performSelfTest' : 'SimpleVehicleModel::Definitions::ActionDefinitions::PerformSelfTest'[action_def])
-            (action_usage 'applyParkingBrake' : 'SimpleVehicleModel::Definitions::ActionDefinitions::ApplyParkingBrake'[action_def])
-            (action_usage 'senseTemperature' : 'SimpleVehicleModel::Definitions::ActionDefinitions::SenseTemperature'[action_def]))
-          (package 'DiscreteInteractions'
-            (package 'Sequence'
-              (part_def 'Driver'
-                (port_usage composite 'p1')
-                (port_usage composite 'p2'))
-              (part_usage 'part0'
-                (perform_action_usage 'startVehicle'
-                  (action_usage 'turnVehicleOn')
-                  (send_action_usage
-                    (reference_usage in reference 'ignitionCmd' : 'SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd'[item_def]))
-                  (action_usage 'trigger1')
-                  (accept_action_usage)
-                  (flow_usage 'of')
-                  (action_usage 'startEngine'
-                    (item_usage in 'ignitionCmd' : 'SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd'[item_def])
-                    (item_usage out 'es' : 'SimpleVehicleModel::Definitions::SignalDefinitions::EngineStatus'[item_def]))
-                  (flow_usage 'of')
-                  (action_usage 'sendStatus')
-                  (send_action_usage
-                    (reference_usage in reference 'es' : 'SimpleVehicleModel::Definitions::SignalDefinitions::EngineStatus'[item_def]))
-                  (action_usage 'trigger2')
-                  (accept_action_usage))
-                (part_usage composite 'driver' : 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver'[part_def]
-                  (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::startVehicle::turnVehicleOn'[action_usage])
-                  (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::startVehicle::trigger2'[action_usage])
-                  (event_occurrence_usage 'driverReady'))
-                (part_usage composite 'vehicle' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def]
-                  (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::startVehicle::trigger1'[action_usage])
-                  (perform_action_usage :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::startVehicle::sendStatus'[action_usage])
-                  (event_occurrence_usage 'doorClosed'))
-                (succession_def
-                  (connector_end 'vehicle.doorClosed')
-                  (connector_end 'driver.driverReady'))
-                (flow_usage composite 'of')
-                (flow_usage composite 'of')))
-            (occurrence_usage 'CruiseControl1'
-              (part_usage composite 'vehicle_b' :> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b'[part_usage]
-                (port_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::setSpeedPort'[port_usage]
-                  (event_occurrence_usage 'setSpeedReceived'))
-                (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::speedSensor'[part_usage]
-                  (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor::speedSensorPort'[port_usage]
-                    (event_occurrence_usage 'sensedSpeedSent')))
-                (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware'[part_usage]
-                  (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController'[part_usage]
-                    (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController::cruiseController'[part_usage]
-                      (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::setSpeedPort'[port_usage]
-                        (event_occurrence_usage 'setSpeedReceived'
-                          (feature_value (=))))
-                      (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::speedSensorPort'[port_usage]
-                        (event_occurrence_usage 'sensedSpeedReceived'))
-                      (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::cruiseControlPort'[port_usage]
-                        (event_occurrence_usage 'fuelCmdSent')))))
-                (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine'[part_usage]
-                  (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelCmdPort'[port_usage]
-                    (event_occurrence_usage 'fuelCmdReceived')))
-                (flow_usage composite 'sendSensedSpeed' : 'SimpleVehicleModel::Definitions::ItemDefinitions::SensedSpeed'[item_def]
-                  (connector_end 'speedSensor.speedSensorPort.sensedSpeedSent')
-                  (connector_end 'vehicleSoftware.vehicleController.cruiseController.speedSensorPort.sensedSpeedReceived'))
-                (flow_usage composite 'sendFuelCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd'[item_def]
-                  (connector_end 'vehicleSoftware.vehicleController.cruiseController.cruiseControlPort.fuelCmdSent')
-                  (connector_end 'engine.fuelCmdPort.fuelCmdReceived'))))
-            (occurrence_usage 'CruiseControl2'
-              (part_usage composite 'vehicle_b' :> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b'[part_usage]
-                (port_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::setSpeedPort'[port_usage]
-                  (event_occurrence_usage 'setSpeedReceived'))
-                (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::speedSensor'[part_usage]
-                  (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor::speedSensorPort'[port_usage]
-                    (not_implemented 'malformed')))
-                (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware'[part_usage]
-                  (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController'[part_usage]
-                    (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController::cruiseController'[part_usage]
-                      (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::setSpeedPort'[port_usage]
-                        (event_occurrence_usage 'setSpeedReceived'
-                          (feature_value (=))))
-                      (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::speedSensorPort'[port_usage]
-                        (event_occurrence_usage 'setSpeedReceived'
-                          (feature_value (=)))
-                        (source_succession
-                          (not_implemented 'malformed')))
-                      (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::cruiseControlPort'[port_usage]
-                        (not_implemented 'malformed')))))
-                (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine'[part_usage]
-                  (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelCmdPort'[port_usage]
-                    (not_implemented 'malformed')))
-                (flow_usage composite 'sendSensedSpeed' : 'SimpleVehicleModel::Definitions::ItemDefinitions::SensedSpeed'[item_def])
-                (flow_usage composite 'sendFuelCmd' : 'SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd'[item_def]))))
-          (package 'Requirements'
-            (namespace_import public -> 'RequirementDerivation'[unresolved])
-            (namespace_import public -> 'ModelingMetadata'[unresolved])
-            (item_usage 'marketSurvey')
-            (dependency)
-            (requirement_usage 'vehicleSpecification'
-              (subject_membership in 'vehicle' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def])
-              (requirement_usage composite 'vehicleMassRequirement' : 'SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement'[requirement_def]
-                (documentation)
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massRequired'[attribute_usage]
-                  (feature_value (=)))
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massActual'[attribute_usage]
-                  (feature_value (default =)))
-                (attribute_usage composite 'fuelMassActual' :> 'ISQ::mass'[unresolved])
-                (attribute_usage composite 'fuelMassMax' :> 'ISQ::mass'[unresolved]
-                  (feature_value (=)))
-                (assume_constraint_usage composite
-                  (result_expr_membership)))
-              (allocation_usage composite
-                (connector_end 'vehicleMassRequirement')
-                (connector_end 'PartsTree::vehicle_b.mass'))
-              (requirement_usage composite 'vehicleFuelEconomyRequirements'
-                (documentation)
-                (attribute_usage composite 'assumedCargoMass' :> 'ISQ::mass'[unresolved])
-                (requirement_usage composite 'cityFuelEconomyRequirement' : 'SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement'[requirement_def]
-                  (reference_usage reference :>> 'SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement::requiredFuelEconomy'[attribute_usage]
-                    (feature_value (=)))
-                  (assume_constraint_usage composite
-                    (result_expr_membership)))
-                (requirement_usage composite 'highwayFuelEconomyRequirement' : 'SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement'[requirement_def]
-                  (reference_usage reference :>> 'SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement::requiredFuelEconomy'[attribute_usage]
-                    (feature_value (=)))
-                  (assume_constraint_usage composite
-                    (result_expr_membership))
-                  (metadata_usage :> 'StatusInfo'[unresolved]
-                    (feature_def 'status'
-                      (feature_value (=)))
-                    (feature_def 'originator'
-                      (feature_value (=)))
-                    (feature_def 'owner'
-                      (feature_value (=)))))))
-            (requirement_usage 'engineSpecification'
-              (subject_membership in 'engine1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine'[part_def])
-              (requirement_usage composite 'engineMassRequirement' : 'SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement'[requirement_def]
-                (documentation)
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massRequired'[attribute_usage]
-                  (feature_value (=)))
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massActual'[attribute_usage]
-                  (feature_value (=))))
-              (requirement_usage composite 'torqueGenerationRequirement' : 'SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement'[requirement_def]
-                (subject_membership in 'generateTorque'
-                  (feature_value (default =))))
-              (requirement_usage composite 'drivePowerOutputRequirement' : 'SimpleVehicleModel::Definitions::RequirementDefinitions::DrivePowerOutputRequirement'[requirement_def]
-                (port_usage composite 'torqueOutPort'
-                  (reference_usage out reference 'torque' : 'SimpleVehicleModel::Definitions::AttributeDefinitions::Torque'[alias_member]))))
-            (not_implemented 'malformed')
-            (not_implemented 'malformed')))
-        (package 'Engine4Cyl_Variant'
-          (namespace_import public -> 'ModelingMetadata'[unresolved])
-          (part_usage 'engine' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine'[part_def]
-            (part_usage composite ordered 'cylinders' : 'SimpleVehicleModel::Definitions::PartDefinitions::Cylinder'[part_def]
-              (multiplicity_range [4..8])))
-          (part_usage 'engine4Cyl' :> 'SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine'[part_usage]
-            (part_usage composite :>> 'SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine::cylinders'[part_usage]
-              (multiplicity_range [4]))
-            (part_usage composite 'cylinder1' :> ''[part_usage]
-              (multiplicity_range [1]))
-            (part_usage composite 'cylinder2' :> ''[part_usage]
-              (multiplicity_range [1]))
-            (part_usage composite 'cylinder3' :> ''[part_usage]
-              (multiplicity_range [1]))
-            (part_usage composite 'cylinder4' :> ''[part_usage]
-              (multiplicity_range [1])))
-          (dependency))
-        (package 'WheelHubAssemblies'
-          (part_usage 'wheelHubAssy1'
-            (part_usage composite 'wheel1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-              (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort'[port_usage] : 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort'[port_def]
-                (port_usage composite 'lugNutPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort'[port_usage]
-                  (multiplicity_range [5]))))
-            (part_usage composite 'hub1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Hub'[part_def]
-              (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort'[port_usage] : 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort'[port_def]
-                (port_usage composite 'shankPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort'[port_usage]
-                  (multiplicity_range [5]))))
-            (interface_usage composite 'wheelHubInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface'[interface_def]
-              (connector_end 'wheel1.lugNutCompositePort')
-              (connector_end 'hub1.shankCompositePort')))
-          (part_usage 'wheelHubAssy2'
-            (part_usage composite 'wheel1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-              (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort'[port_usage] : 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort'[port_def]
-                (port_usage composite 'lugNutPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort'[port_usage]
-                  (multiplicity_range [5]))))
-            (part_usage composite 'hub1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Hub'[part_def]
-              (port_usage composite :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort'[port_usage] : 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort'[port_def]
-                (port_usage composite 'shankPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort'[port_usage]
-                  (multiplicity_range [5]))))
-            (interface_usage composite 'wheelHubInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface'[interface_def]
-              (connector_end 'lugNutCompositePort' :> ''[port_usage])
-              (connector_end 'shankCompositePort' :> ''[port_usage])
-              (interface_usage composite 'wheelFastenerInterface1' :> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface'[interface_usage]
-                (connector_end 'lugNutPort' :> 'lugNutPort'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::lugNutCompositePort.lugNutPort'[connector_end][implied])
-                (connector_end 'shankPort' :> 'shankPort'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::shankCompositePort.shankPort'[connector_end][implied]))))
-          (part_usage 'wheelHubAssy3'
-            (part_usage composite 'wheel1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel'[part_def]
-              (port_usage composite 'lugNutCompositePort' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort'[port_usage]
-                (port_usage composite 'lugNutPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort'[port_usage]
-                  (multiplicity_range [5])
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::threadDia'[attribute_usage]
-                    (feature_value (=)))
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::threadPitch'[attribute_usage]
-                    (feature_value (=))))
-                (port_usage composite 'lugNutPort1' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort'[port_usage]
-                  (multiplicity_range [1]))
-                (port_usage composite 'lugNutPort2' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort'[port_usage]
-                  (multiplicity_range [1]))
-                (port_usage composite 'lugNutPort3' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort'[port_usage]
-                  (multiplicity_range [1]))))
-            (part_usage composite 'hub1' : 'SimpleVehicleModel::Definitions::PartDefinitions::Hub'[part_def]
-              (port_usage composite 'shankCompositePort' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort'[port_usage]
-                (port_usage composite 'shankPort' :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort'[port_usage]
-                  (multiplicity_range [5])
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::threadDia'[attribute_usage]
-                    (feature_value (=)))
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::threadPitch'[attribute_usage]
-                    (feature_value (=)))
-                  (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::shaftLength'[attribute_usage]
-                    (feature_value (=))))
-                (port_usage composite 'shankPort1' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort'[port_usage]
-                  (multiplicity_range [1]))
-                (port_usage composite 'shankPort2' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort'[port_usage]
-                  (multiplicity_range [1]))
-                (port_usage composite 'shankPort3' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort'[port_usage]
-                  (multiplicity_range [1]))))
-            (interface_usage composite 'wheelHubInterface' : 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface'[interface_def]
-              (connector_end 'lugNutCompositePort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort'[port_usage])
-              (connector_end 'shankCompositePort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort'[port_usage])
-              (interface_usage composite 'wheelFastenerInterface1' :> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface'[interface_usage]
-                (connector_end 'lugNutPort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort1'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::lugNutCompositePort.lugNutPort'[connector_end][implied])
-                (connector_end 'shankPort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort1'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::shankCompositePort.shankPort'[connector_end][implied])
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::maxTorque'[attribute_usage]
-                  (feature_value (=))))
-              (interface_usage composite 'wheelFastenerInterface2' :> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface'[interface_usage]
-                (connector_end 'lugNutPort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort2'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::lugNutCompositePort.lugNutPort'[connector_end][implied])
-                (connector_end 'shankPort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort2'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::shankCompositePort.shankPort'[connector_end][implied])
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::maxTorque'[attribute_usage]
-                  (feature_value (=))))
-              (interface_usage composite 'wheelFastenerInterface3' :> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface'[interface_usage]
-                (connector_end 'lugNutPort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort3'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::lugNutCompositePort.lugNutPort'[connector_end][implied])
-                (connector_end 'shankPort' :> 'SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort3'[port_usage] :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::wheelFastenerInterface::shankCompositePort.shankPort'[connector_end][implied])
-                (attribute_usage composite :>> 'SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::maxTorque'[attribute_usage]
-                  (feature_value (=))))))))
-      (package 'VehicleAnalysis'
-        (namespace_import public -> 'RiskMetadata'[unresolved])
-        (namespace_import public -> 'RiskLevelEnum'[unresolved])
-        (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b'[package])
-        (package 'FuelEconomyAnalysisModel'
-          (membership_import public -> 'SampledFunctions::SampledFunction'[unresolved])
-          (attribute_def 'Scenario' :> 'SampledFunction'[unresolved]
-            (attribute_usage composite 'wayPoint'
-              (multiplicity_range [1..*])
-              (attribute_usage composite 'elapseTime' :> 'ISQ::time'[unresolved]
-                (multiplicity_range [1]))
-              (attribute_usage composite 'position' :> 'ISQ::distance'[unresolved]
-                (multiplicity_range [1]))))
-          (calculation_def 'FuelConsumption'
-            (reference_usage in reference 'bestFuelConsumption' : 'Real'[unresolved])
-            (reference_usage in reference 'idlingFuelConsumption' : 'Real'[unresolved])
-            (reference_usage in reference 'tpd_avg' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::timePerDistance'[feature_def])
-            (attribute_usage composite 'f'
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'dpv' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::distancePerVolume'[feature_def]
-                (feature_value (=)))))
-          (calculation_def 'AverageTravelTimePerDistance'
-            (reference_usage in reference 'scenario' : 'SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario'[attribute_def])
-            (return_parameter_membership
-              (feature_def out 'tpd_avg' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::timePerDistance'[feature_def])))
-          (calculation_def 'TraveledDistance'
-            (reference_usage in reference 'scenario' : 'SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario'[attribute_def])
-            (return_parameter_membership
-              (feature_def out 'distance' :> 'length'[unresolved])))
-          (calculation_def 'IdlingFuelConsumptionPerTime'
-            (reference_usage in reference 'engine' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine'[part_def])
-            (attribute_usage composite 'idlingFuelConsumptionPerDisplacement' : 'Real'[unresolved]
-              (feature_value (=)))
-            (return_parameter_membership
-              (feature_def out 'f_a' : 'Real'[unresolved]
-                (feature_value (=)))))
-          (attribute_usage 'specificGravityOfGasoline' : 'Real'[unresolved]
-            (feature_value (=)))
-          (calculation_def 'BestFuelConsumptionPerDistance'
-            (reference_usage in reference 'mass' : 'MassValue'[unresolved])
-            (reference_usage in reference 'bsfc' : 'Real'[unresolved])
-            (reference_usage in reference 'tpd_avg' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::timePerDistance'[feature_def])
-            (reference_usage in reference 'distance' :> 'length'[unresolved])
-            (attribute_usage composite 'required_power_avg' :> 'ISQ::power'[unresolved])
-            (constraint_usage composite
-              (result_expr_membership))
-            (return_parameter_membership
-              (feature_def out 'f_b' : 'Real'[unresolved]
-                (feature_value (=)))))
-          (calculation_def 'ComputeBSFC'
-            (reference_usage in reference 'engine' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine'[part_def])
-            (return_parameter_membership
-              (feature_def out : 'Real'[unresolved])))
-          (analysis_case_usage 'fuelEconomyAnalysis'
-            (subject_membership in
-              (feature_value (=)))
-            (objective_membership composite 'fuelEconomyAnalysisObjective'
-              (documentation)
-              (not_implemented 'malformed'))
-            (attribute_usage in 'scenario' : 'SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario'[attribute_def])
-            (attribute_usage composite 'distance'
-              (feature_value (=)))
-            (attribute_usage composite 'tpd_avg'
-              (feature_value (=)))
-            (attribute_usage composite 'bsfc'
-              (feature_value (=)))
-            (attribute_usage composite 'f_a'
-              (feature_value (=)))
-            (attribute_usage composite 'f_b'
-              (feature_value (=)))
-            (return_parameter_membership
-              (attribute_usage out 'calculatedFuelEconomy' :> 'SimpleVehicleModel::Definitions::AttributeDefinitions::distancePerVolume'[feature_def]
-                (feature_value (=))))))
-        (package 'ElectricalPowerAnalysis')
-        (package 'ReliabilityAnalyis')
-        (package 'VehicleTradeOffAnalysis'
-          (metadata_usage :> 'Rationale'[unresolved] annotated 'SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl'[part_usage]
-            (feature_def 'explanation'
-              (feature_value (=)))
-            (feature_def 'text'
-              (feature_value (=))))
-          (metadata_usage :> 'Risk'[unresolved] annotated 'SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl'[part_usage]
-            (feature_def 'totalRisk'
-              (feature_value (=)))
-            (feature_def 'technicalRisk'
-              (feature_value (=)))
-            (feature_def 'scheduleRisk'
-              (feature_value (=)))
-            (feature_def 'costRisk'
-              (feature_value (=))))
-          (metadata_usage :> 'Risk'[unresolved] annotated 'SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::fuelEfficiency'[attribute_usage]
-            (feature_def 'technicalRisk'
-              (feature_def 'probability'
-                (feature_value (=)))
-              (feature_def 'impact'
-                (feature_value (=)))))
-          (namespace_import public -> 'TradeStudies'[unresolved])
-          (calculation_def 'EngineEvaluation'
-            (reference_usage in reference 'engineMass' :> 'ISQ::mass'[unresolved])
-            (reference_usage in reference 'enginePower' :> 'ISQ::power'[unresolved])
-            (reference_usage in reference 'engineFuelEfficiency' : 'Real'[unresolved])
-            (reference_usage in reference 'engineCost' : 'Real'[unresolved])
-            (return_parameter_membership
-              (feature_def out 'eval' : 'Real'[unresolved])))
-          (calculation_def 'EngineEvaluation_4cyl'
-            (reference_usage in reference 'engineMass' :> 'ISQ::mass'[unresolved])
-            (reference_usage in reference 'enginePower' :> 'ISQ::power'[unresolved])
-            (reference_usage in reference 'engineFuelEfficiency' : 'Real'[unresolved])
-            (reference_usage in reference 'engineCost' : 'Real'[unresolved])
-            (return_parameter_membership
-              (feature_def out 'eval' : 'Real'[unresolved])))
-          (calculation_def 'EngineEvaluation_6cyl'
-            (reference_usage in reference 'engineMass' :> 'ISQ::mass'[unresolved])
-            (reference_usage in reference 'enginePower' :> 'ISQ::power'[unresolved])
-            (reference_usage in reference 'engineFuelEfficiency' : 'Real'[unresolved])
-            (reference_usage in reference 'engineCost' : 'Real'[unresolved])
-            (return_parameter_membership
-              (feature_def out 'eval' : 'Real'[unresolved])))
-          (analysis_case_usage 'engineTradeOffAnalysis' : 'TradeStudy'[unresolved]
-            (subject_membership in 'vehicleAlternatives' :> 'vehicle_b'[unresolved]
-              (multiplicity_range [2]))
-            (part_usage composite 'vehicle_b_engine4cyl' :> 'SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicleAlternatives'[subject_membership]
-              (part_usage composite 'engine' :>> 'engine'[unresolved]
-                (part_usage composite 'cylinders' :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine::cylinders'[part_usage]
-                  (multiplicity_range [4]))
-                (attribute_usage composite 'mass' :>> 'mass'[unresolved]
-                  (feature_value (=)))
-                (attribute_usage composite 'peakHorsePower' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::peakHorsePower'[attribute_usage]
-                  (feature_value (=)))
-                (attribute_usage composite 'fuelEfficiency' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelEfficiency'[attribute_usage]
-                  (feature_value (=)))
-                (attribute_usage composite 'cost' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::cost'[attribute_usage]
-                  (feature_value (=)))))
-            (part_usage composite 'vehicle_b_engine6cyl' :> 'SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicleAlternatives'[subject_membership]
-              (part_usage composite 'engine' :>> 'engine'[unresolved]
-                (part_usage composite 'cylinders' :>> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine::cylinders'[part_usage]
-                  (multiplicity_range [6]))
-                (attribute_usage composite 'mass' :>> 'mass'[unresolved]
-                  (feature_value (=)))
-                (attribute_usage composite 'peakHorsePower' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::peakHorsePower'[attribute_usage]
-                  (feature_value (=)))
-                (attribute_usage composite 'fuelEfficiency' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelEfficiency'[attribute_usage]
-                  (feature_value (=)))
-                (attribute_usage composite 'cost' :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Engine::cost'[attribute_usage]
-                  (feature_value (=)))))
-            (objective_membership composite : 'MaximizeObjective'[unresolved])
-            (calculation_usage composite :> 'evaluationFunction'[unresolved]
-              (part_usage in 'vehicle' :> 'SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl'[part_usage])
-              (return_parameter_membership
-                (attribute_usage out 'eval' : 'Real'[unresolved]
-                  (feature_value (=)))))
-            (calculation_usage composite :> 'evaluationFunction'[unresolved]
-              (part_usage in 'vehicle' :> 'SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl'[part_usage])
-              (return_parameter_membership
-                (attribute_usage out 'eval' : 'Real'[unresolved]
-                  (feature_value (=)))))
-            (return_parameter_membership
-              (part_usage out 'selectedVehicle' :> 'vehicle_b'[unresolved])))))
-      (package 'VehicleVerification'
-        (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b'[package])
-        (namespace_import public -> 'SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions'[package])
-        (namespace_import public -> 'SimpleVehicleModel::VehicleVerification::VerificationCases1'[package])
-        (namespace_import public -> 'VerificationCases'[unresolved])
-        (namespace_import public -> 'SimpleVehicleModel::VehicleVerification::VerificationSystem'[package])
-        (package 'VerificationCaseDefinitions'
-          (verification_case_def 'MassTest')
-          (verification_case_def 'AccelerationTest')
-          (verification_case_def 'ReliabilityTest'))
-        (package 'VerificationCases1'
-          (verification_case_usage 'massTests' : 'SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest'[verification_case_def]
-            (subject_membership in 'vehicle_uut' :> 'vehicle_b'[unresolved])
-            (actor_membership in 'vehicleVerificationSubSystem_1'
-              (feature_value (=)))
-            (objective_membership composite
-              (not_implemented 'malformed'))
-            (metadata_usage :> 'VerificationMethod'[unresolved]
-              (feature_def 'kind'
-                (feature_value (=))))
-            (action_usage composite 'weighVehicle'
-              (reference_usage out reference 'massMeasured' :> 'ISQ::mass'[unresolved]))
-            (source_succession
-              (action_usage 'evaluatePassFail'
-                (reference_usage in reference 'massMeasured' :> 'ISQ::mass'[unresolved])
-                (reference_usage out reference 'verdict'
-                  (feature_value (=)))))
-            (flow_usage composite
-              (connector_end 'weighVehicle.massMeasured')
-              (connector_end 'evaluatePassFail.massMeasured'))
-            (return_parameter_membership
-              (feature_def out :>> 'verdict'[unresolved]
-                (feature_value (=))))))
-        (package 'VerificationSystem'
-          (part_usage 'verificationContext'
-            (perform_action_usage :>> 'SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests'[verification_case_usage])
-            (part_usage composite 'vehicle_UnitUnderTest' :> 'vehicle_b'[unresolved])
-            (part_usage composite 'massVerificationSystem'
-              (part_usage composite 'scale'
-                (perform_action_usage :>> 'SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::weighVehicle'[action_usage]))
-              (part_usage composite 'operator'
-                (perform_action_usage :>> 'massTests::evaluatePassFail'[unresolved]))))))
-      (package 'VehicleIndividuals'
-        (occurrence_usage individual 'a' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::VehicleRoadContext_1'[occurrence_def]
-          (occurrence_usage composite 't0_t2_a'
-            (occurrence_usage composite 't0_a'
-              (attribute_usage composite 't0' :>> 'SimpleVehicleModel::Definitions::GenericContext::Context::time'[attribute_usage]
-                (feature_value (=)))
-              (occurrence_usage composite 't0_r' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Road_1'[occurrence_def]
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Road::incline'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Road::friction'[attribute_usage]
-                  (feature_value (=))))
-              (occurrence_usage composite 't0_v' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Vehicle_1'[occurrence_def]
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::position'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::velocity'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::acceleration'[attribute_usage]
-                  (feature_value (=)))
-                (occurrence_usage composite 't0_fa' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::FrontAxleAssembly_1'[occurrence_def]
-                  (occurrence_usage composite 't0_leftFront' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_1'[occurrence_def])
-                  (occurrence_usage composite 't0_rightFront' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_2'[occurrence_def]))))
-            (occurrence_usage composite 't1_a'
-              (attribute_usage composite 't1' :>> 'SimpleVehicleModel::Definitions::GenericContext::Context::time'[attribute_usage]
-                (feature_value (=)))
-              (occurrence_usage composite 't1_r' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Road_1'[occurrence_def]
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Road::incline'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Road::friction'[attribute_usage]
-                  (feature_value (=))))
-              (occurrence_usage composite 't1_v' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Vehicle_1'[occurrence_def]
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::position'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::velocity'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::acceleration'[attribute_usage]
-                  (feature_value (=)))
-                (occurrence_usage composite 't1_fa' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::FrontAxleAssembly_1'[occurrence_def]
-                  (occurrence_usage composite 't1_leftFront' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_1'[occurrence_def])
-                  (occurrence_usage composite 't1_rightFront' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_2'[occurrence_def]))))
-            (occurrence_usage composite 't2_a'
-              (attribute_usage composite 't2' :>> 'SimpleVehicleModel::Definitions::GenericContext::Context::time'[attribute_usage]
-                (feature_value (=)))
-              (occurrence_usage composite 't2_r' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Road_1'[occurrence_def]
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Road::incline'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Road::friction'[attribute_usage]
-                  (feature_value (=))))
-              (occurrence_usage composite 't2_v' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Vehicle_1'[occurrence_def]
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::position'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::velocity'[attribute_usage]
-                  (feature_value (=)))
-                (reference_usage reference :>> 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::acceleration'[attribute_usage]
-                  (feature_value (=)))
-                (occurrence_usage composite 't2_fa' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::FrontAxleAssembly_1'[occurrence_def]
-                  (occurrence_usage composite 't2_leftFront' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_1'[occurrence_def])
-                  (occurrence_usage composite 't2_rightFront' : 'SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_2'[occurrence_def])))))))
-      (package 'MissionContext'
-        (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b'[package])
-        (membership_import public -> 'ParametersOfInterestMetadata::moe'[unresolved])
-        (namespace_import public -> 'SimpleVehicleModel::MissionContext::TransportPassengerScenario'[package])
-        (package 'ContextDefinitions'
-          (part_def 'MissionContext' :> 'SimpleVehicleModel::Definitions::GenericContext::Context'[part_def])
-          (part_def 'Road')
-          (part_def 'Driver'
-            (port_usage composite 'handPort' : 'SimpleVehicleModel::Definitions::PortDefinitions::HandPort'[port_def])
-            (state_usage composite 'driverStates'
-              (state_usage composite 'initial')
-              (state_usage composite 'wait')
-              (transition_usage)
-              (transition_usage)
-              (transition_usage)))
-          (part_def 'Passenger')
-          (requirement_usage 'transportRequirements')
-          (use_case_def 'TransportPassenger'
-            (objective_membership composite 'TransportObjective'
-              (documentation)
-              (require_constraint_usage composite 'transportRequirements'))
-            (subject_membership in 'vehicle' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def])
-            (actor_membership in 'environment')
-            (actor_membership in 'road')
-            (actor_membership in 'driver')
-            (actor_membership in 'passenger'
-              (multiplicity_range [0..4]))
-            (include_use_case_usage 'getInVehicle_a' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle'[use_case_usage]
-              (multiplicity_range [1..5]))
-            (include_use_case_usage 'getOutOfVehicle_a' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle'[use_case_usage]
-              (multiplicity_range [1..5])))
-          (use_case_usage 'getInVehicle' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle'[use_case_def]
-            (action_usage composite 'unlockDoor_in'
-              (multiplicity_range [0..1]))
-            (source_succession
-              (action_usage 'openDoor_in'))
-            (source_succession
-              (action_usage 'enterVehicle'))
-            (source_succession
-              (action_usage 'closeDoor_in')))
-          (use_case_def 'GetInVehicle'
-            (subject_membership in 'vehicle' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def])
-            (actor_membership in 'driver'
-              (multiplicity_range [0..1]))
-            (actor_membership in 'passenger'
-              (multiplicity_range [0..1]))
-            (assert_constraint_usage
-              (result_expr_membership)))
-          (use_case_usage 'getOutOfVehicle' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle'[use_case_def]
-            (action_usage composite 'openDoor_out')
-            (source_succession
-              (action_usage 'exitVehicle'))
-            (source_succession
-              (action_usage 'closeDoor_out'))
-            (source_succession
-              (action_usage 'lockDoor_out')))
-          (use_case_def 'GetOutOfVehicle'
-            (subject_membership in 'vehicle' : 'SimpleVehicleModel::Definitions::PartDefinitions::Vehicle'[part_def])
-            (actor_membership in 'driver'
-              (multiplicity_range [0..1]))
-            (actor_membership in 'passenger'
-              (multiplicity_range [0..1]))
-            (assert_constraint_usage
-              (result_expr_membership))))
-        (package 'TransportPassengerScenario'
-          (membership_import public -> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger'[use_case_def])
-          (use_case_usage 'transportPassenger' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger'[use_case_def]
-            (initial_node)
-            (source_succession
-              (action_usage 'a'
-                (action_usage composite 'driverGetInVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getInVehicle_a'[include_use_case_usage]
-                  (multiplicity_range [1]))
-                (action_usage composite 'passenger1GetInVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getInVehicle_a'[include_use_case_usage]
-                  (multiplicity_range [1]))))
-            (source_succession
-              (action_usage 'trigger'))
-            (accept_action_usage)
-            (source_succession
-              (action_usage 'b'
-                (action_usage composite 'driveVehicleToDestination')
-                (action_usage composite 'providePower')))
-            (source_succession
-              (action_usage 'c'
-                (action_usage composite 'driverGetOutOfVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getOutOfVehicle_a'[include_use_case_usage]
-                  (multiplicity_range [1]))
-                (action_usage composite 'passenger1GetOutOfVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getOutOfVehicle_a'[include_use_case_usage]
-                  (multiplicity_range [1]))))
-            (source_succession
-              (reference_usage reference 'done')))
-          (use_case_usage 'transportPassenger_1' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger'[use_case_def]
-            (action_usage composite 'driverGetInVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getInVehicle_a'[include_use_case_usage]
-              (multiplicity_range [1]))
-            (action_usage composite 'passenger1GetInVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getInVehicle_a'[include_use_case_usage]
-              (multiplicity_range [1]))
-            (action_usage composite 'driverGetOutOfVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getOutOfVehicle_a'[include_use_case_usage]
-              (multiplicity_range [1]))
-            (action_usage composite 'passenger1GetOutOfVehicle' :> 'SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::getOutOfVehicle_a'[include_use_case_usage]
-              (multiplicity_range [1]))
-            (action_usage composite 'driveVehicleToDestination')
-            (action_usage composite 'providePower')
-            (item_def 'VehicleOnSignal')
-            (join_node 'join1')
-            (join_node 'join2')
-            (join_node 'join3')
-            (action_usage composite 'trigger')
-            (accept_action_usage)
-            (initial_node)
-            (source_succession
-              (fork_node 'fork1'))
-            (source_succession
-              (reference_usage reference 'driverGetInVehicle'))
-            (source_succession
-              (reference_usage reference 'passenger1GetInVehicle'))
-            (succession_def
-              (connector_end 'driverGetInVehicle')
-              (connector_end 'join1'))
-            (succession_def
-              (connector_end 'passenger1GetInVehicle')
-              (connector_end 'join1'))
-            (succession_def
-              (connector_end 'join1')
-              (connector_end 'trigger'))
-            (succession_def
-              (connector_end 'trigger')
-              (connector_end 'fork2'))
-            (fork_node 'fork2')
-            (source_succession
-              (reference_usage reference 'driveVehicleToDestination'))
-            (source_succession
-              (reference_usage reference 'providePower'))
-            (succession_def
-              (connector_end 'driveVehicleToDestination')
-              (connector_end 'join2'))
-            (succession_def
-              (connector_end 'providePower')
-              (connector_end 'join2'))
-            (succession_def
-              (connector_end 'join2')
-              (connector_end 'fork3'))
-            (fork_node 'fork3')
-            (source_succession
-              (reference_usage reference 'driverGetOutOfVehicle'))
-            (source_succession
-              (reference_usage reference 'passenger1GetOutOfVehicle'))
-            (succession_def
-              (connector_end 'driverGetOutOfVehicle')
-              (connector_end 'join3'))
-            (succession_def
-              (connector_end 'passenger1GetOutOfVehicle')
-              (connector_end 'join3'))
-            (succession_def
-              (connector_end 'join3')
-              (connector_end 'done'))))
-        (part_usage 'missionContext' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext'[part_def]
-          (attribute_usage composite 'transportTime' :> 'ISQ::time'[unresolved])
-          (perform_action_usage :>> 'SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger'[use_case_usage])
-          (part_usage composite 'road' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::Road'[part_def]
-            (feature_value (=)))
-          (part_usage composite 'driver' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::Driver'[part_def]
-            (feature_value (=))
-            (perform_action_usage :>> 'transportPassenger::a::driverGetInVehicle::unlockDoor_in'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::a::driverGetInVehicle::openDoor_in'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::a::driverGetInVehicle::enterVehicle'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::a::driverGetInVehicle::closeDoor_in'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::driverGetOutOfVehicle::openDoor_out'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::driverGetOutOfVehicle::exitVehicle'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::driverGetOutOfVehicle::closeDoor_out'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::driverGetOutOfVehicle::lockDoor_out'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::b::driveVehicleToDestination'[unresolved]))
-          (part_usage composite 'passenger1' : 'SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger'[part_def]
-            (feature_value (=))
-            (perform_action_usage :>> 'transportPassenger::a::passenger1GetInVehicle::unlockDoor_in'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::a::passenger1GetInVehicle::openDoor_in'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::a::passenger1GetInVehicle::enterVehicle'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::a::passenger1GetInVehicle::closeDoor_in'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::passenger1GetOutOfVehicle::openDoor_out'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::passenger1GetOutOfVehicle::exitVehicle'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::passenger1GetOutOfVehicle::closeDoor_out'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::c::passenger1GetOutOfVehicle::lockDoor_out'[unresolved]))
-          (part_usage composite 'vehicle_b_1' :> 'vehicle_b'[unresolved]
-            (feature_value (=))
-            (attribute_usage composite :>> 'position3dVector'[unresolved]
-              (feature_value (=)))
-            (perform_action_usage :>> 'transportPassenger::b::providePower'[unresolved])
-            (reference_usage reference :>> 'providePower'[unresolved])
-            (perform_action_usage :>> 'transportPassenger::trigger'[unresolved]))
-          (connection_usage composite
-            (connector_end 'driver.handPort')
-            (connector_end 'vehicle_b_1.ignitionCmdPort'))
-          (connection_usage composite
-            (connector_end 'road')
-            (connector_end 'vehicle_b_1.vehicleToRoadPort'))))
-      (package 'VehicleSuperSetModel'
-        (package 'VariationPointDefinitions'
-          (part_def variation 'TransmissionChoices' :> 'SimpleVehicleModel::Definitions::PartDefinitions::Transmission'[part_def]
-            (variant_usage
-              (part_usage composite 'transmissionAutomatic' : 'SimpleVehicleModel::Definitions::PartDefinitions::TransmissionAutomatic'[part_def]))
-            (variant_usage
-              (part_usage composite 'transmissionManual' : 'SimpleVehicleModel::Definitions::PartDefinitions::TransmissionManual'[part_def]))))
-        (package 'VehiclePartsTree'
-          (namespace_import public -> 'SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions'[package])
-          (part_usage abstract 'vehicleFamily'
-            (part_usage variation composite 'engine' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine'[part_def]
-              (variant_usage
-                (part_usage composite 'engine4Cyl' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine4Cyl'[part_def]))
-              (variant_usage
-                (part_usage composite 'engine6Cyl' : 'SimpleVehicleModel::Definitions::PartDefinitions::Engine6Cyl'[part_def]
-                  (part_usage composite 'cylinder' : 'SimpleVehicleModel::Definitions::PartDefinitions::Cylinder'[part_def]
-                    (multiplicity_range [6])
-                    (attribute_usage variation composite 'diameter' : 'LengthValue'[unresolved]
-                      (variant_usage
-                        (attribute_usage composite 'smallDiameter' : 'LengthValue'[unresolved]))
-                      (variant_usage
-                        (attribute_usage composite 'largeDiagmeter' : 'LengthValue'[unresolved])))))))
-            (part_usage composite 'transmissionChoices' : 'SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices'[part_def])
-            (part_usage composite 'sunroof' : 'SimpleVehicleModel::Definitions::PartDefinitions::Sunroof'[part_def]
-              (multiplicity_range [0..1]))
-            (assert_constraint_usage 'selectionConstraint'
-              (result_expr_membership))
-            (part_usage composite 'driveshaft')
-            (part_usage composite 'frontAxleAssembly')
-            (part_usage composite 'rearAxleAssembly'))))
-      (package 'SafetyandSecurityGroups'
-        (namespace_import public -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree'[package])
-        (package 'SafetyGroup'
-          (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b'[part_usage])
-          (element_filter_membership))
-        (package 'SecurityGroup'
-          (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b'[part_usage])
-          (element_filter_membership))
-        (package 'SafetyandSecurityGroup'
-          (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b'[part_usage])
-          (element_filter_membership))
-        (package 'MandatorySafetyGroup'
-          (membership_import public recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b'[part_usage])
-          (element_filter_membership)))
-      (package 'Views_Viewpoints'
-        (package 'ViewpointDefinitions'
-          (viewpoint_def 'BehaviorViewpoint')
-          (viewpoint_def 'SafetyViewpoint'
-            (framed_concern_membership 'vs' : 'SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety'[concern_def]))
-          (part_def 'SafetyEngineer')
-          (concern_def 'VehicleSafety'
-            (documentation)
-            (subject_membership in)
-            (stakeholder_membership in 'se' : 'SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer'[part_def])))
-        (package 'ViewDefinitions'
-          (namespace_import public -> 'Views'[unresolved])
-          (view_def 'TreeView'
-            (view_rendering_membership -> 'asTreeDiagram'[unresolved]))
-          (view_def 'NestedView')
-          (view_def 'RelationshipView')
-          (view_def 'TableView')
-          (view_def 'PartsTreeView' :> 'SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView'[view_def]
-            (element_filter_membership))
-          (view_def 'PartsInterconnection' :> 'SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::NestedView'[view_def]))
-        (package 'VehicleViews'
-          (namespace_import public -> 'SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions'[package])
-          (namespace_import public -> 'SimpleVehicleModel::Views_Viewpoints::ViewDefinitions'[package])
-          (namespace_import public -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b'[package])
-          (view_usage 'vehiclePartsTree_Safety' : 'SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView'[view_def]
-            (satisfy_requirement_usage 'sv' : 'SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyViewpoint'[viewpoint_def])
-            (namespace_expose all recursive -> 'SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree'[package])
-            (element_filter_membership)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel"))) (name "SimpleVehicleModel") (declared-name "SimpleVehicleModel")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import10"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import11"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import2"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import3"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import4"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import5"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import6"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import7"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import8"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::*#import9"))) (name "*") (declared-name "*"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions"))) (name "ActionDefinitions") (declared-name "ActionDefinitions")
+              (contains
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque"))) (name "AmplifyTorque") (declared-name "AmplifyTorque")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque::engineTorque"))) (name "engineTorque") (declared-name "engineTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque::transmissionTorque"))) (name "transmissionTorque") (declared-name "transmissionTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque")))))
+                  )
+                )
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ApplyParkingBrake"))) (name "ApplyParkingBrake") (declared-name "ApplyParkingBrake"))
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque"))) (name "DistributeTorque") (declared-name "DistributeTorque")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque::driveshaftTorque"))) (name "driveshaftTorque") (declared-name "driveshaftTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque::wheelToRoadTorque"))) (name "wheelToRoadTorque") (declared-name "wheelToRoadTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque")))))
+                  )
+                )
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque"))) (name "GenerateTorque") (declared-name "GenerateTorque")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque::engineTorque"))) (name "engineTorque") (declared-name "engineTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque")))))
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque")))))
+                  )
+                )
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::PerformSelfTest"))) (name "PerformSelfTest") (declared-name "PerformSelfTest"))
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower"))) (name "ProvidePower") (declared-name "ProvidePower")
+                  (contains
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower::pwrCmd"))) (name "pwrCmd") (declared-name "pwrCmd") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower::wheelToRoadTorque"))) (name "wheelToRoadTorque") (declared-name "wheelToRoadTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                  )
+                )
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::SenseTemperature"))) (name "SenseTemperature") (declared-name "SenseTemperature")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::SenseTemperature::temp"))) (name "temp") (declared-name "temp") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::SenseTemperature")))))
+                  )
+                )
+                (element (kind "action def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque"))) (name "TransferTorque") (declared-name "TransferTorque")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque::driveshaftTorque"))) (name "driveshaftTorque") (declared-name "driveshaftTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque::transmissionTorque"))) (name "transmissionTorque") (declared-name "transmissionTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AllocationDefinitions"))) (name "AllocationDefinitions") (declared-name "AllocationDefinitions")
+              (contains
+                (element (kind "allocation def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AllocationDefinitions::LogicalToPhysical"))) (name "LogicalToPhysical") (declared-name "LogicalToPhysical"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions"))) (name "AttributeDefinitions") (declared-name "AttributeDefinitions")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::*"))) (name "*") (declared-name "*"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::*#import"))) (name "*") (declared-name "*"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::*#import2"))) (name "*") (declared-name "*"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::*#import3"))) (name "*") (declared-name "*"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::*#import4"))) (name "*") (declared-name "*"))
+                (element (kind "enum def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors"))) (name "Colors") (declared-name "Colors")
+                  (contains
+                    (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors::black"))) (name "black") (declared-name "black") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors")))))
+                    (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors::grey"))) (name "grey") (declared-name "grey") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors")))))
+                    (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors::red"))) (name "red") (declared-name "red") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors")))))
+                  )
+                )
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::DerivedUnit"))) (name "DerivedUnit") (declared-name "DerivedUnit"))
+                (element (kind "enum def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::DiameterChoices"))) (name "DiameterChoices") (declared-name "DiameterChoices"))
+                (element (kind "enum def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::FuelKind"))) (name "FuelKind") (declared-name "FuelKind")
+                  (contains
+                    (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::FuelKind::diesel"))) (name "diesel") (declared-name "diesel") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::FuelKind")))))
+                    (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::FuelKind::gas"))) (name "gas") (declared-name "gas") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::FuelKind")))))
+                  )
+                )
+                (element (kind "enum def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::IgnitionOnOff"))) (name "IgnitionOnOff") (declared-name "IgnitionOnOff")
+                  (contains
+                    (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::IgnitionOnOff::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::IgnitionOnOff")))))
+                    (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::IgnitionOnOff::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::IgnitionOnOff")))))
+                  )
+                )
+                (element (kind "alias") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Torque"))) (name "Torque") (declared-name "Torque"))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::cylinderDiameter"))) (name "cylinderDiameter") (declared-name "cylinderDiameter") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 80)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::cylinderDiameter"))) (role feature-value))))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::kilo"))) (name "kilo") (declared-name "kilo"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext"))) (name "GenericContext") (declared-name "GenericContext")
+              (contains
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context"))) (name "Context") (declared-name "Context") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context::accelarationCF"))) (name "accelarationCF") (declared-name "accelarationCF") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "velocityCF")) (expression (kind "featureReference") (reference "s")))))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context::accelarationCF"))) (role feature-value))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context::spatialCF"))) (name "spatialCF") (declared-name "spatialCF") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context::time"))) (name "time") (declared-name "time") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context::velocityCF"))) (name "velocityCF") (declared-name "velocityCF") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "spatialCF")) (expression (kind "featureReference") (reference "s")))))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context::velocityCF"))) (role feature-value))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions"))) (name "IndividualDefinitions") (declared-name "IndividualDefinitions")
+              (contains
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::FrontAxleAssembly_1"))) (name "FrontAxleAssembly_1") (declared-name "FrontAxleAssembly_1"))
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::FrontAxle_1"))) (name "FrontAxle_1") (declared-name "FrontAxle_1"))
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::RearAxleAssembly_1"))) (name "RearAxleAssembly_1") (declared-name "RearAxleAssembly_1"))
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Road_1"))) (name "Road_1") (declared-name "Road_1"))
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::VehicleRoadContext_1"))) (name "VehicleRoadContext_1") (declared-name "VehicleRoadContext_1"))
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1"))
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_1"))) (name "Wheel_1") (declared-name "Wheel_1"))
+                (element (kind "individual def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_2"))) (name "Wheel_2") (declared-name "Wheel_2"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions"))) (name "InterfaceDefinitions") (declared-name "InterfaceDefinitions")
+              (contains
+                (element (kind "interface def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface"))) (name "EngineToTransmissionInterface") (declared-name "EngineToTransmissionInterface")
+                  (contains
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface::p1"))) (name "p1") (declared-name "p1") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface")))))
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface::p2"))) (name "p2") (declared-name "p2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface")))))
+                  )
+                )
+                (element (kind "interface def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface"))) (name "FuelInterface") (declared-name "FuelInterface")
+                  (contains
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface")))))
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface::fuelOutPort"))) (name "fuelOutPort") (declared-name "fuelOutPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface")))))
+                  )
+                )
+                (element (kind "interface def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface"))) (name "WheelFastenerInterface") (declared-name "WheelFastenerInterface")
+                  (contains
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::lugNutPort"))) (name "lugNutPort") (declared-name "lugNutPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::maxTorque"))) (name "maxTorque") (declared-name "maxTorque") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface")))))
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::shankPort"))) (name "shankPort") (declared-name "shankPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface")))))
+                  )
+                )
+                (element (kind "interface def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface"))) (name "WheelHubInterface") (declared-name "WheelHubInterface")
+                  (contains
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::lugNutCompositePort"))) (name "lugNutCompositePort") (declared-name "lugNutCompositePort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface")))))
+                    (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions"))) (name "ItemDefinitions") (declared-name "ItemDefinitions")
+              (contains
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::Fuel"))) (name "Fuel") (declared-name "Fuel")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::Fuel::fuelMass"))) (name "fuelMass") (declared-name "fuelMass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::Fuel")))))
+                  )
+                )
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd"))) (name "FuelCmd") (declared-name "FuelCmd"))
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd"))) (name "PwrCmd") (declared-name "PwrCmd")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd::throttleLevel"))) (name "throttleLevel") (declared-name "throttleLevel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd")))))
+                  )
+                )
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::SensedSpeed"))) (name "SensedSpeed") (declared-name "SensedSpeed")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::SensedSpeed::speed"))) (name "speed") (declared-name "speed") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::SensedSpeed")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions"))) (name "KeyWord_MetadataDefinitions") (declared-name "KeyWord_MetadataDefinitions")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
+                (element (kind "metadata def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::failureMode"))) (name "failureMode") (declared-name "failureMode")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::failureMode::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::failureMode")))))
+                  )
+                )
+                (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::failureModes"))) (name "failureModes") (declared-name "failureModes") (declared (properties (composite true) (reference false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))))
+                (element (kind "metadata def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::logical"))) (name "logical") (declared-name "logical")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::logical::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::logical")))))
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::logicalOccurrences"))) (name "logicalOccurrences") (declared-name "logicalOccurrences") (declared (properties (composite true) (reference false))))
+                (element (kind "metadata def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::physical"))) (name "physical") (declared-name "physical")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::physical::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::physical")))))
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::KeyWord_MetadataDefinitions::physicalOccurrences"))) (name "physicalOccurrences") (declared-name "physicalOccurrences") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::MetadataDefinitions"))) (name "MetadataDefinitions") (declared-name "MetadataDefinitions"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::MetadataDefinitions#package"))) (name "MetadataDefinitions") (declared-name "MetadataDefinitions")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::MetadataDefinitions#package::*"))) (name "*") (declared-name "*"))
+                (element (kind "metadata def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::MetadataDefinitions#package::Safety"))) (name "Safety") (declared-name "Safety")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::MetadataDefinitions#package::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::MetadataDefinitions#package::Safety")))))
+                  )
+                )
+                (element (kind "metadata def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::MetadataDefinitions#package::Security"))) (name "Security") (declared-name "Security"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions"))) (name "PartDefinitions") (declared-name "PartDefinitions")
+              (contains
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Axle"))) (name "Axle") (declared-name "Axle") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Axle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Axle")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))) (name "AxleAssembly") (declared-name "AxleAssembly") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Body"))) (name "Body") (declared-name "Body") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Body::color"))) (name "color") (declared-name "color") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Body")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy"))) (name "BodyAssy") (declared-name "BodyAssy") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BrakingSubsystem"))) (name "BrakingSubsystem") (declared-name "BrakingSubsystem") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController"))) (name "CruiseController") (declared-name "CruiseController") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::cruiseControlPort"))) (name "cruiseControlPort") (declared-name "cruiseControlPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController")))))
+                    (element (kind "exhibit state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::cruiseControllerStates"))) (name "cruiseControllerStates") (declared-name "cruiseControllerStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::speedSensorPort"))) (name "speedSensorPort") (declared-name "speedSensorPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Differential"))) (name "Differential") (declared-name "Differential") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Driveshaft"))) (name "Driveshaft") (declared-name "Driveshaft") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::ElectricalGenerator"))) (name "ElectricalGenerator") (declared-name "ElectricalGenerator") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::cost"))) (name "cost") (declared-name "cost") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::displacement"))) (name "displacement") (declared-name "displacement") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineControlPort"))) (name "engineControlPort") (declared-name "engineControlPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "exhibit state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineStates"))) (name "engineStates") (declared-name "engineStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+                      (contains
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineStates::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+                          (contains
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineStates::on::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                          )
+                        )
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineStates::starting"))) (name "starting") (declared-name "starting") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                      )
+                    )
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::flyWheelPort"))) (name "flyWheelPort") (declared-name "flyWheelPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelEfficiency"))) (name "fuelEfficiency") (declared-name "fuelEfficiency") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::ignitionCmdPort"))) (name "ignitionCmdPort") (declared-name "ignitionCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::peakHorsePower"))) (name "peakHorsePower") (declared-name "peakHorsePower") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine4Cyl"))) (name "Engine4Cyl") (declared-name "Engine4Cyl") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine6Cyl"))) (name "Engine6Cyl") (declared-name "Engine6Cyl") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle"))) (name "FrontAxle") (declared-name "FrontAxle") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle::steeringAngle"))) (name "steeringAngle") (declared-name "steeringAngle") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank"))) (name "FuelTank") (declared-name "FuelTank") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelInPort"))) (name "fuelInPort") (declared-name "fuelInPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelKind"))) (name "fuelKind") (declared-name "fuelKind") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelMassMax"))) (name "fuelMassMax") (declared-name "fuelMassMax") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelOutPort"))) (name "fuelOutPort") (declared-name "fuelOutPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank")))))
+                    (element (kind "opaque member") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::item"))) (name "item") (declared-name "item") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank"))))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::item::fuelMass"))) (name "fuelMass") (declared-name "fuelMass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank")))))
+                      )
+                    )
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle"))) (name "HalfAxle") (declared-name "HalfAxle") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))) (name "Hub") (declared-name "Hub") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Road"))) (name "Road") (declared-name "Road") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Road::friction"))) (name "friction") (declared-name "friction") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Road")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Road::incline"))) (name "incline") (declared-name "incline") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Road")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Software"))) (name "Software") (declared-name "Software") (declared (properties (abstract true))))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor"))) (name "SpeedSensor") (declared-name "SpeedSensor") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor::speedSensorPort"))) (name "speedSensorPort") (declared-name "speedSensorPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::StarterMotor"))) (name "StarterMotor") (declared-name "StarterMotor") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::StarterMotor::gearPort"))) (name "gearPort") (declared-name "gearPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::StarterMotor")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SteeringSubsystem"))) (name "SteeringSubsystem") (declared-name "SteeringSubsystem") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Sunroof"))) (name "Sunroof") (declared-name "Sunroof") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Thermostat"))) (name "Thermostat") (declared-name "Thermostat") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TorqueGenerator"))) (name "TorqueGenerator") (declared-name "TorqueGenerator") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission::gearRatio"))) (name "gearRatio") (declared-name "gearRatio") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission")))))
+                    (element (kind "exhibit state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission::transmissionStates"))) (name "transmissionStates") (declared-name "transmissionStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TransmissionAutomatic"))) (name "TransmissionAutomatic") (declared-name "TransmissionAutomatic") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TransmissionChoices"))) (name "TransmissionChoices") (declared-name "TransmissionChoices") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TransmissionManual"))) (name "TransmissionManual") (declared-name "TransmissionManual") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::Tmax"))) (name "Tmax") (declared-name "Tmax") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::acceleration"))) (name "acceleration") (declared-name "acceleration") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::applyParkingBrake"))) (name "applyParkingBrake") (declared-name "applyParkingBrake") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::brakePedalDepressed"))) (name "brakePedalDepressed") (declared-name "brakePedalDepressed") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::cargoMass"))) (name "cargoMass") (declared-name "cargoMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::controlDirection"))) (name "controlDirection") (declared-name "controlDirection") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::dryMass"))) (name "dryMass") (declared-name "dryMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::electricalPower"))) (name "electricalPower") (declared-name "electricalPower") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::ignitionCmdPort"))) (name "ignitionCmdPort") (declared-name "ignitionCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::performSelfTest"))) (name "performSelfTest") (declared-name "performSelfTest") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::position"))) (name "position") (declared-name "position") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::provideBraking"))) (name "provideBraking") (declared-name "provideBraking") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::providePower"))) (name "providePower") (declared-name "providePower") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::pwrCmdPort"))) (name "pwrCmdPort") (declared-name "pwrCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::senseTemperature"))) (name "senseTemperature") (declared-name "senseTemperature") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::statusPort"))) (name "statusPort") (declared-name "statusPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "exhibit state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                      (contains
+                        (element (kind "ref") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::controller"))) (name "controller") (declared-name "controller") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates"))) (name "healthStates") (declared-name "healthStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::_do::temp"))) (name "temp") (declared-name "temp") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::degraded"))) (name "degraded") (declared-name "degraded") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::degraded_To_normal"))) (name "degraded_To_normal") (declared-name "degraded_To_normal") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::degraded_To_normal::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::initial"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::maintenance"))) (name "maintenance") (declared-name "maintenance") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::maintenance_To_normal"))) (name "maintenance_To_normal") (declared-name "maintenance_To_normal") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::maintenance_To_normal::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal"))) (name "normal") (declared-name "normal") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal_To_degraded"))) (name "normal_To_degraded") (declared-name "normal_To_degraded") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "transition effect") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal_To_degraded::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal_To_degraded::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal_To_maintenance"))) (name "normal_To_maintenance") (declared-name "normal_To_maintenance") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal_To_maintenance::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                          )
+                        )
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates"))) (name "operatingStates") (declared-name "operatingStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::initial"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off_To_starting"))) (name "off_To_starting") (declared-name "off_To_starting") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "transition effect") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off_To_starting::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "transition guard") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off_To_starting::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "binary") (operator "&&") (children (expression (kind "binary") (operator "==") (children (expression (kind "memberAccess") (reference "ignitionOnOff") (children (expression (kind "featureReference") (reference "ignitionCmd")))) (expression (kind "featureReference") (reference "IgnitionOnOff::on")))) (expression (kind "featureReference") (reference "brakePedalDepressed")))))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off_To_starting::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on::_exit"))) (name "exit") (declared-name "exit") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on_To_off"))) (name "on_To_off") (declared-name "on_To_off") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "transition effect") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on_To_off::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on_To_off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::starting"))) (name "starting") (declared-name "starting") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::starting_To_on"))) (name "starting_To_on") (declared-name "starting_To_on") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::starting_To_on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleToRoadPort"))) (name "vehicleToRoadPort") (declared-name "vehicleToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::velocity"))) (name "velocity") (declared-name "velocity") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))) (name "VehicleController") (declared-name "VehicleController") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controlPort"))) (name "controlPort") (declared-name "controlPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                    (element (kind "exhibit state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates"))) (name "controllerStates") (declared-name "controllerStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))))
+                      (contains
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates"))) (name "operatingStates") (declared-name "operatingStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))))
+                          (contains
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::initial"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::off-on"))) (name "off-on") (declared-name "off-on") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))))
+                              (contains
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::off-on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                              )
+                            )
+                            (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                            (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::on-off"))) (name "on-off") (declared-name "on-off") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))))
+                              (contains
+                                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::on-off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleSoftware"))) (name "VehicleSoftware") (declared-name "VehicleSoftware") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::WaterHose"))) (name "WaterHose") (declared-name "WaterHose") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort"))) (name "lugNutCompositePort") (declared-name "lugNutCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions"))) (name "PortDefinitions") (declared-name "PortDefinitions")
+              (contains
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxlePort"))) (name "AxlePort") (declared-name "AxlePort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxlePort::~AxlePort"))) (name "~AxlePort") (declared-name "~AxlePort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxlePort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxleToWheelPort"))) (name "AxleToWheelPort") (declared-name "AxleToWheelPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxleToWheelPort::~AxleToWheelPort"))) (name "~AxleToWheelPort") (declared-name "~AxleToWheelPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxleToWheelPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort"))) (name "ControlPort") (declared-name "ControlPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort::~ControlPort"))) (name "~ControlPort") (declared-name "~ControlPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort"))) (name "CruiseControlPort") (declared-name "CruiseControlPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort::~CruiseControlPort"))) (name "~CruiseControlPort") (declared-name "~CruiseControlPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DiffPort"))) (name "DiffPort") (declared-name "DiffPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DiffPort::~DiffPort"))) (name "~DiffPort") (declared-name "~DiffPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DiffPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort"))) (name "DrivePwrPort") (declared-name "DrivePwrPort")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort::torque"))) (name "torque") (declared-name "torque") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort::~DrivePwrPort"))) (name "~DrivePwrPort") (declared-name "~DrivePwrPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort"))) (name "DriverCmdPort") (declared-name "DriverCmdPort")
+                  (contains
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort::driverCmd"))) (name "driverCmd") (declared-name "driverCmd") (declared (properties (direction "out") (composite true) (reference false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort::~DriverCmdPort"))) (name "~DriverCmdPort") (declared-name "~DriverCmdPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort"))) (name "FuelCmdPort") (declared-name "FuelCmdPort")
+                  (contains
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort::~FuelCmdPort"))) (name "~FuelCmdPort") (declared-name "~FuelCmdPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort"))) (name "FuelPort") (declared-name "FuelPort")
+                  (contains
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::fuel"))) (name "fuel") (declared-name "fuel") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::~FuelPort"))) (name "~FuelPort") (declared-name "~FuelPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::GearPort"))) (name "GearPort") (declared-name "GearPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::GearPort::~GearPort"))) (name "~GearPort") (declared-name "~GearPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::GearPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort"))) (name "HandPort") (declared-name "HandPort")
+                  (contains
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort::ignitionCmd"))) (name "ignitionCmd") (declared-name "ignitionCmd") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort")))))
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort::pwrCmd"))) (name "pwrCmd") (declared-name "pwrCmd") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort::~HandPort"))) (name "~HandPort") (declared-name "~HandPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort"))) (name "IgnitionCmdPort") (declared-name "IgnitionCmdPort")
+                  (contains
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort::ignitionCmd"))) (name "ignitionCmd") (declared-name "ignitionCmd") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort::~IgnitionCmdPort"))) (name "~IgnitionCmdPort") (declared-name "~IgnitionCmdPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort"))) (name "LugNutCompositePort") (declared-name "LugNutCompositePort")
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort"))) (name "lugNutPort") (declared-name "lugNutPort") (declared (properties (composite true) (reference false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::~LugNutCompositePort"))) (name "~LugNutCompositePort") (declared-name "~LugNutCompositePort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort"))) (name "LugNutPort") (declared-name "LugNutPort")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::threadDia"))) (name "threadDia") (declared-name "threadDia") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::threadPitch"))) (name "threadPitch") (declared-name "threadPitch") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::~LugNutPort"))) (name "~LugNutPort") (declared-name "~LugNutPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort"))) (name "PwrCmdPort") (declared-name "PwrCmdPort")
+                  (contains
+                    (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort::pwrCmd"))) (name "pwrCmd") (declared-name "pwrCmd") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort::~PwrCmdPort"))) (name "~PwrCmdPort") (declared-name "~PwrCmdPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort"))) (name "SetSpeedPort") (declared-name "SetSpeedPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort::~SetSpeedPort"))) (name "~SetSpeedPort") (declared-name "~SetSpeedPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_a"))) (name "ShaftPort_a") (declared-name "ShaftPort_a")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_a::~ShaftPort_a"))) (name "~ShaftPort_a") (declared-name "~ShaftPort_a") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_a")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_b"))) (name "ShaftPort_b") (declared-name "ShaftPort_b")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_b::~ShaftPort_b"))) (name "~ShaftPort_b") (declared-name "~ShaftPort_b") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_b")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_c"))) (name "ShaftPort_c") (declared-name "ShaftPort_c")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_c::~ShaftPort_c"))) (name "~ShaftPort_c") (declared-name "~ShaftPort_c") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_c")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d"))) (name "ShaftPort_d") (declared-name "ShaftPort_d")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d::~ShaftPort_d"))) (name "~ShaftPort_d") (declared-name "~ShaftPort_d") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))) (name "ShankCompositePort") (declared-name "ShankCompositePort")
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort"))) (name "shankPort") (declared-name "shankPort") (declared (properties (composite true) (reference false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::~ShankCompositePort"))) (name "~ShankCompositePort") (declared-name "~ShankCompositePort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort"))) (name "ShankPort") (declared-name "ShankPort")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::shaftLength"))) (name "shaftLength") (declared-name "shaftLength") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::threadDia"))) (name "threadDia") (declared-name "threadDia") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::threadPitch"))) (name "threadPitch") (declared-name "threadPitch") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::~ShankPort"))) (name "~ShankPort") (declared-name "~ShankPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort"))) (name "SpeedSensorPort") (declared-name "SpeedSensorPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort::~SpeedSensorPort"))) (name "~SpeedSensorPort") (declared-name "~SpeedSensorPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::StatusPort"))) (name "StatusPort") (declared-name "StatusPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::StatusPort::~StatusPort"))) (name "~StatusPort") (declared-name "~StatusPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::StatusPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::VehicleToRoadPort"))) (name "VehicleToRoadPort") (declared-name "VehicleToRoadPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::VehicleToRoadPort::~VehicleToRoadPort"))) (name "~VehicleToRoadPort") (declared-name "~VehicleToRoadPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::VehicleToRoadPort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToAxlePort"))) (name "WheelToAxlePort") (declared-name "WheelToAxlePort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToAxlePort::~WheelToAxlePort"))) (name "~WheelToAxlePort") (declared-name "~WheelToAxlePort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToAxlePort")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort"))) (name "WheelToRoadPort") (declared-name "WheelToRoadPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort::~WheelToRoadPort"))) (name "~WheelToRoadPort") (declared-name "~WheelToRoadPort") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions"))) (name "RequirementDefinitions") (declared-name "RequirementDefinitions")
+              (contains
+                (element (kind "requirement def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::DrivePowerOutputRequirement"))) (name "DrivePowerOutputRequirement") (declared-name "DrivePowerOutputRequirement")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::DrivePowerOutputRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::DrivePowerOutputRequirement")))))
+                  )
+                )
+                (element (kind "requirement def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement"))) (name "FuelEconomyRequirement") (declared-name "FuelEconomyRequirement")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                    (element (kind "require constraint") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement::actualFuelEconomy"))) (name "actualFuelEconomy") (declared-name "actualFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement::requiredFuelEconomy"))) (name "requiredFuelEconomy") (declared-name "requiredFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                  )
+                )
+                (element (kind "requirement def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement"))) (name "MassRequirement") (declared-name "MassRequirement")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                    (element (kind "require constraint") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massRequired"))) (name "massRequired") (declared-name "massRequired") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                  )
+                )
+                (element (kind "requirement def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement"))) (name "ReliabilityRequirement") (declared-name "ReliabilityRequirement")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement")))))
+                    (element (kind "require constraint") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement::reliabilityActual"))) (name "reliabilityActual") (declared-name "reliabilityActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement::reliabilityRequired"))) (name "reliabilityRequired") (declared-name "reliabilityRequired") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement")))))
+                  )
+                )
+                (element (kind "requirement def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement"))) (name "TorqueGenerationRequirement") (declared-name "TorqueGenerationRequirement")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement")))))
+                    (element (kind "subject") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions"))) (name "SignalDefinitions") (declared-name "SignalDefinitions")
+              (contains
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::Cmd"))) (name "Cmd") (declared-name "Cmd"))
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::DriverCmd"))) (name "DriverCmd") (declared-name "DriverCmd"))
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::EngineStatus"))) (name "EngineStatus") (declared-name "EngineStatus"))
+                (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd"))) (name "IgnitionCmd") (declared-name "IgnitionCmd")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd::ignitionOnOff"))) (name "ignitionOnOff") (declared-name "ignitionOnOff") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd")))))
+                  )
+                )
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::OffSignal"))) (name "OffSignal") (declared-name "OffSignal") (declared (properties (ordered false) (unique true))))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::OverTemp"))) (name "OverTemp") (declared-name "OverTemp") (declared (properties (ordered false) (unique true))))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::ReturnToNormal"))) (name "ReturnToNormal") (declared-name "ReturnToNormal") (declared (properties (ordered false) (unique true))))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::SetSpeed"))) (name "SetSpeed") (declared-name "SetSpeed") (declared (properties (ordered false) (unique true))))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::StartSignal"))) (name "StartSignal") (declared-name "StartSignal") (declared (properties (ordered false) (unique true))))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::VehicleOffSignal"))) (name "VehicleOffSignal") (declared-name "VehicleOffSignal") (declared (properties (ordered false) (unique true))))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::VehicleOnSignal"))) (name "VehicleOnSignal") (declared-name "VehicleOnSignal") (declared (properties (ordered false) (unique true))))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::VehicleStartSignal"))) (name "VehicleStartSignal") (declared-name "VehicleStartSignal") (declared (properties (ordered false) (unique true))))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::StateDefinitions"))) (name "StateDefinitions") (declared-name "StateDefinitions")
+              (contains
+                (element (kind "state def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::StateDefinitions::ControllerStates"))) (name "ControllerStates") (declared-name "ControllerStates"))
+                (element (kind "state def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::StateDefinitions::CruiseControllerStates"))) (name "CruiseControllerStates") (declared-name "CruiseControllerStates"))
+                (element (kind "state def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::StateDefinitions::VehicleStates"))) (name "VehicleStates") (declared-name "VehicleStates"))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext"))) (name "MissionContext") (declared-name "MissionContext")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::*"))) (name "*") (declared-name "*"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions"))) (name "ContextDefinitions") (declared-name "ContextDefinitions")
+              (contains
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver"))) (name "Driver") (declared-name "Driver") (declared)
+                  (contains
+                    (element (kind "exhibit state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates"))) (name "driverStates") (declared-name "driverStates") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver"))))
+                      (contains
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::initial"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                        (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::initial#transition"))) (name "initial") (declared-name "initial") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait"))) (name "wait") (declared-name "wait") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                        (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait-wait-1"))) (name "wait-wait-1") (declared-name "wait-wait-1") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver"))))
+                          (contains
+                            (element (kind "transition effect") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait-wait-1::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                          )
+                        )
+                        (element (kind "transition") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait-wait-2"))) (name "wait-wait-2") (declared-name "wait-wait-2") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver"))))
+                          (contains
+                            (element (kind "transition effect") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait-wait-2::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::handPort"))) (name "handPort") (declared-name "handPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                  )
+                )
+                (element (kind "use case def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle"))) (name "GetInVehicle") (declared-name "GetInVehicle")
+                  (contains
+                    (element (kind "subject") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle")))))
+                  )
+                )
+                (element (kind "use case def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle"))) (name "GetOutOfVehicle") (declared-name "GetOutOfVehicle")
+                  (contains
+                    (element (kind "subject") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))) (name "MissionContext") (declared-name "MissionContext") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger"))) (name "Passenger") (declared-name "Passenger") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Road"))) (name "Road") (declared-name "Road") (declared))
+                (element (kind "use case def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger"))) (name "TransportPassenger") (declared-name "TransportPassenger")
+                  (contains
+                    (element (kind "objective") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::TransportObjective"))) (name "TransportObjective") (declared-name "TransportObjective") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "subject") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                  )
+                )
+                (element (kind "use case") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle"))) (name "getInVehicle") (declared-name "getInVehicle")
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::closeDoor_in"))) (name "closeDoor_in") (declared-name "closeDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::enterVehicle"))) (name "enterVehicle") (declared-name "enterVehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::openDoor_in"))) (name "openDoor_in") (declared-name "openDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::unlockDoor_in"))) (name "unlockDoor_in") (declared-name "unlockDoor_in") (declared (properties (composite true) (reference false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle")))))
+                  )
+                )
+                (element (kind "use case") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle"))) (name "getOutOfVehicle") (declared-name "getOutOfVehicle")
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::closeDoor_out"))) (name "closeDoor_out") (declared-name "closeDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::exitVehicle"))) (name "exitVehicle") (declared-name "exitVehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::lockDoor_out"))) (name "lockDoor_out") (declared-name "lockDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::openDoor_out"))) (name "openDoor_out") (declared-name "openDoor_out") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle")))))
+                  )
+                )
+                (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::transportRequirements"))) (name "transportRequirements") (declared-name "transportRequirements"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario"))) (name "TransportPassengerScenario") (declared-name "TransportPassengerScenario")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::TransportPassenger"))) (name "TransportPassenger") (declared-name "TransportPassenger"))
+                (element (kind "use case") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger"))) (name "transportPassenger") (declared-name "transportPassenger")
+                  (contains
+                    (element (kind "verdict") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::_verdict"))) (name "done") (declared-name "done") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::b"))) (name "b") (declared-name "b") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::c"))) (name "c") (declared-name "c") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "succession") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::start"))) (name "start") (declared-name "start") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                  )
+                )
+                (element (kind "use case") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1"))) (name "transportPassenger_1") (declared-name "transportPassenger_1")
+                  (contains
+                    (element (kind "verdict") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::_verdict"))) (name "done") (declared-name "done") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driveVehicleToDestination"))) (name "driveVehicleToDestination") (declared-name "driveVehicleToDestination") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driverGetInVehicle"))) (name "driverGetInVehicle") (declared-name "driverGetInVehicle") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driverGetOutOfVehicle"))) (name "driverGetOutOfVehicle") (declared-name "driverGetOutOfVehicle") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::passenger1GetInVehicle"))) (name "passenger1GetInVehicle") (declared-name "passenger1GetInVehicle") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::passenger1GetOutOfVehicle"))) (name "passenger1GetOutOfVehicle") (declared-name "passenger1GetOutOfVehicle") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::providePower"))) (name "providePower") (declared-name "providePower") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "succession") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::start"))) (name "start") (declared-name "start") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::trigger"))) (name "trigger") (declared-name "trigger") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger")))))
+                  )
+                )
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::VehicleConfiguration_b"))) (name "VehicleConfiguration_b") (declared-name "VehicleConfiguration_b"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext"))) (name "missionContext") (declared-name "missionContext") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "driver") (children (expression (kind "featureReference") (reference "transportPassenger")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver"))) (role feature-value)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.a.driverGetInVehicle.closeDoor_in"))) (name "transportPassenger.a.driverGetInVehicle.closeDoor_in") (declared-name "transportPassenger.a.driverGetInVehicle.closeDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.a.driverGetInVehicle.enterVehicle"))) (name "transportPassenger.a.driverGetInVehicle.enterVehicle") (declared-name "transportPassenger.a.driverGetInVehicle.enterVehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.a.driverGetInVehicle.openDoor_in"))) (name "transportPassenger.a.driverGetInVehicle.openDoor_in") (declared-name "transportPassenger.a.driverGetInVehicle.openDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.a.driverGetInVehicle.unlockDoor_in"))) (name "transportPassenger.a.driverGetInVehicle.unlockDoor_in") (declared-name "transportPassenger.a.driverGetInVehicle.unlockDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.b.driveVehicleToDestination"))) (name "transportPassenger.b.driveVehicleToDestination") (declared-name "transportPassenger.b.driveVehicleToDestination") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.c.driverGetOutOfVehicle.closeDoor_out"))) (name "transportPassenger.c.driverGetOutOfVehicle.closeDoor_out") (declared-name "transportPassenger.c.driverGetOutOfVehicle.closeDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.c.driverGetOutOfVehicle.exitVehicle"))) (name "transportPassenger.c.driverGetOutOfVehicle.exitVehicle") (declared-name "transportPassenger.c.driverGetOutOfVehicle.exitVehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.c.driverGetOutOfVehicle.lockDoor_out"))) (name "transportPassenger.c.driverGetOutOfVehicle.lockDoor_out") (declared-name "transportPassenger.c.driverGetOutOfVehicle.lockDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger.c.driverGetOutOfVehicle.openDoor_out"))) (name "transportPassenger.c.driverGetOutOfVehicle.openDoor_out") (declared-name "transportPassenger.c.driverGetOutOfVehicle.openDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1"))) (name "passenger1") (declared-name "passenger1") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "passenger") (children (expression (kind "featureReference") (reference "transportPassenger")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1"))) (role feature-value)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.a.passenger1GetInVehicle.closeDoor_in"))) (name "transportPassenger.a.passenger1GetInVehicle.closeDoor_in") (declared-name "transportPassenger.a.passenger1GetInVehicle.closeDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.a.passenger1GetInVehicle.enterVehicle"))) (name "transportPassenger.a.passenger1GetInVehicle.enterVehicle") (declared-name "transportPassenger.a.passenger1GetInVehicle.enterVehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.a.passenger1GetInVehicle.openDoor_in"))) (name "transportPassenger.a.passenger1GetInVehicle.openDoor_in") (declared-name "transportPassenger.a.passenger1GetInVehicle.openDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.a.passenger1GetInVehicle.unlockDoor_in"))) (name "transportPassenger.a.passenger1GetInVehicle.unlockDoor_in") (declared-name "transportPassenger.a.passenger1GetInVehicle.unlockDoor_in") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.c.passenger1GetOutOfVehicle.closeDoor_out"))) (name "transportPassenger.c.passenger1GetOutOfVehicle.closeDoor_out") (declared-name "transportPassenger.c.passenger1GetOutOfVehicle.closeDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.c.passenger1GetOutOfVehicle.exitVehicle"))) (name "transportPassenger.c.passenger1GetOutOfVehicle.exitVehicle") (declared-name "transportPassenger.c.passenger1GetOutOfVehicle.exitVehicle") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.c.passenger1GetOutOfVehicle.lockDoor_out"))) (name "transportPassenger.c.passenger1GetOutOfVehicle.lockDoor_out") (declared-name "transportPassenger.c.passenger1GetOutOfVehicle.lockDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger.c.passenger1GetOutOfVehicle.openDoor_out"))) (name "transportPassenger.c.passenger1GetOutOfVehicle.openDoor_out") (declared-name "transportPassenger.c.passenger1GetOutOfVehicle.openDoor_out") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::road"))) (name "road") (declared-name "road") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "road") (children (expression (kind "featureReference") (reference "transportPassenger")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::road"))) (role feature-value))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::transportPassenger"))) (name "transportPassenger") (declared-name "transportPassenger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::vehicle_b_1"))) (name "vehicle_b_1") (declared-name "vehicle_b_1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::vehicle_b_1::position3dVector"))) (name "position3dVector") (declared-name "position3dVector") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower unevaluated) (upper unevaluated) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "tuple") (children (expression (kind "integerLiteral") (literal 0)) (expression (kind "integerLiteral") (literal 0)) (expression (kind "integerLiteral") (literal 0)))))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::vehicle_b_1::position3dVector"))) (role feature-value))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::vehicle_b_1::transportPassenger.trigger"))) (name "transportPassenger.trigger") (declared-name "transportPassenger.trigger") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext")))))
+                  )
+                )
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::moe"))) (name "moe") (declared-name "moe"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups"))) (name "SafetyandSecurityGroups") (declared-name "SafetyandSecurityGroups")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::*"))) (name "*") (declared-name "*"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::MandatorySafetyGroup"))) (name "MandatorySafetyGroup") (declared-name "MandatorySafetyGroup")
+              (contains
+                (element (kind "filter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::MandatorySafetyGroup::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "&&") (children (expression (kind "classification") (reference "Safety")) (expression (kind "featureReference") (reference "Safety::isMandatory")))))))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::MandatorySafetyGroup::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SafetyGroup"))) (name "SafetyGroup") (declared-name "SafetyGroup")
+              (contains
+                (element (kind "filter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SafetyGroup::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Safety")))))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SafetyGroup::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SafetyandSecurityGroup"))) (name "SafetyandSecurityGroup") (declared-name "SafetyandSecurityGroup")
+              (contains
+                (element (kind "filter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SafetyandSecurityGroup::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "||") (children (expression (kind "classification") (reference "Safety")) (expression (kind "classification") (reference "Security")))))))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SafetyandSecurityGroup::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SecurityGroup"))) (name "SecurityGroup") (declared-name "SecurityGroup")
+              (contains
+                (element (kind "filter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SecurityGroup::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Security")))))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::SafetyandSecurityGroups::SecurityGroup::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b"))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis"))) (name "VehicleAnalysis") (declared-name "VehicleAnalysis")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::ElectricalPowerAnalysis"))) (name "ElectricalPowerAnalysis") (declared-name "ElectricalPowerAnalysis"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel"))) (name "FuelEconomyAnalysisModel") (declared-name "FuelEconomyAnalysisModel")
+              (contains
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::AverageTravelTimePerDistance"))) (name "AverageTravelTimePerDistance") (declared-name "AverageTravelTimePerDistance")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::AverageTravelTimePerDistance::scenario"))) (name "scenario") (declared-name "scenario") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::AverageTravelTimePerDistance")))))
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::AverageTravelTimePerDistance::tpd_avg"))) (name "tpd_avg") (declared-name "tpd_avg") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::AverageTravelTimePerDistance")))))
+                  )
+                )
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance"))) (name "BestFuelConsumptionPerDistance") (declared-name "BestFuelConsumptionPerDistance")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance::bsfc"))) (name "bsfc") (declared-name "bsfc") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance::distance"))) (name "distance") (declared-name "distance") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance")))))
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance::f_b"))) (name "f_b") (declared-name "f_b") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance::tpd_avg"))) (name "tpd_avg") (declared-name "tpd_avg") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::BestFuelConsumptionPerDistance")))))
+                  )
+                )
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::ComputeBSFC"))) (name "ComputeBSFC") (declared-name "ComputeBSFC")
+                  (contains
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::ComputeBSFC::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::ComputeBSFC")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::ComputeBSFC::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::ComputeBSFC")))))
+                  )
+                )
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption"))) (name "FuelConsumption") (declared-name "FuelConsumption")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption::bestFuelConsumption"))) (name "bestFuelConsumption") (declared-name "bestFuelConsumption") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption")))))
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption::dpv"))) (name "dpv") (declared-name "dpv") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption::idlingFuelConsumption"))) (name "idlingFuelConsumption") (declared-name "idlingFuelConsumption") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption::tpd_avg"))) (name "tpd_avg") (declared-name "tpd_avg") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::FuelConsumption")))))
+                  )
+                )
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime"))) (name "IdlingFuelConsumptionPerTime") (declared-name "IdlingFuelConsumptionPerTime")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime")))))
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime::f_a"))) (name "f_a") (declared-name "f_a") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime")))))
+                  )
+                )
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::SampledFunction"))) (name "SampledFunction") (declared-name "SampledFunction"))
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario"))) (name "Scenario") (declared-name "Scenario") (declared (properties (ordered false) (unique true)))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario::wayPoint"))) (name "wayPoint") (declared-name "wayPoint") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario")))))
+                  )
+                )
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::TraveledDistance"))) (name "TraveledDistance") (declared-name "TraveledDistance")
+                  (contains
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::TraveledDistance::distance"))) (name "distance") (declared-name "distance") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::TraveledDistance")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::TraveledDistance::scenario"))) (name "scenario") (declared-name "scenario") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::TraveledDistance")))))
+                  )
+                )
+                (element (kind "analysis") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis"))) (name "fuelEconomyAnalysis") (declared-name "fuelEconomyAnalysis")
+                  (contains
+                    (element (kind "subject") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::"))) (name ""))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::bsfc"))) (name "bsfc") (declared-name "bsfc") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "ComputeBSFC"))) (arguments (argument (expression (kind "memberAccess") (reference "engine") (children (expression (kind "featureReference") (reference "vehicle_b"))))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::bsfc"))) (role feature-value))))
+                    (element (kind "analysis result") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::calculatedFuelEconomy"))) (name "calculatedFuelEconomy") (declared-name "calculatedFuelEconomy"))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::distance"))) (name "distance") (declared-name "distance") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "TraveledDistance"))) (arguments (argument (expression (kind "featureReference") (reference "scenario"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::distance"))) (role feature-value))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::f_a"))) (name "f_a") (declared-name "f_a") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "BestFuelConsumptionPerDistance"))) (arguments (argument (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "vehicle_b"))))) (argument (expression (kind "featureReference") (reference "bsfc"))) (argument (expression (kind "featureReference") (reference "tpd_avg"))) (argument (expression (kind "featureReference") (reference "distance"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::f_a"))) (role feature-value))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::f_b"))) (name "f_b") (declared-name "f_b") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "IdlingFuelConsumptionPerTime"))) (arguments (argument (expression (kind "memberAccess") (reference "engine") (children (expression (kind "featureReference") (reference "vehicle_b"))))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::f_b"))) (role feature-value))))
+                    (element (kind "objective") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::fuelEconomyAnalysisObjective"))) (name "fuelEconomyAnalysisObjective") (declared-name "fuelEconomyAnalysisObjective"))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::scenario"))) (name "scenario") (declared-name "scenario") (declared (properties (direction "in") (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::tpd_avg"))) (name "tpd_avg") (declared-name "tpd_avg") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "AverageTravelTimePerDistance"))) (arguments (argument (expression (kind "featureReference") (reference "scenario"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::tpd_avg"))) (role feature-value))))
+                  )
+                )
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::specificGravityOfGasoline"))) (name "specificGravityOfGasoline") (declared-name "specificGravityOfGasoline") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "realLiteral") (literal "0.76")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::specificGravityOfGasoline"))) (role feature-value))))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::ReliabilityAnalyis"))) (name "ReliabilityAnalyis") (declared-name "ReliabilityAnalyis"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleConfiguration_b"))) (name "VehicleConfiguration_b") (declared-name "VehicleConfiguration_b"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis"))) (name "VehicleTradeOffAnalysis") (declared-name "VehicleTradeOffAnalysis")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::*"))) (name "*") (declared-name "*"))
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation"))) (name "EngineEvaluation") (declared-name "EngineEvaluation")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation::engineCost"))) (name "engineCost") (declared-name "engineCost") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation::engineFuelEfficiency"))) (name "engineFuelEfficiency") (declared-name "engineFuelEfficiency") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation::engineMass"))) (name "engineMass") (declared-name "engineMass") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation::enginePower"))) (name "enginePower") (declared-name "enginePower") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation")))))
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation::eval"))) (name "eval") (declared-name "eval") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation")))))
+                  )
+                )
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl"))) (name "EngineEvaluation_4cyl") (declared-name "EngineEvaluation_4cyl")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl::engineCost"))) (name "engineCost") (declared-name "engineCost") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl::engineFuelEfficiency"))) (name "engineFuelEfficiency") (declared-name "engineFuelEfficiency") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl::engineMass"))) (name "engineMass") (declared-name "engineMass") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl::enginePower"))) (name "enginePower") (declared-name "enginePower") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl")))))
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl::eval"))) (name "eval") (declared-name "eval") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_4cyl")))))
+                  )
+                )
+                (element (kind "calc def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl"))) (name "EngineEvaluation_6cyl") (declared-name "EngineEvaluation_6cyl")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl::engineCost"))) (name "engineCost") (declared-name "engineCost") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl::engineFuelEfficiency"))) (name "engineFuelEfficiency") (declared-name "engineFuelEfficiency") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl::engineMass"))) (name "engineMass") (declared-name "engineMass") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl::enginePower"))) (name "enginePower") (declared-name "enginePower") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl")))))
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl::eval"))) (name "eval") (declared-name "eval") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::EngineEvaluation_6cyl")))))
+                  )
+                )
+                (element (kind "analysis") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis"))) (name "engineTradeOffAnalysis") (declared-name "engineTradeOffAnalysis")
+                  (contains
+                    (element (kind "calc") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::"))) (name "")
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (direction "in") (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                    (element (kind "calc") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::#calc"))) (name "")
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle#part"))) (name "vehicle") (declared-name "vehicle") (declared (properties (direction "in") (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                    (element (kind "objective") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::objective"))) (name "objective") (declared-name "objective"))
+                    (element (kind "analysis result") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::selectedVehicle"))) (name "selectedVehicle") (declared-name "selectedVehicle"))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl"))) (name "vehicle_b_engine4cyl") (declared-name "vehicle_b_engine4cyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::cost"))) (name "cost") (declared-name "cost") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 1000)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::cost"))) (role feature-value))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::cylinders"))) (name "cylinders") (declared-name "cylinders") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 180)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::mass"))) (role feature-value))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::peakHorsePower"))) (name "peakHorsePower") (declared-name "peakHorsePower") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 180)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "W")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine4cyl::engine::peakHorsePower"))) (role feature-value))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl"))) (name "vehicle_b_engine6cyl") (declared-name "vehicle_b_engine6cyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine::cost"))) (name "cost") (declared-name "cost") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 1500)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine::cost"))) (role feature-value))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine::cylinders"))) (name "cylinders") (declared-name "cylinders") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 220)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine::mass"))) (role feature-value))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine::peakHorsePower"))) (name "peakHorsePower") (declared-name "peakHorsePower") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 220)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "W")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::VehicleTradeOffAnalysis::engineTradeOffAnalysis::vehicle_b_engine6cyl::engine::peakHorsePower"))) (role feature-value))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations"))) (name "VehicleConfigurations") (declared-name "VehicleConfigurations")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant"))) (name "Engine4Cyl_Variant") (declared-name "Engine4Cyl_Variant")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::*"))) (name "*") (declared-name "*"))
+                (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::_refinement"))) (name "refinement") (declared-name "refinement"))
+                (element (kind "dependency") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::dependency"))) (name "dependency") (declared-name "dependency"))
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine::cylinders"))) (name "cylinders") (declared-name "cylinders") (declared (properties (composite true) (reference false) (ordered true)) (multiplicity (lower 4) (upper 8) (ordered true) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl"))) (name "engine4Cyl") (declared-name "engine4Cyl") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder1"))) (name "cylinder1") (declared-name "cylinder1") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder2"))) (name "cylinder2") (declared-name "cylinder2") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder3"))) (name "cylinder3") (declared-name "cylinder3") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder4"))) (name "cylinder4") (declared-name "cylinder4") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinders"))) (name "cylinders") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a"))) (name "VehicleConfiguration_a") (declared-name "VehicleConfiguration_a")
+              (contains
+                (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::ActionTree"))) (name "ActionTree") (declared-name "ActionTree"))
+                (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree"))) (name "PartsTree") (declared-name "PartsTree")
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a"))) (name "vehicle_a") (declared-name "vehicle_a") (declared (properties (composite true) (reference false) (ordered false)))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::cargoMass"))) (name "cargoMass") (declared-name "cargoMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 0)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::cargoMass"))) (role feature-value))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::dryMass"))) (name "dryMass") (declared-name "dryMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "featureReference") (reference "partMasses"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::dryMass"))) (role feature-value))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly::frontAxle"))) (name "frontAxle") (declared-name "frontAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly::frontWheels"))) (name "frontWheels") (declared-name "frontWheels") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 800)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly::mass"))) (role feature-value))))
+                          )
+                        )
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::fuelTank::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 75)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::fuelTank::mass"))) (role feature-value))))
+                          )
+                        )
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "dryMass")) (expression (kind "featureReference") (reference "cargoMass")))) (expression (kind "memberAccess") (reference "fuelMass") (children (expression (kind "memberAccess") (reference "fuel") (children (expression (kind "featureReference") (reference "fuelTank")))))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::mass"))) (role feature-value))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::partMasses"))) (name "partMasses") (declared-name "partMasses") (declared (properties (composite true) (reference false) (ordered false) (unique false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (unique false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::driveTrainEfficiency"))) (name "driveTrainEfficiency") (declared-name "driveTrainEfficiency") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "realLiteral") (literal "0.6")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::driveTrainEfficiency"))) (role feature-value))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 875)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::mass"))) (role feature-value))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::rearWheels"))) (name "rearWheels") (declared-name "rearWheels") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+                              (contains
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::rearWheels::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::Requirements"))) (name "Requirements") (declared-name "Requirements"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b"))) (name "VehicleConfiguration_b") (declared-name "VehicleConfiguration_b")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::*"))) (name "*") (declared-name "*"))
+                (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree"))) (name "ActionTree") (declared-name "ActionTree")
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::applyParkingBrake"))) (name "applyParkingBrake") (declared-name "applyParkingBrake") (declared (properties (composite true) (reference false))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::performSelfTest"))) (name "performSelfTest") (declared-name "performSelfTest") (declared (properties (composite true) (reference false))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower"))) (name "providePower") (declared-name "providePower") (declared (properties (composite true) (reference false)))
+                      (contains
+                        (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::amplifyTorque"))) (name "amplifyTorque") (declared-name "amplifyTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                        (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::distributeTorque"))) (name "distributeTorque") (declared-name "distributeTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                        (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                        (element (kind "flow") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::generateToAmplify"))) (name "generateToAmplify") (declared-name "generateToAmplify") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                        (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower"))))
+                          (contains
+                            (element (kind "item") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::generateTorque::"))) (name "") (declared (properties (direction "in") (composite true) (reference false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "fuelCmd") (children (expression (kind "featureReference") (reference "providePower")))))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::generateTorque::"))) (role feature-value))))
+                          )
+                        )
+                        (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::transferTorque"))) (name "transferTorque") (declared-name "transferTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::wheelToRoadTorque"))) (name "wheelToRoadTorque") (declared-name "wheelToRoadTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower")))))
+                      )
+                    )
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::senseTemperature"))) (name "senseTemperature") (declared-name "senseTemperature") (declared (properties (composite true) (reference false))))
+                  )
+                )
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Box"))) (name "Box") (declared-name "Box"))
+                (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions"))) (name "DiscreteInteractions") (declared-name "DiscreteInteractions")
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1"))) (name "CruiseControl1") (declared-name "CruiseControl1") (declared (properties (composite true) (reference false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::engine::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                              )
+                            )
+                            (element (kind "flow") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::sendFuelCmd"))) (name "sendFuelCmd") (declared-name "sendFuelCmd")
+                              (contains
+                                (element (kind "flow payload") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::sendFuelCmd::_payload"))) (name "_payload") (declared-name "_payload"))
+                              )
+                            )
+                            (element (kind "flow") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::sendSensedSpeed"))) (name "sendSensedSpeed") (declared-name "sendSensedSpeed")
+                              (contains
+                                (element (kind "flow payload") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::sendSensedSpeed::_payload"))) (name "_payload") (declared-name "_payload"))
+                              )
+                            )
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::speedSensor"))) (name "speedSensor") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::speedSensor::speedSensorPort"))) (name "speedSensorPort") (declared-name "speedSensorPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::vehicleSoftware"))) (name "vehicleSoftware") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::vehicleSoftware::vehicleController"))) (name "vehicleController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                                  (contains
+                                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::vehicleSoftware::vehicleController::cruiseController"))) (name "cruiseController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                                      (contains
+                                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::vehicleSoftware::vehicleController::cruiseController::cruiseControlPort"))) (name "cruiseControlPort") (declared-name "cruiseControlPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::vehicleSoftware::vehicleController::cruiseController::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::vehicleSoftware::vehicleController::cruiseController::speedSensorPort"))) (name "speedSensorPort") (declared-name "speedSensorPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2"))) (name "CruiseControl2") (declared-name "CruiseControl2") (declared (properties (composite true) (reference false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::engine::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                              )
+                            )
+                            (element (kind "flow") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::sendFuelCmd"))) (name "sendFuelCmd") (declared-name "sendFuelCmd")
+                              (contains
+                                (element (kind "flow payload") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::sendFuelCmd::_payload"))) (name "_payload") (declared-name "_payload"))
+                              )
+                            )
+                            (element (kind "flow") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::sendSensedSpeed"))) (name "sendSensedSpeed") (declared-name "sendSensedSpeed")
+                              (contains
+                                (element (kind "flow payload") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::sendSensedSpeed::_payload"))) (name "_payload") (declared-name "_payload"))
+                              )
+                            )
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::speedSensor"))) (name "speedSensor") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::speedSensor::speedSensorPort"))) (name "speedSensorPort") (declared-name "speedSensorPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::vehicleSoftware"))) (name "vehicleSoftware") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::vehicleSoftware::vehicleController"))) (name "vehicleController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                                  (contains
+                                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::vehicleSoftware::vehicleController::cruiseController"))) (name "cruiseController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                                      (contains
+                                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::vehicleSoftware::vehicleController::cruiseController::cruiseControlPort"))) (name "cruiseControlPort") (declared-name "cruiseControlPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::vehicleSoftware::vehicleController::cruiseController::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::vehicleSoftware::vehicleController::cruiseController::speedSensorPort"))) (name "speedSensorPort") (declared-name "speedSensorPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence"))) (name "Sequence") (declared-name "Sequence")
+                      (contains
+                        (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver"))) (name "Driver") (declared-name "Driver") (declared)
+                          (contains
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver::p2"))) (name "p2") (declared-name "p2") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver")))))
+                          )
+                        )
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0"))) (name "part0") (declared-name "part0") (declared (properties (composite true) (reference false) (ordered false)))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver::driverReady"))) (name "driverReady") (declared-name "driverReady") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver")))))
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver::startVehicle.trigger2"))) (name "startVehicle.trigger2") (declared-name "startVehicle.trigger2") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver")))))
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver::startVehicle.turnVehicleOn"))) (name "startVehicle.turnVehicleOn") (declared-name "startVehicle.turnVehicleOn") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver")))))
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                              (contains
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle::doorClosed"))) (name "doorClosed") (declared-name "doorClosed") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle::startVehicle.sendStatus"))) (name "startVehicle.sendStatus") (declared-name "startVehicle.sendStatus") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle::startVehicle.trigger1"))) (name "startVehicle.trigger1") (declared-name "startVehicle.trigger1") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree"))) (name "PartsTree") (declared-name "PartsTree")
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b") (declared (properties (composite true) (reference false) (ordered false)))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::avgFuelEconomy"))) (name "avgFuelEconomy") (declared-name "avgFuelEconomy") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy"))))
+                              (contains
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::body::color"))) (name "color") (declared-name "color") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "Colors::red")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Body"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::body::color"))) (role feature-value))))
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy"))))
+                              (contains
+                                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::bumper::Safety"))) (name "Safety") (declared-name "Safety") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy"))))
+                                  (contains
+                                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::bumper::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy")))))
+                                  )
+                                )
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy"))))
+                              (contains
+                                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::keylessEntry::Security"))) (name "Security") (declared-name "Security") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy")))))
+                              )
+                            )
+                          )
+                        )
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::cargoMass"))) (name "cargoMass") (declared-name "cargoMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 0)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft"))) (name "driveshaft") (declared-name "driveshaft") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 100)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Driveshaft"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::mass"))) (role feature-value))))
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::providePower.transferTorque"))) (name "providePower.transferTorque") (declared-name "providePower.transferTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Driveshaft")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::shaftPort_b"))) (name "shaftPort_b") (declared-name "shaftPort_b") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Driveshaft")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::shaftPort_c"))) (name "shaftPort_c") (declared-name "shaftPort_c") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Driveshaft")))))
+                          )
+                        )
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::dryMass"))) (name "dryMass") (declared-name "dryMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "featureReference") (reference "partMasses"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::dryMass"))) (role feature-value))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine::alternator"))) (name "alternator") (declared-name "alternator") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+                              (contains
+                                (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine::alternator::generateElectricity"))) (name "generateElectricity") (declared-name "generateElectricity") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine::cylinders"))) (name "cylinders") (declared-name "cylinders") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                          )
+                        )
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::frontAxle"))) (name "frontAxle") (declared-name "frontAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::frontWheels"))) (name "frontWheels") (declared-name "frontWheels") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 800)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::mass"))) (role feature-value))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                          )
+                        )
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank::fuelMassMax"))) (name "fuelMassMax") (declared-name "fuelMassMax") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 60)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank::fuelMassMax"))) (role feature-value))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 75)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank::mass"))) (role feature-value))))
+                          )
+                        )
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior"))) (name "interior") (declared-name "interior") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::alarm::Security"))) (name "Security") (declared-name "Security") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::driverAirBag::Safety"))) (name "Safety") (declared-name "Safety") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                                  (contains
+                                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::driverAirBag::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                  )
+                                )
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                              (contains
+                                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::seatBelt::Safety"))) (name "Safety") (declared-name "Safety") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                                  (contains
+                                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::seatBelt::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::partMasses"))) (name "partMasses") (declared-name "partMasses") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "tuple") (children (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "fuelTank")))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "frontAxleAssembly")))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "rearAxleAssembly")))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "engine")))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "transmission")))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "featureReference") (reference "driveshaft")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::partMasses"))) (role feature-value))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential"))) (name "differential") (declared-name "differential") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+                              (contains
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::leftDiffPort"))) (name "leftDiffPort") (declared-name "leftDiffPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Differential")))))
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::rightDiffPort"))) (name "rightDiffPort") (declared-name "rightDiffPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Differential")))))
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Differential")))))
+                              )
+                            )
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::driveTrainEfficiency"))) (name "driveTrainEfficiency") (declared-name "driveTrainEfficiency") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "realLiteral") (literal "0.6")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::driveTrainEfficiency"))) (role feature-value))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 875)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::mass"))) (role feature-value))))
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::providePower.distributeTorque"))) (name "providePower.distributeTorque") (declared-name "providePower.distributeTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+                              (contains
+                                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle"))) (name "leftHalfAxle") (declared-name "leftHalfAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+                                  (contains
+                                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle::leftAxleToDiffPort"))) (name "leftAxleToDiffPort") (declared-name "leftAxleToDiffPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle")))))
+                                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle")))))
+                                  )
+                                )
+                                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle"))) (name "rightHalfAxle") (declared-name "rightHalfAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+                                  (contains
+                                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle::rightAxleToDiffPort"))) (name "rightAxleToDiffPort") (declared-name "rightAxleToDiffPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle")))))
+                                    (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle")))))
+                                  )
+                                )
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1"))) (name "rearWheel1") (declared-name "rearWheel1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+                              (contains
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::lugNutCompositePort"))) (name "lugNutCompositePort") (declared-name "lugNutCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::wheelToRoadPort"))) (name "wheelToRoadPort") (declared-name "wheelToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                              )
+                            )
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2"))) (name "rearWheel2") (declared-name "rearWheel2") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+                              (contains
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::lugNutCompositePort"))) (name "lugNutCompositePort") (declared-name "lugNutCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                                (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::wheelToRoadPort"))) (name "wheelToRoadPort") (declared-name "wheelToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                              )
+                            )
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly")))))
+                          )
+                        )
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::speedSensor"))) (name "speedSensor") (declared-name "speedSensor") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::starterMotor"))) (name "starterMotor") (declared-name "starterMotor") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 100)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission::mass"))) (role feature-value))))
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission::providePower.amplifyTorque"))) (name "providePower.amplifyTorque") (declared-name "providePower.amplifyTorque") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission::shaftPort_a"))) (name "shaftPort_a") (declared-name "shaftPort_a") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission")))))
+                          )
+                        )
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware"))) (name "vehicleSoftware") (declared-name "vehicleSoftware") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController"))) (name "vehicleController") (declared-name "vehicleController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleSoftware"))))
+                              (contains
+                                (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController::controllerStates"))) (name "controllerStates") (declared-name "controllerStates") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController::cruiseController"))) (name "cruiseController") (declared-name "cruiseController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController")))))
+                              )
+                            )
+                          )
+                        )
+                        (element (kind "state") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort"))) (name "vehicleToRoadPort") (declared-name "vehicleToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                          (contains
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort::wheelToRoadPort1"))) (name "wheelToRoadPort1") (declared-name "wheelToRoadPort1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort::wheelToRoadPort2"))) (name "wheelToRoadPort2") (declared-name "wheelToRoadPort2") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements"))) (name "Requirements") (declared-name "Requirements")
+                  (contains
+                    (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::*"))) (name "*") (declared-name "*"))
+                    (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::*#import"))) (name "*") (declared-name "*"))
+                    (element (kind "derivation connection") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::_derivationConnection"))) (name "_derivationConnection")
+                      (contains
+                        (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::_derivationConnection::#derive"))) (name "#derive") (declared-name "#derive") (declared (properties (end true))))
+                        (element (kind "interface end") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::_derivationConnection::#original"))) (name "#original") (declared-name "#original") (declared (properties (end true))))
+                      )
+                    )
+                    (element (kind "dependency") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::dependency"))) (name "dependency") (declared-name "dependency"))
+                    (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification"))) (name "engineSpecification") (declared-name "engineSpecification")
+                      (contains
+                        (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::drivePowerOutputRequirement"))) (name "drivePowerOutputRequirement") (declared-name "drivePowerOutputRequirement"))
+                        (element (kind "subject") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engine1"))) (name "engine1") (declared-name "engine1"))
+                        (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement"))) (name "engineMassRequirement") (declared-name "engineMassRequirement")
+                          (contains
+                            (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement::massRequired"))) (name "massRequired") (declared-name "massRequired") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                          )
+                        )
+                        (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::torqueGenerationRequirement"))) (name "torqueGenerationRequirement") (declared-name "torqueGenerationRequirement"))
+                      )
+                    )
+                    (element (kind "item def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::marketSurvey"))) (name "marketSurvey") (declared-name "marketSurvey"))
+                    (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification"))) (name "vehicleSpecification") (declared-name "vehicleSpecification")
+                      (contains
+                        (element (kind "subject") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+                        (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements"))) (name "vehicleFuelEconomyRequirements") (declared-name "vehicleFuelEconomyRequirements")
+                          (contains
+                            (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::_documentation"))) (name ""))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::assumedCargoMass"))) (name "assumedCargoMass") (declared-name "assumedCargoMass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                            (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::cityFuelEconomyRequirement"))) (name "cityFuelEconomyRequirement") (declared-name "cityFuelEconomyRequirement")
+                              (contains
+                                (element (kind "require constraint") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::cityFuelEconomyRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                              )
+                            )
+                            (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement"))) (name "highwayFuelEconomyRequirement") (declared-name "highwayFuelEconomyRequirement")
+                              (contains
+                                (element (kind "metadata usage") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::StatusInfo"))) (name "StatusInfo") (declared-name "StatusInfo") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement"))))
+                                  (contains
+                                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::StatusInfo::originator"))) (name "originator") (declared-name "originator") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::StatusInfo::owner"))) (name "owner") (declared-name "owner") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::StatusInfo::status"))) (name "status") (declared-name "status") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                                  )
+                                )
+                                (element (kind "require constraint") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement")))))
+                              )
+                            )
+                          )
+                        )
+                        (element (kind "requirement") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement")
+                          (contains
+                            (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                            (element (kind "require constraint") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::fuelMassActual"))) (name "fuelMassActual") (declared-name "fuelMassActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::fuelMassMax"))) (name "fuelMassMax") (declared-name "fuelMassMax") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::massActual"))) (name "massActual") (declared-name "massActual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::massRequired"))) (name "massRequired") (declared-name "massRequired") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement")))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::mop"))) (name "mop") (declared-name "mop"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies"))) (name "WheelHubAssemblies") (declared-name "WheelHubAssemblies")
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1"))) (name "wheelHubAssy1") (declared-name "wheelHubAssy1") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::hub1"))) (name "hub1") (declared-name "hub1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::hub1::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::wheel1"))) (name "wheel1") (declared-name "wheel1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::wheel1::lugNutCompositePort"))) (name "lugNutCompositePort") (declared-name "lugNutCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2"))) (name "wheelHubAssy2") (declared-name "wheelHubAssy2") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::hub1"))) (name "hub1") (declared-name "hub1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::hub1::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::wheel1"))) (name "wheel1") (declared-name "wheel1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::wheel1::lugNutCompositePort"))) (name "lugNutCompositePort") (declared-name "lugNutCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3"))) (name "wheelHubAssy3") (declared-name "wheelHubAssy3") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1"))) (name "hub1") (declared-name "hub1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort"))) (name "shankCompositePort") (declared-name "shankCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))))
+                          (contains
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort"))) (name "shankPort") (declared-name "shankPort") (declared (properties (composite true) (reference false)) (multiplicity (lower 5) (upper 5) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))))
+                              (contains
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::shaftLength"))) (name "shaftLength") (declared-name "shaftLength") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 70)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::shaftLength"))) (role feature-value))))
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::threadDia"))) (name "threadDia") (declared-name "threadDia") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 14)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::threadDia"))) (role feature-value))))
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::threadPitch"))) (name "threadPitch") (declared-name "threadPitch") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "1.5")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::threadPitch"))) (role feature-value))))
+                              )
+                            )
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort1"))) (name "shankPort1") (declared-name "shankPort1") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort2"))) (name "shankPort2") (declared-name "shankPort2") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort3"))) (name "shankPort3") (declared-name "shankPort3") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub")))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1"))) (name "wheel1") (declared-name "wheel1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort"))) (name "lugNutCompositePort") (declared-name "lugNutCompositePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+                          (contains
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort"))) (name "lugNutPort") (declared-name "lugNutPort") (declared (properties (composite true) (reference false)) (multiplicity (lower 5) (upper 5) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+                              (contains
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort::threadDia"))) (name "threadDia") (declared-name "threadDia") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 14)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort::threadDia"))) (role feature-value))))
+                                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort::threadPitch"))) (name "threadPitch") (declared-name "threadPitch") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "1.5")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort::threadPitch"))) (role feature-value))))
+                              )
+                            )
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort1"))) (name "lugNutPort1") (declared-name "lugNutPort1") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort2"))) (name "lugNutPort2") (declared-name "lugNutPort2") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                            (element (kind "port") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort3"))) (name "lugNutPort3") (declared-name "lugNutPort3") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel")))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals"))) (name "VehicleIndividuals") (declared-name "VehicleIndividuals")
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a"))) (name "a") (declared-name "a") (declared (properties (individual true) (composite true) (reference false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a"))) (name "t0_t2_a") (declared-name "t0_t2_a") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice")))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t0_a"))) (name "t0_a") (declared-name "t0_a") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t0_a::t0"))) (name "t0") (declared-name "t0") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t0_a::t0_r"))) (name "t0_r") (declared-name "t0_r") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t0_a::t0_v"))) (name "t0_v") (declared-name "t0_v") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                          (contains
+                            (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t0_a::t0_v::t0_fa"))) (name "t0_fa") (declared-name "t0_fa") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                              (contains
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t0_a::t0_v::t0_fa::t0_leftFront"))) (name "t0_leftFront") (declared-name "t0_leftFront") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t0_a::t0_v::t0_fa::t0_rightFront"))) (name "t0_rightFront") (declared-name "t0_rightFront") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t1_a"))) (name "t1_a") (declared-name "t1_a") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t1_a::t1"))) (name "t1") (declared-name "t1") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t1_a::t1_r"))) (name "t1_r") (declared-name "t1_r") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t1_a::t1_v"))) (name "t1_v") (declared-name "t1_v") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                          (contains
+                            (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t1_a::t1_v::t1_fa"))) (name "t1_fa") (declared-name "t1_fa") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                              (contains
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t1_a::t1_v::t1_fa::t1_leftFront"))) (name "t1_leftFront") (declared-name "t1_leftFront") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t1_a::t1_v::t1_fa::t1_rightFront"))) (name "t1_rightFront") (declared-name "t1_rightFront") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t2_a"))) (name "t2_a") (declared-name "t2_a") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t2_a::t2"))) (name "t2") (declared-name "t2") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t2_a::t2_r"))) (name "t2_r") (declared-name "t2_r") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t2_a::t2_v"))) (name "t2_v") (declared-name "t2_v") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                          (contains
+                            (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t2_a::t2_v::t2_fa"))) (name "t2_fa") (declared-name "t2_fa") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                              (contains
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t2_a::t2_v::t2_fa::t2_leftFront"))) (name "t2_leftFront") (declared-name "t2_leftFront") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                                (element (kind "occurrence") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleIndividuals::a::t0_t2_a::t2_a::t2_v::t2_fa::t2_rightFront"))) (name "t2_rightFront") (declared-name "t2_rightFront") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))))
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration"))) (name "VehicleLogicalConfiguration") (declared-name "VehicleLogicalConfiguration")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree"))) (name "PartsTree") (declared-name "PartsTree")
+              (contains
+                (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::_logical"))) (name "logical") (declared-name "logical"))
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical"))) (name "vehicleLogical") (declared-name "vehicleLogical") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::brakingSubsystem"))) (name "brakingSubsystem") (declared-name "brakingSubsystem") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::electricalGenerator"))) (name "electricalGenerator") (declared-name "electricalGenerator") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                      (contains
+                        (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::electricalGenerator::generateElectricity"))) (name "generateElectricity") (declared-name "generateElectricity") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::ElectricalGenerator")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::steeringSystem"))) (name "steeringSystem") (declared-name "steeringSystem") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+                      (contains
+                        (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::torqueGenerator::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TorqueGenerator")))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalToPhysicalAllocation"))) (name "VehicleLogicalToPhysicalAllocation") (declared-name "VehicleLogicalToPhysicalAllocation")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalToPhysicalAllocation::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalToPhysicalAllocation::PartsTree"))) (name "PartsTree") (declared-name "PartsTree"))
+            (element (kind "allocation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalToPhysicalAllocation::vehicleLogicalToPhysicalAllocation"))) (name "vehicleLogicalToPhysicalAllocation") (declared-name "vehicleLogicalToPhysicalAllocation"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel"))) (name "VehicleSuperSetModel") (declared-name "VehicleSuperSetModel")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions"))) (name "VariationPointDefinitions") (declared-name "VariationPointDefinitions")
+              (contains
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices"))) (name "TransmissionChoices") (declared-name "TransmissionChoices") (declared (properties (variation true)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices::transmissionAutomatic"))) (name "transmissionAutomatic") (declared-name "transmissionAutomatic") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices::transmissionManual"))) (name "transmissionManual") (declared-name "transmissionManual") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree"))) (name "VehiclePartsTree") (declared-name "VehiclePartsTree")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::*"))) (name "*") (declared-name "*"))
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily"))) (name "vehicleFamily") (declared-name "vehicleFamily") (declared (properties (abstract true) (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::driveshaft"))) (name "driveshaft") (declared-name "driveshaft") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine"))) (name "engine") (declared-name "engine") (declared (properties (variation true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine::engine4Cyl"))) (name "engine4Cyl") (declared-name "engine4Cyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine::engine6Cyl"))) (name "engine6Cyl") (declared-name "engine6Cyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+                          (contains
+                            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine::engine6Cyl::cylinder"))) (name "cylinder") (declared-name "cylinder") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine6Cyl")))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::sunroof"))) (name "sunroof") (declared-name "sunroof") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::transmissionChoices"))) (name "transmissionChoices") (declared-name "transmissionChoices") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification"))) (name "VehicleVerification") (declared-name "VehicleVerification")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::*#import2"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::*#import3"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VehicleConfiguration_b"))) (name "VehicleConfiguration_b") (declared-name "VehicleConfiguration_b"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions"))) (name "VerificationCaseDefinitions") (declared-name "VerificationCaseDefinitions")
+              (contains
+                (element (kind "verification def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::AccelerationTest"))) (name "AccelerationTest") (declared-name "AccelerationTest"))
+                (element (kind "verification def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest"))) (name "MassTest") (declared-name "MassTest"))
+                (element (kind "verification def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::ReliabilityTest"))) (name "ReliabilityTest") (declared-name "ReliabilityTest"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1"))) (name "VerificationCases1") (declared-name "VerificationCases1")
+              (contains
+                (element (kind "verification") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests"))) (name "massTests") (declared-name "massTests")
+                  (contains
+                    (element (kind "metadata usage") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::VerificationMethod"))) (name "VerificationMethod") (declared-name "VerificationMethod") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest"))))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::VerificationMethod::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest")))))
+                      )
+                    )
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::evaluatePassFail"))) (name "evaluatePassFail") (declared-name "evaluatePassFail") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest")))))
+                    (element (kind "flow") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest")))))
+                    (element (kind "objective") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::weighVehicle"))) (name "weighVehicle") (declared-name "weighVehicle") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest"))))
+                      (contains
+                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::weighVehicle::massMeasured"))) (name "massMeasured") (declared-name "massMeasured") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest")))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem"))) (name "VerificationSystem") (declared-name "VerificationSystem")
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext"))) (name "verificationContext") (declared-name "verificationContext") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massTests"))) (name "massTests") (declared-name "massTests"))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem"))) (name "massVerificationSystem") (declared-name "massVerificationSystem") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::operator"))) (name "operator") (declared-name "operator") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                          (contains
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::operator::massTests.evaluatePassFail"))) (name "massTests.evaluatePassFail") (declared-name "massTests.evaluatePassFail"))
+                          )
+                        )
+                        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::scale"))) (name "scale") (declared-name "scale") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                          (contains
+                            (element (kind "action") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::scale::massTests.weighVehicle"))) (name "massTests.weighVehicle") (declared-name "massTests.weighVehicle"))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::vehicle_UnitUnderTest"))) (name "vehicle_UnitUnderTest") (declared-name "vehicle_UnitUnderTest") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints"))) (name "Views_Viewpoints") (declared-name "Views_Viewpoints")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews"))) (name "VehicleViews") (declared-name "VehicleViews")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::*"))) (name "*") (declared-name "*"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::*#import"))) (name "*") (declared-name "*"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::*#import2"))) (name "*") (declared-name "*"))
+                (element (kind "view") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::vehiclePartsTree_Safety"))) (name "vehiclePartsTree_Safety") (declared-name "vehiclePartsTree_Safety")
+                  (contains
+                    (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::vehiclePartsTree_Safety::**"))) (name "**") (declared-name "**") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView")))))
+                    (element (kind "filter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::vehiclePartsTree_Safety::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Safety")))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions"))) (name "ViewDefinitions") (declared-name "ViewDefinitions")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::*"))) (name "*") (declared-name "*"))
+                (element (kind "view def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::NestedView"))) (name "NestedView") (declared-name "NestedView"))
+                (element (kind "view def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsInterconnection"))) (name "PartsInterconnection") (declared-name "PartsInterconnection"))
+                (element (kind "view def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (name "PartsTreeView") (declared-name "PartsTreeView")
+                  (contains
+                    (element (kind "filter") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "SysML::PartUsage")))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView")))))
+                  )
+                )
+                (element (kind "view def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::RelationshipView"))) (name "RelationshipView") (declared-name "RelationshipView"))
+                (element (kind "view def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TableView"))) (name "TableView") (declared-name "TableView"))
+                (element (kind "view def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView"))) (name "TreeView") (declared-name "TreeView")
+                  (contains
+                    (element (kind "view rendering") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView::asTreeDiagram"))) (name "asTreeDiagram") (declared-name "asTreeDiagram") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions"))) (name "ViewpointDefinitions") (declared-name "ViewpointDefinitions")
+              (contains
+                (element (kind "viewpoint def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::BehaviorViewpoint"))) (name "BehaviorViewpoint") (declared-name "BehaviorViewpoint"))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer"))) (name "SafetyEngineer") (declared-name "SafetyEngineer") (declared))
+                (element (kind "viewpoint def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyViewpoint"))) (name "SafetyViewpoint") (declared-name "SafetyViewpoint"))
+                (element (kind "concern def") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety"))) (name "VehicleSafety") (declared-name "VehicleSafety")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety")))))
+                    (element (kind "stakeholder") (id (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::se"))) (name "se") (declared-name "se") (effective (featuring-type (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::unresolved_allocate_source"))) (name "unresolved_allocate_source") (declared-name "unresolved_allocate_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalToPhysicalAllocation::unresolved_allocate_target"))) (name "unresolved_allocate_target") (declared-name "unresolved_allocate_target"))
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::DrivePowerOutputRequirement::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::DrivePowerOutputRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::ReliabilityRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::_refinement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::bumper::Safety"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::bumper"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::keylessEntry::Security"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::keylessEntry"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::alarm::Security"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::alarm"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::driverAirBag::Safety"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::driverAirBag"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::seatBelt::Safety"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::interior::seatBelt"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement::StatusInfo"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::_logical"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::VerificationMethod"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::_documentation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety"))))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::cruiseControlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controlPort"))) (connect (source-expression "vehicleSoftware::vehicleController::cruiseController::cruiseControlPort") (target-expression "vehicleSoftware::vehicleController::controlPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelCmdPort"))) (connect (source-expression "engine::fuelCmdPort") (target-expression "fuelCmdPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::ignitionCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::ignitionCmdPort"))) (connect (source-expression "engine::ignitionCmdPort") (target-expression "ignitionCmdPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort::wheelToRoadPort1"))) (connect (source-expression "rearAxleAssembly::rearWheel1::wheelToRoadPort") (target-expression "vehicleToRoadPort::wheelToRoadPort1") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort::wheelToRoadPort2"))) (connect (source-expression "rearAxleAssembly::rearWheel2::wheelToRoadPort") (target-expression "vehicleToRoadPort::wheelToRoadPort2") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::shaftPort_d"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::shaftPort_d"))) (connect (source-expression "shaftPort_d") (target-expression "differential::shaftPort_d") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::setSpeedPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::setSpeedPort"))) (connect (source-expression "vehicle_b::setSpeedPort") (target-expression "vehicleSoftware::vehicleController::cruiseController::setSpeedPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::drivePwrPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission::clutchPort"))) (connect (source-expression "engine::drivePwrPort") (target-expression "transmission::clutchPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b") (interface-usage true) (interface-type "EngineToTransmissionInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelOutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelInPort"))) (connect (source-expression "fuelTank::fuelOutPort") (target-expression "engine::fuelInPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b") (interface-usage true) (interface-type "FuelInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor::speedSensorPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::speedSensorPort"))) (connect (source-expression "speedSensor::speedSensorPort") (target-expression "vehicleSoftware::vehicleController::cruiseController::speedSensorPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::StarterMotor::gearPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::flyWheelPort"))) (connect (source-expression "starterMotor::gearPort") (target-expression "engine::flyWheelPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineControlPort"))) (connect (source-expression "vehicleSoftware::vehicleController::controlPort") (target-expression "engine::engineControlPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort::~DrivePwrPort"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::~FuelPort"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::shaftPort_c"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::shaftPort_d"))) (connect (source-expression "driveshaft::shaftPort_c") (target-expression "rearAxleAssembly::shaftPort_d") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::leftDiffPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle::leftAxleToDiffPort"))) (connect (source-expression "differential::leftDiffPort") (target-expression "rearAxle::leftHalfAxle::leftAxleToDiffPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::rightDiffPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle::rightAxleToDiffPort"))) (connect (source-expression "differential::rightDiffPort") (target-expression "rearAxle::rightHalfAxle::rightAxleToDiffPort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle::shankCompositePort"))) (connect (source-expression "rearWheel1::lugNutCompositePort") (target-expression "rearAxle::leftHalfAxle::shankCompositePort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly") (interface-usage true) (interface-type "WheelHubInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle::shankCompositePort"))) (connect (source-expression "rearWheel2::lugNutCompositePort") (target-expression "rearAxle::rightHalfAxle::shankCompositePort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly") (interface-usage true) (interface-type "WheelHubInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission::shaftPort_a"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::shaftPort_b"))) (connect (source-expression "transmission::shaftPort_a") (target-expression "driveshaft::shaftPort_b") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::wheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::hub1::shankCompositePort"))) (connect (source-expression "wheel1::lugNutCompositePort") (target-expression "hub1::shankCompositePort") (container-prefix "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1") (interface-usage true) (interface-type "WheelHubInterface")))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine"))))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::marketSurvey"))))
+    (derivation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque::transmissionTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque::transmissionTorque"))) (flow (source-expression "amplifyTorque::transmissionTorque") (target-expression "transferTorque::transmissionTorque")))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque::engineTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque::engineTorque"))) (flow (source-expression "generateTorque::engineTorque") (target-expression "amplifyTorque::engineTorque")))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque::driveshaftTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque::driveshaftTorque"))) (flow (source-expression "transferTorque::driveshaftTorque") (target-expression "distributeTorque::driveshaftTorque")))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::enterVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::closeDoor_in"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::openDoor_in"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::enterVehicle"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::closeDoor_out"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::lockDoor_out"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::exitVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::closeDoor_out"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::start"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::a"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::trigger"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::b"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::c"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::c"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::_verdict"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::start"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::a"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::trigger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::b"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::start"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driveVehicleToDestination"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::providePower"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driverGetInVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::passenger1GetInVehicle"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driverGetOutOfVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::passenger1GetOutOfVehicle"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::start"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driverGetInVehicle"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::generateTorque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::applyParkingBrake"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::controlDirection"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::performSelfTest"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::provideBraking"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::providePower"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::senseTemperature"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::closeDoor_in"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::enterVehicle"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle::openDoor_in"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::closeDoor_out"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::exitVehicle"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle::lockDoor_out"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::a"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::b"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::c"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger::trigger"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::transportPassenger"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::amplifyTorque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::distributeTorque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::generateTorque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::transferTorque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests::evaluatePassFail"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massTests"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxlePort::~AxlePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxlePort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxleToWheelPort::~AxleToWheelPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxleToWheelPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort::~ControlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort::~CruiseControlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DiffPort::~DiffPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DiffPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort::~DrivePwrPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort::~DriverCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort::~FuelCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::~FuelPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::GearPort::~GearPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::GearPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort::~HandPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort::~IgnitionCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::~LugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::~LugNutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort::~PwrCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort::~SetSpeedPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_a::~ShaftPort_a"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_a"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_b::~ShaftPort_b"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_b"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_c::~ShaftPort_c"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_c"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d::~ShaftPort_d"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::~ShankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::~ShankPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort::~SpeedSensorPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::StatusPort::~StatusPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::StatusPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::VehicleToRoadPort::~VehicleToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::VehicleToRoadPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToAxlePort::~WheelToAxlePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToAxlePort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort::~WheelToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::cargoMass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::cargoMass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::dryMass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::dryMass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::fuelTank::mass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::mass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::mass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::mass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::rearWheels::diameter"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::diameter"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::fuelCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower::pwrCmd"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::body::color"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Body::color"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::cargoMass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::cargoMass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::dryMass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::dryMass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::pwrCmdPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank::fuelMassMax"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelMassMax"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank::mass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::mass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle::shankCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle::shankCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::diameter"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::diameter"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::diameter"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::diameter"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController::controllerStates"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleStates"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleToRoadPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement::massActual"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massActual"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement::massRequired"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massRequired"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::massActual"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massActual"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement::massRequired"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement::massRequired"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::hub1::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::wheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::hub1::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::wheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::shaftLength"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::shaftLength"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::threadDia"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::threadDia"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort::threadPitch"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort::threadPitch"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort::threadDia"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::threadDia"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort::threadPitch"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort::threadPitch"))))
+    (satisfy (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine"))))
+    (satisfy (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::FrontAxleAssembly_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::FrontAxle_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::RearAxleAssembly_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Road_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Road"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::VehicleRoadContext_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Vehicle_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::IndividualDefinitions::Wheel_2"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Software"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Axle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Software"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleSoftware"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Software"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::DriverCmd"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::GenericContext::Context"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsInterconnection"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::NestedView"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::TreeView"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement::generateTorque"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engine1"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::drivePowerOutputRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engine1"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engine1"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::torqueGenerationRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engine1"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::cityFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelMassMax"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::mass"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::cargoMass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::mass"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::dryMass"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::mass"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinders"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder2"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinders"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder3"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinders"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinder4"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine4Cyl::cylinders"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::partMasses"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::mass"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort2"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort3"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1::shankCompositePort::shankPort"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort2"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort3"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1::lugNutCompositePort::lugNutPort"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::degraded"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::maintenance"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::degraded"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::normal"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::healthStates::maintenance"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::starting"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::starting"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::operatingStates::on"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::off"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::on"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::on"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controllerStates::operatingStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::driverStates::wait"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque::fuelCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower::pwrCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::cylinderDiameter"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::DiameterChoices"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface::p1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::EngineToTransmissionInterface::p2"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort::~DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface::fuelInPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::FuelInterface::fuelOutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::lugNutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::maxTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelFastenerInterface::shankPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::InterfaceDefinitions::WheelHubInterface::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Body::color"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::Colors"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::cruiseControlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::CruiseControlPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::setSpeedPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort::~SetSpeedPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController::speedSensorPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort::~SpeedSensorPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::drivePwrPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::engineControlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort::~ControlPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::fuelInPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine::ignitionCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelInPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::~FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelKind"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::FuelKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank::fuelOutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor::speedSensorPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SpeedSensorPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::StarterMotor::gearPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::GearPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission::clutchPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DrivePwrPort::~DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::ignitionCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::pwrCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::statusPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::StatusPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleStates::controller"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle::vehicleToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::VehicleToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController::controlPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ControlPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DriverCmdPort::driverCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::DriverCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort::fuelCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelPort::fuel"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::Fuel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort::ignitionCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort::pwrCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::IgnitionCmdPort::ignitionCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort::lugNutPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::PwrCmdPort::pwrCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::PwrCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort::shankPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::SignalDefinitions::IgnitionCmd::ignitionOnOff"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AttributeDefinitions::IgnitionOnOff"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver::handPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::HandPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle::vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle::vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger::vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getInVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetInVehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::getOutOfVehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::GetOutOfVehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::TransportPassenger"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::MissionContext"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::driver"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Driver"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::passenger1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::ContextDefinitions::Passenger"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::MissionContext::missionContext::road"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Road"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::AverageTravelTimePerDistance::scenario"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::ComputeBSFC::engine"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::IdlingFuelConsumptionPerTime::engine"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::TraveledDistance::scenario"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::fuelEconomyAnalysis::scenario"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleAnalysis::FuelEconomyAnalysisModel::Scenario"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::Engine4Cyl_Variant::engine::cylinders"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Cylinder"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly::frontAxle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Axle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::frontAxleAssembly::frontWheels"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::fuelTank"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::rearAxle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Axle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_a::PartsTree::vehicle_a::rearAxleAssembly::rearWheels"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::applyParkingBrake"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ApplyParkingBrake"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::performSelfTest"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::PerformSelfTest"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::ProvidePower"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::amplifyTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::AmplifyTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::distributeTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::DistributeTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::fuelCmd"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::generateTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::GenerateTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::providePower::transferTorque"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::TransferTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::ActionTree::senseTemperature"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ActionDefinitions::SenseTemperature"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::sendFuelCmd::_payload"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl1::vehicle_b::sendSensedSpeed::_payload"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::SensedSpeed"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::sendFuelCmd::_payload"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::CruiseControl2::vehicle_b::sendSensedSpeed::_payload"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::ItemDefinitions::SensedSpeed"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::Driver"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BodyAssy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::bodyAssy::body"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Body"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Driveshaft"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::shaftPort_b"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_b"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::shaftPort_c"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_c"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::engine::cylinders"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Cylinder"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::frontAxle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FrontAxle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::frontWheels"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::frontAxleAssembly::shaftPort_d"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelCmdPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::FuelCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::fuelTank"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::FuelTank"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Differential"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::leftDiffPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DiffPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::rightDiffPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::DiffPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::differential::shaftPort_d"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::leftHalfAxle::leftAxleToDiffPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxlePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::HalfAxle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearAxle::rightHalfAxle::rightAxleToDiffPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::AxlePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel1::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::rearWheel2::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::shaftPort_d"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_d"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::setSpeedPort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::SetSpeedPort::~SetSpeedPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::speedSensor"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SpeedSensor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::starterMotor"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::StarterMotor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission::shaftPort_a"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShaftPort_a"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleSoftware"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::VehicleController"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleSoftware::vehicleController::cruiseController"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::CruiseController"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort::wheelToRoadPort1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::vehicleToRoadPort::wheelToRoadPort2"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::drivePowerOutputRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::DrivePowerOutputRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engine1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::engineMassRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::engineSpecification::torqueGenerationRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::TorqueGenerationRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicle"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::cityFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleFuelEconomyRequirements::highwayFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::Requirements::vehicleSpecification::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::RequirementDefinitions::MassRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::hub1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::hub1::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::wheel1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy1::wheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::hub1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::hub1::shankCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::ShankCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::wheel1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy2::wheel1::lugNutCompositePort"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PortDefinitions::LugNutCompositePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::hub1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Hub"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleConfigurations::WheelHubAssemblies::wheelHubAssy3::wheel1"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::brakingSubsystem"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::BrakingSubsystem"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::electricalGenerator"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::ElectricalGenerator"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::steeringSystem"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::SteeringSubsystem"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalConfiguration::PartsTree::vehicleLogical::torqueGenerator"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TorqueGenerator"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleLogicalToPhysicalAllocation::vehicleLogicalToPhysicalAllocation"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::AllocationDefinitions::LogicalToPhysical"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices::transmissionAutomatic"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TransmissionAutomatic"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VariationPointDefinitions::TransmissionChoices::transmissionManual"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TransmissionManual"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine::engine4Cyl"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine4Cyl"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine::engine6Cyl"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Engine6Cyl"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::engine::engine6Cyl::cylinder"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Cylinder"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::sunroof"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::Sunroof"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleSuperSetModel::VehiclePartsTree::vehicleFamily::transmissionChoices"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Definitions::PartDefinitions::TransmissionChoices"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCases1::massTests"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::VehicleVerification::VerificationCaseDefinitions::MassTest"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::VehicleViews::vehiclePartsTree_Safety"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewDefinitions::PartsTreeView"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::VehicleSafety::se"))) (to (node (document "d0") (qualified-name "SimpleVehicleModel::Views_Viewpoints::ViewpointDefinitions::SafetyEngineer"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::fork2") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driveVehicleToDestination"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::fork3") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::driverGetOutOfVehicle"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join1") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join1"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join1") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::trigger"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join2") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::fork3"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join2") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join2"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join3") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::_verdict"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join3") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join3"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::passenger1GetInVehicle") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join1"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::passenger1GetOutOfVehicle") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join3"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::providePower") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::join2"))
+    (flow (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::trigger") (target-qualified "SimpleVehicleModel::MissionContext::TransportPassengerScenario::transportPassenger_1::fork2"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::a::driverGetInVehicle::closeDoor_in"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::a::driverGetInVehicle::enterVehicle"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::a::driverGetInVehicle::openDoor_in"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::a::driverGetInVehicle::unlockDoor_in"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::b::driveVehicleToDestination"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::c::driverGetOutOfVehicle::closeDoor_out"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::c::driverGetOutOfVehicle::exitVehicle"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::c::driverGetOutOfVehicle::lockDoor_out"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::driver") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::driver::transportPassenger::c::driverGetOutOfVehicle::openDoor_out"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::a::passenger1GetInVehicle::closeDoor_in"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::a::passenger1GetInVehicle::enterVehicle"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::a::passenger1GetInVehicle::openDoor_in"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::a::passenger1GetInVehicle::unlockDoor_in"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::c::passenger1GetOutOfVehicle::closeDoor_out"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::c::passenger1GetOutOfVehicle::exitVehicle"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::c::passenger1GetOutOfVehicle::lockDoor_out"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::passenger1::transportPassenger::c::passenger1GetOutOfVehicle::openDoor_out"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::MissionContext::missionContext::vehicle_b_1") (target-qualified "SimpleVehicleModel::MissionContext::missionContext::vehicle_b_1::transportPassenger::trigger"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver") (target-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver::startVehicle::trigger2"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver") (target-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::driver::startVehicle::turnVehicleOn"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle") (target-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle::startVehicle::sendStatus"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle") (target-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::DiscreteInteractions::Sequence::part0::vehicle::startVehicle::trigger1"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft") (target-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::driveshaft::providePower::transferTorque"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly") (target-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::rearAxleAssembly::providePower::distributeTorque"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission") (target-qualified "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b::transmission::providePower::amplifyTorque"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::operator") (target-qualified "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::operator::massTests::evaluatePassFail"))
+    (perform (status pending) (document "d0") (source-qualified "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::scale") (target-qualified "SimpleVehicleModel::VehicleVerification::VerificationSystem::verificationContext::massVerificationSystem::scale::massTests::weighVehicle"))
+  )
+  (pending-expression-relationships
+    (allocate (status pending-expression) (document "d0") (source-expression "ActionTree::providePower::generateToAmplify") (target-expression "engineToTransmissionInterface") (container-prefix "SimpleVehicleModel::VehicleConfigurations::VehicleConfiguration_b::PartsTree::vehicle_b"))
+    (allocate (status pending-expression) (document "d0") (source-expression "vehicleLogical") (target-expression "vehicle_b") (container-prefix "SimpleVehicleModel::VehicleLogicalToPhysicalAllocation"))
+    (connection (status pending-expression) (document "d0") (source-expression "driver::handPort") (target-expression "vehicle_b_1::ignitionCmdPort") (container-prefix "SimpleVehicleModel::MissionContext::missionContext"))
+    (connection (status pending-expression) (document "d0") (source-expression "road") (target-expression "vehicle_b_1::vehicleToRoadPort") (container-prefix "SimpleVehicleModel::MissionContext::missionContext"))
+  )
+)
 ~~~

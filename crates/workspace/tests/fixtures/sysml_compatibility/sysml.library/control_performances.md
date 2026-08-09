@@ -468,98 +468,35 @@ standard library package ControlPerformances {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ControlPerformances'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'SequenceFunctions::notEmpty'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensBefore'[unresolved])
-      (membership_import private -> 'Occurrences::SelfSameLifeLink'[unresolved])
-      (membership_import private -> 'Performances::Performance'[unresolved])
-      (membership_import private -> 'Performances::BooleanEvaluation'[unresolved])
-      (behavior_def 'DecisionPerformance' :> 'Performance'[unresolved]
-        (documentation)
-        (feature_def 'outgoingHBLink' : 'HappensBefore'[unresolved]
-          (multiplicity_range [1])
-          (documentation)
-          (feature_def end :>> 'earlierOccurrence'[unresolved] :> 'that'[unresolved])))
-      (behavior_def 'MergePerformance' :> 'Performance'[unresolved]
-        (documentation)
-        (feature_def 'incomingHBLink' : 'HappensBefore'[unresolved]
-          (multiplicity_range [1])
-          (documentation)
-          (feature_def end :>> 'laterOccurrence'[unresolved] :> 'that'[unresolved])))
-      (behavior_def abstract 'IfPerformance' :> 'Performance'[unresolved]
-        (documentation)
-        (feature_def in 'ifTest' : 'BooleanEvaluation'[unresolved]
-          (multiplicity_range [1])))
-      (behavior_def 'IfThenPerformance' :> 'ControlPerformances::IfPerformance'[behavior_def]
-        (documentation)
-        (feature_def in :>> 'ControlPerformances::IfPerformance::ifTest'[feature_def])
-        (feature_def in 'thenClause' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (succession_def
-          (multiplicity_range [1])
-          (connector_end 'ifTest')
-          (connector_end 'thenClause'))
-        (invariant_def
-          (result_expr_membership)))
-      (behavior_def 'IfElsePerformance' :> 'ControlPerformances::IfPerformance'[behavior_def]
-        (documentation)
-        (feature_def in :>> 'ControlPerformances::IfPerformance::ifTest'[feature_def])
-        (feature_def in 'elseClause' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (succession_def
-          (multiplicity_range [1])
-          (connector_end 'ifTest')
-          (connector_end 'elseClause'))
-        (invariant_def
-          (result_expr_membership)))
-      (behavior_def 'IfThenElsePerformance' :> 'ControlPerformances::IfThenPerformance'[behavior_def]
-        (documentation)
-        (feature_def in :>> ''[feature_def])
-        (feature_def in :>> 'ControlPerformances::IfThenPerformance::thenClause'[feature_def])
-        (feature_def in 'elseClause' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (succession_def
-          (multiplicity_range [1])
-          (connector_end 'ifTest')
-          (connector_end 'elseClause'))
-        (invariant_def
-          (result_expr_membership)))
-      (behavior_def 'LoopPerformance' :> 'Performance'[unresolved]
-        (documentation)
-        (feature_def in 'whileTest' : 'BooleanEvaluation'[unresolved]
-          (multiplicity_range [1..*]))
-        (feature_def in 'body' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'untilTest' : 'BooleanEvaluation'[unresolved]
-          (multiplicity_range [0..*]))
-        (step_def 'whileDecision' : 'ControlPerformances::IfThenPerformance'[behavior_def]
-          (multiplicity_range [1..*]))
-        (step_def 'untilDecision' : 'ControlPerformances::IfElsePerformance'[behavior_def]
-          (multiplicity_range [0..*]))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'whileDecision.ifTest')
-          (connector_end 'whileTest'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'whileDecision.thenClause')
-          (connector_end 'body'))
-        (succession_def
-          (connector_end 'body')
-          (connector_end 'untilDecision'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'untilDecision.ifTest')
-          (connector_end 'untilTest'))
-        (binding_connector_def 'loopBack'
-          (connector_end 'untilDecision.elseClause')
-          (connector_end 'whileDecision'))
-        (invariant_def
-          (result_expr_membership))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ControlPerformances"))) (name "ControlPerformances") (declared-name "ControlPerformances")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::BooleanEvaluation"))) (name "BooleanEvaluation") (declared-name "BooleanEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::DecisionPerformance"))) (name "DecisionPerformance") (declared-name "DecisionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfElsePerformance"))) (name "IfElsePerformance") (declared-name "IfElsePerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfPerformance"))) (name "IfPerformance") (declared-name "IfPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfThenElsePerformance"))) (name "IfThenElsePerformance") (declared-name "IfThenElsePerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::IfThenPerformance"))) (name "IfThenPerformance") (declared-name "IfThenPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::LoopPerformance"))) (name "LoopPerformance") (declared-name "LoopPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlPerformances::MergePerformance"))) (name "MergePerformance") (declared-name "MergePerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ControlPerformances::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlPerformances::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlPerformances::_documentation"))) (to (node (document "d0") (qualified-name "ControlPerformances"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -342,148 +342,41 @@ standard library package ComplexFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ComplexFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (feature_def 'i' : 'Complex'[unresolved]
-        (multiplicity_range [1])
-        (feature_value (=)))
-      (function_def 'rect'
-        (feature_def in 're' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'im' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'polar'
-        (feature_def in 'abs' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'arg' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 're'
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'im'
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'isZero' :> 'NumericalFunctions::isZero'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'isUnit' :> 'NumericalFunctions::isUnit'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'abs' :> 'NumericalFunctions::abs'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'arg'
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '+' :> 'NumericalFunctions::+'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Complex'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '-' :> 'NumericalFunctions::-'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Complex'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '*' :> 'NumericalFunctions::*'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '/' :> 'NumericalFunctions::/'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '**' :> 'NumericalFunctions::**'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '^' :> 'NumericalFunctions::^'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '==' :> 'DataFunctions::=='[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Complex'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToString' :> 'BaseFunctions::ToString'[unresolved]
-        (feature_def in 'x' : 'Complex'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToComplex'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'sum' :> 'NumericalFunctions::sum'[unresolved]
-        (feature_def in 'collection' : 'Complex'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (default =)))))
-      (function_def 'product' :> 'NumericalFunctions::product'[unresolved]
-        (feature_def in 'collection' : 'Complex'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Complex'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (default =))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ComplexFunctions"))) (name "ComplexFunctions") (declared-name "ComplexFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ComplexFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::ToComplex"))) (name "ToComplex") (declared-name "ToComplex"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ComplexFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::abs"))) (name "abs") (declared-name "abs"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::arg"))) (name "arg") (declared-name "arg"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ComplexFunctions::i"))) (name "i") (declared-name "i"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::im"))) (name "im") (declared-name "im"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::isUnit"))) (name "isUnit") (declared-name "isUnit"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::isZero"))) (name "isZero") (declared-name "isZero"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::polar"))) (name "polar") (declared-name "polar"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::product"))) (name "product") (declared-name "product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::re"))) (name "re") (declared-name "re"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::rect"))) (name "rect") (declared-name "rect"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ComplexFunctions::sum"))) (name "sum") (declared-name "sum"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ComplexFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ComplexFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

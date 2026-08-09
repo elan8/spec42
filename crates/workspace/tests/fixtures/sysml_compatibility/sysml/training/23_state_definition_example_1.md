@@ -117,21 +117,48 @@ semantic.duplicate_name 'off'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'State Definition Example-1'
-      (attribute_def 'VehicleStartSignal')
-      (attribute_def 'VehicleOnSignal')
-      (attribute_def 'VehicleOffSignal')
-      (state_def 'VehicleStates'
-        (state_subaction_membership 'entry'
-          (action_usage))
-        (source_succession
-          (reference_usage reference 'off'))
-        (state_usage composite 'off')
-        (transition_usage 'off_to_starting')
-        (state_usage composite 'starting')
-        (transition_usage 'starting_to_on')
-        (state_usage composite 'on')
-        (transition_usage 'on_to_off')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "State Definition Example-1"))) (name "State Definition Example-1") (declared-name "State Definition Example-1")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleOffSignal"))) (name "VehicleOffSignal") (declared-name "VehicleOffSignal") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleOnSignal"))) (name "VehicleOnSignal") (declared-name "VehicleOnSignal") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStartSignal"))) (name "VehicleStartSignal") (declared-name "VehicleStartSignal") (declared (properties (ordered false) (unique true))))
+        (element (kind "state def") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (name "VehicleStates") (declared-name "VehicleStates")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting"))) (name "off_to_starting") (declared-name "off_to_starting") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off_to_starting::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
+              )
+            )
+            (element (kind "state") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off"))) (name "on_to_off") (declared-name "on_to_off") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on_to_off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
+              )
+            )
+            (element (kind "state") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (name "starting") (declared-name "starting") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on"))) (name "starting_to_on") (declared-name "starting_to_on") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))))
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting_to_on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::starting"))) (to (node (document "d0") (qualified-name "State Definition Example-1::VehicleStates::on"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

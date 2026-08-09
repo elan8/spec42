@@ -57,21 +57,15 @@ package BindingNamedMult {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'BindingNamedMult'
-      (binding_connector_def 'instant'
-        (multiplicity_range [?])
-        (connector_end 'startShot')
-        (connector_end 'endShot'))
-      (binding_connector_def
-        (connector_end 'startShot')
-        (connector_end 'endShot'))
-      (binding_connector_def 'x'
-        (connector_end 'a')
-        (connector_end 'b'))
-      (binding_connector_def
-        (multiplicity_range [0..1])
-        (connector_end 'a')
-        (connector_end 'b')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "BindingNamedMult"))) (name "BindingNamedMult") (declared-name "BindingNamedMult"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

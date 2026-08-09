@@ -497,99 +497,25 @@ semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TimeVaryingCarDriver'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (structure_def 'Person0'
-        (feature_def 'isLicensed' : 'Boolean'[unresolved]
-          (multiplicity_range [0..1])))
-      (structure_def 'Car0'
-        (feature_def 'driver' : 'TimeVaryingCarDriver::Person0'[structure_def]
-          (multiplicity_range [0..1]))
-        (feature_def :>> 'startShot'[unresolved]
-          (feature_def :>> 'TimeVaryingCarDriver::Car0::driver'[feature_def]
-            (multiplicity_range [0])))
-        (succession_def
-          (connector_end 'startShot')
-          (connector_end 'operated'))
-        (feature_def 'operated' :> 'timeSlices'[unresolved]
-          (multiplicity_range [0..*])
-          (feature_def :>> 'TimeVaryingCarDriver::Car0::driver'[feature_def]
-            (multiplicity_range [1])
-            (feature_def :>> 'TimeVaryingCarDriver::Person0::isLicensed'[feature_def]
-              (feature_value (=)))))
-        (feature_def abstract 'carParts'
-          (multiplicity_range [0..*]))
-        (feature_def 'engine' :> 'TimeVaryingCarDriver::Car0::carParts'[feature_def]
-          (multiplicity_range [1]))
-        (feature_def 'transmission' :> 'TimeVaryingCarDriver::Car0::carParts'[feature_def]
-          (multiplicity_range [1]))
-        (connector_def 'drive'
-          (connector_end 'engine')
-          (connector_end 'transmission')))
-      (structure_def 'Person1'
-        (feature_def 'isLicensed' : 'Boolean'[unresolved]
-          (multiplicity_range [1])))
-      (structure_def 'Car1'
-        (feature_def 'driver' : 'TimeVaryingCarDriver::Person1'[structure_def]
-          (multiplicity_range [0..1]))
-        (feature_def :>> 'startShot'[unresolved]
-          (feature_def :>> 'TimeVaryingCarDriver::Car1::driver'[feature_def]
-            (multiplicity_range [0])))
-        (succession_def
-          (connector_end 'startShot')
-          (connector_end 'operated'))
-        (feature_def 'operated' :> 'timeSlices'[unresolved]
-          (multiplicity_range [0..*])
-          (feature_def :>> 'TimeVaryingCarDriver::Car1::driver'[feature_def]
-            (multiplicity_range [1])
-            (feature_def :>> 'TimeVaryingCarDriver::Person1::isLicensed'[feature_def]
-              (feature_value (=)))))
-        (feature_def abstract 'carParts'
-          (multiplicity_range [0..*]))
-        (feature_def 'engine' :> 'TimeVaryingCarDriver::Car1::carParts'[feature_def]
-          (multiplicity_range [1]))
-        (feature_def 'transmission' :> 'TimeVaryingCarDriver::Car1::carParts'[feature_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (connector_def 'drive'
-          (connector_end 'engine')
-          (connector_end 'transmission')))
-      (structure_def 'Person1_'
-        (feature_def 'isLicensed' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_def 'Person_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))
-        (feature_def 'name' : 'String'[unresolved]
-          (multiplicity_range [1])
-          (feature_def 'Person_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved])))
-      (structure_def 'Car1_'
-        (feature_def 'driver' : 'TimeVaryingCarDriver::Person1_'[structure_def]
-          (multiplicity_range [0..1])
-          (feature_def 'Car_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))
-        (feature_def :>> 'startShot'[unresolved]
-          (feature_def :>> 'TimeVaryingCarDriver::Car1_::driver'[feature_def]
-            (multiplicity_range [0])
-            (feature_def 'Car_startShot_snapshots' :>> 'TimeVaryingCarDriver::Car1_::driver::Car_snapshots'[feature_def])))
-        (succession_def
-          (connector_end 'startShot')
-          (connector_end 'operated'))
-        (feature_def 'operated' :> 'timeSlices'[unresolved]
-          (multiplicity_range [0..*])
-          (feature_def :>> 'TimeVaryingCarDriver::Car1_::driver'[feature_def]
-            (multiplicity_range [1])
-            (feature_def 'Car_operated_snapshots' :>> 'TimeVaryingCarDriver::Car1_::driver::Car_snapshots'[feature_def])
-            (feature_def 'isLicensed1' :>> 'TimeVaryingCarDriver::Person1_::isLicensed'[feature_def]
-              (feature_value (=))
-              (feature_def 'Car_operated_driver_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))))
-        (feature_def abstract 'carParts'
-          (multiplicity_range [0..*])
-          (feature_def 'Car_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))
-        (feature_def 'engine' :> 'TimeVaryingCarDriver::Car1_::carParts'[feature_def]
-          (multiplicity_range [1])
-          (feature_def 'Car_snapshots1' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))
-        (feature_def 'transmission' :> 'TimeVaryingCarDriver::Car1_::carParts'[feature_def]
-          (multiplicity_range [1])
-          (feature_def 'Car_snapshots1' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))
-        (not_implemented 'malformed')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (name "TimeVaryingCarDriver") (declared-name "TimeVaryingCarDriver")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car0"))) (name "Car0") (declared-name "Car0"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1"))) (name "Car1") (declared-name "Car1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1_"))) (name "Car1_") (declared-name "Car1_"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person0"))) (name "Person0") (declared-name "Person0"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1"))) (name "Person1") (declared-name "Person1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1_"))) (name "Person1_") (declared-name "Person1_"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

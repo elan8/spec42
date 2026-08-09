@@ -97,18 +97,38 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Part Definition Example'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (part_def 'Vehicle'
-        (attribute_usage composite 'mass' : 'Real'[unresolved])
-        (attribute_usage composite 'status' : 'Part Definition Example::VehicleStatus'[attribute_def])
-        (part_usage composite 'eng' : 'Part Definition Example::Engine'[part_def])
-        (part_usage reference 'driver' : 'Part Definition Example::Person'[part_def]))
-      (attribute_def 'VehicleStatus'
-        (attribute_usage composite 'gearSetting' : 'Integer'[unresolved])
-        (attribute_usage composite 'acceleratorPosition' : 'Real'[unresolved]))
-      (part_def 'Engine')
-      (part_def 'Person'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Part Definition Example"))) (name "Part Definition Example") (declared-name "Part Definition Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Part Definition Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Part Definition Example::Person"))) (name "Person") (declared-name "Person") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (name "status") (declared-name "status") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::Vehicle")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (name "VehicleStatus") (declared-name "VehicleStatus") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::acceleratorPosition"))) (name "acceleratorPosition") (declared-name "acceleratorPosition") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::gearSetting"))) (name "gearSetting") (declared-name "gearSetting") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (to (node (document "d0") (qualified-name "Part Definition Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Part Definition Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (to (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

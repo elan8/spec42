@@ -135,31 +135,41 @@ semantic.duplicate_name 'stop'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Terminate Actions Example-1'
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (action_usage 'monitorCriticalActivity')
-      (action_usage 'criticalActivity')
-      (action_usage 'waitForTimeOut')
-      (action_def 'MonitoredActivity'
-        (initial_node)
-        (source_succession
-          (fork_node))
-        (source_succession
-          (reference_usage reference 'performCriticalActivity'))
-        (source_succession
-          (reference_usage reference 'waitForTimeOut'))
-        (action_usage composite 'performCriticalActivity'
-          (perform_action_usage :>> 'Terminate Actions Example-1::monitorCriticalActivity'[action_usage])
-          (perform_action_usage :>> 'Terminate Actions Example-1::criticalActivity'[action_usage])
-          (source_succession
-            (terminate_action_usage)))
-        (source_succession
-          (reference_usage reference 'stop'))
-        (action_usage composite 'waitForTimeOut')
-        (source_succession
-          (reference_usage reference 'stop'))
-        (action_usage composite 'stop')
-        (terminate_action_usage)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Terminate Actions Example-1"))) (name "Terminate Actions Example-1") (declared-name "Terminate Actions Example-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (name "MonitoredActivity") (declared-name "MonitoredActivity")
+          (contains
+            (element (kind "initial") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
+            (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_terminate"))) (name "terminate") (declared-name "terminate") (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (name "performCriticalActivity") (declared-name "performCriticalActivity") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (name "stop") (declared-name "stop") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (name "waitForTimeOut") (declared-name "waitForTimeOut") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::criticalActivity"))) (name "criticalActivity") (declared-name "criticalActivity") (declared (properties (composite true) (reference false))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::monitorCriticalActivity"))) (name "monitorCriticalActivity") (declared-name "monitorCriticalActivity") (declared (properties (composite true) (reference false))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-1::waitForTimeOut"))) (name "waitForTimeOut") (declared-name "waitForTimeOut") (declared (properties (composite true) (reference false))))
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity") (target-qualified "Terminate Actions Example-1::MonitoredActivity::fork"))
+    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity::_initial") (target-qualified "Terminate Actions Example-1::MonitoredActivity::start"))
+    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity::fork") (target-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))
+    (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity") (target-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity::terminate"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

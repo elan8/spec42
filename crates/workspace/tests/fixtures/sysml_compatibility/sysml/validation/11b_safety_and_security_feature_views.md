@@ -293,64 +293,145 @@ semantic.unresolved_name 'Boolean'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (namespace_import private -> 'Views'[unresolved])
-    (package '11b-Safety and Security Feaure Views'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (package 'AnnotationDefinitions'
-        (metadata_def 'Safety'
-          (attribute_usage composite 'isMandatory' : 'Boolean'[unresolved]))
-        (metadata_def 'Security'))
-      (package 'PartsTree'
-        (namespace_import public -> '11b-Safety and Security Feaure Views::AnnotationDefinitions'[package])
-        (part_usage 'vehicle'
-          (part_usage composite 'interior'
-            (part_usage composite 'alarm'
-              (metadata_usage :> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Security'[metadata_def]))
-            (part_usage composite 'seatBelt'
-              (multiplicity_range [2])
-              (metadata_usage :> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=)))))
-            (part_usage composite 'frontSeat'
-              (multiplicity_range [2]))
-            (part_usage composite 'driverAirBag'
-              (metadata_usage :> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=))))))
-          (part_usage composite 'bodyAssy'
-            (part_usage composite 'body')
-            (part_usage composite 'bumper'
-              (metadata_usage :> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=)))))
-            (part_usage composite 'keylessEntry'
-              (metadata_usage :> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Security'[metadata_def])))
-          (part_usage composite 'wheelAssy'
-            (part_usage composite 'wheel'
-              (multiplicity_range [2]))
-            (part_usage composite 'antilockBrakes'
-              (multiplicity_range [2])
-              (metadata_usage :> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=))))))))
-      (package 'ViewDefinitions'
-        (namespace_import public -> '11b-Safety and Security Feaure Views::AnnotationDefinitions'[package])
-        (view_def 'SafetyFeatureView'
-          (element_filter_membership)
-          (view_rendering_membership -> 'asTreeDiagram'[unresolved]))
-        (view_def 'SafetyOrSecurityFeatureView'
-          (element_filter_membership)))
-      (package 'Views'
-        (namespace_import private -> '11b-Safety and Security Feaure Views::ViewDefinitions'[package])
-        (membership_import private -> '11b-Safety and Security Feaure Views::PartsTree::vehicle'[part_usage])
-        (view_usage 'vehicleSafetyFeatureView' : '11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView'[view_def]
-          (membership_expose all -> '11b-Safety and Security Feaure Views::PartsTree::vehicle'[part_usage]))
-        (view_usage 'vehicleMandatorySafetyFeatureView' :> '11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView'[view_usage]
-          (namespace_expose all recursive -> '11b-Safety and Security Feaure Views::PartsTree::vehicle'[part_usage])
-          (element_filter_membership))
-        (view_usage 'vehicleMandatorySafetyFeatureViewStandalone'
-          (namespace_expose all recursive -> '11b-Safety and Security Feaure Views::PartsTree::vehicle'[part_usage])
-          (view_rendering_membership -> 'asElementTable'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views"))) (name "11b-Safety and Security Feaure Views") (declared-name "11b-Safety and Security Feaure Views")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::*"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions"))) (name "AnnotationDefinitions") (declared-name "AnnotationDefinitions")
+          (contains
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety"))) (name "Safety") (declared-name "Safety")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Safety")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::AnnotationDefinitions::Security"))) (name "Security") (declared-name "Security"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree"))) (name "PartsTree") (declared-name "PartsTree")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::bumper::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::bumper::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::keylessEntry::Security"))) (name "Security") (declared-name "Security"))
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior"))) (name "interior") (declared-name "interior") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::alarm::Security"))) (name "Security") (declared-name "Security"))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::driverAirBag::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::driverAirBag::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::seatBelt::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::seatBelt::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy"))) (name "wheelAssy") (declared-name "wheelAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (name "antilockBrakes") (declared-name "antilockBrakes") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::antilockBrakes::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::antilockBrakes::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions"))) (name "ViewDefinitions") (declared-name "ViewDefinitions")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::*"))) (name "*") (declared-name "*"))
+            (element (kind "view def") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView"))) (name "SafetyFeatureView") (declared-name "SafetyFeatureView")
+              (contains
+                (element (kind "filter") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Safety")))) (effective (featuring-type (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")))))
+                (element (kind "view rendering") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView::asTreeDiagram"))) (name "asTreeDiagram") (declared-name "asTreeDiagram") (effective (featuring-type (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")))))
+              )
+            )
+            (element (kind "view def") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyOrSecurityFeatureView"))) (name "SafetyOrSecurityFeatureView") (declared-name "SafetyOrSecurityFeatureView")
+              (contains
+                (element (kind "filter") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyOrSecurityFeatureView::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "|") (children (expression (kind "classification") (reference "Safety")) (expression (kind "classification") (reference "Security")))))) (effective (featuring-type (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyOrSecurityFeatureView")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views"))) (name "Views") (declared-name "Views")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+            (element (kind "view") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView"))) (name "vehicleMandatorySafetyFeatureView") (declared-name "vehicleMandatorySafetyFeatureView")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView::**"))) (name "**") (declared-name "**"))
+                (element (kind "filter") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureView::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "featureReference") (reference "Safety::isMandatory")))))
+              )
+            )
+            (element (kind "view") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureViewStandalone"))) (name "vehicleMandatorySafetyFeatureViewStandalone") (declared-name "vehicleMandatorySafetyFeatureViewStandalone")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureViewStandalone::**"))) (name "**") (declared-name "**"))
+                (element (kind "view rendering") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleMandatorySafetyFeatureViewStandalone::asElementTable"))) (name "asElementTable") (declared-name "asElementTable"))
+              )
+            )
+            (element (kind "view") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))) (name "vehicleSafetyFeatureView") (declared-name "vehicleSafetyFeatureView")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::bumper::Safety"))) (to (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::bumper"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::keylessEntry::Security"))) (to (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::bodyAssy::keylessEntry"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::alarm::Security"))) (to (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::alarm"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::driverAirBag::Safety"))) (to (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::driverAirBag"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::seatBelt::Safety"))) (to (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::interior::seatBelt"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::antilockBrakes::Safety"))) (to (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::vehicle::wheelAssy::antilockBrakes"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicleSafetyFeatureView"))) (to (node (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::SafetyFeatureView"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

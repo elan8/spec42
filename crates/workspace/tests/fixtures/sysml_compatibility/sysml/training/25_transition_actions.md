@@ -178,38 +178,75 @@ semantic.unresolved_name 'ScalarValues::Boolean'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Transition Actions'
-      (attribute_def 'VehicleStartSignal')
-      (attribute_def 'VehicleOnSignal')
-      (attribute_def 'VehicleOffSignal')
-      (attribute_def 'ControllerStartSignal')
-      (part_def 'Vehicle'
-        (reference_usage reference 'brakePedalDepressed' : 'ScalarValues::Boolean'[unresolved]))
-      (part_def 'VehicleController')
-      (action_usage 'performSelfTest'
-        (reference_usage in reference 'vehicle' : 'Transition Actions::Vehicle'[part_def]))
-      (state_def 'VehicleStates')
-      (state_usage 'vehicleStates' : 'Transition Actions::VehicleStates'[state_def]
-        (reference_usage in reference 'operatingVehicle' : 'Transition Actions::Vehicle'[part_def])
-        (reference_usage in reference 'controller' : 'Transition Actions::VehicleController'[part_def])
-        (state_subaction_membership 'entry'
-          (action_usage))
-        (source_succession
-          (reference_usage reference 'off'))
-        (state_usage composite 'off')
-        (transition_usage)
-        (state_usage composite 'starting')
-        (transition_usage)
-        (state_usage composite 'on'
-          (state_subaction_membership 'entry'
-            (action_usage 'performSelfTest'
-              (reference_usage in reference 'vehicle'
-                (feature_value (=)))))
-          (state_subaction_membership 'do'
-            (action_usage 'providePower'))
-          (state_subaction_membership 'exit'
-            (action_usage 'applyParkingBrake')))
-        (transition_usage)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Transition Actions"))) (name "Transition Actions") (declared-name "Transition Actions")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Transition Actions::ControllerStartSignal"))) (name "ControllerStartSignal") (declared-name "ControllerStartSignal") (declared (properties (ordered false) (unique true))))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Transition Actions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleController"))) (name "VehicleController") (declared-name "VehicleController") (declared))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleOffSignal"))) (name "VehicleOffSignal") (declared-name "VehicleOffSignal") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleOnSignal"))) (name "VehicleOnSignal") (declared-name "VehicleOnSignal") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleStartSignal"))) (name "VehicleStartSignal") (declared-name "VehicleStartSignal") (declared (properties (ordered false) (unique true))))
+        (element (kind "state def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))) (name "VehicleStates") (declared-name "VehicleStates"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::performSelfTest"))) (name "performSelfTest") (declared-name "performSelfTest") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "state") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::controller"))) (name "controller") (declared-name "controller") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::on::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::on::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::on::_entry::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+                  )
+                )
+                (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::on::_exit"))) (name "exit") (declared-name "exit") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+              )
+            )
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::operatingVehicle"))) (name "operatingVehicle") (declared-name "operatingVehicle") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::starting"))) (name "starting") (declared-name "starting") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_off"))) (name "transition_vehicleStates_to_off") (declared-name "transition_vehicleStates_to_off") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))))
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_off::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_on"))) (name "transition_vehicleStates_to_on") (declared-name "transition_vehicleStates_to_on") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))))
+              (contains
+                (element (kind "transition effect") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_on::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+                (element (kind "transition guard") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_on::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "memberAccess") (reference "brakePedalDepressed") (children (expression (kind "featureReference") (reference "operatingVehicle")))))) (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_on::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_starting"))) (name "transition_vehicleStates_to_starting") (declared-name "transition_vehicleStates_to_starting") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))))
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::transition_vehicleStates_to_starting::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (to (node (document "d0") (qualified-name "Transition Actions::vehicleStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (to (node (document "d0") (qualified-name "Transition Actions::vehicleStates::off"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (to (node (document "d0") (qualified-name "Transition Actions::vehicleStates::on"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (to (node (document "d0") (qualified-name "Transition Actions::vehicleStates::starting"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (to (node (document "d0") (qualified-name "Transition Actions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (to (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::vehicleStates::controller"))) (to (node (document "d0") (qualified-name "Transition Actions::VehicleController"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transition Actions::vehicleStates::operatingVehicle"))) (to (node (document "d0") (qualified-name "Transition Actions::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

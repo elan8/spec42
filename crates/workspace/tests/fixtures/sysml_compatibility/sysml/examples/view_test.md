@@ -181,35 +181,46 @@ parse.expected_semicolon_or_body
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ViewTest'
-      (package 'P'
-        (part_usage 'p1')
-        (part_usage 'p2'))
-      (part_def 'S')
-      (concern_def 'C'
-        (subject_membership in)
-        (stakeholder_membership in 's' : 'ViewTest::S'[part_def]))
-      (concern_usage 'c' : 'ViewTest::C'[concern_def]
-        (subject_membership in)
-        (stakeholder_membership in 's1'))
-      (viewpoint_def 'VP'
-        (framed_concern_membership 'c'))
-      (rendering_def 'R')
-      (rendering_usage 'r' : 'ViewTest::R'[rendering_def])
-      (view_def 'V'
-        (viewpoint_usage 'vp' : 'ViewTest::VP'[viewpoint_def]
-          (framed_concern_membership 'c1')
-          (concern_usage composite 'c2'))
-        (not_implemented 'malformed')
-        (rendering_usage composite 'r1' : 'ViewTest::R'[rendering_def]
-          (multiplicity_range [0..1]))
-        (view_usage composite 'v' : 'ViewTest::V'[view_def]
-          (multiplicity_range [0..*])
-          (namespace_expose all -> 'ViewTest::P'[package])
-          (view_rendering_membership -> 'ViewTest::r'[rendering_usage])
-          (rendering_usage composite 'r2')
-          (alias_member 'vp1' -> 'p1'[unresolved])
-          (alias_member 'vp2' -> 'p2'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ViewTest"))) (name "ViewTest") (declared-name "ViewTest")
+      (contains
+        (element (kind "concern def") (id (node (document "d0") (qualified-name "ViewTest::C"))) (name "C") (declared-name "C")
+          (contains
+            (element (kind "stakeholder") (id (node (document "d0") (qualified-name "ViewTest::C::s"))) (name "s") (declared-name "s") (effective (featuring-type (node (document "d0") (qualified-name "ViewTest::C")))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "ViewTest::P"))) (name "P") (declared-name "P")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ViewTest::P::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ViewTest::P::p2"))) (name "p2") (declared-name "p2") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+        (element (kind "rendering def") (id (node (document "d0") (qualified-name "ViewTest::R"))) (name "R") (declared-name "R"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "ViewTest::S"))) (name "S") (declared-name "S") (declared))
+        (element (kind "view def") (id (node (document "d0") (qualified-name "ViewTest::V"))) (name "V") (declared-name "V"))
+        (element (kind "viewpoint def") (id (node (document "d0") (qualified-name "ViewTest::VP"))) (name "VP") (declared-name "VP")
+          (contains
+            (element (kind "frame") (id (node (document "d0") (qualified-name "ViewTest::VP::c"))) (name "c") (declared-name "c") (effective (featuring-type (node (document "d0") (qualified-name "ViewTest::VP")))))
+          )
+        )
+        (element (kind "concern") (id (node (document "d0") (qualified-name "ViewTest::c"))) (name "c") (declared-name "c")
+          (contains
+            (element (kind "stakeholder") (id (node (document "d0") (qualified-name "ViewTest::c::_stakeholder_s1"))) (name "s1") (declared-name "s1") (effective (featuring-type (node (document "d0") (qualified-name "ViewTest::C")))))
+          )
+        )
+        (element (kind "rendering") (id (node (document "d0") (qualified-name "ViewTest::r"))) (name "r") (declared-name "r"))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::C::s"))) (to (node (document "d0") (qualified-name "ViewTest::S"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::c"))) (to (node (document "d0") (qualified-name "ViewTest::C"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::r"))) (to (node (document "d0") (qualified-name "ViewTest::R"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

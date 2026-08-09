@@ -114,26 +114,44 @@ semantic.unresolved_name 'vehicle'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Interaction Example-1'
-      (namespace_import public -> 'Event Occurrence Example'[unresolved])
-      (item_def 'SetSpeed')
-      (item_def 'SensedSpeed')
-      (item_def 'FuelCommand')
-      (occurrence_def 'CruiseControlInteraction'
-        (part_usage reference :>> 'driver'[unresolved])
-        (part_usage reference :>> 'vehicle'[unresolved])
-        (flow_usage composite 'setSpeedMessage' : 'Interaction Example-1::SetSpeed'[item_def]
-          (connector_end 'driver.setSpeedSent')
-          (connector_end 'vehicle.cruiseController.setSpeedReceived'))
-        (flow_usage composite 'sensedSpeedMessage' : 'Interaction Example-1::SensedSpeed'[item_def]
-          (connector_end 'vehicle.speedometer.sensedSpeedSent')
-          (connector_end 'vehicle.cruiseController.sensedSpeedReceived'))
-        (flow_usage composite 'fuelCommandMessage' : 'Interaction Example-1::FuelCommand'[item_def]
-          (connector_end 'vehicle.cruiseController.fuelCommandSent')
-          (connector_end 'vehicle.engine.fuelCommandReceived'))
-        (succession_def
-          (connector_end 'setSpeedMessage')
-          (connector_end 'sensedSpeedMessage'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Interaction Example-1"))) (name "Interaction Example-1") (declared-name "Interaction Example-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interaction Example-1::*"))) (name "*") (declared-name "*"))
+        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))) (name "CruiseControlInteraction") (declared-name "CruiseControlInteraction") (declared)
+          (contains
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::fuelCommandMessage"))) (name "fuelCommandMessage") (declared-name "fuelCommandMessage") (effective (featuring-type (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))))
+              (contains
+                (element (kind "flow payload") (id (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::fuelCommandMessage::_payload"))) (name "_payload") (declared-name "_payload") (effective (featuring-type (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::sensedSpeedMessage"))) (name "sensedSpeedMessage") (declared-name "sensedSpeedMessage") (effective (featuring-type (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))))
+              (contains
+                (element (kind "flow payload") (id (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::sensedSpeedMessage::_payload"))) (name "_payload") (declared-name "_payload") (effective (featuring-type (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::setSpeedMessage"))) (name "setSpeedMessage") (declared-name "setSpeedMessage") (effective (featuring-type (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))))
+              (contains
+                (element (kind "flow payload") (id (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::setSpeedMessage::_payload"))) (name "_payload") (declared-name "_payload") (effective (featuring-type (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction")))))
+              )
+            )
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Interaction Example-1::FuelCommand"))) (name "FuelCommand") (declared-name "FuelCommand"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Interaction Example-1::SensedSpeed"))) (name "SensedSpeed") (declared-name "SensedSpeed"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Interaction Example-1::SetSpeed"))) (name "SetSpeed") (declared-name "SetSpeed"))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::fuelCommandMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::FuelCommand"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::sensedSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::SensedSpeed"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::SetSpeed"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

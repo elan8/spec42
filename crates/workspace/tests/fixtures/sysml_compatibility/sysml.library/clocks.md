@@ -490,78 +490,33 @@ standard library package Clocks {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Clocks'
-      (documentation)
-      (membership_import private -> 'ScalarValues::NumericalValue'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::Life'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (structure_def 'UniversalClockLife' :> 'Clocks::Clock'[structure_def] :> 'Life'[unresolved]
-        (multiplicity_range [1])
-        (documentation))
-      (feature_def 'universalClock' : 'Clocks::UniversalClockLife'[structure_def]
-        (multiplicity_range [1])
-        (documentation))
-      (structure_def abstract 'Clock'
-        (documentation)
-        (feature_def 'thisClock' : 'Clocks::Clock'[structure_def] :>> 'self'[unresolved])
-        (feature_def 'currentTime' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (invariant_def 'timeFlowConstraint'
-          (documentation)
-          (result_expr_membership)))
-      (function_def abstract 'TimeOf'
-        (documentation)
-        (feature_def in 'o' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clocks::Clock'[structure_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'timeInstant' : 'NumericalValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'startTimeConstraint'
-          (documentation)
-          (result_expr_membership))
-        (invariant_def 'timeOrderingConstraint'
-          (documentation)
-          (result_expr_membership))
-        (invariant_def 'timeContinuityConstraint'
-          (documentation)
-          (result_expr_membership)))
-      (function_def 'DurationOf'
-        (documentation)
-        (feature_def in 'o' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clocks::Clock'[structure_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'duration' : 'NumericalValue'[unresolved]
-            (feature_value (=)))))
-      (structure_def 'BasicClock' :> 'Clocks::Clock'[structure_def]
-        (documentation)
-        (feature_def :>> 'Clocks::Clock::currentTime'[feature_def] : 'Real'[unresolved]))
-      (function_def 'BasicTimeOf' :> 'Clocks::TimeOf'[function_def]
-        (documentation)
-        (feature_def in 'o' : 'Occurrence'[unresolved] :>> 'Clocks::TimeOf::o'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clocks::BasicClock'[structure_def] :>> 'Clocks::TimeOf::clock'[feature_def][implied]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved] :>> 'timeInstant'[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def 'BasicDurationOf' :> 'Clocks::DurationOf'[function_def]
-        (documentation)
-        (feature_def in 'o' : 'Occurrence'[unresolved] :>> 'Clocks::DurationOf::o'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clocks::BasicClock'[structure_def] :>> 'Clocks::DurationOf::clock'[feature_def][implied]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved] :>> 'duration'[feature_def][implied]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Clocks"))) (name "Clocks") (declared-name "Clocks")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Clocks::BasicClock"))) (name "BasicClock") (declared-name "BasicClock"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::BasicDurationOf"))) (name "BasicDurationOf") (declared-name "BasicDurationOf"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::BasicTimeOf"))) (name "BasicTimeOf") (declared-name "BasicTimeOf"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Clocks::Clock"))) (name "Clock") (declared-name "Clock"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::DurationOf"))) (name "DurationOf") (declared-name "DurationOf"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::Life"))) (name "Life") (declared-name "Life"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Clocks::TimeOf"))) (name "TimeOf") (declared-name "TimeOf"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Clocks::UniversalClockLife1"))) (name "UniversalClockLife1") (declared-name "UniversalClockLife1"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Clocks::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Clocks::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Clocks::universalClock"))) (name "universalClock") (declared-name "universalClock"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Clocks::_documentation"))) (to (node (document "d0") (qualified-name "Clocks"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

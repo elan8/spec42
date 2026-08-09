@@ -255,47 +255,104 @@ semantic.redefinition_featuring_type_overlap
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'StateTest'
-      (attribute_def 'Sig'
-        (reference_usage reference 'x'))
-      (attribute_def 'Exit')
-      (part_usage 'p')
-      (action_usage 'act')
-      (state_def 'S'
-        (state_subaction_membership 'do'
-          (action_usage 'A'))
-        (state_subaction_membership 'entry'
-          (action_usage))
-        (source_succession
-          (reference_usage reference 'S1'))
-        (state_usage composite 'S1')
-        (transition_usage)
-        (state_usage composite 'S2'
-          (not_implemented 'malformed'))
-        (transition_usage)
-        (transition_usage)
-        (transition_usage 'T')
-        (state_subaction_membership 'exit'
-          (action_usage 'act'))
-        (state_usage composite 'S3'
-          (state_usage composite 'S3a'))
-        (transition_usage))
-      (state_usage 's0'
-        (state_usage composite 's1'
-          (state_usage composite 's2'))
-        (state_usage composite 's3'
-          (state_usage composite 's4'))
-        (transition_usage 't1'))
-      (state_usage parallel 's'
-        (state_usage composite 's1')
-        (state_usage composite 's2'))
-      (state_usage 's4'
-        (state_subaction_membership 'do'
-          (action_usage 'a'))
-        (action_usage composite 'c'))
-      (state_usage 's5' :> 'StateTest::s4'[state_usage]
-        (state_subaction_membership 'do' :>> 'StateTest::s4::do'[state_subaction_membership][implied]
-          (action_usage 'b' :>> 'StateTest::s4::c'[action_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "StateTest"))) (name "StateTest") (declared-name "StateTest")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "StateTest::Exit"))) (name "Exit") (declared-name "Exit") (declared (properties (ordered false) (unique true))))
+        (element (kind "state def") (id (node (document "d0") (qualified-name "StateTest::S"))) (name "S") (declared-name "S")
+          (contains
+            (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::S::S1"))) (name "S1") (declared-name "S1") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::S::S2"))) (name "S2") (declared-name "S2") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S"))))
+              (contains
+                (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::S::S2::S3"))) (name "S3") (declared-name "S3") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+              )
+            )
+            (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::S::S3"))) (name "S3") (declared-name "S3") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S"))))
+              (contains
+                (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::S::S3::S3a"))) (name "S3a") (declared-name "S3a") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "StateTest::S::T"))) (name "T") (declared-name "T") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S"))))
+              (contains
+                (element (kind "transition effect") (id (node (document "d0") (qualified-name "StateTest::S::T::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+                (element (kind "transition guard") (id (node (document "d0") (qualified-name "StateTest::S::T::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "booleanLiteral") (literal true)))) (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "StateTest::S::T::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "StateTest::S::_do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "StateTest::S::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "StateTest::S::_exit"))) (name "exit") (declared-name "exit") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "StateTest::S::transition_S1_to_S3"))) (name "transition_S1_to_S3") (declared-name "transition_S1_to_S3") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S"))))
+              (contains
+                (element (kind "transition effect") (id (node (document "d0") (qualified-name "StateTest::S::transition_S1_to_S3::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "StateTest::S::transition_S1_to_S3::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "StateTest::S::transition_S3a_to_S1"))) (name "transition_S3a_to_S1") (declared-name "transition_S3a_to_S1") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "StateTest::S::transition_S_to_S2"))) (name "transition_S_to_S2") (declared-name "transition_S_to_S2") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S"))))
+              (contains
+                (element (kind "transition effect") (id (node (document "d0") (qualified-name "StateTest::S::transition_S_to_S2::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "StateTest::S::transition_S_to_S2::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "StateTest::S::transition_S_to_done"))) (name "transition_S_to_done") (declared-name "transition_S_to_done") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S"))))
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "StateTest::S::transition_S_to_done::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+              )
+            )
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "StateTest::Sig"))) (name "Sig") (declared-name "Sig") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "StateTest::Sig::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "StateTest::Sig")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "StateTest::act"))) (name "act") (declared-name "act") (declared (properties (composite true) (reference false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "StateTest::p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s"))) (name "s") (declared-name "s") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s::s1"))) (name "s1") (declared-name "s1"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s::s2"))) (name "s2") (declared-name "s2"))
+          )
+        )
+        (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s0"))) (name "s0") (declared-name "s0") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s0::s1"))) (name "s1") (declared-name "s1")
+              (contains
+                (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s0::s1::s2"))) (name "s2") (declared-name "s2"))
+              )
+            )
+            (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s0::s3"))) (name "s3") (declared-name "s3")
+              (contains
+                (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s0::s3::s4"))) (name "s4") (declared-name "s4"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "StateTest::s0::t1"))) (name "t1") (declared-name "t1"))
+          )
+        )
+        (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s4"))) (name "s4") (declared-name "s4") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "StateTest::s4::_do"))) (name "do") (declared-name "do"))
+          )
+        )
+        (element (kind "state") (id (node (document "d0") (qualified-name "StateTest::s5"))) (name "s5") (declared-name "s5") (declared (properties (composite true) (reference false))))
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "StateTest::S"))) (to (node (document "d0") (qualified-name "StateTest::S::S1"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "StateTest::s5"))) (to (node (document "d0") (qualified-name "StateTest::s4"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "StateTest::S"))) (to (node (document "d0") (qualified-name "StateTest::S::S2"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "StateTest::S::S1"))) (to (node (document "d0") (qualified-name "StateTest::S::S2::S3"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "StateTest::S::S2::S3"))) (to (node (document "d0") (qualified-name "StateTest::S::S1"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "StateTest::S::S3::S3a"))) (to (node (document "d0") (qualified-name "StateTest::S::S1"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "StateTest::s0::s1::s2"))) (to (node (document "d0") (qualified-name "StateTest::s0::s3::s4"))))
+  )
+  (pending-relationships
+    (transition (status pending) (document "d0") (source-qualified "StateTest::S") (target-qualified "StateTest::S::done"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

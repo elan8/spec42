@@ -461,81 +461,127 @@ semantic.unresolved_name 'MassValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MassConstraintExample'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (part_def 'Engine'
-        (attribute_usage composite 'm' :> 'mass'[unresolved]))
-      (part_def 'Transmission'
-        (attribute_usage composite 'm' :> 'mass'[unresolved]))
-      (part_def 'Vehicle1'
-        (attribute_usage composite 'm' : 'MassValue'[unresolved]
-          (feature_value (=)))
-        (part_usage composite 'eng' : 'MassConstraintExample::Engine'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Engine::m'[attribute_usage] : 'MassValue'[unresolved]))
-        (part_usage composite 'trans' : 'MassConstraintExample::Transmission'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Transmission::m'[attribute_usage] : 'MassValue'[unresolved])))
-      (part_def 'Vehicle2'
-        (assert_constraint_usage
-          (result_expr_membership))
-        (attribute_usage composite 'm' : 'MassValue'[unresolved])
-        (part_usage composite 'eng' : 'MassConstraintExample::Engine'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Engine::m'[attribute_usage] : 'MassValue'[unresolved]))
-        (part_usage composite 'trans' : 'MassConstraintExample::Transmission'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Transmission::m'[attribute_usage] : 'MassValue'[unresolved])))
-      (constraint_def 'MassConstraint3'
-        (reference_usage in reference 'totalMass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'partMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (result_expr_membership))
-      (part_def 'Vehicle3'
-        (assert_constraint_usage 'massConstraint' : 'MassConstraintExample::MassConstraint3'[constraint_def]
-          (reference_usage in reference 'totalMass'
-            (feature_value (=)))
-          (reference_usage in reference 'partMasses'
-            (feature_value (=))))
-        (attribute_usage composite 'm' : 'MassValue'[unresolved])
-        (part_usage composite 'eng'
-          (attribute_usage composite 'm' : 'MassValue'[unresolved]))
-        (part_usage composite 'trans'
-          (attribute_usage composite 'm' : 'MassValue'[unresolved])))
-      (constraint_def 'MassConstraint4'
-        (reference_usage in reference 'totalMass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'partMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*])))
-      (constraint_usage 'mc' : 'MassConstraintExample::MassConstraint4'[constraint_def]
-        (reference_usage in reference 'totalMass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'partMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (result_expr_membership))
-      (part_def 'Vehicle4'
-        (assert_constraint_usage 'mc'
-          (reference_usage in reference 'totalMass'
-            (feature_value (=)))
-          (reference_usage in reference 'partMasses'
-            (feature_value (=))))
-        (attribute_usage composite 'm' : 'MassValue'[unresolved])
-        (part_usage composite 'eng' : 'MassConstraintExample::Engine'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Engine::m'[attribute_usage] : 'MassValue'[unresolved]))
-        (part_usage composite 'trans' : 'MassConstraintExample::Transmission'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Transmission::m'[attribute_usage] : 'MassValue'[unresolved])))
-      (constraint_def 'MassLimit'
-        (reference_usage in reference 'mass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'maxMass' : 'MassValue'[unresolved])
-        (result_expr_membership))
-      (part_def 'Vehicle5'
-        (assert_constraint_usage 'ml' : 'MassConstraintExample::MassLimit'[constraint_def]
-          (reference_usage in reference 'mass'
-            (feature_value (=)))
-          (reference_usage in reference 'maxMass'
-            (feature_value (=))))
-        (attribute_usage composite 'm' : 'MassValue'[unresolved]
-          (feature_value (=)))
-        (part_usage composite 'eng' : 'MassConstraintExample::Engine'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Engine::m'[attribute_usage] : 'MassValue'[unresolved]))
-        (part_usage composite 'trans' : 'MassConstraintExample::Transmission'[part_def]
-          (attribute_usage composite :>> 'MassConstraintExample::Transmission::m'[attribute_usage] : 'MassValue'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MassConstraintExample"))) (name "MassConstraintExample") (declared-name "MassConstraintExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassConstraintExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassConstraintExample::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassConstraintExample::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassConstraintExample::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Engine::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Engine")))))
+          )
+        )
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "MassConstraintExample::MassConstraint3"))) (name "MassConstraint3") (declared-name "MassConstraint3"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "MassConstraintExample::MassConstraint4"))) (name "MassConstraint4") (declared-name "MassConstraint4"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "MassConstraintExample::MassLimit"))) (name "MassLimit") (declared-name "MassLimit"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassConstraintExample::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Transmission::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Transmission")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1"))) (name "Vehicle1") (declared-name "Vehicle1") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::eng::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Engine")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "memberAccess") (reference "m") (children (expression (kind "featureReference") (reference "eng")))) (expression (kind "memberAccess") (reference "m") (children (expression (kind "featureReference") (reference "trans")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::m"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::trans"))) (name "trans") (declared-name "trans") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::trans::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Transmission")))))
+              )
+            )
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2"))) (name "Vehicle2") (declared-name "Vehicle2") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::eng::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Engine")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::trans"))) (name "trans") (declared-name "trans") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::trans::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Transmission")))))
+              )
+            )
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3"))) (name "Vehicle3") (declared-name "Vehicle3") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3::eng::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3::trans"))) (name "trans") (declared-name "trans") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3::trans::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle3")))))
+              )
+            )
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4"))) (name "Vehicle4") (declared-name "Vehicle4") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::eng::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Engine")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::trans"))) (name "trans") (declared-name "trans") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::trans::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Transmission")))))
+              )
+            )
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5"))) (name "Vehicle5") (declared-name "Vehicle5") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::eng::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Engine")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "memberAccess") (reference "m") (children (expression (kind "featureReference") (reference "eng")))) (expression (kind "memberAccess") (reference "m") (children (expression (kind "featureReference") (reference "trans")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::m"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::trans"))) (name "trans") (declared-name "trans") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::trans::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassConstraintExample::Transmission")))))
+              )
+            )
+          )
+        )
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "MassConstraintExample::mc"))) (name "mc") (declared-name "mc"))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::eng::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::trans::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::eng::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::trans::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::eng::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::trans::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::eng::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::trans::m"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission::m"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::eng"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle1::trans"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::eng"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle2::trans"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::eng"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle4::trans"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::eng"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::Vehicle5::trans"))) (to (node (document "d0") (qualified-name "MassConstraintExample::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassConstraintExample::mc"))) (to (node (document "d0") (qualified-name "MassConstraintExample::MassConstraint4"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

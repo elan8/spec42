@@ -106,26 +106,45 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Interface Decomposition Example'
-      (port_def 'SpigotBank')
-      (port_def 'Spigot')
-      (port_def 'Faucet')
-      (port_def 'FaucetInlet')
-      (interface_def 'WaterDelivery'
-        (port_usage end 'suppliedBy' : 'Interface Decomposition Example::SpigotBank'[port_def]
-          (multiplicity_range [1])
-          (port_usage composite 'hot' : 'Interface Decomposition Example::Spigot'[port_def])
-          (port_usage composite 'cold' : 'Interface Decomposition Example::Spigot'[port_def]))
-        (port_usage end 'deliveredTo' : 'Interface Decomposition Example::Faucet'[port_def]
-          (multiplicity_range [1..*])
-          (port_usage composite 'hot' : 'Interface Decomposition Example::FaucetInlet'[port_def])
-          (port_usage composite 'cold' : 'Interface Decomposition Example::FaucetInlet'[port_def]))
-        (connection_usage composite
-          (connector_end 'suppliedBy.hot')
-          (connector_end 'deliveredTo.hot'))
-        (connection_usage composite
-          (connector_end 'suppliedBy.cold')
-          (connector_end 'deliveredTo.cold'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Interface Decomposition Example"))) (name "Interface Decomposition Example") (declared-name "Interface Decomposition Example")
+      (contains
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))) (name "Faucet") (declared-name "Faucet")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet::~Faucet"))) (name "~Faucet") (declared-name "~Faucet") (effective (featuring-type (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet"))) (name "FaucetInlet") (declared-name "FaucetInlet")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet::~FaucetInlet"))) (name "~FaucetInlet") (declared-name "~FaucetInlet") (effective (featuring-type (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot"))) (name "Spigot") (declared-name "Spigot")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot::~Spigot"))) (name "~Spigot") (declared-name "~Spigot") (effective (featuring-type (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank"))) (name "SpigotBank") (declared-name "SpigotBank")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank::~SpigotBank"))) (name "~SpigotBank") (declared-name "~SpigotBank") (effective (featuring-type (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank")))))
+          )
+        )
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (name "WaterDelivery") (declared-name "WaterDelivery"))
+      )
+    )
+  )
+  (relationships
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet::~Faucet"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet::~FaucetInlet"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot::~Spigot"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank::~SpigotBank"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (connection (status pending-expression) (document "d0") (source-expression "suppliedBy::cold") (target-expression "deliveredTo::cold") (container-prefix "Interface Decomposition Example::WaterDelivery"))
+    (connection (status pending-expression) (document "d0") (source-expression "suppliedBy::hot") (target-expression "deliveredTo::hot") (container-prefix "Interface Decomposition Example::WaterDelivery"))
+  )
+)
 ~~~

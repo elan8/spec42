@@ -173,34 +173,36 @@ semantic.unresolved_name 'SysML::Usage'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MetadataTest'
-      (namespace_import private -> 'MetadataTest::User Defined Extensions'[library_package])
-      (library_package 'User Defined Extensions'
-        (enum_def 'ClassificationLevel' :> 'ScalarValues::Natural'[unresolved]
-          (enum_usage composite 'uncl' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[enum_def]
-            (feature_value (=)))
-          (enum_usage composite 'conf' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[enum_def]
-            (feature_value (=)))
-          (not_implemented 'malformed')
-          (enum_usage composite 'secret' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[enum_def]
-            (feature_value (=))))
-        (metadata_def 'Classified'
-          (reference_usage reference :>> 'annotatedElement'[unresolved] : 'SysML::Usage'[unresolved])
-          (reference_usage reference 'classificationLevel' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[enum_def]))
-        (metadata_def 'Security'))
-      (reference_usage reference 'x'
-        (metadata_usage :> 'MetadataTest::User Defined Extensions::Classified'[metadata_def]
-          (feature_def 'classificationLevel' :>> 'MetadataTest::User Defined Extensions::Classified::classificationLevel'[reference_usage][implied]
-            (feature_value (=)))))
-      (reference_usage reference 'y'
-        (metadata_usage :> 'MetadataTest::User Defined Extensions::Classified'[metadata_def]
-          (feature_def 'classificationLevel' :>> 'MetadataTest::User Defined Extensions::Classified::classificationLevel'[reference_usage][implied]
-            (feature_value (=))))
-        (metadata_usage :> 'MetadataTest::User Defined Extensions::Security'[metadata_def]))
-      (reference_usage reference 'z1')
-      (reference_usage abstract 'z2')
-      (reference_usage reference 'z'
-        (not_implemented 'malformed')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MetadataTest"))) (name "MetadataTest") (declared-name "MetadataTest")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MetadataTest::*"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))) (name "User Defined Extensions") (declared-name "User Defined Extensions")
+          (contains
+            (element (kind "enum def") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (name "ClassificationLevel") (declared-name "ClassificationLevel"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (name "Classified") (declared-name "Classified")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (name "classificationLevel") (declared-name "classificationLevel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (name "Security") (declared-name "Security"))
+            (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::_Security"))) (name "Security") (declared-name "Security"))
+          )
+        )
+        (element (kind "ref") (id (node (document "d0") (qualified-name "MetadataTest::x"))) (name "x") (declared-name "x") (declared (properties (composite false) (reference true))))
+        (element (kind "ref") (id (node (document "d0") (qualified-name "MetadataTest::y"))) (name "y") (declared-name "y") (declared (properties (composite false) (reference true))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::_Security"))) (to (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (to (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

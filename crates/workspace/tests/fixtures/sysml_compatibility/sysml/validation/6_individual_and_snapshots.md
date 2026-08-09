@@ -626,117 +626,165 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '6-Individual and Snapshots'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'Time::DateTime'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (package 'Part Definitions'
-        (part_def 'Temporal-Spatial Reference'
-          (attribute_usage composite 'referenceTime' : 'DateTime'[unresolved])
-          (attribute_usage composite 'referenceCoordinateSystem'))
-        (part_def 'VehicleRoadContext'
-          (attribute_usage composite 't' : 'TimeValue'[unresolved]))
-        (part_def 'VehicleA'
-          (attribute_usage composite 'mass' : 'MassValue'[unresolved])
-          (attribute_usage composite 'position' : 'Real'[unresolved])
-          (attribute_usage composite 'velocity' : 'Real'[unresolved])
-          (attribute_usage composite 'acceleration' : 'Real'[unresolved])
-          (state_usage composite 'vehicleStates'
-            (state_subaction_membership 'entry'
-              (action_usage))
-            (source_succession
-              (reference_usage reference 'on'))
-            (state_usage composite 'on')
-            (source_succession
-              (reference_usage reference 'off'))
-            (state_usage composite 'off')))
-        (part_def 'Road'
-          (attribute_usage composite 'angle' : 'Real'[unresolved])
-          (attribute_usage composite 'surfaceFriction' : 'Real'[unresolved])))
-      (package 'Individual Definitions'
-        (namespace_import private -> '6-Individual and Snapshots::Part Definitions'[package])
-        (occurrence_def individual 'Temporal-Spatial Reference_ID1' :> '6-Individual and Snapshots::Part Definitions::Temporal-Spatial Reference'[part_def])
-        (occurrence_def individual 'VehicleRoadContext_ID1' :> '6-Individual and Snapshots::Part Definitions::VehicleRoadContext'[part_def])
-        (occurrence_def individual 'VehicleA_ID1' :> '6-Individual and Snapshots::Part Definitions::VehicleA'[part_def])
-        (occurrence_def individual 'Road_ID1' :> '6-Individual and Snapshots::Part Definitions::Road'[part_def]))
-      (package 'Values'
-        (attribute_usage 't0' : 'TimeValue'[unresolved])
-        (attribute_usage 't1' : 'TimeValue'[unresolved])
-        (attribute_usage 'tn' : 'TimeValue'[unresolved])
-        (attribute_usage 'm' : 'MassValue'[unresolved])
-        (attribute_usage 'p0' : 'Real'[unresolved])
-        (attribute_usage 'p1' : 'Real'[unresolved])
-        (attribute_usage 'pn' : 'Real'[unresolved])
-        (attribute_usage 'v0' : 'Real'[unresolved])
-        (attribute_usage 'v1' : 'Real'[unresolved])
-        (attribute_usage 'vn' : 'Real'[unresolved])
-        (attribute_usage 'a0' : 'Real'[unresolved])
-        (attribute_usage 'a1' : 'Real'[unresolved])
-        (attribute_usage 'an' : 'Real'[unresolved])
-        (attribute_usage 'theta0' : 'Real'[unresolved])
-        (attribute_usage 'theta1' : 'Real'[unresolved])
-        (attribute_usage 'thetan' : 'Real'[unresolved])
-        (attribute_usage 'sf0' : 'Real'[unresolved])
-        (attribute_usage 'sf1' : 'Real'[unresolved])
-        (attribute_usage 'sfn' : 'Real'[unresolved]))
-      (package 'Individuals and Snapshots'
-        (namespace_import private -> '6-Individual and Snapshots::Individual Definitions'[package])
-        (namespace_import private -> '6-Individual and Snapshots::Values'[package])
-        (occurrence_usage individual 'reference' : '6-Individual and Snapshots::Individual Definitions::Temporal-Spatial Reference_ID1'[occurrence_def]
-          (occurrence_usage composite 'context_t0' : '6-Individual and Snapshots::Individual Definitions::VehicleRoadContext_ID1'[occurrence_def]
-            (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleRoadContext::t'[attribute_usage]
-              (feature_value (=)))
-            (occurrence_usage composite 'vehicle_ID1_t0' : '6-Individual and Snapshots::Individual Definitions::VehicleA_ID1'[occurrence_def]
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::mass'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::position'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::velocity'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::acceleration'[attribute_usage]
-                (feature_value (=)))
-              (state_usage composite 'on'))
-            (occurrence_usage composite 'road_ID1_t0' : '6-Individual and Snapshots::Individual Definitions::Road_ID1'[occurrence_def]
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::Road::angle'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::Road::surfaceFriction'[attribute_usage]
-                (feature_value (=)))))
-          (occurrence_usage composite 'context_t1' : '6-Individual and Snapshots::Individual Definitions::VehicleRoadContext_ID1'[occurrence_def]
-            (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleRoadContext::t'[attribute_usage]
-              (feature_value (=)))
-            (occurrence_usage composite 'vehicle_ID1_t1' : '6-Individual and Snapshots::Individual Definitions::VehicleA_ID1'[occurrence_def]
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::mass'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::position'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::velocity'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::acceleration'[attribute_usage]
-                (feature_value (=)))
-              (state_usage composite 'on'))
-            (occurrence_usage composite 'road_ID1_t1' : '6-Individual and Snapshots::Individual Definitions::Road_ID1'[occurrence_def]
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::Road::angle'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::Road::surfaceFriction'[attribute_usage]
-                (feature_value (=)))))
-          (occurrence_usage composite 'context_tn' : '6-Individual and Snapshots::Individual Definitions::VehicleRoadContext_ID1'[occurrence_def]
-            (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleRoadContext::t'[attribute_usage]
-              (feature_value (=)))
-            (occurrence_usage composite 'vehicle_ID1_tn' : '6-Individual and Snapshots::Individual Definitions::VehicleA_ID1'[occurrence_def]
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::mass'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::position'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::velocity'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::VehicleA::acceleration'[attribute_usage]
-                (feature_value (=)))
-              (state_usage composite 'off'))
-            (occurrence_usage composite 'road_ID1_tn' : '6-Individual and Snapshots::Individual Definitions::Road_ID1'[occurrence_def]
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::Road::angle'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> '6-Individual and Snapshots::Part Definitions::Road::surfaceFriction'[attribute_usage]
-                (feature_value (=))))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "6-Individual and Snapshots"))) (name "6-Individual and Snapshots") (declared-name "6-Individual and Snapshots")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::DateTime"))) (name "DateTime") (declared-name "DateTime"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions"))) (name "Individual Definitions") (declared-name "Individual Definitions")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::*"))) (name "*") (declared-name "*"))
+            (element (kind "individual def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::Road_ID1"))) (name "Road_ID1") (declared-name "Road_ID1"))
+            (element (kind "individual def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::Temporal-Spatial Reference_ID1"))) (name "Temporal-Spatial Reference_ID1") (declared-name "Temporal-Spatial Reference_ID1"))
+            (element (kind "individual def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::VehicleA_ID1"))) (name "VehicleA_ID1") (declared-name "VehicleA_ID1"))
+            (element (kind "individual def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::VehicleRoadContext_ID1"))) (name "VehicleRoadContext_ID1") (declared-name "VehicleRoadContext_ID1"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots"))) (name "Individuals and Snapshots") (declared-name "Individuals and Snapshots")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference"))) (name "reference") (declared-name "reference") (declared (properties (individual true) (composite true) (reference false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0"))) (name "context_t0") (declared-name "context_t0") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::road_ID1_t0"))) (name "road_ID1_t0") (declared-name "road_ID1_t0") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::road_ID1_t0::angle"))) (name "angle") (declared-name "angle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::road_ID1_t0::surfaceFriction"))) (name "surfaceFriction") (declared-name "surfaceFriction") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::t"))) (name "t") (declared-name "t") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::vehicle_ID1_t0"))) (name "vehicle_ID1_t0") (declared-name "vehicle_ID1_t0") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::vehicle_ID1_t0::acceleration"))) (name "acceleration") (declared-name "acceleration") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::vehicle_ID1_t0::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::vehicle_ID1_t0::position"))) (name "position") (declared-name "position") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::vehicle_ID1_t0::vehicleStates.on"))) (name "vehicleStates.on") (declared-name "vehicleStates.on") (declared (properties (composite true) (reference false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t0::vehicle_ID1_t0::velocity"))) (name "velocity") (declared-name "velocity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1"))) (name "context_t1") (declared-name "context_t1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::road_ID1_t1"))) (name "road_ID1_t1") (declared-name "road_ID1_t1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::road_ID1_t1::angle"))) (name "angle") (declared-name "angle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::road_ID1_t1::surfaceFriction"))) (name "surfaceFriction") (declared-name "surfaceFriction") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::t"))) (name "t") (declared-name "t") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::vehicle_ID1_t1"))) (name "vehicle_ID1_t1") (declared-name "vehicle_ID1_t1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::vehicle_ID1_t1::acceleration"))) (name "acceleration") (declared-name "acceleration") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::vehicle_ID1_t1::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::vehicle_ID1_t1::position"))) (name "position") (declared-name "position") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::vehicle_ID1_t1::vehicleStates.on"))) (name "vehicleStates.on") (declared-name "vehicleStates.on") (declared (properties (composite true) (reference false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_t1::vehicle_ID1_t1::velocity"))) (name "velocity") (declared-name "velocity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn"))) (name "context_tn") (declared-name "context_tn") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::road_ID1_tn"))) (name "road_ID1_tn") (declared-name "road_ID1_tn") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::road_ID1_tn::angle"))) (name "angle") (declared-name "angle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::road_ID1_tn::surfaceFriction"))) (name "surfaceFriction") (declared-name "surfaceFriction") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::t"))) (name "t") (declared-name "t") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::vehicle_ID1_tn"))) (name "vehicle_ID1_tn") (declared-name "vehicle_ID1_tn") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::vehicle_ID1_tn::acceleration"))) (name "acceleration") (declared-name "acceleration") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::vehicle_ID1_tn::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::vehicle_ID1_tn::position"))) (name "position") (declared-name "position") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::vehicle_ID1_tn::vehicleStates.off"))) (name "vehicleStates.off") (declared-name "vehicleStates.off") (declared (properties (composite true) (reference false))))
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Individuals and Snapshots::reference::context_tn::vehicle_ID1_tn::velocity"))) (name "velocity") (declared-name "velocity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions"))) (name "Part Definitions") (declared-name "Part Definitions")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Road"))) (name "Road") (declared-name "Road") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Road::angle"))) (name "angle") (declared-name "angle") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Road")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Road::surfaceFriction"))) (name "surfaceFriction") (declared-name "surfaceFriction") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Road")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Temporal-Spatial Reference"))) (name "Temporal-Spatial Reference") (declared-name "Temporal-Spatial Reference") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Temporal-Spatial Reference::referenceCoordinateSystem"))) (name "referenceCoordinateSystem") (declared-name "referenceCoordinateSystem") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Temporal-Spatial Reference")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Temporal-Spatial Reference::referenceTime"))) (name "referenceTime") (declared-name "referenceTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Temporal-Spatial Reference")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA"))) (name "VehicleA") (declared-name "VehicleA") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::acceleration"))) (name "acceleration") (declared-name "acceleration") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::position"))) (name "position") (declared-name "position") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA")))))
+                (element (kind "exhibit state") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (effective (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA"))))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA")))))
+                    (element (kind "state") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA")))))
+                    (element (kind "state") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates::on"))) (name "on") (declared-name "on") (effective (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::velocity"))) (name "velocity") (declared-name "velocity") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleRoadContext"))) (name "VehicleRoadContext") (declared-name "VehicleRoadContext") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleRoadContext::t"))) (name "t") (declared-name "t") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleRoadContext")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values"))) (name "Values") (declared-name "Values")
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::a0"))) (name "a0") (declared-name "a0") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::a1"))) (name "a1") (declared-name "a1") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::an"))) (name "an") (declared-name "an") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::m"))) (name "m") (declared-name "m") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::p0"))) (name "p0") (declared-name "p0") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::p1"))) (name "p1") (declared-name "p1") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::pn"))) (name "pn") (declared-name "pn") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::sf0"))) (name "sf0") (declared-name "sf0") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::sf1"))) (name "sf1") (declared-name "sf1") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::sfn"))) (name "sfn") (declared-name "sfn") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::t0"))) (name "t0") (declared-name "t0") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::t1"))) (name "t1") (declared-name "t1") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::theta0"))) (name "theta0") (declared-name "theta0") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::theta1"))) (name "theta1") (declared-name "theta1") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::thetan"))) (name "thetan") (declared-name "thetan") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::tn"))) (name "tn") (declared-name "tn") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::v0"))) (name "v0") (declared-name "v0") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::v1"))) (name "v1") (declared-name "v1") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "6-Individual and Snapshots::Values::vn"))) (name "vn") (declared-name "vn") (declared (properties (ordered false) (unique true))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates"))) (to (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates::off"))))
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates"))) (to (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA::vehicleStates::on"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::Road_ID1"))) (to (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Road"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::Temporal-Spatial Reference_ID1"))) (to (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::Temporal-Spatial Reference"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::VehicleA_ID1"))) (to (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleA"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "6-Individual and Snapshots::Individual Definitions::VehicleRoadContext_ID1"))) (to (node (document "d0") (qualified-name "6-Individual and Snapshots::Part Definitions::VehicleRoadContext"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

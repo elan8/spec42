@@ -180,27 +180,61 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '1d-Parts Tree with Reference'
-      (package 'Definitions'
-        (part_def 'Vehicle')
-        (part_def 'Trailer')
-        (part_def 'TrailerHitch')
-        (part_def 'HitchBall')
-        (part_def 'TrailerCoupler'))
-      (package 'Usages'
-        (namespace_import private -> '1d-Parts Tree with Reference::Definitions'[package])
-        (part_usage 'vehicle_trailer_system'
-          (part_usage composite 'vehicle1_c1' : '1d-Parts Tree with Reference::Definitions::Vehicle'[part_def]
-            (reference_usage reference 'hitchBall' : '1d-Parts Tree with Reference::Definitions::HitchBall'[part_def]))
-          (binding_connector_def
-            (connector_end 'vehicle1_c1.hitchBall')
-            (connector_end 'trailerHitch.hitchBall'))
-          (part_usage composite 'trailerHitch' : '1d-Parts Tree with Reference::Definitions::TrailerHitch'[part_def]
-            (part_usage composite 'hitchBall' : '1d-Parts Tree with Reference::Definitions::HitchBall'[part_def])
-            (part_usage composite 'trailerCoupler' : '1d-Parts Tree with Reference::Definitions::TrailerCoupler'[part_def]))
-          (part_usage composite 'trailer1' : '1d-Parts Tree with Reference::Definitions::Trailer'[part_def]
-            (reference_usage reference 'trailerCoupler' : '1d-Parts Tree with Reference::Definitions::TrailerCoupler'[part_def]
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference"))) (name "1d-Parts Tree with Reference") (declared-name "1d-Parts Tree with Reference")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))) (name "HitchBall") (declared-name "HitchBall") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))) (name "Trailer") (declared-name "Trailer") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))) (name "TrailerCoupler") (declared-name "TrailerCoupler") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch"))) (name "TrailerHitch") (declared-name "TrailerHitch") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system"))) (name "vehicle_trailer_system") (declared-name "vehicle_trailer_system") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (name "trailer1") (declared-name "trailer1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "ref") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (name "trailerCoupler") (declared-name "trailerCoupler") (declared (properties (composite false) (reference true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "trailerCoupler") (children (expression (kind "featureReference") (reference "trailerHitch")))))) (effective (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (role feature-value))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (name "trailerHitch") (declared-name "trailerHitch") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (name "hitchBall") (declared-name "hitchBall") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (name "trailerCoupler") (declared-name "trailerCoupler") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "ref") (id (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (name "hitchBall") (declared-name "hitchBall") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (bind (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (connect (source-expression "vehicle1_c1::hitchBall") (target-expression "trailerHitch::hitchBall") (container-prefix "1d-Parts Tree with Reference::Usages::vehicle_trailer_system")))
+    (reference (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Trailer"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailer1::trailerCoupler"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerHitch"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::hitchBall"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::trailerHitch::trailerCoupler"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::TrailerCoupler"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Usages::vehicle_trailer_system::vehicle1_c1::hitchBall"))) (to (node (document "d0") (qualified-name "1d-Parts Tree with Reference::Definitions::HitchBall"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

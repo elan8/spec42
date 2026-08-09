@@ -145,39 +145,43 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Enumeration Definitions-2'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'Enumeration Definitions-1'[unresolved])
-      (attribute_def 'ClassificationLevel'
-        (attribute_usage composite 'code' : 'String'[unresolved])
-        (attribute_usage composite 'color' : 'TrafficLightColor'[unresolved]))
-      (enum_def 'ClassificationKind' :> 'Enumeration Definitions-2::ClassificationLevel'[attribute_def]
-        (enum_usage composite 'unclassified'
-          (reference_usage reference :>> 'Enumeration Definitions-2::ClassificationLevel::code'[attribute_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> 'Enumeration Definitions-2::ClassificationLevel::color'[attribute_usage]
-            (feature_value (=))))
-        (enum_usage composite 'confidential'
-          (reference_usage reference :>> 'Enumeration Definitions-2::ClassificationLevel::code'[attribute_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> 'Enumeration Definitions-2::ClassificationLevel::color'[attribute_usage]
-            (feature_value (=))))
-        (enum_usage composite 'secret'
-          (reference_usage reference :>> 'Enumeration Definitions-2::ClassificationLevel::code'[attribute_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> 'Enumeration Definitions-2::ClassificationLevel::color'[attribute_usage]
-            (feature_value (=)))))
-      (enum_def 'GradePoints' :> 'Real'[unresolved]
-        (enum_usage composite 'A'
-          (feature_value (=)))
-        (enum_usage composite 'B'
-          (feature_value (=)))
-        (enum_usage composite 'C'
-          (feature_value (=)))
-        (enum_usage composite 'D'
-          (feature_value (=)))
-        (enum_usage composite 'F'
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Enumeration Definitions-2"))) (name "Enumeration Definitions-2") (declared-name "Enumeration Definitions-2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind"))) (name "ClassificationKind") (declared-name "ClassificationKind")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind::confidential"))) (name "confidential") (declared-name "confidential") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind::secret"))) (name "secret") (declared-name "secret") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind::unclassified"))) (name "unclassified") (declared-name "unclassified") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel"))) (name "ClassificationLevel") (declared-name "ClassificationLevel") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel::code"))) (name "code") (declared-name "code") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel::color"))) (name "color") (declared-name "color") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints"))) (name "GradePoints") (declared-name "GradePoints")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::A"))) (name "A") (declared-name "A") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::B"))) (name "B") (declared-name "B") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::C"))) (name "C") (declared-name "C") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::D"))) (name "D") (declared-name "D") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::F"))) (name "F") (declared-name "F") (effective (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

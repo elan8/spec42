@@ -194,31 +194,28 @@ standard library package VectorValues {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'VectorValues'
-      (documentation)
-      (membership_import private -> 'ScalarValues::NumericalValue'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'Collections::Array'[unresolved])
-      (datatype_def abstract 'VectorValue'
-        (documentation))
-      (datatype_def 'NumericalVectorValue' :> 'VectorValues::VectorValue'[datatype_def] :> 'Array'[unresolved]
-        (intersecting)
-        (intersecting)
-        (documentation)
-        (feature_def 'dimension' :>> 'dimensions'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def :>> 'elements'[unresolved] : 'NumericalValue'[unresolved]))
-      (datatype_def 'CartesianVectorValue' :> 'VectorValues::NumericalVectorValue'[datatype_def]
-        (documentation)
-        (feature_def :>> 'elements'[unresolved] : 'Real'[unresolved]))
-      (datatype_def 'ThreeVectorValue' :> 'VectorValues::NumericalVectorValue'[datatype_def]
-        (documentation)
-        (feature_def :>> 'VectorValues::NumericalVectorValue::dimension'[feature_def]
-          (feature_value (=))))
-      (datatype_def 'CartesianThreeVectorValue' :> 'VectorValues::CartesianVectorValue'[datatype_def] :> 'VectorValues::ThreeVectorValue'[datatype_def]
-        (intersecting)
-        (intersecting)
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VectorValues"))) (name "VectorValues") (declared-name "VectorValues")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorValues::Array"))) (name "Array") (declared-name "Array"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::CartesianThreeVectorValue"))) (name "CartesianThreeVectorValue") (declared-name "CartesianThreeVectorValue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::CartesianVectorValue"))) (name "CartesianVectorValue") (declared-name "CartesianVectorValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorValues::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::NumericalVectorValue"))) (name "NumericalVectorValue") (declared-name "NumericalVectorValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VectorValues::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::ThreeVectorValue"))) (name "ThreeVectorValue") (declared-name "ThreeVectorValue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VectorValues::VectorValue"))) (name "VectorValue") (declared-name "VectorValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "VectorValues::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorValues::_documentation"))) (to (node (document "d0") (qualified-name "VectorValues"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

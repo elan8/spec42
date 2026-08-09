@@ -99,20 +99,32 @@ standard library package ScalarValues {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ScalarValues'
-      (documentation)
-      (membership_import private -> 'Base::DataValue'[unresolved])
-      (datatype_def abstract 'ScalarValue' :> 'DataValue'[unresolved])
-      (datatype_def 'Boolean' :> 'ScalarValues::ScalarValue'[datatype_def])
-      (datatype_def 'String' :> 'ScalarValues::ScalarValue'[datatype_def])
-      (datatype_def abstract 'NumericalValue' :> 'ScalarValues::ScalarValue'[datatype_def])
-      (datatype_def abstract 'Number' :> 'ScalarValues::NumericalValue'[datatype_def])
-      (datatype_def 'Complex' :> 'ScalarValues::Number'[datatype_def])
-      (datatype_def 'Real' :> 'ScalarValues::Complex'[datatype_def])
-      (datatype_def 'Rational' :> 'ScalarValues::Real'[datatype_def])
-      (datatype_def 'Integer' :> 'ScalarValues::Rational'[datatype_def])
-      (datatype_def 'Natural' :> 'ScalarValues::Integer'[datatype_def])
-      (datatype_def 'Positive' :> 'ScalarValues::Natural'[datatype_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ScalarValues"))) (name "ScalarValues") (declared-name "ScalarValues")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Complex"))) (name "Complex") (declared-name "Complex"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ScalarValues::DataValue"))) (name "DataValue") (declared-name "DataValue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Integer"))) (name "Integer") (declared-name "Integer"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Number"))) (name "Number") (declared-name "Number"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Positive"))) (name "Positive") (declared-name "Positive"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Rational"))) (name "Rational") (declared-name "Rational"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::ScalarValue"))) (name "ScalarValue") (declared-name "ScalarValue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarValues::String"))) (name "String") (declared-name "String"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ScalarValues::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ScalarValues::_documentation"))) (to (node (document "d0") (qualified-name "ScalarValues"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

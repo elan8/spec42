@@ -215,56 +215,35 @@ semantic.unresolved_name 'ToolVariable'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AnalysisAnnotation'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'AnalysisTooling'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (action_def 'ComputeDynamics'
-        (metadata_usage :> 'ToolExecution'[unresolved]
-          (feature_def 'toolName'
-            (feature_value (=)))
-          (feature_def 'uri'
-            (feature_value (=))))
-        (reference_usage in reference 'dt' : 'TimeValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'whlpwr' : 'PowerValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'Cd' : 'Real'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'Cf' : 'Real'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'tm' : 'MassValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'v_in' : 'SpeedValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'x_in' : 'LengthValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage out reference 'a_out' : 'AccelerationValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage out reference 'v_out' : 'SpeedValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage out reference 'x_out' : 'LengthValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisAnnotation"))) (name "AnalysisAnnotation") (declared-name "AnalysisAnnotation")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisAnnotation::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisAnnotation::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics"))) (name "ComputeDynamics") (declared-name "ComputeDynamics")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::Cd"))) (name "Cd") (declared-name "Cd") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::Cf"))) (name "Cf") (declared-name "Cf") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::a_out"))) (name "a_out") (declared-name "a_out") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::tm"))) (name "tm") (declared-name "tm") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::v_out"))) (name "v_out") (declared-name "v_out") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics::x_out"))) (name "x_out") (declared-name "x_out") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisAnnotation::ComputeDynamics")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisAnnotation::Real"))) (name "Real") (declared-name "Real"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

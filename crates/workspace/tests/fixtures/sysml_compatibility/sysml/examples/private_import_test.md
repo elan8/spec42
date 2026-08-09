@@ -139,20 +139,46 @@ semantic.unresolved_name 'A'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'PrivateImportTest'
-      (package 'P1'
-        (part_def 'A'))
-      (package 'P2'
-        (namespace_import private -> 'PrivateImportTest::P1'[package]))
-      (part_usage 'x' : 'PrivateImportTest::P1::A'[part_def])
-      (namespace_import public -> 'PrivateImportTest::P2'[package])
-      (package 'P3'
-        (part_def 'B'))
-      (namespace_import private -> 'PrivateImportTest::P3'[package])
-      (part_usage 'z' : 'PrivateImportTest::P3::B'[part_def])
-      (package 'P4'
-        (namespace_import public all -> 'PrivateImportTest::P2'[package])
-        (part_usage 'z1' : 'A'[unresolved])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest"))) (name "PrivateImportTest") (declared-name "PrivateImportTest")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P1"))) (name "P1") (declared-name "P1")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (name "A") (declared-name "A") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P2"))) (name "P2") (declared-name "P2")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::P2::*"))) (name "*") (declared-name "*"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P3"))) (name "P3") (declared-name "P3")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (name "B") (declared-name "B") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "PrivateImportTest::P4"))) (name "P4") (declared-name "P4")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "PrivateImportTest::P4::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (name "z1") (declared-name "z1") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "PrivateImportTest::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "PrivateImportTest::z"))) (name "z") (declared-name "z") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::x"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::z"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

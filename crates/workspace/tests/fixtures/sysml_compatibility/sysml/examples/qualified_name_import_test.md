@@ -74,13 +74,34 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'QualifiedNameImportTest'
-      (package 'P1'
-        (part_def 'A'))
-      (package 'P2'
-        (package 'P2a'
-          (namespace_import public -> 'QualifiedNameImportTest::P1'[package]))
-        (part_usage 'x' : 'QualifiedNameImportTest::P1::A'[part_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest"))) (name "QualifiedNameImportTest") (declared-name "QualifiedNameImportTest")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P1"))) (name "P1") (declared-name "P1")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P1::A"))) (name "A") (declared-name "A") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2"))) (name "P2") (declared-name "P2")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a"))) (name "P2a") (declared-name "P2a")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a::*"))) (name "*") (declared-name "*"))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (to (node (document "d0") (qualified-name "QualifiedNameImportTest::P1::A"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

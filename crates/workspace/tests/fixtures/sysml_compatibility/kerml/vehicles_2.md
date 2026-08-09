@@ -164,28 +164,24 @@ semantic.unresolved_name 'subcomponents'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Vehicles_2'
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (namespace_import private -> 'MassRollup_1'[unresolved])
-      (class_def 'CarPart' :> 'MassedThing'[unresolved]
-        (feature_def 'serialNumber' : 'String'[unresolved])
-        (feature_def 'm' :>> 'mass'[unresolved])
-        (feature_def composite 'subparts' : 'Vehicles_2::CarPart'[class_def] :>> 'subcomponents'[unresolved]
-          (multiplicity_range [0..*])))
-      (feature_def 'vehicle' : 'Vehicles_2::CarPart'[class_def]
-        (feature_def 'vin' :>> 'Vehicles_2::CarPart::serialNumber'[feature_def])
-        (feature_def composite 'engine' : 'Vehicles_2::CarPart'[class_def] :> 'Vehicles_2::CarPart::subparts'[feature_def])
-        (feature_def composite 'transmission' : 'Vehicles_2::CarPart'[class_def] :> 'Vehicles_2::CarPart::subparts'[feature_def]))
-      (namespace_import private -> 'SI'[unresolved])
-      (feature_def 'v' : 'Vehicles_2::vehicle'[feature_def]
-        (feature_def 'm' :>> 'Vehicles_2::CarPart::m'[feature_def]
-          (feature_value (=)))
-        (feature_def composite 'engine' :>> 'Vehicles_2::vehicle::engine'[feature_def]
-          (feature_def 'm' :>> 'Vehicles_2::CarPart::m'[feature_def]
-            (feature_value (=))))
-        (feature_def composite 'transmission' :>> 'Vehicles_2::vehicle::transmission'[feature_def]
-          (feature_def 'm' :>> 'Vehicles_2::CarPart::m'[feature_def]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Vehicles_2"))) (name "Vehicles_2") (declared-name "Vehicles_2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicles_2::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicles_2::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Vehicles_2::CarPart"))) (name "CarPart") (declared-name "CarPart"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Vehicles_2::String"))) (name "String") (declared-name "String"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Vehicles_2::v"))) (name "v") (declared-name "v"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Vehicles_2::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

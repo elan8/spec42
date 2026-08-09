@@ -146,31 +146,32 @@ semantic.unresolved_name 'severity'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'User Keyword Example'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Semantic Metadata Example'[unresolved])
-      (membership_import private -> 'RiskMetadata::LevelEnum'[unresolved])
-      (part_def 'Device'
-        (part_usage composite 'battery'
-          (attribute_usage composite 'power' : 'Real'[unresolved])))
-      (definition 'DeviceFailure'
-        (reference_usage reference 'device' : 'User Keyword Example::Device'[part_def])
-        (attribute_usage composite 'minPower' : 'Real'[unresolved])
-        (reference_usage 'battery old'
-          (reference_usage reference :>> 'probability'[unresolved]
-            (feature_value (=))))
-        (connection_usage composite
-          (connector_end ''battery old'')
-          (connector_end ''power low''))
-        (reference_usage 'power low'
-          (constraint_usage composite
-            (result_expr_membership)))
-        (connection_usage composite
-          (connector_end ''power low'')
-          (connector_end ''device shutoff''))
-        (reference_usage 'device shutoff'
-          (reference_usage reference :>> 'severity'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "User Keyword Example"))) (name "User Keyword Example") (declared-name "User Keyword Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "User Keyword Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "User Keyword Example::Device"))) (name "Device") (declared-name "Device") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (name "battery") (declared-name "battery") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (name "power") (declared-name "power") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "User Keyword Example::LevelEnum"))) (name "LevelEnum") (declared-name "LevelEnum"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "User Keyword Example::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (name "scenario") (declared-name "scenario"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (to (node (document "d0") (qualified-name "User Keyword Example"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

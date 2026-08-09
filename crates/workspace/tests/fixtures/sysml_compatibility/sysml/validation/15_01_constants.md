@@ -207,32 +207,48 @@ semantic.unresolved_name 'DimensionOneValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_01-Constants'
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'RealFunctions'[unresolved])
-      (package 'Mathematical Constants'
-        (documentation)
-        (attribute_usage 'e' : 'Real'[unresolved]
-          (assert_constraint_usage
-            (result_expr_membership)))
-        (attribute_usage 'pi' : 'Real'[unresolved]
-          (assert_constraint_usage
-            (result_expr_membership))))
-      (package 'Fundamental Physical Constants'
-        (documentation)
-        (attribute_usage 'fine structure constant' : 'DimensionOneValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage 'electron to proton mass ratio' : 'DimensionOneValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage 'speed of light in vacuum' : 'SpeedValue'[unresolved]
-          (feature_value (=))))
-      (package 'Global Context'
-        (attribute_usage 'nominal earth gravitational acceleration' : 'AccelerationValue'[unresolved]
-          (feature_value (=))))
-      (package 'Model X Context'
-        (attribute_usage 'amplifier gain' : 'DimensionOneValue'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_01-Constants"))) (name "15_01-Constants") (declared-name "15_01-Constants")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_01-Constants::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_01-Constants::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_01-Constants::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))) (name "Fundamental Physical Constants") (declared-name "Fundamental Physical Constants")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::_documentation"))) (name ""))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::electron to proton mass ratio"))) (name "electron to proton mass ratio") (declared-name "electron to proton mass ratio") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "5.44617021487E-4")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "one")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::electron to proton mass ratio"))) (role feature-value))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::fine structure constant"))) (name "fine structure constant") (declared-name "fine structure constant") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "7.2973525693E-3")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "one")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::fine structure constant"))) (role feature-value))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::speed of light in vacuum"))) (name "speed of light in vacuum") (declared-name "speed of light in vacuum") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 299792458)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m/s")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::speed of light in vacuum"))) (role feature-value))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "15_01-Constants::Global Context"))) (name "Global Context") (declared-name "Global Context")
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration"))) (name "nominal earth gravitational acceleration") (declared-name "nominal earth gravitational acceleration") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "9.80665")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m/s²")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration"))) (role feature-value))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))) (name "Mathematical Constants") (declared-name "Mathematical Constants")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::_documentation"))) (name ""))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::e"))) (name "e") (declared-name "e") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::pi"))) (name "pi") (declared-name "pi") (declared (properties (ordered false) (unique true))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "15_01-Constants::Model X Context"))) (name "Model X Context") (declared-name "Model X Context")
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (name "amplifier gain") (declared-name "amplifier gain") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "3.5")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "one")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::_documentation"))) (to (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::_documentation"))) (to (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

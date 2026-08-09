@@ -582,108 +582,108 @@ semantic.unresolved_name 'elements'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleGeometryAndCoordinateFrames'
-      (namespace_import private -> 'TrigFunctions'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'Time'[unresolved])
-      (namespace_import private -> 'ShapeItems'[unresolved])
-      (namespace_import private -> 'SpatialItems'[unresolved])
-      (membership_import private -> 'MeasurementReferences::CoordinateFrame'[unresolved])
-      (membership_import private -> 'MeasurementReferences::TranslationRotationSequence'[unresolved])
-      (membership_import private -> 'MeasurementReferences::Translation'[unresolved])
-      (membership_import private -> 'MeasurementReferences::Rotation'[unresolved])
-      (membership_import private -> 'Collections::Array'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (part_def 'Vehicle' :> 'SpatialItem'[unresolved])
-      (part_def 'Chassis' :> 'SpatialItem'[unresolved]
-        (item_usage composite :>> 'shape'[unresolved]
-          (feature_value (=))))
-      (part_def 'Wheel' :> 'SpatialItem'[unresolved]
-        (documentation)
-        (item_usage composite :>> 'shape'[unresolved] : 'Cylinder'[unresolved]
-          (reference_usage reference :>> 'radius'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'height'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'wheelCoordinateFrame' : 'CoordinateFrame'[unresolved])
-        (attribute_usage composite 'numberOfBolts' : 'Natural'[unresolved]
-          (feature_value (=)))
-        (part_usage composite 'lugBolts' : 'VehicleGeometryAndCoordinateFrames::LugBolt'[part_def] :> 'subSpatialParts'[unresolved]
-          (multiplicity_range [1..?]))
-        (attribute_usage composite 'lugBoltPlacementRadius' :>> 'radius'[unresolved]
-          (feature_value (default =)))
-        (attribute_usage composite 'lugBoltDistributionAngle' :>> 'planeAngle'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'lbda' : 'Real'[unresolved]
-          (feature_value (=)))
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (part_def 'LugBolt' :> 'SpatialItem'[unresolved]
-        (item_usage composite :>> 'shape'[unresolved] : 'Cylinder'[unresolved]
-          (reference_usage reference :>> 'radius'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'height'[unresolved]
-            (feature_value (=)))))
-      (part_usage 'vehicle' : 'VehicleGeometryAndCoordinateFrames::Vehicle'[part_def] : 'SpatialItem'[unresolved]
-        (attribute_usage composite 'datum' :>> 'coordinateFrame'[unresolved]
-          (reference_usage reference :>> 'mRefs'[unresolved]
-            (feature_value (=))))
-        (part_usage composite 'chassis' : 'VehicleGeometryAndCoordinateFrames::Chassis'[part_def] :> 'componentParts'[unresolved]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (attribute_usage composite :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (attribute_usage composite :>> 'source'[unresolved]
-                (feature_value (=)))
-              (attribute_usage composite :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (attribute_usage composite 'plusXAxis' : 'Array'[unresolved]
-          (reference_usage reference :>> 'dimensions'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'elements'[unresolved] : 'Real'[unresolved]
-            (multiplicity_range [3])
-            (feature_value (=))))
-        (attribute_usage composite 'frontWheelXShift' : 'Real'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'rearWheelXShift' : 'Real'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'wheelYShift' : 'Real'[unresolved]
-          (feature_value (=)))
-        (part_usage composite 'leftFrontWheel' : 'VehicleGeometryAndCoordinateFrames::Wheel'[part_def] :> 'componentParts'[unresolved]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (attribute_usage composite :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (attribute_usage composite :>> 'source'[unresolved]
-                (feature_value (=)))
-              (attribute_usage composite :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'rightFrontWheel' : 'VehicleGeometryAndCoordinateFrames::Wheel'[part_def] :> 'componentParts'[unresolved]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (attribute_usage composite :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (attribute_usage composite :>> 'source'[unresolved]
-                (feature_value (=)))
-              (attribute_usage composite :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'leftRearWheel' : 'VehicleGeometryAndCoordinateFrames::Wheel'[part_def] :> 'componentParts'[unresolved]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (attribute_usage composite :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (attribute_usage composite :>> 'source'[unresolved]
-                (feature_value (=)))
-              (attribute_usage composite :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'rightRearWheel' : 'VehicleGeometryAndCoordinateFrames::Wheel'[part_def] :> 'componentParts'[unresolved]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (attribute_usage composite :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (attribute_usage composite :>> 'source'[unresolved]
-                (feature_value (=)))
-              (attribute_usage composite :>> 'elements'[unresolved]
-                (feature_value (=))))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames"))) (name "VehicleGeometryAndCoordinateFrames") (declared-name "VehicleGeometryAndCoordinateFrames")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::*#import4"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::*#import5"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Array"))) (name "Array") (declared-name "Array"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Chassis"))) (name "Chassis") (declared-name "Chassis") (declared)
+          (contains
+            (element (kind "item") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Chassis::shape"))) (name "shape") (declared (properties (composite true) (reference false)) (feature-value (kind bound) (expression (kind "constructor") (reference "Box") (arguments (argument (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 4800)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm"))))))) (argument (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1840)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm"))))))) (argument (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1350)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm"))))))))))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Chassis"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Chassis::shape"))) (role feature-value))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::CoordinateFrame"))) (name "CoordinateFrame") (declared-name "CoordinateFrame"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt"))) (name "LugBolt") (declared-name "LugBolt") (declared)
+          (contains
+            (element (kind "item") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt::shape"))) (name "shape") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt::shape::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt::shape::radius"))) (name "radius") (declared-name "radius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Rotation"))) (name "Rotation") (declared-name "Rotation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Translation"))) (name "Translation") (declared-name "Translation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::TranslationRotationSequence"))) (name "TranslationRotationSequence") (declared-name "TranslationRotationSequence"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lbda"))) (name "lbda") (declared-name "lbda") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "*") (children (expression (kind "memberAccess") (reference "num") (children (expression (kind "featureReference") (reference "lugBoltDistributionAngle")))) (expression (kind "parenthesized") (children (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "pi")) (expression (kind "integerLiteral") (literal 180)))))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lbda"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBoltDistributionAngle"))) (name "lugBoltDistributionAngle") (declared-name "lugBoltDistributionAngle") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower unevaluated) (upper unevaluated) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "integerLiteral") (literal 360)) (expression (kind "featureReference") (reference "numberOfBolts")))))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBoltDistributionAngle"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBoltPlacementRadius"))) (name "lugBoltPlacementRadius") (declared-name "lugBoltPlacementRadius") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 60)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBolts"))) (name "lugBolts") (declared-name "lugBolts") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unevaluated) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::numberOfBolts"))) (name "numberOfBolts") (declared-name "numberOfBolts") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 5)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::numberOfBolts"))) (role feature-value))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::shape"))) (name "shape") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::shape::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::shape::radius"))) (name "radius") (declared-name "radius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::wheelCoordinateFrame"))) (name "wheelCoordinateFrame") (declared-name "wheelCoordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::chassis"))) (name "chassis") (declared-name "chassis") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::chassis::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Chassis")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::datum"))) (name "datum") (declared-name "datum") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::frontWheelXShift"))) (name "frontWheelXShift") (declared-name "frontWheelXShift") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 1670)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::frontWheelXShift"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftFrontWheel"))) (name "leftFrontWheel") (declared-name "leftFrontWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftFrontWheel::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftRearWheel"))) (name "leftRearWheel") (declared-name "leftRearWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftRearWheel::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::plusXAxis"))) (name "plusXAxis") (declared-name "plusXAxis") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rearWheelXShift"))) (name "rearWheelXShift") (declared-name "rearWheelXShift") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "unary") (operator "-") (children (expression (kind "integerLiteral") (literal 1820)))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rearWheelXShift"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightFrontWheel"))) (name "rightFrontWheel") (declared-name "rightFrontWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightFrontWheel::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightRearWheel"))) (name "rightRearWheel") (declared-name "rightRearWheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightRearWheel::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::wheelYShift"))) (name "wheelYShift") (declared-name "wheelYShift") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 720)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::wheelYShift"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::_documentation"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel::lugBolts"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::LugBolt"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::chassis"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Chassis"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftFrontWheel"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::leftRearWheel"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightFrontWheel"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::vehicle::rightRearWheel"))) (to (node (document "d0") (qualified-name "VehicleGeometryAndCoordinateFrames::Wheel"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

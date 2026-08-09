@@ -137,29 +137,58 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Use Case Definition Example'
-      (part_def 'Vehicle')
-      (part_def 'Person')
-      (part_def 'Environment')
-      (part_def 'Fuel Station')
-      (use_case_def 'Provide Transportation'
-        (subject_membership in 'vehicle' : 'Use Case Definition Example::Vehicle'[part_def])
-        (actor_membership in 'driver' : 'Use Case Definition Example::Person'[part_def])
-        (actor_membership in 'passengers' : 'Use Case Definition Example::Person'[part_def]
-          (multiplicity_range [0..4]))
-        (actor_membership in 'environment' : 'Use Case Definition Example::Environment'[part_def])
-        (objective_membership composite
-          (documentation)))
-      (use_case_def 'Enter Vehicle'
-        (subject_membership in 'vehicle' : 'Use Case Definition Example::Vehicle'[part_def])
-        (actor_membership in 'driver' : 'Use Case Definition Example::Person'[part_def])
-        (actor_membership in 'passengers' : 'Use Case Definition Example::Person'[part_def]
-          (multiplicity_range [0..4])))
-      (use_case_def 'Exit Vehicle'
-        (subject_membership in 'vehicle' : 'Use Case Definition Example::Vehicle'[part_def])
-        (actor_membership in 'driver' : 'Use Case Definition Example::Person'[part_def])
-        (actor_membership in 'passengers' : 'Use Case Definition Example::Person'[part_def]
-          (multiplicity_range [0..4]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Use Case Definition Example"))) (name "Use Case Definition Example") (declared-name "Use Case Definition Example")
+      (contains
+        (element (kind "use case def") (id (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle"))) (name "Enter Vehicle") (declared-name "Enter Vehicle")
+          (contains
+            (element (kind "actor") (id (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle::driver"))) (name "driver") (declared-name "driver") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle")))))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle::passengers"))) (name "passengers") (declared-name "passengers") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Use Case Definition Example::Environment"))) (name "Environment") (declared-name "Environment") (declared))
+        (element (kind "use case def") (id (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle"))) (name "Exit Vehicle") (declared-name "Exit Vehicle")
+          (contains
+            (element (kind "actor") (id (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle::driver"))) (name "driver") (declared-name "driver") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle")))))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle::passengers"))) (name "passengers") (declared-name "passengers") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Use Case Definition Example::Fuel Station"))) (name "Fuel Station") (declared-name "Fuel Station") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Use Case Definition Example::Person"))) (name "Person") (declared-name "Person") (declared))
+        (element (kind "use case def") (id (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation"))) (name "Provide Transportation") (declared-name "Provide Transportation")
+          (contains
+            (element (kind "actor") (id (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::driver"))) (name "driver") (declared-name "driver") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation")))))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::environment"))) (name "environment") (declared-name "environment") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation")))))
+            (element (kind "objective") (id (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation")))))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::passengers"))) (name "passengers") (declared-name "passengers") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Use Case Definition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+      )
+    )
+  )
+  (relationships
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle::driver"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle::passengers"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Enter Vehicle::vehicle"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle::driver"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle::passengers"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Exit Vehicle::vehicle"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::driver"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::environment"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Environment"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::passengers"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Definition Example::Provide Transportation::vehicle"))) (to (node (document "d0") (qualified-name "Use Case Definition Example::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

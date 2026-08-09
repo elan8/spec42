@@ -83,25 +83,20 @@ parse.unexpected_token
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Classifiers'
-      (classifier_def 'A')
-      (classifier_def 'B')
-      (subclassification 'Super')
-      (not_implemented 'malformed')
-      (subclassification)
-      (subclassification)
-      (subclassification)
-      (classifier_def 'C' :> 'Classifiers::A'[classifier_def] :> 'Classifiers::B'[classifier_def])
-      (classifier_def 'D'
-        (disjoining_decl)
-        (differencing)
-        (differencing))
-      (classifier_def 'E' :> 'Classifiers::C'[classifier_def]
-        (intersecting)
-        (intersecting))
-      (classifier_def 'F'
-        (unioning)
-        (unioning)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Classifiers"))) (name "Classifiers") (declared-name "Classifiers")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classifiers::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classifiers::B"))) (name "B") (declared-name "B"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

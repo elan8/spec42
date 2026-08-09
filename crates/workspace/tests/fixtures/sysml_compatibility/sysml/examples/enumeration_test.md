@@ -201,42 +201,53 @@ semantic.unresolved_name 'ScalarValues::Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'EnumerationTest'
-      (attribute_def 'Color'
-        (attribute_usage composite 'val' : 'ScalarValues::Natural'[unresolved]))
-      (enum_def 'ColorKind' :> 'EnumerationTest::Color'[attribute_def]
-        (documentation)
-        (enum_usage composite 'red'
-          (reference_usage reference :>> 'EnumerationTest::Color::val'[attribute_usage]
-            (feature_value (=))))
-        (enum_usage composite 'blue'
-          (reference_usage reference :>> 'EnumerationTest::Color::val'[attribute_usage]
-            (feature_value (=))))
-        (enum_usage composite 'green'
-          (reference_usage reference :>> 'EnumerationTest::Color::val'[attribute_usage]
-            (feature_value (=)))))
-      (enum_usage 'color' : 'EnumerationTest::ColorKind'[enum_def])
-      (enum_usage 'color1'
-        (feature_value (=)))
-      (attribute_usage 'color2' : 'EnumerationTest::ColorKind'[enum_def]
-        (feature_value (=)))
-      (enum_def 'E1'
-        (enum_usage composite 'a')
-        (enum_usage composite 'b')
-        (enum_usage composite 'c')
-        (documentation))
-      (enum_def 'E2')
-      (attribute_def 'Size' :> 'ScalarValues::Real'[unresolved]
-        (documentation))
-      (enum_def 'SizeChoice' :> 'EnumerationTest::Size'[attribute_def]
-        (enum_usage composite
-          (feature_value (=)))
-        (enum_usage composite
-          (feature_value (=)))
-        (enum_usage composite
-          (feature_value (=))))
-      (enum_usage 'size' : 'EnumerationTest::SizeChoice'[enum_def]
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "EnumerationTest"))) (name "EnumerationTest") (declared-name "EnumerationTest")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "EnumerationTest::Color"))) (name "Color") (declared-name "Color") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EnumerationTest::Color::val"))) (name "val") (declared-name "val") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EnumerationTest::Color")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (name "ColorKind") (declared-name "ColorKind")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind::blue"))) (name "blue") (declared-name "blue") (effective (featuring-type (node (document "d0") (qualified-name "EnumerationTest::ColorKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind::green"))) (name "green") (declared-name "green") (effective (featuring-type (node (document "d0") (qualified-name "EnumerationTest::ColorKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "EnumerationTest::ColorKind::red"))) (name "red") (declared-name "red") (effective (featuring-type (node (document "d0") (qualified-name "EnumerationTest::ColorKind")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "EnumerationTest::E1"))) (name "E1") (declared-name "E1")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "EnumerationTest::E1::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "EnumerationTest::E1")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "EnumerationTest::E1::b"))) (name "b") (declared-name "b") (effective (featuring-type (node (document "d0") (qualified-name "EnumerationTest::E1")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "EnumerationTest::E1::c"))) (name "c") (declared-name "c") (effective (featuring-type (node (document "d0") (qualified-name "EnumerationTest::E1")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "EnumerationTest::E2"))) (name "E2") (declared-name "E2"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "EnumerationTest::Size"))) (name "Size") (declared-name "Size") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "EnumerationTest::Size::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "EnumerationTest::Size")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "EnumerationTest::SizeChoice"))) (name "SizeChoice") (declared-name "SizeChoice"))
+        (element (kind "enumeration") (id (node (document "d0") (qualified-name "EnumerationTest::color"))) (name "color") (declared-name "color"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "EnumerationTest::color1"))) (name "color1") (declared-name "color1"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "EnumerationTest::color2"))) (name "color2") (declared-name "color2") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "color1")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EnumerationTest::color2"))) (role feature-value))))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "EnumerationTest::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "EnumerationTest::Size::_documentation"))) (to (node (document "d0") (qualified-name "EnumerationTest::Size"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))) (to (node (document "d0") (qualified-name "EnumerationTest::Color"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EnumerationTest::SizeChoice"))) (to (node (document "d0") (qualified-name "EnumerationTest::Size"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EnumerationTest::color"))) (to (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EnumerationTest::color2"))) (to (node (document "d0") (qualified-name "EnumerationTest::ColorKind"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

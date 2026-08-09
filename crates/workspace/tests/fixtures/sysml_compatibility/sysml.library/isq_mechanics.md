@@ -6160,1107 +6160,1026 @@ standard library package ISQMechanics {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQMechanics'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (membership_import private -> 'ISQThermodynamics::EnergyValue'[unresolved])
-      (attribute_def 'MassDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::MassDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massDensity' : 'ISQMechanics::MassDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'DensityUnit' -> 'ISQMechanics::MassDensityUnit'[attribute_def])
-      (alias_member 'DensityValue' -> 'ISQMechanics::MassDensityValue'[attribute_def])
-      (alias_member 'density' -> 'ISQMechanics::massDensity'[attribute_usage])
-      (attribute_def 'SpecificVolumeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::SpecificVolumeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificVolume' : 'ISQMechanics::SpecificVolumeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificVolumeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RelativeMassDensityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeMassDensity' : 'ISQMechanics::RelativeMassDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'relativeDensity' -> 'ISQMechanics::relativeMassDensity'[attribute_usage])
-      (attribute_def 'SurfaceMassDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::SurfaceMassDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'surfaceMassDensity' : 'ISQMechanics::SurfaceMassDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SurfaceMassDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'SurfaceDensityUnit' -> 'ISQMechanics::SurfaceMassDensityUnit'[attribute_def])
-      (alias_member 'SurfaceDensityValue' -> 'ISQMechanics::SurfaceMassDensityValue'[attribute_def])
-      (alias_member 'surfaceDensity' -> 'ISQMechanics::surfaceMassDensity'[attribute_usage])
-      (attribute_def 'LinearMassDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::LinearMassDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearMassDensity' : 'ISQMechanics::LinearMassDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearMassDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'LinearDensityUnit' -> 'ISQMechanics::LinearMassDensityUnit'[attribute_def])
-      (alias_member 'LinearDensityValue' -> 'ISQMechanics::LinearMassDensityValue'[attribute_def])
-      (alias_member 'linearDensity' -> 'ISQMechanics::linearMassDensity'[attribute_usage])
-      (attribute_def 'MomentOfInertiaValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::MomentOfInertiaUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'momentOfInertia' : 'ISQMechanics::MomentOfInertiaValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MomentOfInertiaUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'Cartesian3dMomentOfInertiaTensor' :> 'TensorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved]
-          (multiplicity_range [9]))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'momentOfInertiaTensor' : 'ISQMechanics::Cartesian3dMomentOfInertiaTensor'[attribute_def] :> 'tensorQuantities'[unresolved])
-      (attribute_def 'Cartesian3dMomentOfInertiaMeasurementReference' :> 'TensorMeasurementReference'[unresolved]
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::MomentOfInertiaUnit'[attribute_def]
-          (multiplicity_range [9])))
-      (attribute_def 'MomentumValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::MomentumUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'momentum' : 'ISQMechanics::MomentumValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MomentumUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMomentum3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianMomentum3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMomentum3dVector' : 'ISQMechanics::CartesianMomentum3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMomentum3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::MomentumUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'ForceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::ForceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'force' : 'ISQMechanics::ForceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ForceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianForce3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianForce3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianForce3dVector' : 'ISQMechanics::CartesianForce3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianForce3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::ForceUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'CartesianWeight3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianForce3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianWeight3dVector' : 'ISQMechanics::CartesianWeight3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianStaticFrictionForce3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianForce3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianStaticFrictionForce3dVector' : 'ISQMechanics::CartesianStaticFrictionForce3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (alias_member 'cartesianStaticFriction3dVector' -> 'ISQMechanics::cartesianStaticFrictionForce3dVector'[attribute_usage])
-      (attribute_def 'CartesianKineticFrictionForce3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianForce3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianKineticFrictionForce3dVector' : 'ISQMechanics::CartesianKineticFrictionForce3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (alias_member 'cartesianDynamicFrictionForce3dVector' -> 'ISQMechanics::cartesianKineticFrictionForce3dVector'[attribute_usage])
-      (attribute_def 'CartesianRollingResistance3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianForce3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianRollingResistance3dVector' : 'ISQMechanics::CartesianRollingResistance3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (alias_member 'cartesianRollingDrag3dVector' -> 'ISQMechanics::cartesianRollingResistance3dVector'[attribute_usage])
-      (alias_member 'cartesianRollingFrictionForce3dVector' -> 'ISQMechanics::cartesianRollingResistance3dVector'[attribute_usage])
-      (attribute_def 'CartesianDragForce3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianForce3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianDragForce3dVector' : 'ISQMechanics::CartesianDragForce3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'ImpulseValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::ImpulseUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'impulse' : 'ISQMechanics::ImpulseValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ImpulseUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianImpulse3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianImpulse3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianImpulse3dVector' : 'ISQMechanics::CartesianImpulse3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianImpulse3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::ImpulseUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'AngularMomentumValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::AngularMomentumUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'angularMomentum' : 'ISQMechanics::AngularMomentumValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AngularMomentumUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianAngularMomentum3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianAngularMomentum3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianAngularMomentum3dVector' : 'ISQMechanics::CartesianAngularMomentum3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianAngularMomentum3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::AngularMomentumUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'MomentOfForceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::MomentOfForceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'momentOfForce' : 'ISQMechanics::MomentOfForceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MomentOfForceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMomentOfForce3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianMomentOfForce3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMomentOfForce3dVector' : 'ISQMechanics::CartesianMomentOfForce3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMomentOfForce3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::MomentOfForceUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'TorqueValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::TorqueUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'torque' : 'ISQMechanics::TorqueValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TorqueUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'AngularImpulseValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::AngularImpulseUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'angularImpulse' : 'ISQMechanics::AngularImpulseValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AngularImpulseUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianAngularImpulse3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianAngularImpulse3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianAngularImpulse3dVector' : 'ISQMechanics::CartesianAngularImpulse3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianAngularImpulse3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::AngularImpulseUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'PressureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::PressureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'pressure' : 'ISQMechanics::PressureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PressureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'gaugePressure' : 'ISQMechanics::PressureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'StressValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::StressUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'stress' : 'ISQMechanics::StressValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'StressUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'Cartesian3dStressTensor' :> 'TensorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved]
-          (multiplicity_range [9]))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::Cartesian3dStressMeasurementReference'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'stressTensor' : 'ISQMechanics::Cartesian3dStressTensor'[attribute_def] :> 'tensorQuantities'[unresolved])
-      (attribute_def 'Cartesian3dStressMeasurementReference' :> 'TensorMeasurementReference'[unresolved]
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::StressUnit'[attribute_def]
-          (multiplicity_range [9])))
-      (attribute_def 'NormalStressValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::NormalStressUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'normalStress' : 'ISQMechanics::NormalStressValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'NormalStressUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ShearStressValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::ShearStressUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'shearStress' : 'ISQMechanics::ShearStressValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ShearStressUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'StrainValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::StrainUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'strain' : 'ISQMechanics::StrainValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'StrainUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'Cartesian3dStrainTensor' :> 'TensorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved]
-          (multiplicity_range [9]))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::Cartesian3dStrainMeasurementReference'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'strainTensor' : 'ISQMechanics::Cartesian3dStrainTensor'[attribute_def] :> 'tensorQuantities'[unresolved])
-      (attribute_def 'Cartesian3dStrainMeasurementReference' :> 'TensorMeasurementReference'[unresolved]
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::StrainUnit'[attribute_def]
-          (multiplicity_range [9])))
-      (attribute_def 'RelativeLinearStrainValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeLinearStrain' : 'ISQMechanics::RelativeLinearStrainValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ShearStrainValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'shearStrain' : 'ISQMechanics::ShearStrainValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'RelativeVolumeStrainValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeVolumeStrain' : 'ISQMechanics::RelativeVolumeStrainValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'PoissonNumberValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'poissonNumber' : 'ISQMechanics::PoissonNumberValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ModulusOfElasticityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::ModulusOfElasticityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'modulusOfElasticity' : 'ISQMechanics::ModulusOfElasticityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ModulusOfElasticityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'YoungModulusUnit' -> 'ISQMechanics::ModulusOfElasticityUnit'[attribute_def])
-      (alias_member 'YoungModulusValue' -> 'ISQMechanics::ModulusOfElasticityValue'[attribute_def])
-      (alias_member 'youngModulus' -> 'ISQMechanics::modulusOfElasticity'[attribute_usage])
-      (attribute_def 'ModulusOfRigidityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::ModulusOfRigidityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'modulusOfRigidity' : 'ISQMechanics::ModulusOfRigidityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ModulusOfRigidityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'ShearModulusUnit' -> 'ISQMechanics::ModulusOfRigidityUnit'[attribute_def])
-      (alias_member 'ShearModulusValue' -> 'ISQMechanics::ModulusOfRigidityValue'[attribute_def])
-      (alias_member 'shearModulus' -> 'ISQMechanics::modulusOfRigidity'[attribute_usage])
-      (attribute_def 'ModulusOfCompressionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::ModulusOfCompressionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'modulusOfCompression' : 'ISQMechanics::ModulusOfCompressionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ModulusOfCompressionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'BulkModulusUnit' -> 'ISQMechanics::ModulusOfCompressionUnit'[attribute_def])
-      (alias_member 'BulkModulusValue' -> 'ISQMechanics::ModulusOfCompressionValue'[attribute_def])
-      (alias_member 'bulkModulus' -> 'ISQMechanics::modulusOfCompression'[attribute_usage])
-      (attribute_def 'CompressibilityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CompressibilityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'compressibility' : 'ISQMechanics::CompressibilityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CompressibilityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SecondAxialMomentOfAreaValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::SecondAxialMomentOfAreaUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'secondAxialMomentOfArea' : 'ISQMechanics::SecondAxialMomentOfAreaValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SecondAxialMomentOfAreaUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SecondPolarMomentOfAreaValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::SecondPolarMomentOfAreaUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'secondPolarMomentOfArea' : 'ISQMechanics::SecondPolarMomentOfAreaValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SecondPolarMomentOfAreaUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SectionModulusValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::SectionModulusUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'sectionModulus' : 'ISQMechanics::SectionModulusValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SectionModulusUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'StaticFrictionCoefficientValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'staticFrictionCoefficient' : 'ISQMechanics::StaticFrictionCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'staticFrictionFactor' -> 'ISQMechanics::staticFrictionCoefficient'[attribute_usage])
-      (alias_member 'coefficientOfStaticFriction' -> 'ISQMechanics::staticFrictionCoefficient'[attribute_usage])
-      (attribute_def 'KineticFrictionFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'kineticFrictionFactor' : 'ISQMechanics::KineticFrictionFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'dynamicFrictionFactor' -> 'ISQMechanics::kineticFrictionFactor'[attribute_usage])
-      (attribute_def 'RollingResistanceFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'rollingResistanceFactor' : 'ISQMechanics::RollingResistanceFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'DragCoefficientValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'dragCoefficient' : 'ISQMechanics::DragCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'dragFactor' -> 'ISQMechanics::dragCoefficient'[attribute_usage])
-      (attribute_def 'DynamicViscosityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::DynamicViscosityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'dynamicViscosity' : 'ISQMechanics::DynamicViscosityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DynamicViscosityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'ViscosityUnit' -> 'ISQMechanics::DynamicViscosityUnit'[attribute_def])
-      (alias_member 'ViscosityValue' -> 'ISQMechanics::DynamicViscosityValue'[attribute_def])
-      (alias_member 'viscosity' -> 'ISQMechanics::dynamicViscosity'[attribute_usage])
-      (attribute_def 'KinematicViscosityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::KinematicViscosityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'kinematicViscosity' : 'ISQMechanics::KinematicViscosityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'KinematicViscosityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SurfaceTensionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::SurfaceTensionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'surfaceTension' : 'ISQMechanics::SurfaceTensionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SurfaceTensionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PowerValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::PowerUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'power' : 'ISQMechanics::PowerValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PowerUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'mechanicalPower' : 'ISQMechanics::PowerValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'potentialEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'kineticEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'mechanicalEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'mechanicalWork' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'work' -> 'ISQMechanics::mechanicalWork'[attribute_usage])
-      (attribute_def 'MechanicalEfficiencyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'mechanicalEfficiency' : 'ISQMechanics::MechanicalEfficiencyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'MassFlowValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::MassFlowUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massFlow' : 'ISQMechanics::MassFlowValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassFlowUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMassFlow3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::CartesianMassFlow3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMassFlow3dVector' : 'ISQMechanics::CartesianMassFlow3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMassFlow3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQMechanics::MassFlowUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'MassFlowRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::MassFlowRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massFlowRate' : 'ISQMechanics::MassFlowRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassFlowRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassChangeRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::MassChangeRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massChangeRate' : 'ISQMechanics::MassChangeRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassChangeRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'VolumeFlowRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::VolumeFlowRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'volumeFlowRate' : 'ISQMechanics::VolumeFlowRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'VolumeFlowRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ActionQuantityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQMechanics::ActionQuantityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'actionQuantity' : 'ISQMechanics::ActionQuantityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ActionQuantityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQMechanics"))) (name "ISQMechanics") (declared-name "ISQMechanics")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQMechanics::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQMechanics::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQMechanics::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit"))) (name "ActionQuantityUnit") (declared-name "ActionQuantityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue"))) (name "ActionQuantityValue") (declared-name "ActionQuantityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit"))) (name "AngularImpulseUnit") (declared-name "AngularImpulseUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue"))) (name "AngularImpulseValue") (declared-name "AngularImpulseValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit"))) (name "AngularMomentumUnit") (declared-name "AngularMomentumUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue"))) (name "AngularMomentumValue") (declared-name "AngularMomentumValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::BulkModulusUnit"))) (name "BulkModulusUnit") (declared-name "BulkModulusUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::BulkModulusValue"))) (name "BulkModulusValue") (declared-name "BulkModulusValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference"))) (name "Cartesian3dMomentOfInertiaMeasurementReference") (declared-name "Cartesian3dMomentOfInertiaMeasurementReference") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor"))) (name "Cartesian3dMomentOfInertiaTensor") (declared-name "Cartesian3dMomentOfInertiaTensor") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference"))) (name "Cartesian3dStrainMeasurementReference") (declared-name "Cartesian3dStrainMeasurementReference") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor"))) (name "Cartesian3dStrainTensor") (declared-name "Cartesian3dStrainTensor") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference"))) (name "Cartesian3dStressMeasurementReference") (declared-name "Cartesian3dStressMeasurementReference") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor"))) (name "Cartesian3dStressTensor") (declared-name "Cartesian3dStressTensor") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame"))) (name "CartesianAngularImpulse3dCoordinateFrame") (declared-name "CartesianAngularImpulse3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector"))) (name "CartesianAngularImpulse3dVector") (declared-name "CartesianAngularImpulse3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame"))) (name "CartesianAngularMomentum3dCoordinateFrame") (declared-name "CartesianAngularMomentum3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector"))) (name "CartesianAngularMomentum3dVector") (declared-name "CartesianAngularMomentum3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector"))) (name "CartesianDragForce3dVector") (declared-name "CartesianDragForce3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame"))) (name "CartesianForce3dCoordinateFrame") (declared-name "CartesianForce3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector"))) (name "CartesianForce3dVector") (declared-name "CartesianForce3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame"))) (name "CartesianImpulse3dCoordinateFrame") (declared-name "CartesianImpulse3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector"))) (name "CartesianImpulse3dVector") (declared-name "CartesianImpulse3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector"))) (name "CartesianKineticFrictionForce3dVector") (declared-name "CartesianKineticFrictionForce3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame"))) (name "CartesianMassFlow3dCoordinateFrame") (declared-name "CartesianMassFlow3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector"))) (name "CartesianMassFlow3dVector") (declared-name "CartesianMassFlow3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame"))) (name "CartesianMomentOfForce3dCoordinateFrame") (declared-name "CartesianMomentOfForce3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector"))) (name "CartesianMomentOfForce3dVector") (declared-name "CartesianMomentOfForce3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame"))) (name "CartesianMomentum3dCoordinateFrame") (declared-name "CartesianMomentum3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector"))) (name "CartesianMomentum3dVector") (declared-name "CartesianMomentum3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector"))) (name "CartesianRollingResistance3dVector") (declared-name "CartesianRollingResistance3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector"))) (name "CartesianStaticFrictionForce3dVector") (declared-name "CartesianStaticFrictionForce3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector"))) (name "CartesianWeight3dVector") (declared-name "CartesianWeight3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit"))) (name "CompressibilityUnit") (declared-name "CompressibilityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue"))) (name "CompressibilityValue") (declared-name "CompressibilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::DensityUnit"))) (name "DensityUnit") (declared-name "DensityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::DensityValue"))) (name "DensityValue") (declared-name "DensityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::DragCoefficientValue"))) (name "DragCoefficientValue") (declared-name "DragCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::DragCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DragCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit"))) (name "DynamicViscosityUnit") (declared-name "DynamicViscosityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue"))) (name "DynamicViscosityValue") (declared-name "DynamicViscosityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQMechanics::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ForceUnit"))) (name "ForceUnit") (declared-name "ForceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ForceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ForceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ForceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ForceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ForceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ForceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ForceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ForceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ForceValue"))) (name "ForceValue") (declared-name "ForceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ForceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ForceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ForceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ForceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ForceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ForceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit"))) (name "ImpulseUnit") (declared-name "ImpulseUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue"))) (name "ImpulseValue") (declared-name "ImpulseValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit"))) (name "KinematicViscosityUnit") (declared-name "KinematicViscosityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue"))) (name "KinematicViscosityValue") (declared-name "KinematicViscosityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::KineticFrictionFactorValue"))) (name "KineticFrictionFactorValue") (declared-name "KineticFrictionFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::KineticFrictionFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::KineticFrictionFactorValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::LinearDensityUnit"))) (name "LinearDensityUnit") (declared-name "LinearDensityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::LinearDensityValue"))) (name "LinearDensityValue") (declared-name "LinearDensityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit"))) (name "LinearMassDensityUnit") (declared-name "LinearMassDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue"))) (name "LinearMassDensityValue") (declared-name "LinearMassDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit"))) (name "MassChangeRateUnit") (declared-name "MassChangeRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue"))) (name "MassChangeRateValue") (declared-name "MassChangeRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit"))) (name "MassDensityUnit") (declared-name "MassDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue"))) (name "MassDensityValue") (declared-name "MassDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit"))) (name "MassFlowRateUnit") (declared-name "MassFlowRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue"))) (name "MassFlowRateValue") (declared-name "MassFlowRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit"))) (name "MassFlowUnit") (declared-name "MassFlowUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue"))) (name "MassFlowValue") (declared-name "MassFlowValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MechanicalEfficiencyValue"))) (name "MechanicalEfficiencyValue") (declared-name "MechanicalEfficiencyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MechanicalEfficiencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MechanicalEfficiencyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit"))) (name "ModulusOfCompressionUnit") (declared-name "ModulusOfCompressionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue"))) (name "ModulusOfCompressionValue") (declared-name "ModulusOfCompressionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit"))) (name "ModulusOfElasticityUnit") (declared-name "ModulusOfElasticityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue"))) (name "ModulusOfElasticityValue") (declared-name "ModulusOfElasticityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit"))) (name "ModulusOfRigidityUnit") (declared-name "ModulusOfRigidityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue"))) (name "ModulusOfRigidityValue") (declared-name "ModulusOfRigidityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit"))) (name "MomentOfForceUnit") (declared-name "MomentOfForceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue"))) (name "MomentOfForceValue") (declared-name "MomentOfForceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit"))) (name "MomentOfInertiaUnit") (declared-name "MomentOfInertiaUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue"))) (name "MomentOfInertiaValue") (declared-name "MomentOfInertiaValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit"))) (name "MomentumUnit") (declared-name "MomentumUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumValue"))) (name "MomentumValue") (declared-name "MomentumValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::MomentumValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::MomentumValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit"))) (name "NormalStressUnit") (declared-name "NormalStressUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue"))) (name "NormalStressValue") (declared-name "NormalStressValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::PoissonNumberValue"))) (name "PoissonNumberValue") (declared-name "PoissonNumberValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::PoissonNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PoissonNumberValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::PowerUnit"))) (name "PowerUnit") (declared-name "PowerUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PowerUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PowerUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PowerUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PowerUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PowerUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::PowerValue"))) (name "PowerValue") (declared-name "PowerValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::PowerValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PowerValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PowerValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PowerValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PowerValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PowerValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::PressureUnit"))) (name "PressureUnit") (declared-name "PressureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PressureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PressureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PressureUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PressureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PressureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::PressureValue"))) (name "PressureValue") (declared-name "PressureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::PressureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PressureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PressureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PressureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::PressureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::PressureValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQMechanics::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::RelativeLinearStrainValue"))) (name "RelativeLinearStrainValue") (declared-name "RelativeLinearStrainValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::RelativeLinearStrainValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::RelativeLinearStrainValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::RelativeMassDensityValue"))) (name "RelativeMassDensityValue") (declared-name "RelativeMassDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::RelativeMassDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::RelativeMassDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::RelativeVolumeStrainValue"))) (name "RelativeVolumeStrainValue") (declared-name "RelativeVolumeStrainValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::RelativeVolumeStrainValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::RelativeVolumeStrainValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::RollingResistanceFactorValue"))) (name "RollingResistanceFactorValue") (declared-name "RollingResistanceFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::RollingResistanceFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::RollingResistanceFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaUnit"))) (name "SecondAxialMomentOfAreaUnit") (declared-name "SecondAxialMomentOfAreaUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue"))) (name "SecondAxialMomentOfAreaValue") (declared-name "SecondAxialMomentOfAreaValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaUnit"))) (name "SecondPolarMomentOfAreaUnit") (declared-name "SecondPolarMomentOfAreaUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue"))) (name "SecondPolarMomentOfAreaValue") (declared-name "SecondPolarMomentOfAreaValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SectionModulusUnit"))) (name "SectionModulusUnit") (declared-name "SectionModulusUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SectionModulusUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SectionModulusUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SectionModulusUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SectionModulusUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue"))) (name "SectionModulusValue") (declared-name "SectionModulusValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::ShearModulusUnit"))) (name "ShearModulusUnit") (declared-name "ShearModulusUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::ShearModulusValue"))) (name "ShearModulusValue") (declared-name "ShearModulusValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStrainValue"))) (name "ShearStrainValue") (declared-name "ShearStrainValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStrainValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStrainValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit"))) (name "ShearStressUnit") (declared-name "ShearStressUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue"))) (name "ShearStressValue") (declared-name "ShearStressValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit"))) (name "SpecificVolumeUnit") (declared-name "SpecificVolumeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue"))) (name "SpecificVolumeValue") (declared-name "SpecificVolumeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::StaticFrictionCoefficientValue"))) (name "StaticFrictionCoefficientValue") (declared-name "StaticFrictionCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::StaticFrictionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StaticFrictionCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::StrainUnit"))) (name "StrainUnit") (declared-name "StrainUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::StrainValue"))) (name "StrainValue") (declared-name "StrainValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::StrainValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StrainValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StrainValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StrainValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StrainValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StrainValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::StressUnit"))) (name "StressUnit") (declared-name "StressUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StressUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StressUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StressUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StressUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StressUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StressUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::StressValue"))) (name "StressValue") (declared-name "StressValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::StressValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StressValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StressValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StressValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::StressValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::StressValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceDensityUnit"))) (name "SurfaceDensityUnit") (declared-name "SurfaceDensityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceDensityValue"))) (name "SurfaceDensityValue") (declared-name "SurfaceDensityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit"))) (name "SurfaceMassDensityUnit") (declared-name "SurfaceMassDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue"))) (name "SurfaceMassDensityValue") (declared-name "SurfaceMassDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit"))) (name "SurfaceTensionUnit") (declared-name "SurfaceTensionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue"))) (name "SurfaceTensionValue") (declared-name "SurfaceTensionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit"))) (name "TorqueUnit") (declared-name "TorqueUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueValue"))) (name "TorqueValue") (declared-name "TorqueValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::TorqueValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::TorqueValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::TorqueValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::TorqueValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::ViscosityUnit"))) (name "ViscosityUnit") (declared-name "ViscosityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::ViscosityValue"))) (name "ViscosityValue") (declared-name "ViscosityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit"))) (name "VolumeFlowRateUnit") (declared-name "VolumeFlowRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue"))) (name "VolumeFlowRateValue") (declared-name "VolumeFlowRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::YoungModulusUnit"))) (name "YoungModulusUnit") (declared-name "YoungModulusUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::YoungModulusValue"))) (name "YoungModulusValue") (declared-name "YoungModulusValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::actionQuantity"))) (name "actionQuantity") (declared-name "actionQuantity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::angularImpulse"))) (name "angularImpulse") (declared-name "angularImpulse") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::angularMomentum"))) (name "angularMomentum") (declared-name "angularMomentum") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::bulkModulus"))) (name "bulkModulus") (declared-name "bulkModulus"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianAngularImpulse3dVector"))) (name "cartesianAngularImpulse3dVector") (declared-name "cartesianAngularImpulse3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianAngularMomentum3dVector"))) (name "cartesianAngularMomentum3dVector") (declared-name "cartesianAngularMomentum3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianDragForce3dVector"))) (name "cartesianDragForce3dVector") (declared-name "cartesianDragForce3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianDynamicFrictionForce3dVector"))) (name "cartesianDynamicFrictionForce3dVector") (declared-name "cartesianDynamicFrictionForce3dVector"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianForce3dVector"))) (name "cartesianForce3dVector") (declared-name "cartesianForce3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianImpulse3dVector"))) (name "cartesianImpulse3dVector") (declared-name "cartesianImpulse3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianKineticFrictionForce3dVector"))) (name "cartesianKineticFrictionForce3dVector") (declared-name "cartesianKineticFrictionForce3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianMassFlow3dVector"))) (name "cartesianMassFlow3dVector") (declared-name "cartesianMassFlow3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianMomentOfForce3dVector"))) (name "cartesianMomentOfForce3dVector") (declared-name "cartesianMomentOfForce3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianMomentum3dVector"))) (name "cartesianMomentum3dVector") (declared-name "cartesianMomentum3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianRollingDrag3dVector"))) (name "cartesianRollingDrag3dVector") (declared-name "cartesianRollingDrag3dVector"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianRollingFrictionForce3dVector"))) (name "cartesianRollingFrictionForce3dVector") (declared-name "cartesianRollingFrictionForce3dVector"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianRollingResistance3dVector"))) (name "cartesianRollingResistance3dVector") (declared-name "cartesianRollingResistance3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianStaticFriction3dVector"))) (name "cartesianStaticFriction3dVector") (declared-name "cartesianStaticFriction3dVector"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianStaticFrictionForce3dVector"))) (name "cartesianStaticFrictionForce3dVector") (declared-name "cartesianStaticFrictionForce3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::cartesianWeight3dVector"))) (name "cartesianWeight3dVector") (declared-name "cartesianWeight3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::coefficientOfStaticFriction"))) (name "coefficientOfStaticFriction") (declared-name "coefficientOfStaticFriction"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::compressibility"))) (name "compressibility") (declared-name "compressibility") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::density"))) (name "density") (declared-name "density"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::dragCoefficient"))) (name "dragCoefficient") (declared-name "dragCoefficient") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::dragFactor"))) (name "dragFactor") (declared-name "dragFactor"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::dynamicFrictionFactor"))) (name "dynamicFrictionFactor") (declared-name "dynamicFrictionFactor"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::dynamicViscosity"))) (name "dynamicViscosity") (declared-name "dynamicViscosity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::force"))) (name "force") (declared-name "force") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::gaugePressure"))) (name "gaugePressure") (declared-name "gaugePressure") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::gaugePressure::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::gaugePressure")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::impulse"))) (name "impulse") (declared-name "impulse") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::kinematicViscosity"))) (name "kinematicViscosity") (declared-name "kinematicViscosity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::kineticEnergy"))) (name "kineticEnergy") (declared-name "kineticEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::kineticEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::kineticEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::kineticFrictionFactor"))) (name "kineticFrictionFactor") (declared-name "kineticFrictionFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::linearDensity"))) (name "linearDensity") (declared-name "linearDensity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::linearMassDensity"))) (name "linearMassDensity") (declared-name "linearMassDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::massChangeRate"))) (name "massChangeRate") (declared-name "massChangeRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::massDensity"))) (name "massDensity") (declared-name "massDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::massFlow"))) (name "massFlow") (declared-name "massFlow") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::massFlowRate"))) (name "massFlowRate") (declared-name "massFlowRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::mechanicalEfficiency"))) (name "mechanicalEfficiency") (declared-name "mechanicalEfficiency") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::mechanicalEnergy"))) (name "mechanicalEnergy") (declared-name "mechanicalEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::mechanicalEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::mechanicalEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::mechanicalPower"))) (name "mechanicalPower") (declared-name "mechanicalPower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::mechanicalPower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::mechanicalPower")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::mechanicalWork"))) (name "mechanicalWork") (declared-name "mechanicalWork") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::mechanicalWork::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::mechanicalWork")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::modulusOfCompression"))) (name "modulusOfCompression") (declared-name "modulusOfCompression") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::modulusOfElasticity"))) (name "modulusOfElasticity") (declared-name "modulusOfElasticity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::modulusOfRigidity"))) (name "modulusOfRigidity") (declared-name "modulusOfRigidity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::momentOfForce"))) (name "momentOfForce") (declared-name "momentOfForce") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::momentOfInertia"))) (name "momentOfInertia") (declared-name "momentOfInertia") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::momentOfInertiaTensor"))) (name "momentOfInertiaTensor") (declared-name "momentOfInertiaTensor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::momentum"))) (name "momentum") (declared-name "momentum") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::normalStress"))) (name "normalStress") (declared-name "normalStress") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::poissonNumber"))) (name "poissonNumber") (declared-name "poissonNumber") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::potentialEnergy"))) (name "potentialEnergy") (declared-name "potentialEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQMechanics::potentialEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQMechanics::potentialEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::power"))) (name "power") (declared-name "power") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::pressure"))) (name "pressure") (declared-name "pressure") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::relativeDensity"))) (name "relativeDensity") (declared-name "relativeDensity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::relativeLinearStrain"))) (name "relativeLinearStrain") (declared-name "relativeLinearStrain") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::relativeMassDensity"))) (name "relativeMassDensity") (declared-name "relativeMassDensity") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::relativeVolumeStrain"))) (name "relativeVolumeStrain") (declared-name "relativeVolumeStrain") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::rollingResistanceFactor"))) (name "rollingResistanceFactor") (declared-name "rollingResistanceFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::secondAxialMomentOfArea"))) (name "secondAxialMomentOfArea") (declared-name "secondAxialMomentOfArea") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::secondPolarMomentOfArea"))) (name "secondPolarMomentOfArea") (declared-name "secondPolarMomentOfArea") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::sectionModulus"))) (name "sectionModulus") (declared-name "sectionModulus") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::shearModulus"))) (name "shearModulus") (declared-name "shearModulus"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::shearStrain"))) (name "shearStrain") (declared-name "shearStrain") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::shearStress"))) (name "shearStress") (declared-name "shearStress") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::specificVolume"))) (name "specificVolume") (declared-name "specificVolume") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::staticFrictionCoefficient"))) (name "staticFrictionCoefficient") (declared-name "staticFrictionCoefficient") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::staticFrictionFactor"))) (name "staticFrictionFactor") (declared-name "staticFrictionFactor"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::strain"))) (name "strain") (declared-name "strain") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::strainTensor"))) (name "strainTensor") (declared-name "strainTensor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::stress"))) (name "stress") (declared-name "stress") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::stressTensor"))) (name "stressTensor") (declared-name "stressTensor") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::surfaceDensity"))) (name "surfaceDensity") (declared-name "surfaceDensity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::surfaceMassDensity"))) (name "surfaceMassDensity") (declared-name "surfaceMassDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::surfaceTension"))) (name "surfaceTension") (declared-name "surfaceTension") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::torque"))) (name "torque") (declared-name "torque") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::viscosity"))) (name "viscosity") (declared-name "viscosity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQMechanics::volumeFlowRate"))) (name "volumeFlowRate") (declared-name "volumeFlowRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::work"))) (name "work") (declared-name "work"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQMechanics::youngModulus"))) (name "youngModulus") (declared-name "youngModulus"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::DragCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::DragCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ForceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ForceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::KineticFrictionFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::KineticFrictionFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MechanicalEfficiencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MechanicalEfficiencyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MomentumValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentumValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::PoissonNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::PoissonNumberValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::PowerValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::PowerValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::PressureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::PressureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::RelativeLinearStrainValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::RelativeLinearStrainValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::RelativeMassDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::RelativeMassDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::RelativeVolumeStrainValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::RelativeVolumeStrainValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::RollingResistanceFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::RollingResistanceFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ShearStrainValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ShearStrainValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::StaticFrictionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::StaticFrictionCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::StrainValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::StrainValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::StressValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::StressValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::TorqueValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::TorqueValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::gaugePressure::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::gaugePressure"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::kineticEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::kineticEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::mechanicalEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::mechanicalEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::mechanicalPower::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::mechanicalPower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::mechanicalWork::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::mechanicalWork"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::potentialEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQMechanics::potentialEnergy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::StrainUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::StressUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::ForceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::CompressibilityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ForceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::ForceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::ImpulseUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassFlowUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::MomentumValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentumUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::NormalStressUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::PowerValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::PowerUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::PressureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::PressureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::SectionModulusUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::ShearStressUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::StrainValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::StrainUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::StressValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::StressUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::TorqueValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::TorqueUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::actionQuantity"))) (to (node (document "d0") (qualified-name "ISQMechanics::ActionQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::angularImpulse"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularImpulseValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::angularMomentum"))) (to (node (document "d0") (qualified-name "ISQMechanics::AngularMomentumValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianAngularImpulse3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularImpulse3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianAngularMomentum3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianAngularMomentum3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianDragForce3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianDragForce3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianForce3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianForce3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianImpulse3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianImpulse3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianKineticFrictionForce3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianKineticFrictionForce3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianMassFlow3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMassFlow3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianMomentOfForce3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentOfForce3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianMomentum3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianMomentum3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianRollingResistance3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianRollingResistance3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianStaticFrictionForce3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianStaticFrictionForce3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::cartesianWeight3dVector"))) (to (node (document "d0") (qualified-name "ISQMechanics::CartesianWeight3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::compressibility"))) (to (node (document "d0") (qualified-name "ISQMechanics::CompressibilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::dragCoefficient"))) (to (node (document "d0") (qualified-name "ISQMechanics::DragCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::dynamicViscosity"))) (to (node (document "d0") (qualified-name "ISQMechanics::DynamicViscosityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::force"))) (to (node (document "d0") (qualified-name "ISQMechanics::ForceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::gaugePressure"))) (to (node (document "d0") (qualified-name "ISQMechanics::PressureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::impulse"))) (to (node (document "d0") (qualified-name "ISQMechanics::ImpulseValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::kinematicViscosity"))) (to (node (document "d0") (qualified-name "ISQMechanics::KinematicViscosityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::kineticFrictionFactor"))) (to (node (document "d0") (qualified-name "ISQMechanics::KineticFrictionFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::linearMassDensity"))) (to (node (document "d0") (qualified-name "ISQMechanics::LinearMassDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::massChangeRate"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassChangeRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::massDensity"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::massFlow"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassFlowValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::massFlowRate"))) (to (node (document "d0") (qualified-name "ISQMechanics::MassFlowRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::mechanicalEfficiency"))) (to (node (document "d0") (qualified-name "ISQMechanics::MechanicalEfficiencyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::mechanicalPower"))) (to (node (document "d0") (qualified-name "ISQMechanics::PowerValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::modulusOfCompression"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfCompressionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::modulusOfElasticity"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfElasticityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::modulusOfRigidity"))) (to (node (document "d0") (qualified-name "ISQMechanics::ModulusOfRigidityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::momentOfForce"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfForceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::momentOfInertia"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentOfInertiaValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::momentOfInertiaTensor"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dMomentOfInertiaTensor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::momentum"))) (to (node (document "d0") (qualified-name "ISQMechanics::MomentumValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::normalStress"))) (to (node (document "d0") (qualified-name "ISQMechanics::NormalStressValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::poissonNumber"))) (to (node (document "d0") (qualified-name "ISQMechanics::PoissonNumberValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::power"))) (to (node (document "d0") (qualified-name "ISQMechanics::PowerValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::pressure"))) (to (node (document "d0") (qualified-name "ISQMechanics::PressureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::relativeLinearStrain"))) (to (node (document "d0") (qualified-name "ISQMechanics::RelativeLinearStrainValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::relativeMassDensity"))) (to (node (document "d0") (qualified-name "ISQMechanics::RelativeMassDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::relativeVolumeStrain"))) (to (node (document "d0") (qualified-name "ISQMechanics::RelativeVolumeStrainValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::rollingResistanceFactor"))) (to (node (document "d0") (qualified-name "ISQMechanics::RollingResistanceFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::secondAxialMomentOfArea"))) (to (node (document "d0") (qualified-name "ISQMechanics::SecondAxialMomentOfAreaValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::secondPolarMomentOfArea"))) (to (node (document "d0") (qualified-name "ISQMechanics::SecondPolarMomentOfAreaValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::sectionModulus"))) (to (node (document "d0") (qualified-name "ISQMechanics::SectionModulusValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::shearStrain"))) (to (node (document "d0") (qualified-name "ISQMechanics::ShearStrainValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::shearStress"))) (to (node (document "d0") (qualified-name "ISQMechanics::ShearStressValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::specificVolume"))) (to (node (document "d0") (qualified-name "ISQMechanics::SpecificVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::staticFrictionCoefficient"))) (to (node (document "d0") (qualified-name "ISQMechanics::StaticFrictionCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::strain"))) (to (node (document "d0") (qualified-name "ISQMechanics::StrainValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::strainTensor"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStrainTensor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::stress"))) (to (node (document "d0") (qualified-name "ISQMechanics::StressValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::stressTensor"))) (to (node (document "d0") (qualified-name "ISQMechanics::Cartesian3dStressTensor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::surfaceMassDensity"))) (to (node (document "d0") (qualified-name "ISQMechanics::SurfaceMassDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::surfaceTension"))) (to (node (document "d0") (qualified-name "ISQMechanics::SurfaceTensionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::torque"))) (to (node (document "d0") (qualified-name "ISQMechanics::TorqueValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQMechanics::volumeFlowRate"))) (to (node (document "d0") (qualified-name "ISQMechanics::VolumeFlowRateValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

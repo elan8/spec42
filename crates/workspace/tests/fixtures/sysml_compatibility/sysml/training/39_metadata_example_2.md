@@ -151,38 +151,28 @@ semantic.unresolved_name 'ToolVariable'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Metadata Example-2'
-      (action_usage 'computeDynamics'
-        (namespace_import private -> 'AnalysisTooling'[unresolved])
-        (metadata_usage :> 'ToolExecution'[unresolved]
-          (feature_def 'toolName'
-            (feature_value (=)))
-          (feature_def 'uri'
-            (feature_value (=))))
-        (reference_usage in reference 'dt' : 'ISQ::TimeValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'a' : 'ISQ::AccelerationValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'v_in' : 'ISQ::SpeedValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage in reference 'x_in' : 'ISQ::LengthValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage out reference 'v_out' : 'ISQ::SpeedValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))
-        (reference_usage out reference 'x_out' : 'ISQ::LengthValue'[unresolved]
-          (metadata_usage :> 'ToolVariable'[unresolved]
-            (feature_def 'name'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Metadata Example-2"))) (name "Metadata Example-2") (declared-name "Metadata Example-2")
+      (contains
+        (element (kind "action") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics"))) (name "computeDynamics") (declared-name "computeDynamics") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::a"))) (name "a") (declared-name "a"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::dt"))) (name "dt") (declared-name "dt"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::v_in"))) (name "v_in") (declared-name "v_in"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::v_out"))) (name "v_out") (declared-name "v_out"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::x_in"))) (name "x_in") (declared-name "x_in"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::x_out"))) (name "x_out") (declared-name "x_out"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

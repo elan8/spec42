@@ -536,85 +536,69 @@ standard library package Items {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Items'
-      (documentation)
-      (membership_import private -> 'Objects::Object'[unresolved])
-      (membership_import private -> 'Objects::objects'[unresolved])
-      (membership_import private -> 'Parts::Part'[unresolved])
-      (membership_import private -> 'Parts::parts'[unresolved])
-      (membership_import private -> 'Occurrences::HappensWhile'[unresolved])
-      (membership_import private -> 'Occurrences::JustOutsideOf'[unresolved])
-      (membership_import private -> 'Objects::StructuredSpaceObject'[unresolved])
-      (membership_import private -> 'Constraints::ConstraintCheck'[unresolved])
-      (membership_import private -> 'Constraints::constraintChecks'[unresolved])
-      (membership_import private -> 'CollectionFunctions::contains'[unresolved])
-      (membership_import private -> 'SequenceFunctions::isEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::notEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::includes'[unresolved])
-      (membership_import private -> 'SequenceFunctions::union'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (item_def abstract 'Item' :> 'Object'[unresolved]
-        (documentation)
-        (reference_usage reference 'self' : 'Items::Item'[item_def] :>> 'Object::self'[unresolved])
-        (item_usage composite 'start' : 'Items::Item'[item_def] :>> 'startShot'[unresolved] :> 'Items::Item::subitems'[item_usage][implied])
-        (item_usage composite 'done' : 'Items::Item'[item_def] :>> 'endShot'[unresolved] :> 'Items::Item::subitems'[item_usage][implied])
-        (item_usage composite 'shape' : 'Items::Item'[item_def] :>> 'spaceBoundary'[unresolved] :> 'Items::Item::subitems'[item_usage][implied]
-          (documentation))
-        (item_usage composite 'envelopingShapes' : 'Items::Item'[item_def] :> 'Items::Item::subitems'[item_usage][implied]
-          (multiplicity_range [0..*])
-          (documentation)
-          (item_usage reference 'envelopedItem' :>> 'that'[unresolved] :> 'Items::items'[item_usage][implied])
-          (assert_constraint_usage
-            (documentation)
-            (result_expr_membership))
-          (assert_constraint_usage
-            (result_expr_membership))
-          (item_usage composite 'envelopingItem' :> 'Items::Item::subitems'[item_usage][implied]
-            (multiplicity_range [1]))
-          (assert_constraint_usage
-            (documentation)
-            (result_expr_membership)))
-        (item_usage composite 'boundingShapes' : 'StructuredSpaceObject'[unresolved] :> 'Items::Item::envelopingShapes'[item_usage]
-          (multiplicity_range [0..*])
-          (documentation)
-          (item_usage reference 'boundingShape' : 'Items::Item'[item_def] :>> 'Items::Item::self'[reference_usage] :> 'Items::items'[item_usage][implied])
-          (item_usage composite :>> 'faces'[unresolved] :> 'Items::Item::subitems'[item_usage][implied]
-            (item_usage reference 'face' :>> 'Items::Item::self'[reference_usage] :> 'Items::items'[item_usage][implied])
-            (item_usage composite 'inter' :> 'Items::Item::subitems'[item_usage][implied]
-              (multiplicity_range [1]))
-            (assert_constraint_usage
-              (result_expr_membership)))
-          (item_usage composite :>> 'edges'[unresolved] :> 'Items::Item::subitems'[item_usage][implied]
-            (item_usage reference 'edge' :>> 'Items::Item::self'[reference_usage] :> 'Items::items'[item_usage][implied])
-            (item_usage composite 'inter' :> 'Items::Item::subitems'[item_usage][implied]
-              (multiplicity_range [1]))
-            (assert_constraint_usage
-              (result_expr_membership))))
-        (item_usage composite 'voids' :>> 'innerSpaceOccurrences'[unresolved] :> 'Items::Item::subitems'[item_usage][implied]
-          (multiplicity_range [0..*])
-          (documentation))
-        (attribute_usage composite 'isSolid'
-          (feature_value (=))
-          (documentation))
-        (item_usage abstract composite 'subitems' : 'Items::Item'[item_def] :> 'Items::items'[item_usage] :> 'subobjects'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)
-          (reference_usage reference :>> 'Item::incomingTransferSort'[unresolved] :>> 'subobjects::incomingTransferSort'[unresolved]))
-        (part_usage abstract composite 'subparts' : 'Part'[unresolved] :> 'Items::Item::subitems'[item_usage] :> 'parts'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (constraint_usage abstract composite 'checkedConstraints' : 'ConstraintCheck'[unresolved] :> 'constraintChecks'[unresolved] :> 'ownedPerformances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (connection_def 'Touches' :> 'JustOutsideOf'[unresolved] :> 'HappensWhile'[unresolved]
-        (documentation)
-        (port_usage end 'touchesToo' :>> 'separateSpaceToo'[unresolved] :>> 'thisOccurrence'[unresolved]
-          (multiplicity_range [0..*]))
-        (port_usage end 'touches' :>> 'separateSpace'[unresolved] :>> 'thatOccurrence'[unresolved]
-          (multiplicity_range [0..*])))
-      (item_usage abstract 'items' : 'Items::Item'[item_def] :> 'objects'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Items"))) (name "Items") (declared-name "Items")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::ConstraintCheck"))) (name "ConstraintCheck") (declared-name "ConstraintCheck"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::HappensWhile"))) (name "HappensWhile") (declared-name "HappensWhile"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Items::Item"))) (name "Item") (declared-name "Item")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Item::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Items::Item::isSolid"))) (name "isSolid") (declared-name "isSolid") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Items::Item"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Item::isSolid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
+              )
+            )
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Items::Item::self"))) (name "self") (declared-name "self") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Items::Item::subparts"))) (name "subparts") (declared-name "subparts") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Item"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::JustOutsideOf"))) (name "JustOutsideOf") (declared-name "JustOutsideOf"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::Object"))) (name "Object") (declared-name "Object"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::Part"))) (name "Part") (declared-name "Part"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::StructuredSpaceObject"))) (name "StructuredSpaceObject") (declared-name "StructuredSpaceObject"))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "Items::Touches"))) (name "Touches") (declared-name "Touches")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Touches")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Items::Touches::touches"))) (name "touches") (declared-name "touches") (declared (properties (end true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Touches")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Items::Touches::touchesToo"))) (name "touchesToo") (declared-name "touchesToo") (declared (properties (end true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Touches")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::constraintChecks"))) (name "constraintChecks") (declared-name "constraintChecks"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::contains"))) (name "contains") (declared-name "contains"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::includes"))) (name "includes") (declared-name "includes"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Items::items"))) (name "items") (declared-name "items")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::items::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::items")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::objects"))) (name "objects") (declared-name "objects"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::parts"))) (name "parts") (declared-name "parts"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Items::union"))) (name "union") (declared-name "union"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::isSolid::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::isSolid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::subparts"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (to (node (document "d0") (qualified-name "Items::Touches"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::_documentation"))) (to (node (document "d0") (qualified-name "Items"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::items::_documentation"))) (to (node (document "d0") (qualified-name "Items::items"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Items::Item::self"))) (to (node (document "d0") (qualified-name "Items::Item"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

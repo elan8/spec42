@@ -728,121 +728,47 @@ standard library package Objects {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Objects'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Base::things'[unresolved])
-      (namespace_import private -> 'Links'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::occurrences'[unresolved])
-      (membership_import private -> 'Occurrences::HappensLink'[unresolved])
-      (membership_import private -> 'Occurrences::SelfSameLifeLink'[unresolved])
-      (membership_import private -> 'Occurrences::WithinBoth'[unresolved])
-      (membership_import private -> 'Performances::Performance'[unresolved])
-      (membership_import private -> 'Performances::performances'[unresolved])
-      (membership_import private -> 'SequenceFunctions::isEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::notEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::union'[unresolved])
-      (membership_import private -> 'CollectionFunctions::contains'[unresolved])
-      (membership_import private -> 'ScalarValues::Integer'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (structure_def abstract 'Object' :> 'Occurrence'[unresolved]
-        (documentation)
-        (feature_def 'self' : 'Objects::Object'[structure_def] :>> 'Occurrence::self'[unresolved])
-        (feature_def composite 'subobjects' : 'Objects::Object'[structure_def] :> 'Objects::objects'[feature_def] :> 'suboccurrences'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (feature_def 'involvingPerformances' : 'Performance'[unresolved] :> 'performances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (step_def abstract 'enactedPerformances' : 'Performance'[unresolved] :> 'Objects::Object::involvingPerformances'[feature_def] :> 'timeEnclosedOccurrences'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (step_def composite 'ownedPerformances' : 'Performance'[unresolved] :> 'Objects::Object::involvingPerformances'[feature_def] :> 'timeEnclosedOccurrences'[unresolved] :> 'suboccurrences'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)
-          (feature_def :>> 'this'[unresolved]
-            (feature_value (default =))
-            (documentation)))
-        (feature_def 'structuredSpaceBoundary' : 'Objects::StructuredSpaceObject'[structure_def] :> 'spaceBoundary'[unresolved]
-          (multiplicity_range [0..1])
-          (documentation)))
-      (assoc_struct_def abstract 'LinkObject' :> 'Link'[unresolved] :> 'Objects::Object'[structure_def]
-        (intersecting)
-        (intersecting)
-        (documentation))
-      (assoc_struct_def 'BinaryLinkObject' :> 'BinaryLink'[unresolved] :> 'Objects::LinkObject'[assoc_struct_def]
-        (intersecting)
-        (intersecting)
-        (documentation))
-      (feature_def abstract 'objects' : 'Objects::Object'[structure_def] :> 'occurrences'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (feature_def abstract 'linkObjects' : 'Objects::LinkObject'[assoc_struct_def] :> 'links'[unresolved] :> 'Objects::objects'[feature_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (feature_def abstract 'binaryLinkObjects' : 'Objects::BinaryLinkObject'[assoc_struct_def] :> 'binaryLinks'[unresolved] :> 'Objects::linkObjects'[feature_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (structure_def sufficient 'Body' :> 'Objects::Object'[structure_def]
-        (documentation)
-        (feature_def :>> 'innerSpaceDimension'[unresolved]
-          (feature_value (=))))
-      (structure_def sufficient 'Surface' :> 'Objects::Object'[structure_def]
-        (documentation)
-        (feature_def :>> 'innerSpaceDimension'[unresolved]
-          (feature_value (=)))
-        (feature_def 'genus' : 'Natural'[unresolved]
-          (multiplicity_range [0..1])
-          (feature_value (default =)))
-        (invariant_def
-          (result_expr_membership)))
-      (structure_def sufficient 'Curve' :> 'Objects::Object'[structure_def]
-        (documentation)
-        (feature_def :>> 'innerSpaceDimension'[unresolved]
-          (feature_value (=))))
-      (structure_def sufficient 'Point' :> 'Objects::Object'[structure_def]
-        (documentation)
-        (feature_def :>> 'innerSpaceDimension'[unresolved]
-          (feature_value (=))))
-      (structure_def abstract 'StructuredSpaceObject' :> 'Objects::Object'[structure_def]
-        (documentation)
-        (feature_def abstract 'structuredSpaceObjectCells' : 'Objects::StructuredSpaceObject'[structure_def] :> 'Occurrence::spaceSlices'[unresolved]
-          (multiplicity_range [1..*])
-          (feature_def 'cellOrientation' : 'Integer'[unresolved]
-            (multiplicity_range [0..1]))
-          (invariant_def
-            (result_expr_membership)))
-        (comment_annotating)
-        (structure_def 'StructuredSurface' :> 'Objects::StructuredSpaceObject'[structure_def] :> 'Objects::Surface'[structure_def]
-          (feature_def :>> 'StructuredSpaceObject::innerSpaceDimension'[unresolved] :>> 'Surface::innerSpaceDimension'[unresolved]))
-        (structure_def 'StructuredCurve' :> 'Objects::StructuredSpaceObject'[structure_def] :> 'Objects::Curve'[structure_def]
-          (feature_def :>> 'StructuredSpaceObject::innerSpaceDimension'[unresolved] :>> 'Curve::innerSpaceDimension'[unresolved]))
-        (structure_def 'StructuredPoint' :> 'Objects::StructuredSpaceObject'[structure_def] :> 'Objects::Point'[structure_def]
-          (feature_def :>> 'StructuredSpaceObject::innerSpaceDimension'[unresolved] :>> 'Point::innerSpaceDimension'[unresolved]))
-        (feature_def ordered 'faces' : 'Objects::StructuredSpaceObject::StructuredSurface'[structure_def] :> 'Objects::StructuredSpaceObject::structuredSpaceObjectCells'[feature_def]
-          (multiplicity_range [0..*])
-          (feature_def :>> 'that'[unresolved] : 'Objects::StructuredSpaceObject'[structure_def])
-          (feature_def :>> 'Objects::StructuredSpaceObject::edges'[feature_def] :> 'that::edges'[unresolved])
-          (feature_def :>> 'Objects::StructuredSpaceObject::vertices'[feature_def] :> 'that::vertices'[unresolved])
-          (feature_def derived :>> 'spaceBoundary'[unresolved])
-          (invariant_def
-            (result_expr_membership))
-          (invariant_def
-            (result_expr_membership)))
-        (feature_def ordered 'edges' : 'Objects::StructuredSpaceObject::StructuredCurve'[structure_def] :> 'Objects::StructuredSpaceObject::structuredSpaceObjectCells'[feature_def]
-          (multiplicity_range [0..*])
-          (feature_def :>> 'that'[unresolved] : 'Objects::StructuredSpaceObject'[structure_def])
-          (feature_def :>> 'Objects::StructuredSpaceObject::vertices'[feature_def] :> 'that::vertices'[unresolved])
-          (feature_def derived :>> 'spaceBoundary'[unresolved])
-          (invariant_def
-            (result_expr_membership))
-          (invariant_def
-            (result_expr_membership)))
-        (feature_def ordered 'vertices' : 'Objects::StructuredSpaceObject::StructuredPoint'[structure_def] :> 'Objects::StructuredSpaceObject::structuredSpaceObjectCells'[feature_def]
-          (multiplicity_range [0..*]))
-        (feature_def derived :>> 'innerSpaceDimension'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Objects"))) (name "Objects") (declared-name "Objects")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::HappensLink"))) (name "HappensLink") (declared-name "HappensLink"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Integer"))) (name "Integer") (declared-name "Integer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::Object"))) (name "Object") (declared-name "Object"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::StructuredSpaceObject"))) (name "StructuredSpaceObject") (declared-name "StructuredSpaceObject"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::WithinBoth"))) (name "WithinBoth") (declared-name "WithinBoth"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Objects::_documentation"))) (name ""))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all"))) (name "all") (declared-name "all"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all#classifier_decl"))) (name "all") (declared-name "all"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all#classifier_decl2"))) (name "all") (declared-name "all"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Objects::all#classifier_decl3"))) (name "all") (declared-name "all"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Objects::binaryLinkObjects"))) (name "binaryLinkObjects") (declared-name "binaryLinkObjects"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::contains"))) (name "contains") (declared-name "contains"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Objects::linkObjects"))) (name "linkObjects") (declared-name "linkObjects"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Objects::objects"))) (name "objects") (declared-name "objects"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::occurrences"))) (name "occurrences") (declared-name "occurrences"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::performances"))) (name "performances") (declared-name "performances"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Objects::struct"))) (name "struct") (declared-name "struct"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Objects::struct#kermlDecl"))) (name "struct") (declared-name "struct"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::things"))) (name "things") (declared-name "things"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Objects::union"))) (name "union") (declared-name "union"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Objects::_documentation"))) (to (node (document "d0") (qualified-name "Objects"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

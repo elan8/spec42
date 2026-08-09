@@ -129,9 +129,20 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_07-System of Units and Scales'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'USCustomaryUnits'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_07-System of Units and Scales"))) (name "15_07-System of Units and Scales") (declared-name "15_07-System of Units and Scales")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))) (name "*") (declared-name "*"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

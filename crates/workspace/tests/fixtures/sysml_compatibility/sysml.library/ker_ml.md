@@ -1774,531 +1774,120 @@ standard library package KerML {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'KerML'
-      (documentation)
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import public -> 'KerML::Kernel'[package])
-      (package 'Root'
-        (metaclass_def 'AnnotatingElement' :> 'KerML::Root::Element'[metaclass_def]
-          (feature_def derived ordered 'annotatedElement' : 'KerML::Root::Element'[metaclass_def] :>> 'annotatedElement'[unresolved]
-            (multiplicity_range [1..*]))
-          (feature_def derived composite ordered 'ownedAnnotatingRelationship' : 'KerML::Root::Annotation'[metaclass_def] :> 'KerML::Root::AnnotatingElement::annotation'[feature_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'owningAnnotatingRelationship' : 'KerML::Root::Annotation'[metaclass_def] :> 'KerML::Root::Element::owningRelationship'[feature_def] :> 'KerML::Root::AnnotatingElement::annotation'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'annotation' : 'KerML::Root::Annotation'[metaclass_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'Annotation' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'annotatedElement' : 'KerML::Root::Element'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def] :>> 'annotatedElement'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'annotatingElement' : 'KerML::Root::AnnotatingElement'[metaclass_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningAnnotatedElement' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Annotation::annotatedElement'[feature_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'owningAnnotatingElement' : 'KerML::Root::AnnotatingElement'[metaclass_def] :> 'KerML::Root::Annotation::annotatingElement'[feature_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived composite 'ownedAnnotatingElement' : 'KerML::Root::AnnotatingElement'[metaclass_def] :> 'KerML::Root::Annotation::annotatingElement'[feature_def] :> 'KerML::Root::Relationship::ownedRelatedElement'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'Comment' :> 'KerML::Root::AnnotatingElement'[metaclass_def]
-          (feature_def 'locale' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def 'body' : 'String'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Dependency' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def ordered 'client' : 'KerML::Root::Element'[metaclass_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..*]))
-          (feature_def ordered 'supplier' : 'KerML::Root::Element'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..*])))
-        (metaclass_def 'Documentation' :> 'KerML::Root::Comment'[metaclass_def]
-          (feature_def derived 'documentedElement' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Element::owner'[feature_def] :>> 'KerML::Root::AnnotatingElement::annotatedElement'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def abstract 'Element'
-          (feature_def 'elementId' : 'String'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def ordered 'aliasIds' : 'String'[unresolved]
-            (multiplicity_range [0..*]))
-          (feature_def 'declaredShortName' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def 'declaredName' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def 'isImpliedIncluded' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'shortName' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'name' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'qualifiedName' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'isLibraryElement' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'owningRelationship' : 'KerML::Root::Relationship'[metaclass_def]
-            (multiplicity_range [0..1]))
-          (feature_def composite ordered 'ownedRelationship' : 'KerML::Root::Relationship'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'owningMembership' : 'KerML::Root::OwningMembership'[metaclass_def] :> 'KerML::Root::Element::owningRelationship'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'owningNamespace' : 'KerML::Root::Namespace'[metaclass_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'owner' : 'KerML::Root::Element'[metaclass_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'ownedElement' : 'KerML::Root::Element'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'documentation' : 'KerML::Root::Documentation'[metaclass_def] :> 'KerML::Root::Element::ownedElement'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedAnnotation' : 'KerML::Root::Annotation'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'textualRepresentation' : 'KerML::Root::TextualRepresentation'[metaclass_def] :> 'KerML::Root::Element::ownedElement'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def abstract 'Import' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'visibility' : 'KerML::Root::VisibilityKind'[datatype_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'isRecursive' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isImportAll' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'importOwningNamespace' : 'KerML::Root::Namespace'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'importedElement' : 'KerML::Root::Element'[metaclass_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Membership' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'memberShortName' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def 'memberName' : 'String'[unresolved]
-            (multiplicity_range [0..1]))
-          (feature_def 'visibility' : 'KerML::Root::VisibilityKind'[datatype_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'memberElementId' : 'String'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'memberElement' : 'KerML::Root::Element'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'membershipOwningNamespace' : 'KerML::Root::Namespace'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'MembershipImport' :> 'KerML::Root::Import'[metaclass_def]
-          (feature_def 'importedMembership' : 'KerML::Root::Membership'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Namespace' :> 'KerML::Root::Element'[metaclass_def]
-          (feature_def abstract derived ordered 'membership' : 'KerML::Root::Membership'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedImport' : 'KerML::Root::Import'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'member' : 'KerML::Root::Element'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'ownedMember' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Namespace::member'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedMembership' : 'KerML::Root::Membership'[metaclass_def] :> 'KerML::Root::Namespace::membership'[feature_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'importedMembership' : 'KerML::Root::Membership'[metaclass_def] :> 'KerML::Root::Namespace::membership'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'NamespaceImport' :> 'KerML::Root::Import'[metaclass_def]
-          (feature_def 'importedNamespace' : 'KerML::Root::Namespace'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'OwningMembership' :> 'KerML::Root::Membership'[metaclass_def]
-          (feature_def derived 'ownedMemberElementId' : 'String'[unresolved] :>> 'KerML::Root::Membership::memberElementId'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'ownedMemberShortName' : 'String'[unresolved] :>> 'KerML::Root::Membership::memberShortName'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'ownedMemberName' : 'String'[unresolved] :>> 'KerML::Root::Membership::memberName'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived composite 'ownedMemberElement' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Relationship::ownedRelatedElement'[feature_def] :>> 'KerML::Root::Membership::memberElement'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def abstract 'Relationship' :> 'KerML::Root::Element'[metaclass_def]
-          (feature_def 'isImplied' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def ordered 'target' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Relationship::relatedElement'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def ordered 'source' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Relationship::relatedElement'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def 'owningRelatedElement' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Relationship::relatedElement'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def composite ordered 'ownedRelatedElement' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Relationship::relatedElement'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'relatedElement' : 'KerML::Root::Element'[metaclass_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'TextualRepresentation' :> 'KerML::Root::AnnotatingElement'[metaclass_def]
-          (feature_def 'language' : 'String'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'body' : 'String'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'representedElement' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Element::owner'[feature_def] :>> 'KerML::Root::AnnotatingElement::annotatedElement'[feature_def]
-            (multiplicity_range [1..1])))
-        (datatype_def 'VisibilityKind'
-          (feature_def 'private' : 'KerML::Root::VisibilityKind'[datatype_def]
-            (multiplicity_range [1]))
-          (feature_def 'protected' : 'KerML::Root::VisibilityKind'[datatype_def]
-            (multiplicity_range [1]))
-          (feature_def 'public' : 'KerML::Root::VisibilityKind'[datatype_def]
-            (multiplicity_range [1]))))
-      (package 'Core'
-        (namespace_import public -> 'KerML::Root'[package])
-        (metaclass_def 'Classifier' :> 'KerML::Core::Type'[metaclass_def]
-          (feature_def derived composite 'ownedSubclassification' : 'KerML::Core::Subclassification'[metaclass_def] :> 'KerML::Core::Type::ownedSpecialization'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'Conjugation' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'originalType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'conjugatedType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Core::Conjugation::conjugatedType'[feature_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'CrossSubsetting' :> 'KerML::Core::Subsetting'[metaclass_def]
-          (feature_def 'crossedFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Subsetting::subsettedFeature'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'crossingFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Subsetting::owningFeature'[feature_def] :>> 'KerML::Core::Subsetting::subsettingFeature'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Differencing' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'differencingType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'typeDifferenced' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Disjoining' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'typeDisjoined' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'disjoiningType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :> 'KerML::Core::Disjoining::typeDisjoined'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'EndFeatureMembership' :> 'KerML::Core::FeatureMembership'[metaclass_def]
-          (feature_def derived composite 'ownedMemberFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::FeatureMembership::ownedMemberFeature'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Feature' :> 'KerML::Core::Type'[metaclass_def]
-          (feature_def 'isUnique' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isOrdered' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isComposite' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isEnd' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isDerived' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isPortion' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isVariable' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isConstant' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'direction' : 'KerML::Core::FeatureDirectionKind'[datatype_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'owningType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Root::Element::owningNamespace'[feature_def] :> 'KerML::Core::Feature::featuringType'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'type' : 'KerML::Core::Type'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite 'ownedRedefinition' : 'KerML::Core::Redefinition'[metaclass_def] :> 'KerML::Core::Feature::ownedSubsetting'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite 'ownedSubsetting' : 'KerML::Core::Subsetting'[metaclass_def] :> 'KerML::Core::Type::ownedSpecialization'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'owningFeatureMembership' : 'KerML::Core::FeatureMembership'[metaclass_def] :> 'KerML::Root::Element::owningMembership'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'endOwningType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Core::Feature::owningType'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived composite ordered 'ownedTyping' : 'KerML::Core::FeatureTyping'[metaclass_def] :> 'KerML::Core::Type::ownedSpecialization'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'featuringType' : 'KerML::Core::Type'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedTypeFeaturing' : 'KerML::Core::TypeFeaturing'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'chainingFeature' : 'KerML::Core::Feature'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite 'ownedFeatureInverting' : 'KerML::Core::FeatureInverting'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedFeatureChaining' : 'KerML::Core::FeatureChaining'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite 'ownedReferenceSubsetting' : 'KerML::Core::ReferenceSubsetting'[metaclass_def] :> 'KerML::Core::Feature::ownedSubsetting'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'featureTarget' : 'KerML::Core::Feature'[metaclass_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'crossFeature' : 'KerML::Core::Feature'[metaclass_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived composite 'ownedCrossSubsetting' : 'KerML::Core::CrossSubsetting'[metaclass_def] :> 'KerML::Core::Feature::ownedSubsetting'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'FeatureChaining' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'chainingFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'featureChained' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1])))
-        (datatype_def 'FeatureDirectionKind'
-          (feature_def 'in' : 'KerML::Core::FeatureDirectionKind'[datatype_def]
-            (multiplicity_range [1]))
-          (feature_def 'inout' : 'KerML::Core::FeatureDirectionKind'[datatype_def]
-            (multiplicity_range [1]))
-          (feature_def 'out' : 'KerML::Core::FeatureDirectionKind'[datatype_def]
-            (multiplicity_range [1])))
-        (metaclass_def 'FeatureInverting' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'featureInverted' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'invertingFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::FeatureInverting::featureInverted'[feature_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'FeatureMembership' :> 'KerML::Root::OwningMembership'[metaclass_def]
-          (feature_def derived 'owningType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Membership::membershipOwningNamespace'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived composite 'ownedMemberFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Root::OwningMembership::ownedMemberElement'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'FeatureTyping' :> 'KerML::Core::Specialization'[metaclass_def]
-          (feature_def 'typedFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Specialization::specific'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'type' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Core::Specialization::general'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::FeatureTyping::typedFeature'[feature_def] :>> 'KerML::Core::Specialization::owningType'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'Intersecting' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'intersectingType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'typeIntersected' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Multiplicity' :> 'KerML::Core::Feature'[metaclass_def])
-        (metaclass_def 'Redefinition' :> 'KerML::Core::Subsetting'[metaclass_def]
-          (feature_def 'redefiningFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Subsetting::subsettingFeature'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'redefinedFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Subsetting::subsettedFeature'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'ReferenceSubsetting' :> 'KerML::Core::Subsetting'[metaclass_def]
-          (feature_def 'referencedFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Subsetting::subsettedFeature'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'referencingFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Subsetting::owningFeature'[feature_def] :>> 'KerML::Core::Subsetting::subsettingFeature'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Specialization' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'general' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'specific' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :> 'KerML::Core::Specialization::specific'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'Subclassification' :> 'KerML::Core::Specialization'[metaclass_def]
-          (feature_def 'superclassifier' : 'KerML::Core::Classifier'[metaclass_def] :>> 'KerML::Core::Specialization::general'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'subclassifier' : 'KerML::Core::Classifier'[metaclass_def] :>> 'KerML::Core::Specialization::specific'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningClassifier' : 'KerML::Core::Classifier'[metaclass_def] :>> 'KerML::Core::Specialization::owningType'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'Subsetting' :> 'KerML::Core::Specialization'[metaclass_def]
-          (feature_def 'subsettedFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Specialization::general'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'subsettingFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Specialization::specific'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Subsetting::subsettingFeature'[feature_def] :>> 'KerML::Core::Specialization::owningType'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'Type' :> 'KerML::Root::Namespace'[metaclass_def]
-          (feature_def 'isAbstract' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isSufficient' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'isConjugated' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived composite ordered 'ownedSpecialization' : 'KerML::Core::Specialization'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedFeatureMembership' : 'KerML::Core::FeatureMembership'[metaclass_def] :> 'KerML::Root::Namespace::ownedMembership'[feature_def] :> 'KerML::Core::Type::featureMembership'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'feature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Namespace::member'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'ownedFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Namespace::ownedMember'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'input' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::directedFeature'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'output' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::directedFeature'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'inheritedMembership' : 'KerML::Root::Membership'[metaclass_def] :> 'KerML::Root::Namespace::membership'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'endFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::feature'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'ownedEndFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::endFeature'[feature_def] :> 'KerML::Core::Type::ownedFeature'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite 'ownedConjugator' : 'KerML::Core::Conjugation'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'inheritedFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::feature'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'multiplicity' : 'KerML::Core::Multiplicity'[metaclass_def] :> 'KerML::Root::Namespace::ownedMember'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'unioningType' : 'KerML::Core::Type'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedIntersecting' : 'KerML::Core::Intersecting'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'intersectingType' : 'KerML::Core::Type'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedUnioning' : 'KerML::Core::Unioning'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite 'ownedDisjoining' : 'KerML::Core::Disjoining'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'featureMembership' : 'KerML::Core::FeatureMembership'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'differencingType' : 'KerML::Core::Type'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived composite ordered 'ownedDifferencing' : 'KerML::Core::Differencing'[metaclass_def] :> 'KerML::Root::Element::ownedRelationship'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'directedFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::feature'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'TypeFeaturing' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'featureOfType' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def 'featuringType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'owningFeatureOfType' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :> 'KerML::Core::TypeFeaturing::featureOfType'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'Unioning' :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def 'unioningType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'typeUnioned' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Root::Relationship::owningRelatedElement'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [1..1]))))
-      (package 'Kernel'
-        (namespace_import public -> 'KerML::Core'[package])
-        (metaclass_def 'Association' :> 'KerML::Core::Classifier'[metaclass_def] :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def derived ordered 'relatedType' : 'KerML::Core::Type'[metaclass_def] :>> 'KerML::Root::Relationship::relatedElement'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'sourceType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Kernel::Association::relatedType'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'targetType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Kernel::Association::relatedType'[feature_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'associationEnd' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Type::endFeature'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'AssociationStructure' :> 'KerML::Kernel::Association'[metaclass_def] :> 'KerML::Kernel::Structure'[metaclass_def])
-        (metaclass_def 'Behavior' :> 'KerML::Kernel::Class'[metaclass_def]
-          (feature_def derived 'step' : 'KerML::Kernel::Step'[metaclass_def] :> 'KerML::Core::Type::feature'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'parameter' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Type::directedFeature'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'BindingConnector' :> 'KerML::Kernel::Connector'[metaclass_def])
-        (metaclass_def 'BooleanExpression' :> 'KerML::Kernel::Expression'[metaclass_def]
-          (feature_def derived 'predicate' : 'KerML::Kernel::Predicate'[metaclass_def] :>> 'KerML::Kernel::Expression::function'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'Class' :> 'KerML::Core::Classifier'[metaclass_def])
-        (metaclass_def 'CollectExpression' :> 'KerML::Kernel::OperatorExpression'[metaclass_def]
-          (feature_def 'operator' : 'String'[unresolved] :>> 'KerML::Kernel::OperatorExpression::operator'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Connector' :> 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Relationship'[metaclass_def]
-          (feature_def derived ordered 'relatedFeature' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Root::Relationship::relatedElement'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'association' : 'KerML::Kernel::Association'[metaclass_def] :>> 'KerML::Core::Feature::type'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'connectorEnd' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Type::endFeature'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'sourceFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Kernel::Connector::relatedFeature'[feature_def] :>> 'KerML::Root::Relationship::source'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'targetFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Kernel::Connector::relatedFeature'[feature_def] :>> 'KerML::Root::Relationship::target'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'defaultFeaturingType' : 'KerML::Core::Type'[metaclass_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'ConstructorExpression' :> 'KerML::Kernel::InstantiationExpression'[metaclass_def])
-        (metaclass_def 'DataType' :> 'KerML::Core::Classifier'[metaclass_def])
-        (metaclass_def 'ElementFilterMembership' :> 'KerML::Root::OwningMembership'[metaclass_def]
-          (feature_def derived composite 'condition' : 'KerML::Kernel::Expression'[metaclass_def] :>> 'KerML::Root::OwningMembership::ownedMemberElement'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Expression' :> 'KerML::Kernel::Step'[metaclass_def]
-          (feature_def derived 'isModelLevelEvaluable' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'function' : 'KerML::Kernel::Function'[metaclass_def] :>> 'KerML::Kernel::Step::behavior'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'result' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::output'[feature_def] :> 'KerML::Kernel::Step::parameter'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'FeatureChainExpression' :> 'KerML::Kernel::OperatorExpression'[metaclass_def]
-          (feature_def 'operator' : 'String'[unresolved] :>> 'KerML::Kernel::OperatorExpression::operator'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'targetFeature' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Namespace::member'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'FeatureReferenceExpression' :> 'KerML::Kernel::Expression'[metaclass_def]
-          (feature_def derived 'referent' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Namespace::member'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'FeatureValue' :> 'KerML::Root::OwningMembership'[metaclass_def]
-          (feature_def 'isInitial' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def 'isDefault' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'featureWithValue' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Root::Membership::membershipOwningNamespace'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived composite 'value' : 'KerML::Kernel::Expression'[metaclass_def] :>> 'KerML::Root::OwningMembership::ownedMemberElement'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Flow' :> 'KerML::Kernel::Connector'[metaclass_def] :> 'KerML::Kernel::Step'[metaclass_def]
-          (feature_def derived ordered 'payloadType' : 'KerML::Core::Classifier'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'targetInputFeature' : 'KerML::Core::Feature'[metaclass_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'sourceOutputFeature' : 'KerML::Core::Feature'[metaclass_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'flowEnd' : 'KerML::Kernel::FlowEnd'[metaclass_def] :> 'KerML::Kernel::Connector::connectorEnd'[feature_def]
-            (multiplicity_range [0..2]))
-          (feature_def derived 'payloadFeature' : 'KerML::Kernel::PayloadFeature'[metaclass_def] :> 'KerML::Core::Type::ownedFeature'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived ordered 'interaction' : 'KerML::Kernel::Interaction'[metaclass_def] :>> 'KerML::Kernel::Connector::association'[feature_def] :>> 'KerML::Kernel::Step::behavior'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'FlowEnd' :> 'KerML::Core::Feature'[metaclass_def])
-        (metaclass_def 'Function' :> 'KerML::Kernel::Behavior'[metaclass_def]
-          (feature_def derived 'isModelLevelEvaluable' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (feature_def derived 'expression' : 'KerML::Kernel::Expression'[metaclass_def] :> 'KerML::Kernel::Behavior::step'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'result' : 'KerML::Core::Feature'[metaclass_def] :> 'KerML::Core::Type::output'[feature_def] :> 'KerML::Kernel::Behavior::parameter'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'IndexExpression' :> 'KerML::Kernel::OperatorExpression'[metaclass_def]
-          (feature_def 'operator' : 'String'[unresolved] :>> 'KerML::Kernel::OperatorExpression::operator'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def abstract 'InstantiationExpression' :> 'KerML::Kernel::Expression'[metaclass_def]
-          (feature_def derived ordered 'argument' : 'KerML::Kernel::Expression'[metaclass_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived 'instantiatedType' : 'KerML::Core::Type'[metaclass_def] :> 'KerML::Root::Namespace::member'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Interaction' :> 'KerML::Kernel::Association'[metaclass_def] :> 'KerML::Kernel::Behavior'[metaclass_def])
-        (metaclass_def 'Invariant' :> 'KerML::Kernel::BooleanExpression'[metaclass_def]
-          (feature_def 'isNegated' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'InvocationExpression' :> 'KerML::Kernel::InstantiationExpression'[metaclass_def])
-        (metaclass_def 'LibraryPackage' :> 'KerML::Kernel::Package'[metaclass_def]
-          (feature_def 'isStandard' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'LiteralBoolean' :> 'KerML::Kernel::LiteralExpression'[metaclass_def]
-          (feature_def 'value' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'LiteralExpression' :> 'KerML::Kernel::Expression'[metaclass_def])
-        (metaclass_def 'LiteralInfinity' :> 'KerML::Kernel::LiteralExpression'[metaclass_def])
-        (metaclass_def 'LiteralInteger' :> 'KerML::Kernel::LiteralExpression'[metaclass_def]
-          (feature_def 'value' : 'Integer'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'LiteralRational' :> 'KerML::Kernel::LiteralExpression'[metaclass_def]
-          (feature_def 'value' : 'Rational'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'LiteralString' :> 'KerML::Kernel::LiteralExpression'[metaclass_def]
-          (feature_def 'value' : 'String'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Metaclass' :> 'KerML::Kernel::Structure'[metaclass_def])
-        (metaclass_def 'MetadataAccessExpression' :> 'KerML::Kernel::Expression'[metaclass_def]
-          (feature_def derived 'referencedElement' : 'KerML::Root::Element'[metaclass_def] :> 'KerML::Root::Namespace::member'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'MetadataFeature' :> 'KerML::Root::AnnotatingElement'[metaclass_def] :> 'KerML::Core::Feature'[metaclass_def]
-          (feature_def derived 'metaclass' : 'KerML::Kernel::Metaclass'[metaclass_def] :> 'KerML::Core::Feature::type'[feature_def]
-            (multiplicity_range [0..1])))
-        (metaclass_def 'MultiplicityRange' :> 'KerML::Core::Multiplicity'[metaclass_def]
-          (feature_def derived 'lowerBound' : 'KerML::Kernel::Expression'[metaclass_def] :> 'KerML::Kernel::MultiplicityRange::bound'[feature_def]
-            (multiplicity_range [0..1]))
-          (feature_def derived 'upperBound' : 'KerML::Kernel::Expression'[metaclass_def] :> 'KerML::Kernel::MultiplicityRange::bound'[feature_def]
-            (multiplicity_range [1..1]))
-          (feature_def derived ordered 'bound' : 'KerML::Kernel::Expression'[metaclass_def] :> 'KerML::Root::Namespace::ownedMember'[feature_def]
-            (multiplicity_range [1..2])))
-        (metaclass_def 'NullExpression' :> 'KerML::Kernel::Expression'[metaclass_def])
-        (metaclass_def 'OperatorExpression' :> 'KerML::Kernel::InvocationExpression'[metaclass_def]
-          (feature_def 'operator' : 'String'[unresolved]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Package' :> 'KerML::Root::Namespace'[metaclass_def]
-          (feature_def derived ordered 'filterCondition' : 'KerML::Kernel::Expression'[metaclass_def] :> 'KerML::Root::Namespace::ownedMember'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'ParameterMembership' :> 'KerML::Core::FeatureMembership'[metaclass_def]
-          (feature_def derived composite 'ownedMemberParameter' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::FeatureMembership::ownedMemberFeature'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'PayloadFeature' :> 'KerML::Core::Feature'[metaclass_def])
-        (metaclass_def 'Predicate' :> 'KerML::Kernel::Function'[metaclass_def])
-        (metaclass_def 'ResultExpressionMembership' :> 'KerML::Core::FeatureMembership'[metaclass_def]
-          (feature_def derived composite 'ownedResultExpression' : 'KerML::Kernel::Expression'[metaclass_def] :>> 'KerML::Core::FeatureMembership::ownedMemberFeature'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'ReturnParameterMembership' :> 'KerML::Kernel::ParameterMembership'[metaclass_def])
-        (metaclass_def 'SelectExpression' :> 'KerML::Kernel::OperatorExpression'[metaclass_def]
-          (feature_def 'operator' : 'String'[unresolved] :>> 'KerML::Kernel::OperatorExpression::operator'[feature_def]
-            (multiplicity_range [1..1])))
-        (metaclass_def 'Step' :> 'KerML::Core::Feature'[metaclass_def]
-          (feature_def derived ordered 'behavior' : 'KerML::Kernel::Behavior'[metaclass_def] :> 'KerML::Core::Feature::type'[feature_def]
-            (multiplicity_range [0..*]))
-          (feature_def derived ordered 'parameter' : 'KerML::Core::Feature'[metaclass_def] :>> 'KerML::Core::Type::directedFeature'[feature_def]
-            (multiplicity_range [0..*])))
-        (metaclass_def 'Structure' :> 'KerML::Kernel::Class'[metaclass_def])
-        (metaclass_def 'Succession' :> 'KerML::Kernel::Connector'[metaclass_def])
-        (metaclass_def 'SuccessionFlow' :> 'KerML::Kernel::Succession'[metaclass_def] :> 'KerML::Kernel::Flow'[metaclass_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "KerML"))) (name "KerML") (declared-name "KerML")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "KerML::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "KerML::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "KerML::Core"))) (name "Core") (declared-name "Core")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "KerML::Core::*"))) (name "*") (declared-name "*"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Classifier"))) (name "Classifier") (declared-name "Classifier"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Conjugation"))) (name "Conjugation") (declared-name "Conjugation"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::CrossSubsetting"))) (name "CrossSubsetting") (declared-name "CrossSubsetting"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Differencing"))) (name "Differencing") (declared-name "Differencing"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Disjoining"))) (name "Disjoining") (declared-name "Disjoining"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::EndFeatureMembership"))) (name "EndFeatureMembership") (declared-name "EndFeatureMembership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Feature"))) (name "Feature") (declared-name "Feature"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::FeatureChaining"))) (name "FeatureChaining") (declared-name "FeatureChaining"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::FeatureDirectionKind"))) (name "FeatureDirectionKind") (declared-name "FeatureDirectionKind"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::FeatureInverting"))) (name "FeatureInverting") (declared-name "FeatureInverting"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::FeatureMembership"))) (name "FeatureMembership") (declared-name "FeatureMembership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::FeatureTyping"))) (name "FeatureTyping") (declared-name "FeatureTyping"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Intersecting"))) (name "Intersecting") (declared-name "Intersecting"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Multiplicity"))) (name "Multiplicity") (declared-name "Multiplicity"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Redefinition"))) (name "Redefinition") (declared-name "Redefinition"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::ReferenceSubsetting"))) (name "ReferenceSubsetting") (declared-name "ReferenceSubsetting"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Specialization"))) (name "Specialization") (declared-name "Specialization"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Subclassification"))) (name "Subclassification") (declared-name "Subclassification"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Subsetting"))) (name "Subsetting") (declared-name "Subsetting"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Type"))) (name "Type") (declared-name "Type"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::TypeFeaturing"))) (name "TypeFeaturing") (declared-name "TypeFeaturing"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Core::Unioning"))) (name "Unioning") (declared-name "Unioning"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "KerML::Kernel"))) (name "Kernel") (declared-name "Kernel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "KerML::Kernel::*"))) (name "*") (declared-name "*"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Association"))) (name "Association") (declared-name "Association"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::AssociationStructure"))) (name "AssociationStructure") (declared-name "AssociationStructure"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Behavior"))) (name "Behavior") (declared-name "Behavior"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::BindingConnector"))) (name "BindingConnector") (declared-name "BindingConnector"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::BooleanExpression"))) (name "BooleanExpression") (declared-name "BooleanExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Class"))) (name "Class") (declared-name "Class"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::CollectExpression"))) (name "CollectExpression") (declared-name "CollectExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Connector"))) (name "Connector") (declared-name "Connector"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::ConstructorExpression"))) (name "ConstructorExpression") (declared-name "ConstructorExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::DataType"))) (name "DataType") (declared-name "DataType"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::ElementFilterMembership"))) (name "ElementFilterMembership") (declared-name "ElementFilterMembership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Expression"))) (name "Expression") (declared-name "Expression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::FeatureChainExpression"))) (name "FeatureChainExpression") (declared-name "FeatureChainExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::FeatureReferenceExpression"))) (name "FeatureReferenceExpression") (declared-name "FeatureReferenceExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::FeatureValue"))) (name "FeatureValue") (declared-name "FeatureValue"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Flow"))) (name "Flow") (declared-name "Flow"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::FlowEnd"))) (name "FlowEnd") (declared-name "FlowEnd"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Function"))) (name "Function") (declared-name "Function"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::IndexExpression"))) (name "IndexExpression") (declared-name "IndexExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::InstantiationExpression"))) (name "InstantiationExpression") (declared-name "InstantiationExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Interaction"))) (name "Interaction") (declared-name "Interaction"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Invariant"))) (name "Invariant") (declared-name "Invariant"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::InvocationExpression"))) (name "InvocationExpression") (declared-name "InvocationExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::LibraryPackage"))) (name "LibraryPackage") (declared-name "LibraryPackage"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::LiteralBoolean"))) (name "LiteralBoolean") (declared-name "LiteralBoolean"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::LiteralExpression"))) (name "LiteralExpression") (declared-name "LiteralExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::LiteralInfinity"))) (name "LiteralInfinity") (declared-name "LiteralInfinity"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::LiteralInteger"))) (name "LiteralInteger") (declared-name "LiteralInteger"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::LiteralRational"))) (name "LiteralRational") (declared-name "LiteralRational"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::LiteralString"))) (name "LiteralString") (declared-name "LiteralString"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Metaclass"))) (name "Metaclass") (declared-name "Metaclass"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::MetadataAccessExpression"))) (name "MetadataAccessExpression") (declared-name "MetadataAccessExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::MetadataFeature"))) (name "MetadataFeature") (declared-name "MetadataFeature"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::MultiplicityRange"))) (name "MultiplicityRange") (declared-name "MultiplicityRange"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::NullExpression"))) (name "NullExpression") (declared-name "NullExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::OperatorExpression"))) (name "OperatorExpression") (declared-name "OperatorExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Package"))) (name "Package") (declared-name "Package"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::ParameterMembership"))) (name "ParameterMembership") (declared-name "ParameterMembership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::PayloadFeature"))) (name "PayloadFeature") (declared-name "PayloadFeature"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Predicate"))) (name "Predicate") (declared-name "Predicate"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::ResultExpressionMembership"))) (name "ResultExpressionMembership") (declared-name "ResultExpressionMembership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::ReturnParameterMembership"))) (name "ReturnParameterMembership") (declared-name "ReturnParameterMembership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::SelectExpression"))) (name "SelectExpression") (declared-name "SelectExpression"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Step"))) (name "Step") (declared-name "Step"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Structure"))) (name "Structure") (declared-name "Structure"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::Succession"))) (name "Succession") (declared-name "Succession"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Kernel::SuccessionFlow"))) (name "SuccessionFlow") (declared-name "SuccessionFlow"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "KerML::Root"))) (name "Root") (declared-name "Root")
+          (contains
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::AnnotatingElement"))) (name "AnnotatingElement") (declared-name "AnnotatingElement"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Annotation"))) (name "Annotation") (declared-name "Annotation"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Comment"))) (name "Comment") (declared-name "Comment"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Dependency"))) (name "Dependency") (declared-name "Dependency"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Documentation"))) (name "Documentation") (declared-name "Documentation"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Element"))) (name "Element") (declared-name "Element"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Import"))) (name "Import") (declared-name "Import"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Membership"))) (name "Membership") (declared-name "Membership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::MembershipImport"))) (name "MembershipImport") (declared-name "MembershipImport"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Namespace"))) (name "Namespace") (declared-name "Namespace"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::NamespaceImport"))) (name "NamespaceImport") (declared-name "NamespaceImport"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::OwningMembership"))) (name "OwningMembership") (declared-name "OwningMembership"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::Relationship"))) (name "Relationship") (declared-name "Relationship"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::TextualRepresentation"))) (name "TextualRepresentation") (declared-name "TextualRepresentation"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KerML::Root::VisibilityKind"))) (name "VisibilityKind") (declared-name "VisibilityKind"))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "KerML::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "KerML::_documentation"))) (to (node (document "d0") (qualified-name "KerML"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

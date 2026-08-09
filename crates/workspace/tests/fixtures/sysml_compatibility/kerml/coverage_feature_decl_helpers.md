@@ -61,16 +61,25 @@ package FeatureDeclCoverage {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'FeatureDeclCoverage'
-      (classifier_def 'Base')
-      (feature_def 'f')
-      (step_def 's' :> 'FeatureDeclCoverage::f'[feature_def])
-      (expression_def 'e' :> 'FeatureDeclCoverage::f'[feature_def])
-      (boolean_expr_def 'b' :> 'FeatureDeclCoverage::f'[feature_def])
-      (invariant_def 'i' :> 'FeatureDeclCoverage::f'[feature_def])
-      (step_def 's2'
-        (multiplicity_range [0..1])
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureDeclCoverage"))) (name "FeatureDeclCoverage") (declared-name "FeatureDeclCoverage")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureDeclCoverage::Base"))) (name "Base") (declared-name "Base"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureDeclCoverage::b"))) (name "b") (declared-name "b"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureDeclCoverage::e"))) (name "e") (declared-name "e"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureDeclCoverage::f"))) (name "f") (declared-name "f"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureDeclCoverage::i"))) (name "i") (declared-name "i"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureDeclCoverage::s"))) (name "s") (declared-name "s"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureDeclCoverage::s2"))) (name "s2") (declared-name "s2"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

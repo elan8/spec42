@@ -89,19 +89,33 @@ semantic.unresolved_name 'height'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'CarWithEnvelopingShape'
-      (membership_import private -> 'ShapeItems::Box'[unresolved])
-      (membership_import private -> 'SI::mm'[unresolved])
-      (part_def 'Car'
-        (documentation)
-        (item_usage composite 'boundingBox' : 'Box'[unresolved] :> 'boundingShapes'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'length'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'width'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'height'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape"))) (name "CarWithEnvelopingShape") (declared-name "CarWithEnvelopingShape")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Box"))) (name "Box") (declared-name "Box"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (name "Car") (declared-name "Car") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (name "boundingBox") (declared-name "boundingBox") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithEnvelopingShape::mm"))) (name "mm") (declared-name "mm"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::_documentation"))) (to (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

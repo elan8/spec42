@@ -697,140 +697,40 @@ standard library package FeatureReferencingPerformances {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'FeatureReferencingPerformances'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Base::things'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensWhile'[unresolved])
-      (membership_import private -> 'Occurrences::HappensBefore'[unresolved])
-      (membership_import private -> 'Occurrences::HappensJustBefore'[unresolved])
-      (membership_import private -> 'Occurrences::SelfSameLifeLink'[unresolved])
-      (membership_import private -> 'Performances::Performance'[unresolved])
-      (membership_import private -> 'Performances::Evaluation'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'SequenceFunctions::isEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::equals'[unresolved])
-      (behavior_def abstract 'FeatureReferencingPerformance' :> 'Performance'[unresolved]
-        (documentation)
-        (feature_def in abstract 'onOccurrence' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def inout 'values' : 'Anything'[unresolved]
-          (multiplicity_range [*])
-          (documentation)))
-      (behavior_def abstract 'FeatureAccessPerformance' :> 'FeatureReferencingPerformances::FeatureReferencingPerformance'[behavior_def]
-        (documentation)
-        (feature_def in abstract 'onOccurrence' : 'Occurrence'[unresolved] :>> 'FeatureReferencingPerformances::FeatureReferencingPerformance::onOccurrence'[feature_def][implied]
-          (feature_def abstract 'startingAt' : 'Occurrence'[unresolved] :> 'timeSlices'[unresolved]
-            (multiplicity_range [1])
-            (feature_def abstract 'accessedFeature' : 'Anything'[unresolved]
-              (multiplicity_range [*]))))
-        (connector_def : 'HappensWhile'[unresolved]
-          (connector_end 'onOccurrence.startingAt.startShot')
-          (connector_end 'endShot')
-          (documentation))
-        (connector_def : 'SelfSameLifeLink'[unresolved]
-          (connector_end 'onOccurrence.startingAt.accessedFeature')
-          (connector_end 'values')))
-      (function_def abstract 'FeatureReadEvaluation' :> 'FeatureReferencingPerformances::FeatureAccessPerformance'[behavior_def] :> 'Evaluation'[unresolved]
-        (documentation)
-        (feature_def in 'onOccurrence' : 'Occurrence'[unresolved] :>> 'FeatureReferencingPerformances::FeatureAccessPerformance::onOccurrence'[feature_def][implied]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'resultValues' : 'Anything'[unresolved] :>> 'result'[unresolved] :>> 'FeatureReferencingPerformances::FeatureReferencingPerformance::values'[feature_def]
-            (multiplicity_range [*]))))
-      (behavior_def abstract 'FeatureWritePerformance' :> 'FeatureReferencingPerformances::FeatureAccessPerformance'[behavior_def]
-        (documentation)
-        (feature_def in 'onOccurrence' : 'Occurrence'[unresolved] :>> 'FeatureReferencingPerformances::FeatureAccessPerformance::onOccurrence'[feature_def]
-          (multiplicity_range [1]))
-        (feature_def inout 'replacementValues' : 'Anything'[unresolved] :>> 'FeatureReferencingPerformances::FeatureReferencingPerformance::values'[feature_def]
-          (multiplicity_range [*])))
-      (behavior_def abstract 'FeatureMonitorPerformance' :> 'FeatureReferencingPerformances::FeatureReferencingPerformance'[behavior_def]
-        (documentation)
-        (feature_def in :>> 'FeatureReferencingPerformances::FeatureReferencingPerformance::onOccurrence'[feature_def]
-          (feature_def 'monitoredOccurrence' : 'Occurrence'[unresolved] :> 'timeSlices'[unresolved]
-            (multiplicity_range [1])
-            (feature_def abstract 'monitoredFeature' : 'Anything'[unresolved]
-              (multiplicity_range [*]))
-            (feature_def 'beforeTimeSlice' : 'Occurrence'[unresolved] :> 'timeSlices'[unresolved]
-              (multiplicity_range [1])
-              (feature_def :>> 'monitoredOccurrence::monitoredFeature'[feature_def]))
-            (feature_def 'afterSnapshot' : 'Occurrence'[unresolved] :> 'snapshots'[unresolved]
-              (multiplicity_range [1])
-              (feature_def :>> 'monitoredOccurrence::monitoredFeature'[feature_def]))
-            (connector_def : 'HappensJustBefore'[unresolved]
-              (connector_end 'beforeTimeSlice')
-              (connector_end 'afterSnapshot'))))
-        (feature_def out 'afterValues' :>> 'FeatureReferencingPerformances::FeatureReferencingPerformance::values'[feature_def])
-        (feature_def out 'beforeValues' : 'Anything'[unresolved]
-          (multiplicity_range [*]))
-        (invariant_def
-          (result_expr_membership))
-        (connector_def : 'HappensWhile'[unresolved]
-          (connector_end 'onOccurrence.monitoredOccurrence.beforeTimeSlice.startShot')
-          (connector_end 'startShot'))
-        (connector_def : 'SelfSameLifeLink'[unresolved]
-          (connector_end 'onOccurrence.monitoredOccurrence.beforeTimeSlice.monitoredFeature')
-          (connector_end 'beforeValues'))
-        (connector_def : 'SelfSameLifeLink'[unresolved]
-          (connector_end 'onOccurrence.monitoredOccurrence.afterSnapshot.monitoredFeature')
-          (connector_end 'afterValues'))
-        (connector_def 'endWhen' : 'HappensBefore'[unresolved]
-          (connector_end 'onOccurrence.monitoredOccurrence.afterSnapshot')
-          (connector_end 'endShot')))
-      (behavior_def 'EvaluationResultMonitorPerformance' :> 'FeatureReferencingPerformances::FeatureMonitorPerformance'[behavior_def]
-        (documentation)
-        (feature_def in 'onOccurrence' : 'Evaluation'[unresolved] :>> ''[feature_def]
-          (expression_def 'monitoredOccurrence' : 'Evaluation'[unresolved] :>> 'monitoredOccurrence'[feature_def]
-            (multiplicity_range [1])
-            (return_parameter_membership
-              (feature_def out 'result' : 'Anything'[unresolved] :>> 'result'[unresolved] :>> 'monitoredOccurrence::monitoredFeature'[feature_def]
-                (multiplicity_range [*]))))))
-      (behavior_def 'BooleanEvaluationResultMonitorPerformance' :> 'FeatureReferencingPerformances::EvaluationResultMonitorPerformance'[behavior_def]
-        (documentation)
-        (boolean_expr_usage in :>> 'FeatureReferencingPerformances::EvaluationResultMonitorPerformance::onOccurrence'[feature_def]
-          (boolean_expr_def :>> 'FeatureReferencingPerformances::EvaluationResultMonitorPerformance::onOccurrence::monitoredOccurrence'[expression_def]
-            (multiplicity_range [1])
-            (return_parameter_membership
-              (feature_def out 'result' : 'Boolean'[unresolved]
-                (multiplicity_range [1])))))
-        (feature_def out :>> 'FeatureReferencingPerformances::FeatureMonitorPerformance::afterValues'[feature_def] : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def out :>> 'FeatureReferencingPerformances::FeatureMonitorPerformance::beforeValues'[feature_def] : 'Boolean'[unresolved]
-          (multiplicity_range [1])))
-      (behavior_def 'BooleanEvaluationResultToMonitorPerformance' :> 'FeatureReferencingPerformances::FeatureReferencingPerformance'[behavior_def]
-        (documentation)
-        (boolean_expr_usage in :>> 'FeatureReferencingPerformances::FeatureReferencingPerformance::onOccurrence'[feature_def])
-        (feature_def 'isToTrue' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def out 'afterValues' : 'Boolean'[unresolved] :>> 'FeatureReferencingPerformances::FeatureReferencingPerformance::values'[feature_def]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (feature_def 'monitor1' : 'FeatureReferencingPerformances::BooleanEvaluationResultMonitorPerformance'[behavior_def]
-          (multiplicity_range [1])
-          (feature_def :>> 'FeatureReferencingPerformances::FeatureMonitorPerformance::endWhen'[connector_def] : 'HappensJustBefore'[unresolved]
-            (feature_def end 'earlierOccurrence')
-            (feature_def end 'laterOccurrence')))
-        (feature_def 'monitor2' : 'FeatureReferencingPerformances::BooleanEvaluationResultMonitorPerformance'[behavior_def]
-          (multiplicity_range [1])
-          (feature_def :>> 'FeatureReferencingPerformances::FeatureMonitorPerformance::endWhen'[connector_def] : 'HappensJustBefore'[unresolved]
-            (feature_def end 'earlierOccurrence')
-            (feature_def end 'laterOccurrence')))
-        (connector_def : 'HappensJustBefore'[unresolved]
-          (connector_end 'monitor1')
-          (connector_end 'monitor2'))
-        (invariant_def
-          (result_expr_membership))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'monitor1.onOccurrence')
-          (connector_end 'onOccurrence'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'monitor2.onOccurrence')
-          (connector_end 'onOccurrence'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (name "FeatureReferencingPerformances") (declared-name "FeatureReferencingPerformances")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::BooleanEvaluationResultMonitorPerformance"))) (name "BooleanEvaluationResultMonitorPerformance") (declared-name "BooleanEvaluationResultMonitorPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::BooleanEvaluationResultToMonitorPerformance"))) (name "BooleanEvaluationResultToMonitorPerformance") (declared-name "BooleanEvaluationResultToMonitorPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::EvaluationResultMonitorPerformance"))) (name "EvaluationResultMonitorPerformance") (declared-name "EvaluationResultMonitorPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureAccessPerformance"))) (name "FeatureAccessPerformance") (declared-name "FeatureAccessPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureMonitorPerformance"))) (name "FeatureMonitorPerformance") (declared-name "FeatureMonitorPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureReadEvaluation"))) (name "FeatureReadEvaluation") (declared-name "FeatureReadEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureReferencingPerformance"))) (name "FeatureReferencingPerformance") (declared-name "FeatureReferencingPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensJustBefore"))) (name "HappensJustBefore") (declared-name "HappensJustBefore"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::HappensWhile"))) (name "HappensWhile") (declared-name "HappensWhile"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::SelfSameLifeLink"))) (name "SelfSameLifeLink") (declared-name "SelfSameLifeLink"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::equals"))) (name "equals") (declared-name "equals"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureReferencingPerformances::things"))) (name "things") (declared-name "things"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureReferencingPerformances::_documentation"))) (to (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

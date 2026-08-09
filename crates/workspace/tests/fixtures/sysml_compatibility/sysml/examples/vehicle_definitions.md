@@ -219,35 +219,84 @@ semantic.unresolved_name 'ISQ::torque'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleDefinitions'
-      (documentation)
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (part_def 'Vehicle'
-        (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]))
-      (part_def 'Transmission')
-      (part_def 'AxleAssembly')
-      (part_def 'Axle'
-        (port_usage composite 'leftMountingPoint' : 'VehicleDefinitions::AxleMountIF'[port_def])
-        (port_usage composite 'rightMountingPoint' : 'VehicleDefinitions::AxleMountIF'[port_def]))
-      (part_def 'Wheel'
-        (port_usage composite 'hub' : 'VehicleDefinitions::WheelHubIF'[port_def]))
-      (part_def 'Lugbolt'
-        (attribute_usage composite 'tighteningTorque' :> 'ISQ::torque'[unresolved]))
-      (port_def 'DriveIF'
-        (reference_usage in reference 'driveTorque' :> 'ISQ::torque'[unresolved]))
-      (port_def 'AxleMountIF'
-        (reference_usage out reference 'transferredTorque' :> 'ISQ::torque'[unresolved]))
-      (port_def 'WheelHubIF'
-        (reference_usage in reference 'appliedTorque' :> 'ISQ::torque'[unresolved]))
-      (interface_def 'Mounting'
-        (documentation)
-        (port_usage end 'axleMount' : 'VehicleDefinitions::AxleMountIF'[port_def])
-        (port_usage end 'hub' : 'VehicleDefinitions::WheelHubIF'[port_def])
-        (flow_usage composite 'axleMount')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleDefinitions"))) (name "VehicleDefinitions") (declared-name "VehicleDefinitions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleDefinitions::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleDefinitions::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleDefinitions::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleDefinitions::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleDefinitions::*#import4"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleDefinitions::Axle"))) (name "Axle") (declared-name "Axle") (declared)
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "VehicleDefinitions::Axle::leftMountingPoint"))) (name "leftMountingPoint") (declared-name "leftMountingPoint") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Axle")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "VehicleDefinitions::Axle::rightMountingPoint"))) (name "rightMountingPoint") (declared-name "rightMountingPoint") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Axle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleAssembly"))) (name "AxleAssembly") (declared-name "AxleAssembly") (declared))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))) (name "AxleMountIF") (declared-name "AxleMountIF")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF::transferredTorque"))) (name "transferredTorque") (declared-name "transferredTorque") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF::~AxleMountIF"))) (name "~AxleMountIF") (declared-name "~AxleMountIF") (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF"))) (name "DriveIF") (declared-name "DriveIF")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF::driveTorque"))) (name "driveTorque") (declared-name "driveTorque") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF::~DriveIF"))) (name "~DriveIF") (declared-name "~DriveIF") (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleDefinitions::Lugbolt"))) (name "Lugbolt") (declared-name "Lugbolt") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleDefinitions::Lugbolt::tighteningTorque"))) (name "tighteningTorque") (declared-name "tighteningTorque") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Lugbolt")))))
+          )
+        )
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "VehicleDefinitions::Mounting"))) (name "Mounting") (declared-name "Mounting")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleDefinitions::Mounting::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Mounting")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "VehicleDefinitions::Mounting::axleMount"))) (name "axleMount") (declared-name "axleMount") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Mounting")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "VehicleDefinitions::Mounting::hub"))) (name "hub") (declared-name "hub") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Mounting")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleDefinitions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleDefinitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleDefinitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Vehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleDefinitions::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "VehicleDefinitions::Wheel::hub"))) (name "hub") (declared-name "hub") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::Wheel")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF"))) (name "WheelHubIF") (declared-name "WheelHubIF")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF::appliedTorque"))) (name "appliedTorque") (declared-name "appliedTorque") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF::~WheelHubIF"))) (name "~WheelHubIF") (declared-name "~WheelHubIF") (effective (featuring-type (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleDefinitions::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::Mounting::_documentation"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::Mounting"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::_documentation"))) (to (node (document "d0") (qualified-name "VehicleDefinitions"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF::transferredTorque"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF::appliedTorque"))) (flow (source-expression "axleMount::transferredTorque") (target-expression "hub::appliedTorque")))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF::~AxleMountIF"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF::~DriveIF"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF::~WheelHubIF"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::Axle::leftMountingPoint"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::Axle::rightMountingPoint"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::Mounting::axleMount"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::Mounting::hub"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::Wheel::hub"))) (to (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

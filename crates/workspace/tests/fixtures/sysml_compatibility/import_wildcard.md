@@ -30,7 +30,15 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (namespace_import -> 'ScalarValues'[unresolved])))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

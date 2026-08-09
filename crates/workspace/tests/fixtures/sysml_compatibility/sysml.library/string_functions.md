@@ -193,80 +193,30 @@ standard library package StringFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'StringFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (function_def '+' :> 'ScalarFunctions::+'[unresolved]
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'Length'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'Substring'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'lower' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'upper' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<' :> 'ScalarFunctions::<'[unresolved]
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>' :> 'ScalarFunctions::>'[unresolved]
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<=' :> 'ScalarFunctions::<='[unresolved]
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>=' :> 'ScalarFunctions::>='[unresolved]
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '==' :> 'DataFunctions::=='[unresolved]
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'String'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToString' :> 'BaseFunctions::ToString'[unresolved]
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "StringFunctions"))) (name "StringFunctions") (declared-name "StringFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "StringFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::Length"))) (name "Length") (declared-name "Length"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::Substring"))) (name "Substring") (declared-name "Substring"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "StringFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StringFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StringFunctions::_documentation"))) (to (node (document "d0") (qualified-name "StringFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

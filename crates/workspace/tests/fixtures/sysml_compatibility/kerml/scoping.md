@@ -172,30 +172,50 @@ semantic.unresolved_name 'subobjects'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Scoping'
-      (package 'P1'
-        (class_def 'A'
-          (feature_def 'f'))
-        (package 'P2'
-          (class_def 'A'
-            (feature_def 'g'))
-          (package 'P3'
-            (class_def 'B' :> 'Scoping::P1::P2::A'[class_def]
-              (feature_def :>> 'Scoping::P1::P2::A::g'[feature_def]))))
-        (package 'Objects'
-          (class_def 'Object'
-            (feature_def 'test1')))
-        (package '$'
-          (class_def 'Objects'
-            (class_def 'Object'
-              (feature_def 'test2'))))
-        (package 'P4'
-          (class_def 'C' :> 'Scoping::P1::Objects::Object'[class_def]
-            (feature_def :>> 'Scoping::P1::Objects::Object::test1'[feature_def]))
-          (class_def 'D' :> 'Scoping::P1::$::Objects::Object'[class_def]
-            (feature_def :>> 'Scoping::P1::$::Objects::Object::test2'[feature_def]))
-          (class_def 'E' :> '$::Objects::Object'[unresolved]
-            (feature_def :>> 'subobjects'[unresolved])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Scoping"))) (name "Scoping") (declared-name "Scoping")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1"))) (name "P1") (declared-name "P1")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::$"))) (name "$") (declared-name "$")
+              (contains
+                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::$::Objects"))) (name "Objects") (declared-name "Objects"))
+              )
+            )
+            (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::A"))) (name "A") (declared-name "A"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::Objects"))) (name "Objects") (declared-name "Objects")
+              (contains
+                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::Objects::Object"))) (name "Object") (declared-name "Object"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::P2"))) (name "P2") (declared-name "P2")
+              (contains
+                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P2::A"))) (name "A") (declared-name "A"))
+                (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3"))) (name "P3") (declared-name "P3")
+                  (contains
+                    (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P2::P3::B"))) (name "B") (declared-name "B"))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "Scoping::P1::P4"))) (name "P4") (declared-name "P4")
+              (contains
+                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P4::C"))) (name "C") (declared-name "C"))
+                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P4::D"))) (name "D") (declared-name "D"))
+                (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Scoping::P1::P4::E"))) (name "E") (declared-name "E"))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

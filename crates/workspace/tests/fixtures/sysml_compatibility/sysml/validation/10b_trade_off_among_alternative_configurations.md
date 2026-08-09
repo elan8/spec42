@@ -407,93 +407,137 @@ semantic.unresolved_name 'selectedAlternative'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '10b-Trade-off Among Alternative Configurations'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'TradeStudies'[unresolved])
-      (namespace_import private -> '10b-Trade-off Among Alternative Configurations::Definitions'[package])
-      (namespace_import private -> '10b-Trade-off Among Alternative Configurations::Usages'[package])
-      (package 'Definitions'
-        (part_def 'Vehicle')
-        (part_def 'Engine'
-          (reference_usage reference 'power' : 'ISQ::PowerValue'[unresolved])
-          (reference_usage reference 'mass' : 'ISQ::MassValue'[unresolved])
-          (reference_usage reference 'efficiency' : 'Real'[unresolved])
-          (reference_usage reference 'reliability' : 'Real'[unresolved])
-          (reference_usage reference 'cost' : 'Real'[unresolved]))
-        (part_def 'Piston')
-        (part_def 'Cylinder')
-        (part_def 'ConnectingRod')
-        (part_def 'CrankShaft')
-        (part_def '4CylCrankShaft' :> '10b-Trade-off Among Alternative Configurations::Definitions::CrankShaft'[part_def])
-        (part_def '6CylCrankShaft' :> '10b-Trade-off Among Alternative Configurations::Definitions::CrankShaft'[part_def]))
-      (package 'Usages'
-        (part_usage 'engine' : '10b-Trade-off Among Alternative Configurations::Definitions::Engine'[part_def]
-          (part_usage composite 'cyl' : '10b-Trade-off Among Alternative Configurations::Definitions::Cylinder'[part_def]
-            (multiplicity_range [*])
-            (part_usage composite 'p' : '10b-Trade-off Among Alternative Configurations::Definitions::Piston'[part_def]
-              (multiplicity_range [1]))
-            (part_usage composite 'rod' : '10b-Trade-off Among Alternative Configurations::Definitions::ConnectingRod'[part_def]
-              (multiplicity_range [1])))
-          (part_usage composite 'cs' : '10b-Trade-off Among Alternative Configurations::Definitions::CrankShaft'[part_def]))
-        (part_usage variation 'engineChoice' :> '10b-Trade-off Among Alternative Configurations::Usages::engine'[part_usage]
-          (variant_usage
-            (part_usage composite '4cylEngine'
-              (part_usage composite :>> '10b-Trade-off Among Alternative Configurations::Usages::engine::cyl'[part_usage]
-                (multiplicity_range [4]))
-              (part_usage composite :>> '10b-Trade-off Among Alternative Configurations::Usages::engine::cs'[part_usage] : '10b-Trade-off Among Alternative Configurations::Definitions::4CylCrankShaft'[part_def])))
-          (variant_usage
-            (part_usage composite '6cylEngine'
-              (part_usage composite :>> '10b-Trade-off Among Alternative Configurations::Usages::engine::cyl'[part_usage]
-                (multiplicity_range [6]))
-              (part_usage composite :>> '10b-Trade-off Among Alternative Configurations::Usages::engine::cs'[part_usage] : '10b-Trade-off Among Alternative Configurations::Definitions::6CylCrankShaft'[part_def]))))
-        (part_usage 'vehicle' : '10b-Trade-off Among Alternative Configurations::Definitions::Vehicle'[part_def]
-          (part_usage composite 'engine' :> '10b-Trade-off Among Alternative Configurations::Usages::engineChoice'[part_usage]
-            (multiplicity_range [1])
-            (feature_value (=))
-            (assert_constraint_usage 'engineSelectionRational'
-              (documentation)
-              (result_expr_membership)))))
-      (package 'Analysis'
-        (calculation_def 'EngineEvaluation'
-          (documentation)
-          (reference_usage in reference 'power' : 'ISQ::PowerValue'[unresolved])
-          (reference_usage in reference 'mass' : 'ISQ::MassValue'[unresolved])
-          (reference_usage in reference 'efficiency' : 'Real'[unresolved])
-          (reference_usage in reference 'cost' : 'Real'[unresolved])
-          (return_parameter_membership
-            (feature_def out 'evaluation' : 'Real'[unresolved])))
-        (analysis_case_usage 'engineTradeStudy' : 'TradeStudy'[unresolved]
-          (subject_membership in : '10b-Trade-off Among Alternative Configurations::Definitions::Engine'[part_def]
-            (multiplicity_range [1..*])
-            (feature_value (=)))
-          (objective_membership composite : 'MaximizeObjective'[unresolved])
-          (calculation_usage composite :>> 'evaluationFunction'[unresolved]
-            (part_usage in 'anEngine' :>> 'alternative'[unresolved] : '10b-Trade-off Among Alternative Configurations::Definitions::Engine'[part_def])
-            (calculation_usage composite 'powerRollup'
-              (reference_usage in reference 'engine'
-                (feature_value (=)))
-              (return_parameter_membership
-                (feature_def out 'power' :> 'ISQ::power'[unresolved])))
-            (calculation_usage composite 'massRollup'
-              (reference_usage in reference 'engine'
-                (feature_value (=)))
-              (return_parameter_membership
-                (feature_def out 'mass' :> 'ISQ::mass'[unresolved])))
-            (calculation_usage composite 'efficiencyRollup'
-              (reference_usage in reference 'engine'
-                (feature_value (=)))
-              (return_parameter_membership
-                (feature_def out 'efficiency' : 'Real'[unresolved])))
-            (calculation_usage composite 'costRollup'
-              (reference_usage in reference 'engine'
-                (feature_value (=)))
-              (return_parameter_membership
-                (feature_def out 'cost' : 'Real'[unresolved])))
-            (return_parameter_membership
-              (feature_def out :>> 'result'[unresolved] : 'Real'[unresolved]
-                (feature_value (=)))))
-          (return_parameter_membership
-            (part_usage out :>> 'selectedAlternative'[unresolved] : '10b-Trade-off Among Alternative Configurations::Definitions::Engine'[part_def])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations"))) (name "10b-Trade-off Among Alternative Configurations") (declared-name "10b-Trade-off Among Alternative Configurations")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis"))) (name "Analysis") (declared-name "Analysis")
+          (contains
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation"))) (name "EngineEvaluation") (declared-name "EngineEvaluation")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation::cost"))) (name "cost") (declared-name "cost") (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation::efficiency"))) (name "efficiency") (declared-name "efficiency") (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation")))))
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation::evaluation"))) (name "evaluation") (declared-name "evaluation") (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation")))))
+              )
+            )
+            (element (kind "analysis") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy"))) (name "engineTradeStudy") (declared-name "engineTradeStudy")
+              (contains
+                (element (kind "subject") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::"))) (name ""))
+                (element (kind "calc") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction"))) (name "evaluationFunction") (declared-name "evaluationFunction")
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::anEngine"))) (name "anEngine") (declared-name "anEngine") (declared (properties (direction "in") (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "calc") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::costRollup"))) (name "costRollup") (declared-name "costRollup")
+                      (contains
+                        (element (kind "return parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::costRollup::cost"))) (name "cost") (declared-name "cost"))
+                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::costRollup::engine"))) (name "engine") (declared-name "engine"))
+                      )
+                    )
+                    (element (kind "calc") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::efficiencyRollup"))) (name "efficiencyRollup") (declared-name "efficiencyRollup")
+                      (contains
+                        (element (kind "return parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::efficiencyRollup::efficiency"))) (name "efficiency") (declared-name "efficiency"))
+                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::efficiencyRollup::engine"))) (name "engine") (declared-name "engine"))
+                      )
+                    )
+                    (element (kind "calc") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::massRollup"))) (name "massRollup") (declared-name "massRollup")
+                      (contains
+                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::massRollup::engine"))) (name "engine") (declared-name "engine"))
+                        (element (kind "return parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::massRollup::mass"))) (name "mass") (declared-name "mass"))
+                      )
+                    )
+                    (element (kind "calc") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::powerRollup"))) (name "powerRollup") (declared-name "powerRollup")
+                      (contains
+                        (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::powerRollup::engine"))) (name "engine") (declared-name "engine"))
+                        (element (kind "return parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::powerRollup::power"))) (name "power") (declared-name "power"))
+                      )
+                    )
+                    (element (kind "return parameter") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::evaluationFunction::result"))) (name "result") (declared-name "result"))
+                  )
+                )
+                (element (kind "objective") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::objective"))) (name "objective") (declared-name "objective"))
+                (element (kind "analysis result") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::selectedAlternative"))) (name "selectedAlternative") (declared-name "selectedAlternative"))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::4CylCrankShaft"))) (name "4CylCrankShaft") (declared-name "4CylCrankShaft") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::6CylCrankShaft"))) (name "6CylCrankShaft") (declared-name "6CylCrankShaft") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::ConnectingRod"))) (name "ConnectingRod") (declared-name "ConnectingRod") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::CrankShaft"))) (name "CrankShaft") (declared-name "CrankShaft") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Piston"))) (name "Piston") (declared-name "Piston") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cs"))) (name "cs") (declared-name "cs") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cyl::p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Cylinder")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cyl::rod"))) (name "rod") (declared-name "rod") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Cylinder")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice"))) (name "engineChoice") (declared-name "engineChoice") (declared (properties (variation true) (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::4cylEngine::cs"))) (name "cs") (declared-name "cs") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::4cylEngine::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::6cylEngine::cs"))) (name "cs") (declared-name "cs") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::6cylEngine::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Vehicle")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation::_documentation"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::EngineEvaluation"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::4CylCrankShaft"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::CrankShaft"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::6CylCrankShaft"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::CrankShaft"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::anEngine"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Analysis::engineTradeStudy::selectedAlternative"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cs"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::CrankShaft"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cyl"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Cylinder"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cyl::p"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Piston"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engine::cyl::rod"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::ConnectingRod"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::4cylEngine::cs"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::4CylCrankShaft"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::engineChoice::6cylEngine::cs"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::6CylCrankShaft"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Usages::vehicle"))) (to (node (document "d0") (qualified-name "10b-Trade-off Among Alternative Configurations::Definitions::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

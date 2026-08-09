@@ -124,17 +124,15 @@ assoc JustOutsideOf specializes OutsideOf {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (association_def 'HappensDuring' :> 'HappensLink'[unresolved]
-      (feature_def end 'shorterOccurrence' : 'Occurrence'[unresolved] :>> 'sourceOccurrence'[unresolved] :> 'longerOccurrence::timeEnclosedOccurrences'[unresolved])
-      (feature_def end 'thatOccurrence' :> 'timeCoincidentOccurrences'[unresolved] : 'Occurrence'[unresolved] :>> 'longerOccurrence'[unresolved]
-        (multiplicity_range [1..*])))
-    (association_def 'PortionOf' :> 'Within'[unresolved]
-      (feature_def end 'portionedOccurrence' :> 'portionOf'[unresolved] : 'Occurrence'[unresolved] :>> 'largerOccurrence'[unresolved]))
-    (association_def 'WithinBoth' :> 'Within'[unresolved]
-      (feature_def end 'thatOccurrence' :> 'spaceTimeCoincidentOccurrences'[unresolved] :>> 'largerOccurrence'[unresolved]))
-    (association_def 'JustOutsideOf' :> 'OutsideOf'[unresolved]
-      (feature_def end :>> 'separateSpaceToo'[unresolved] : 'Occurrence'[unresolved] :> 'separateSpace::justOutsideOfOccurrences'[unresolved])
-      (feature_def end :>> 'separateSpace'[unresolved] : 'Occurrence'[unresolved] :> 'separateSpaceToo::justOutsideOfOccurrences'[unresolved]))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

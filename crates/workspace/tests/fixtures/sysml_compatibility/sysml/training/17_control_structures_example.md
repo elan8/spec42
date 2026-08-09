@@ -139,31 +139,41 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Control Structures Example'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (attribute_def 'BatteryCharged')
-      (part_usage 'battery')
-      (part_usage 'powerSystem')
-      (action_def 'MonitorBattery'
-        (reference_usage out reference 'charge' : 'Real'[unresolved]))
-      (action_def 'AddCharge'
-        (reference_usage in reference 'charge' : 'Real'[unresolved]))
-      (action_def 'EndCharging')
-      (action_def 'ChargeBattery'
-        (while_loop_action_usage)
-        (action_usage composite 'charging'
-          (action_usage composite 'monitor' : 'Control Structures Example::MonitorBattery'[action_def]
-            (reference_usage out reference 'charge'))
-          (source_succession
-            (if_action_usage
-              (action_usage 'addCharge' : 'Control Structures Example::AddCharge'[action_def]
-                (reference_usage in reference 'charge'
-                  (feature_value (=)))))))
-        (not_implemented 'malformed')
-        (source_succession
-          (action_usage 'endCharging' : 'Control Structures Example::EndCharging'[action_def]))
-        (source_succession
-          (reference_usage reference 'done'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Control Structures Example"))) (name "Control Structures Example") (declared-name "Control Structures Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Control Structures Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Control Structures Example::AddCharge"))) (name "AddCharge") (declared-name "AddCharge")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Control Structures Example::AddCharge::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Control Structures Example::AddCharge")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Control Structures Example::BatteryCharged"))) (name "BatteryCharged") (declared-name "BatteryCharged") (declared (properties (ordered false) (unique true))))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery"))) (name "ChargeBattery") (declared-name "ChargeBattery")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))) (name "endCharging") (declared-name "endCharging") (effective (featuring-type (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Control Structures Example::EndCharging"))) (name "EndCharging") (declared-name "EndCharging"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery"))) (name "MonitorBattery") (declared-name "MonitorBattery")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Control Structures Example::battery"))) (name "battery") (declared-name "battery") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Control Structures Example::powerSystem"))) (name "powerSystem") (declared-name "powerSystem") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery"))) (to (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))) (to (node (document "d0") (qualified-name "Control Structures Example::EndCharging"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "Control Structures Example::ChargeBattery::endCharging") (target-qualified "Control Structures Example::ChargeBattery::done"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

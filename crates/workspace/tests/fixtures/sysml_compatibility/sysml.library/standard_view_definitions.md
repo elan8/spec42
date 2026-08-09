@@ -319,25 +319,71 @@ standard library package StandardViewDefinitions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'StandardViewDefinitions'
-      (documentation)
-      (namespace_import public -> 'SysML'[unresolved])
-      (view_def 'GeneralView'
-        (documentation))
-      (view_def 'InterconnectionView'
-        (documentation))
-      (view_def 'ActionFlowView' :> 'StandardViewDefinitions::InterconnectionView'[view_def]
-        (documentation))
-      (view_def 'StateTransitionView' :> 'StandardViewDefinitions::InterconnectionView'[view_def]
-        (documentation))
-      (view_def 'SequenceView'
-        (documentation))
-      (view_def 'GeometryView'
-        (documentation))
-      (view_def 'GridView'
-        (documentation))
-      (view_def 'BrowserView'
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "StandardViewDefinitions"))) (name "StandardViewDefinitions") (declared-name "StandardViewDefinitions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "StandardViewDefinitions::*"))) (name "*") (declared-name "*"))
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (name "ActionFlowView") (declared-name "ActionFlowView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView")))))
+          )
+        )
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView"))) (name "BrowserView") (declared-name "BrowserView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView")))))
+          )
+        )
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView"))) (name "GeneralView") (declared-name "GeneralView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView")))))
+          )
+        )
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView"))) (name "GeometryView") (declared-name "GeometryView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView")))))
+          )
+        )
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::GridView"))) (name "GridView") (declared-name "GridView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::GridView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::GridView")))))
+          )
+        )
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (name "InterconnectionView") (declared-name "InterconnectionView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView")))))
+          )
+        )
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView"))) (name "SequenceView") (declared-name "SequenceView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView")))))
+          )
+        )
+        (element (kind "view def") (id (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))) (name "StateTransitionView") (declared-name "StateTransitionView")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "StandardViewDefinitions::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::BrowserView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::GeneralView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::GeometryView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::GridView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::GridView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::SequenceView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::_documentation"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))) (to (node (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

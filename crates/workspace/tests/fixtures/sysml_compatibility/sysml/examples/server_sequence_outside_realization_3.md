@@ -701,170 +701,156 @@ semantic.unresolved_name 'deliver_message'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ServerSequenceOutsideRealization_3'
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (namespace_import private -> 'ServerSequenceModelOutside'[unresolved])
-      (namespace_import private -> 'ServerSequenceOutsideRealization_3::Configuration'[package])
-      (package 'Configuration'
-        (port_def 'PublicationPort'
-          (reference_usage in reference 'publish' : 'Publish'[unresolved]))
-        (port_def 'SubscriptionPort'
-          (reference_usage in reference 'subscribe' : 'Subscribe'[unresolved])
-          (reference_usage out reference 'deliver' : 'Deliver'[unresolved]))
-        (interface_def 'PublicationInterface'
-          (port_usage end 'source' : 'ServerSequenceOutsideRealization_3::Configuration::PublicationPort'[port_def])
-          (port_usage end 'target' : 'ServerSequenceOutsideRealization_3::Configuration::PublicationPort'[port_def]))
-        (interface_def 'SubscriptionInterface'
-          (port_usage end 'source' : 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort'[port_def])
-          (port_usage end 'target' : 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort'[port_def]))
-        (part_usage 'producer_3'
-          (multiplicity_range [1])
-          (attribute_usage composite 'someTopic' : 'String'[unresolved])
-          (item_usage composite 'somePublication')
-          (port_usage composite 'publicationPort' : 'ServerSequenceOutsideRealization_3::Configuration::PublicationPort'[port_def] ~ 'ServerSequenceOutsideRealization_3::Configuration::PublicationPort'[port_def]
-            (reference_usage out reference :>> 'ServerSequenceOutsideRealization_3::Configuration::PublicationPort::publish'[reference_usage]))
-          (perform_action_usage 'producerBehavior'
-            (action_usage 'publish'
-              (reference_usage out reference 'request' : 'Publish'[unresolved]
-                (multiplicity_range [1])
-                (feature_value (=)))))
-          (flow_usage composite 'publish_request'
-            (connector_end 'producerBehavior.publish.request')
-            (connector_end 'publicationPort.publish')
-            (attribute_usage composite :>> 'isInstant'[unresolved]
-              (feature_value (=)))))
-        (interface_usage 'publication_interface' : 'ServerSequenceOutsideRealization_3::Configuration::PublicationInterface'[interface_def]
-          (connector_end 'producer_3.publicationPort')
-          (connector_end 'server_3.publicationPort')
-          (flow_usage composite 'publish_request'
-            (connector_end 'publication_interface.source.publish')
-            (connector_end 'publication_interface.target.publish')))
-        (part_usage 'server_3'
-          (multiplicity_range [1])
-          (port_usage composite 'publicationPort' : 'ServerSequenceOutsideRealization_3::Configuration::PublicationPort'[port_def]
-            (reference_usage in reference :>> 'ServerSequenceOutsideRealization_3::Configuration::PublicationPort::publish'[reference_usage]))
-          (port_usage composite 'subscriptionPort' : 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort'[port_def]
-            (reference_usage in reference :>> 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::subscribe'[reference_usage])
-            (reference_usage out reference :>> 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::deliver'[reference_usage]))
-          (flow_usage composite 'subscribe_request'
-            (connector_end 'subscriptionPort.subscribe')
-            (connector_end 'serverBehavior.subscribing.request')
-            (attribute_usage composite :>> 'isInstant'[unresolved]
-              (feature_value (=))))
-          (flow_usage composite 'publish_request'
-            (connector_end 'publicationPort.publish')
-            (connector_end 'serverBehavior.publishing.request')
-            (attribute_usage composite :>> 'isInstant'[unresolved]
-              (feature_value (=))))
-          (flow_usage composite 'deliver_response'
-            (connector_end 'serverBehavior.delivering.response')
-            (connector_end 'subscriptionPort.deliver')
-            (attribute_usage composite :>> 'isInstant'[unresolved]
-              (feature_value (=))))
-          (perform_action_usage 'serverBehavior'
-            (action_usage 'subscribing'
-              (reference_usage in reference 'request' : 'Subscribe'[unresolved]
-                (multiplicity_range [1]))
-              (attribute_usage out 'topic' : 'String'[unresolved]
-                (multiplicity_range [1])
-                (feature_value (=))))
-            (source_succession
-              (merge_node 'continuePublishing'))
-            (source_succession
-              (action_usage 'publishing'
-                (reference_usage in reference 'request' : 'Publish'[unresolved]
-                  (multiplicity_range [1]))
-                (attribute_usage out 'topic'
-                  (multiplicity_range [1])
-                  (feature_value (=)))
-                (reference_usage out reference 'publication'
-                  (multiplicity_range [1])
-                  (feature_value (=)))))
-            (source_succession
-              (decide_node))
-            (if_action_usage)
-            (source_succession
-              (reference_usage reference 'delivering'))
-            (source_succession
-              (reference_usage reference 'continuePublishing'))
-            (source_succession
-              (action_usage 'delivering'
-                (reference_usage in reference 'topic' : 'String'[unresolved]
-                  (multiplicity_range [1])
-                  (feature_value (=)))
-                (reference_usage in reference 'publication'
-                  (multiplicity_range [1])
-                  (feature_value (=)))
-                (reference_usage out reference 'response' : 'Deliver'[unresolved]
-                  (feature_value (=)))))
-            (source_succession
-              (reference_usage reference 'continuePublishing'))))
-        (interface_usage 'subscription_interface' : 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface'[interface_def]
-          (connector_end 'consumer_3.subscriptionPort')
-          (connector_end 'server_3.subscriptionPort')
-          (flow_usage composite 'subscribe_request'
-            (connector_end 'subscription_interface.source.subscribe')
-            (connector_end 'subscription_interface.target.subscribe'))
-          (flow_usage composite 'deliver_response'
-            (connector_end 'subscription_interface.target.deliver')
-            (connector_end 'subscription_interface.source.deliver')))
-        (part_usage 'consumer_3'
-          (multiplicity_range [1])
-          (attribute_usage composite 'myTopic' : 'String'[unresolved])
-          (port_usage composite 'subscriptionPort' : 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort'[port_def] ~ 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort'[port_def]
-            (reference_usage out reference :>> 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::subscribe'[reference_usage])
-            (reference_usage in reference :>> 'ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::deliver'[reference_usage]))
-          (flow_usage composite 'subscribe_request'
-            (connector_end 'consumerBehavior.subscribe.request')
-            (connector_end 'subscriptionPort.subscribe')
-            (attribute_usage composite :>> 'isInstant'[unresolved]
-              (feature_value (=))))
-          (flow_usage composite 'deliver_response'
-            (connector_end 'subscriptionPort.deliver')
-            (connector_end 'consumerBehavior.delivery.response')
-            (attribute_usage composite :>> 'isInstant'[unresolved]
-              (feature_value (=))))
-          (perform_action_usage 'consumerBehavior'
-            (action_usage 'subscribe'
-              (reference_usage out reference 'request' : 'Subscribe'[unresolved]
-                (feature_value (=))))
-            (source_succession
-              (action_usage 'delivery'
-                (reference_usage in reference 'response' : 'Deliver'[unresolved]))))))
-      (part_usage 'realization_2' : 'PubSubSequence'[unresolved]
-        (part_usage composite :>> 'producer'[unresolved] :> 'ServerSequenceOutsideRealization_3::Configuration::producer_3'[part_usage]
-          (not_implemented 'malformed'))
-        (part_usage composite :>> 'server'[unresolved] :> 'ServerSequenceOutsideRealization_3::Configuration::server_3'[part_usage]
-          (not_implemented 'malformed')
-          (not_implemented 'malformed')
-          (not_implemented 'malformed'))
-        (part_usage composite :>> 'consumer'[unresolved] :> 'ServerSequenceOutsideRealization_3::Configuration::consumer_3'[part_usage]
-          (not_implemented 'malformed')
-          (not_implemented 'malformed'))
-        (flow_usage composite :>> 'publish_message'[unresolved]
-          (connector_end 'producer.producerBehavior.publish.request')
-          (connector_end 'server.serverBehavior.publishing.request')
-          (not_implemented 'malformed')
-          (source_succession
-            (not_implemented 'malformed'))
-          (source_succession
-            (not_implemented 'malformed')))
-        (flow_usage composite :>> 'subscribe_message'[unresolved]
-          (connector_end 'consumer.consumerBehavior.subscribe.request')
-          (connector_end 'server.serverBehavior.subscribing.request')
-          (not_implemented 'malformed')
-          (source_succession
-            (not_implemented 'malformed'))
-          (source_succession
-            (not_implemented 'malformed')))
-        (flow_usage composite :>> 'deliver_message'[unresolved]
-          (connector_end 'server.serverBehavior.delivering.response')
-          (connector_end 'consumer.consumerBehavior.delivery.response')
-          (not_implemented 'malformed')
-          (source_succession
-            (not_implemented 'malformed'))
-          (source_succession
-            (not_implemented 'malformed')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3"))) (name "ServerSequenceOutsideRealization_3") (declared-name "ServerSequenceOutsideRealization_3")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration"))) (name "Configuration") (declared-name "Configuration")
+          (contains
+            (element (kind "interface def") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface"))) (name "PublicationInterface") (declared-name "PublicationInterface")
+              (contains
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface")))))
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort"))) (name "PublicationPort") (declared-name "PublicationPort")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort")))))
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::~PublicationPort"))) (name "~PublicationPort") (declared-name "~PublicationPort") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort")))))
+              )
+            )
+            (element (kind "interface def") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface"))) (name "SubscriptionInterface") (declared-name "SubscriptionInterface")
+              (contains
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface")))))
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort"))) (name "SubscriptionPort") (declared-name "SubscriptionPort")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort")))))
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (name "~SubscriptionPort") (declared-name "~SubscriptionPort") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3"))) (name "consumer_3") (declared-name "consumer_3") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::consumerBehavior"))) (name "consumerBehavior") (declared-name "consumerBehavior"))
+                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::deliver_response"))) (name "deliver_response") (declared-name "deliver_response")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::deliver_response::isInstant"))) (name "isInstant") (declared-name "isInstant") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::myTopic"))) (name "myTopic") (declared-name "myTopic") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::subscribe_request"))) (name "subscribe_request") (declared-name "subscribe_request")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::subscribe_request::isInstant"))) (name "isInstant") (declared-name "isInstant") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::subscriptionPort"))) (name "subscriptionPort") (declared-name "subscriptionPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::subscriptionPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::~SubscriptionPort")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::subscriptionPort::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::~SubscriptionPort")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3"))) (name "producer_3") (declared-name "producer_3") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::producerBehavior"))) (name "producerBehavior") (declared-name "producerBehavior"))
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::publicationPort"))) (name "publicationPort") (declared-name "publicationPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::publicationPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::~PublicationPort")))))
+                  )
+                )
+                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::publish_request"))) (name "publish_request") (declared-name "publish_request")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::publish_request::isInstant"))) (name "isInstant") (declared-name "isInstant") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::someTopic"))) (name "someTopic") (declared-name "someTopic") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::publication_interface"))) (name "publication_interface") (declared-name "publication_interface"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3"))) (name "server_3") (declared-name "server_3") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+              (contains
+                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::deliver_response"))) (name "deliver_response") (declared-name "deliver_response")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::deliver_response::isInstant"))) (name "isInstant") (declared-name "isInstant") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::publicationPort"))) (name "publicationPort") (declared-name "publicationPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::publicationPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort")))))
+                  )
+                )
+                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::publish_request"))) (name "publish_request") (declared-name "publish_request")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::publish_request::isInstant"))) (name "isInstant") (declared-name "isInstant") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::subscribe_request"))) (name "subscribe_request") (declared-name "subscribe_request")
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::subscribe_request::isInstant"))) (name "isInstant") (declared-name "isInstant") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::subscriptionPort"))) (name "subscriptionPort") (declared-name "subscriptionPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::subscriptionPort::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::subscriptionPort::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort")))))
+                  )
+                )
+              )
+            )
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::subscription_interface"))) (name "subscription_interface") (declared-name "subscription_interface"))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::String"))) (name "String") (declared-name "String"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2"))) (name "realization_2") (declared-name "realization_2") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::consumer"))) (name "consumer") (declared-name "consumer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::consumer::consumerBehavior.delivery"))) (name "consumerBehavior.delivery") (declared-name "consumerBehavior.delivery") (declared (properties (composite true) (reference false))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::consumer::consumerBehavior.subscribe"))) (name "consumerBehavior.subscribe") (declared-name "consumerBehavior.subscribe") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::producer"))) (name "producer") (declared-name "producer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::producer::producerBehavior.publish"))) (name "producerBehavior.publish") (declared-name "producerBehavior.publish") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::server"))) (name "server") (declared-name "server") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::server::serverBehavior.delivering"))) (name "serverBehavior.delivering") (declared-name "serverBehavior.delivering") (declared (properties (composite true) (reference false))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::server::serverBehavior.publishing"))) (name "serverBehavior.publishing") (declared-name "serverBehavior.publishing") (declared (properties (composite true) (reference false))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::realization_2::server::serverBehavior.subscribing"))) (name "serverBehavior.subscribing") (declared-name "serverBehavior.subscribing") (declared (properties (composite true) (reference false))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::~PublicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::consumerBehavior"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::producerBehavior"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::~PublicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface::source"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::~PublicationPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationInterface::target"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface::source"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionInterface::target"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::consumer_3::subscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort::~SubscriptionPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::producer_3::publicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort::~PublicationPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::publicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::PublicationPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::server_3::subscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceOutsideRealization_3::Configuration::SubscriptionPort"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

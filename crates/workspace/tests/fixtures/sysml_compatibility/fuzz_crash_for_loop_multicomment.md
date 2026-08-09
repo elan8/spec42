@@ -61,12 +61,19 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (action_def 'A'
-        (for_loop_action_usage)
-        (perform_action_usage 'doS' : 'Dff'[unresolved]
-          (for_loop_action_usage))))
-    (not_implemented 'malformed')))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "P::A"))) (name "A") (declared-name "A"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

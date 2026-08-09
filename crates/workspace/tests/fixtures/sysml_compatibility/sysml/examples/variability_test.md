@@ -175,39 +175,50 @@ parse.expected_usage_declaration
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VariabilityTest'
-      (part_def 'P'
-        (attribute_usage composite 'a'))
-      (part_def 'Q' :> 'VariabilityTest::P'[part_def])
-      (attribute_def 'B')
-      (part_def variation 'V' :> 'VariabilityTest::P'[part_def]
-        (variant_usage
-          (part_usage composite 'x' : 'VariabilityTest::Q'[part_def]
-            (attribute_usage composite 'b' : 'VariabilityTest::B'[attribute_def] :>> 'VariabilityTest::P::a'[attribute_usage]))))
-      (part_usage 'q' : 'VariabilityTest::Q'[part_def])
-      (part_usage variation 'v' : 'VariabilityTest::P'[part_def]
-        (variant_usage
-          (reference_usage reference 'q'
-            (attribute_usage composite 'b' : 'VariabilityTest::B'[attribute_def] :>> 'VariabilityTest::P::a'[attribute_usage]))))
-      (part_usage 'y' : 'VariabilityTest::P'[part_def]
-        (feature_value (=)))
-      (action_def variation 'A'
-        (variant_usage
-          (action_usage composite 'a1'))
-        (variant_usage
-          (action_usage composite 'a2')))
-      (use_case_usage variation 'uc1'
-        (variant_usage
-          (not_implemented 'malformed'))
-        (case_usage composite 'uc11')
-        (variant_usage
-          (not_implemented 'malformed'))
-        (case_usage composite 'uc12'))
-      (analysis_case_usage variation 'a1')
-      (verification_case_usage variation 'v1')
-      (requirement_usage variation 'r'
-        (variant_usage
-          (requirement_usage composite 'r1'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VariabilityTest"))) (name "VariabilityTest") (declared-name "VariabilityTest")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::A"))) (name "A") (declared-name "A"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "VariabilityTest::B"))) (name "B") (declared-name "B") (declared (properties (ordered false) (unique true))))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VariabilityTest::P"))) (name "P") (declared-name "P") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VariabilityTest::P::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::P")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VariabilityTest::Q"))) (name "Q") (declared-name "Q") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VariabilityTest::V"))) (name "V") (declared-name "V") (declared (properties (variation true)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::V"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (name "b") (declared-name "b") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::Q")))))
+              )
+            )
+          )
+        )
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::a1"))) (name "a1") (declared-name "a1"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::q"))) (name "q") (declared-name "q") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VariabilityTest::r"))) (name "r") (declared-name "r"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::uc1"))) (name "uc1") (declared-name "uc1"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::v"))) (name "v") (declared-name "v") (declared (properties (variation true) (composite true) (reference false) (ordered false))))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::v1"))) (name "v1") (declared-name "v1"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::y"))) (name "y") (declared-name "y") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "v::q")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VariabilityTest::y"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (to (node (document "d0") (qualified-name "VariabilityTest::P::a"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::Q"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (to (node (document "d0") (qualified-name "VariabilityTest::Q"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (to (node (document "d0") (qualified-name "VariabilityTest::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::q"))) (to (node (document "d0") (qualified-name "VariabilityTest::Q"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::v"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VariabilityTest::y"))) (to (node (document "d0") (qualified-name "VariabilityTest::P"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

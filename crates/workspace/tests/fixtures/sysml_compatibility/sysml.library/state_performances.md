@@ -559,143 +559,35 @@ standard library package StatePerformances {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'StatePerformances'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'TransitionPerformances::TransitionPerformance'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensDuring'[unresolved])
-      (membership_import private -> 'Transfers::Transfer'[unresolved])
-      (membership_import private -> 'Transfers::MessageTransfer'[unresolved])
-      (membership_import private -> 'Performances::Performance'[unresolved])
-      (membership_import private -> 'ControlPerformances::DecisionPerformance'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (membership_import private -> 'ControlFunctions::select'[unresolved])
-      (membership_import private -> 'ControlFunctions::collect'[unresolved])
-      (namespace_import private -> 'SequenceFunctions'[unresolved])
-      (behavior_def 'StatePerformance' :> 'DecisionPerformance'[unresolved]
-        (feature_def 'isTriggerDuring' : 'Boolean'[unresolved]
-          (feature_value (default =)))
-        (step_def abstract 'middle'
-          (multiplicity_range [1..*])
-          (documentation))
-        (step_def 'entry'
-          (multiplicity_range [1]))
-        (step_def 'do' :> 'StatePerformances::StatePerformance::middle'[step_def]
-          (multiplicity_range [1]))
-        (step_def 'exit'
-          (multiplicity_range [1]))
-        (step_def 'nonDoMiddle' :> 'StatePerformances::StatePerformance::middle'[step_def]
-          (multiplicity_range [*])
-          (feature_value (=)))
-        (succession_def
-          (multiplicity_range [1])
-          (connector_end 'entry')
-          (connector_end 'middle'))
-        (succession_def
-          (multiplicity_range [1])
-          (connector_end 'do.startShot')
-          (connector_end 'nonDoMiddle.startShot'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'middle')
-          (connector_end 'exit'))
-        (feature_def 'incomingTransitionTrigger' : 'MessageTransfer'[unresolved]
-          (multiplicity_range [0..1])
-          (feature_value (default =))
-          (documentation))
-        (invariant_def
-          (result_expr_membership))
-        (feature_def 'accepted' : 'Transfer'[unresolved] :> 'StatePerformances::StatePerformance::acceptable'[feature_def]
-          (multiplicity_range [0..1])
-          (documentation))
-        (feature_def 'deferrable' : 'Transfer'[unresolved] :> 'StatePerformances::StatePerformance::acceptable'[feature_def]
-          (multiplicity_range [0..*])
-          (documentation))
-        (feature_def abstract 'acceptable' : 'Transfer'[unresolved]
-          (multiplicity_range [*])
-          (documentation)
-          (feature_def 'thatSP' : 'StatePerformances::StatePerformance'[behavior_def]
-            (multiplicity_range [1])
-            (feature_value (=)))
-          (feature_def 'accableT' : 'Transfer'[unresolved] :>> 'self'[unresolved])
-          (feature_def 'accT' : 'Transfer'[unresolved]
-            (feature_value (=)))
-          (invariant_def
-            (result_expr_membership))
-          (invariant_def
-            (result_expr_membership)))
-        (function_def 'allSubstatePerformances'
-          (feature_def in 'p' : 'Performance'[unresolved]
-            (multiplicity_range [1]))
-          (feature_def 'substatePerformances' : 'StatePerformances::StatePerformance'[behavior_def]
-            (multiplicity_range [*])
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out : 'StatePerformances::StatePerformance'[behavior_def]
-              (multiplicity_range [*])
-              (feature_value (=)))))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'acceptable')
-          (connector_end 'exit'))
-        (feature_def :>> 'isRunToCompletion'[unresolved]
-          (feature_value (default =)))
-        (feature_def :>> 'runToCompletionScope'[unresolved]
-          (feature_value (default =)))
-        (invariant_def
-          (result_expr_membership))
-        (function_def 'allSubtransitionPerformances'
-          (feature_def in 'p' : 'Performance'[unresolved]
-            (multiplicity_range [1]))
-          (feature_def 'subtransitionPerformances' : 'TransitionPerformance'[unresolved]
-            (multiplicity_range [*])
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out : 'TransitionPerformance'[unresolved]
-              (multiplicity_range [*])
-              (feature_value (=))))))
-      (behavior_def 'StateTransitionPerformance' :> 'TransitionPerformance'[unresolved]
-        (feature_def 'isTriggerDuring' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (invariant_def
-          (result_expr_membership))
-        (feature_def in 'transitionLinkSource' : 'StatePerformances::StatePerformance'[behavior_def] :>> 'TransitionPerformance::transitionLinkSource'[unresolved]
-          (feature_def :>> 'StatePerformances::StatePerformance::accepted'[feature_def])
-          (feature_def :>> 'StatePerformances::StatePerformance::acceptable'[feature_def]))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'transitionLinkSource.nonDoMiddle')
-          (connector_end 'Performance::self'))
-        (feature_def 'transitionLinkTarget' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1])
-          (feature_value (=))
-          (invariant_def
-            (result_expr_membership)))
-        (feature_def 'acceptable' : 'Transfer'[unresolved] :> ''[feature_def] :> 'triggerTarget::incomingTransfersToSelf'[unresolved]
-          (multiplicity_range [*]))
-        (feature_def 'trigger' :>> 'TransitionPerformance::trigger'[unresolved] :> 'StatePerformances::StateTransitionPerformance::acceptable'[feature_def] :> ''[feature_def]
-          (feature_def :>> 'endShot'[unresolved]))
-        (feature_def 'tdNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (connector_def 'linkTriggerDuring' : 'HappensDuring'[unresolved]
-          (multiplicity_range [?])
-          (connector_end 'trigger.endShot')
-          (connector_end 'transitionLinkSource'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'acceptable')
-          (connector_end 'guard'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'guard')
-          (connector_end 'transitionLinkSource.exit'))
-        (succession_def
-          (multiplicity_range [?])
-          (connector_end 'accept')
-          (connector_end 'transitionLinkSource.exit'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "StatePerformances"))) (name "StatePerformances") (declared-name "StatePerformances")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::DecisionPerformance"))) (name "DecisionPerformance") (declared-name "DecisionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::MessageTransfer"))) (name "MessageTransfer") (declared-name "MessageTransfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StatePerformances::StatePerformance"))) (name "StatePerformance") (declared-name "StatePerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "StatePerformances::StateTransitionPerformance"))) (name "StateTransitionPerformance") (declared-name "StateTransitionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::Transfer"))) (name "Transfer") (declared-name "Transfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::TransitionPerformance"))) (name "TransitionPerformance") (declared-name "TransitionPerformance"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "StatePerformances::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::collect"))) (name "collect") (declared-name "collect"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "StatePerformances::select"))) (name "select") (declared-name "select"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StatePerformances::_documentation"))) (to (node (document "d0") (qualified-name "StatePerformances"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

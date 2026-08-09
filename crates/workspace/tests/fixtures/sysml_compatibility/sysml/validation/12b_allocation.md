@@ -118,24 +118,52 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '12b-Allocation'
-      (namespace_import private -> '12b-Allocation::LogicalModel'[package])
-      (namespace_import private -> '12b-Allocation::PhysicalModel'[package])
-      (package 'LogicalModel'
-        (action_usage 'providePower'
-          (action_usage composite 'generateTorque'))
-        (part_usage 'torqueGenerator'
-          (perform_action_usage :>> '12b-Allocation::LogicalModel::providePower::generateTorque'[action_usage])))
-      (package 'PhysicalModel'
-        (part_usage 'powerTrain'
-          (part_usage composite 'engine'
-            (perform_action_usage :>> '12b-Allocation::LogicalModel::providePower::generateTorque'[action_usage]))))
-      (allocation_usage
-        (connector_end 'torqueGenerator')
-        (connector_end 'powerTrain')
-        (allocation_usage composite
-          (connector_end 'torqueGenerator.generateTorque')
-          (connector_end 'powerTrain.engine.generateTorque'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "12b-Allocation"))) (name "12b-Allocation") (declared-name "12b-Allocation")
+      (contains
+        (element (kind "allocation") (id (node (document "d0") (qualified-name "12b-Allocation::"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "12b-Allocation::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "12b-Allocation::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel"))) (name "LogicalModel") (declared-name "LogicalModel")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque"))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel"))) (name "PhysicalModel") (declared-name "PhysicalModel")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque"))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (allocate (status resolved) (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (to (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (to (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))))
+  )
+  (pending-relationships
+    (perform (status pending) (document "d0") (source-qualified "12b-Allocation::LogicalModel::torqueGenerator") (target-qualified "12b-Allocation::LogicalModel::torqueGenerator::providePower::generateTorque"))
+    (perform (status pending) (document "d0") (source-qualified "12b-Allocation::PhysicalModel::powerTrain::engine") (target-qualified "12b-Allocation::PhysicalModel::powerTrain::engine::providePower::generateTorque"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

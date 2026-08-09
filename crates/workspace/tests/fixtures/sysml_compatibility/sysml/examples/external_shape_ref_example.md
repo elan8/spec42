@@ -146,31 +146,31 @@ semantic.unresolved_name 'height'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ExternalShapeRefExample'
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (namespace_import private -> 'ShapeItems'[unresolved])
-      (membership_import private -> 'ISQ::mass'[unresolved])
-      (membership_import private -> 'SI::mm'[unresolved])
-      (metadata_def 'ExternalShapeRef'
-        (documentation)
-        (attribute_usage composite 'purpose' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'shapeIri' : 'String'[unresolved]
-          (multiplicity_range [1])))
-      (part_usage 'myBatteryUnit'
-        (item_usage composite :>> 'shape'[unresolved] : 'Shell'[unresolved]
-          (metadata_usage :> 'ExternalShapeRefExample::ExternalShapeRef'[metadata_def]
-            (feature_def 'purpose' :>> 'ExternalShapeRefExample::ExternalShapeRef::purpose'[attribute_usage][implied]
-              (feature_value (=)))
-            (feature_def 'shapeIri' :>> 'ExternalShapeRefExample::ExternalShapeRef::shapeIri'[attribute_usage][implied]
-              (feature_value (=)))))
-        (item_usage composite 'envelopingBoxBatteryUnit' : 'Box'[unresolved] :> 'envelopingShapes'[unresolved]
-          (reference_usage reference :>> 'length'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'width'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'height'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ExternalShapeRefExample"))) (name "ExternalShapeRefExample") (declared-name "ExternalShapeRefExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (name "ExternalShapeRef") (declared-name "ExternalShapeRef")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (name "purpose") (declared-name "purpose") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (name "shapeIri") (declared-name "shapeIri") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::String"))) (name "String") (declared-name "String"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mass"))) (name "mass") (declared-name "mass"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mm"))) (name "mm") (declared-name "mm"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (name "myBatteryUnit") (declared-name "myBatteryUnit") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::_documentation"))) (to (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

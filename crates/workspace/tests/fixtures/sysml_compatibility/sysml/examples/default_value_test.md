@@ -82,20 +82,39 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'DefaultValueTest'
-      (part_def 'V'
-        (attribute_usage composite 'm'
-          (feature_value (default =)))
-        (attribute_usage composite 'n'
-          (feature_value (=))))
-      (part_usage 'v1' : 'DefaultValueTest::V'[part_def]
-        (attribute_usage composite :>> 'DefaultValueTest::V::m'[attribute_usage]
-          (feature_value (=))))
-      (part_def 'W' :> 'DefaultValueTest::V'[part_def]
-        (attribute_usage composite :>> 'DefaultValueTest::V::m'[attribute_usage]
-          (feature_value (default =))))
-      (part_usage 'v2'
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "DefaultValueTest"))) (name "DefaultValueTest") (declared-name "DefaultValueTest")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "DefaultValueTest::V"))) (name "V") (declared-name "V") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "DefaultValueTest::V::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "integerLiteral") (literal 10)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "DefaultValueTest::V")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "DefaultValueTest::V::n"))) (name "n") (declared-name "n") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 20)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "DefaultValueTest::V"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "DefaultValueTest::V::n"))) (role feature-value))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "DefaultValueTest::W"))) (name "W") (declared-name "W") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "DefaultValueTest::W::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "featureReference") (reference "n")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "DefaultValueTest::W")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "DefaultValueTest::v1"))) (name "v1") (declared-name "v1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "DefaultValueTest::v1::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 20)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "DefaultValueTest::V"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "DefaultValueTest::v1::m"))) (role feature-value))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "DefaultValueTest::v2"))) (name "v2") (declared-name "v2") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "constructor") (reference "W")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "DefaultValueTest::v2"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::W::m"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V::m"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::v1::m"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V::m"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::W"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::v1"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

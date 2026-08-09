@@ -138,30 +138,49 @@ semantic.unresolved_name 'Integer'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_12-Compound Value Type'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'USCustomaryUnits::in'[unresolved])
-      (attribute_def 'PositionVector'
-        (attribute_usage composite 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'z' : 'Real'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_def 'LengthValue' :> 'Real'[unresolved])
-      (attribute_def 'TireInfo'
-        (attribute_usage composite 'manufacturer' : 'String'[unresolved])
-        (attribute_usage composite 'hubDiameter' : '15_12-Compound Value Type::LengthValue'[attribute_def])
-        (attribute_usage composite 'width' : 'Integer'[unresolved])
-        (attribute_usage composite 'placement' : '15_12-Compound Value Type::PositionVector'[attribute_def]
-          (multiplicity_range [0..1])))
-      (attribute_usage 'frenchTireInfo' : '15_12-Compound Value Type::TireInfo'[attribute_def]
-        (attribute_usage composite :>> '15_12-Compound Value Type::TireInfo::manufacturer'[attribute_usage]
-          (feature_value (=)))
-        (attribute_usage composite :>> '15_12-Compound Value Type::TireInfo::hubDiameter'[attribute_usage]
-          (feature_value (=)))
-        (attribute_usage composite :>> '15_12-Compound Value Type::TireInfo::width'[attribute_usage]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_12-Compound Value Type"))) (name "15_12-Compound Value Type") (declared-name "15_12-Compound Value Type")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::*"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::LengthValue"))) (name "LengthValue") (declared-name "LengthValue") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector"))) (name "PositionVector") (declared-name "PositionVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector::y"))) (name "y") (declared-name "y") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector::z"))) (name "z") (declared-name "z") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo"))) (name "TireInfo") (declared-name "TireInfo") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::hubDiameter"))) (name "hubDiameter") (declared-name "hubDiameter") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::manufacturer"))) (name "manufacturer") (declared-name "manufacturer") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::placement"))) (name "placement") (declared-name "placement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo"))) (name "frenchTireInfo") (declared-name "frenchTireInfo") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::hubDiameter"))) (name "hubDiameter") (declared-name "hubDiameter") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::manufacturer"))) (name "manufacturer") (declared-name "manufacturer") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_12-Compound Value Type::in"))) (name "in") (declared-name "in"))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::hubDiameter"))) (to (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::hubDiameter"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::manufacturer"))) (to (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::manufacturer"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::width"))) (to (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::width"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::hubDiameter"))) (to (node (document "d0") (qualified-name "15_12-Compound Value Type::LengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo::placement"))) (to (node (document "d0") (qualified-name "15_12-Compound Value Type::PositionVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo"))) (to (node (document "d0") (qualified-name "15_12-Compound Value Type::TireInfo"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -86,19 +86,21 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ArgumentResolutionBug'
-      (class_def 'A'
-        (feature_def 'x'))
-      (behavior_def 'B'
-        (feature_def in 'x')
-        (feature_def out : 'ArgumentResolutionBug::A'[class_def]
-          (feature_value (=))))
-      (class_def 'C'
-        (feature_def 'a' : 'ArgumentResolutionBug::A'[class_def])
-        (feature_def 'b' : 'ArgumentResolutionBug::B'[behavior_def])
-        (connector_def
-          (connector_end 'a' :> 'ArgumentResolutionBug::A::x'[feature_def])
-          (connector_end 'b'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ArgumentResolutionBug"))) (name "ArgumentResolutionBug") (declared-name "ArgumentResolutionBug")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ArgumentResolutionBug::A"))) (name "A") (declared-name "A"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ArgumentResolutionBug::B"))) (name "B") (declared-name "B"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ArgumentResolutionBug::C"))) (name "C") (declared-name "C"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

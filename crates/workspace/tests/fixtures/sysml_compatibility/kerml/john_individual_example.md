@@ -332,44 +332,26 @@ semantic.unresolved_name 'timeSliceOf'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'JohnIndividualExample'
-      (namespace_import private -> 'Objects'[unresolved])
-      (class_def 'Person' :> 'Object'[unresolved]
-        (documentation)
-        (class_def 'Life' :> 'JohnIndividualExample::Person'[class_def] :> 'Occurrences::Life'[unresolved])
-        (feature_def 'age' : 'ScalarValues::Natural'[unresolved])
-        (feature_def :>> 'portions'[unresolved] : 'JohnIndividualExample::Person'[class_def]
-          (documentation))
-        (feature_def :>> 'portionOf'[unresolved] : 'JohnIndividualExample::Person'[class_def]))
-      (class_def 'President' :> 'JohnIndividualExample::Person'[class_def]
-        (documentation)
-        (feature_def :>> 'timeSliceOf'[unresolved] : 'JohnIndividualExample::Person::Life'[class_def]
-          (multiplicity_range [1])))
-      (class_def 'John' :> 'JohnIndividualExample::Person'[class_def]
-        (documentation)
-        (class_def sufficient 'JohnLife' :> 'JohnIndividualExample::John'[class_def] :> 'Occurrences::Life'[unresolved]
-          (multiplicity_range [0..1])))
-      (class_def 'JohnAsPresident' :> 'JohnIndividualExample::John'[class_def] :> 'JohnIndividualExample::President'[class_def]
-        (documentation))
-      (class_def 'Country' :> 'Object'[unresolved]
-        (documentation)
-        (class_def sufficient 'Life' :> 'JohnIndividualExample::Country'[class_def] :> 'Occurrences::Life'[unresolved])
-        (feature_def 'presidentOfCountry' : 'JohnIndividualExample::President'[class_def]
-          (multiplicity_range [0..1]))
-        (feature_def :>> 'portions'[unresolved] : 'JohnIndividualExample::Country'[class_def])
-        (feature_def :>> 'portionOf'[unresolved] : 'JohnIndividualExample::Country'[class_def]))
-      (class_def 'UnitedStates' :> 'JohnIndividualExample::Country'[class_def]
-        (documentation)
-        (class_def sufficient 'USLife' :> 'JohnIndividualExample::UnitedStates'[class_def] :> 'Occurrences::Life'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'presidentOfUS' :>> 'JohnIndividualExample::Country::presidentOfCountry'[feature_def]
-          (multiplicity_range [1])
-          (invariant_def
-            (result_expr_membership))))
-      (class_def 'UnitedStatesWithJohnAsPresident' :> 'JohnIndividualExample::UnitedStates'[class_def]
-        (documentation)
-        (feature_def :>> 'timeSliceOf'[unresolved] : 'JohnIndividualExample::Country::Life'[class_def])
-        (feature_def :>> 'JohnIndividualExample::UnitedStates::presidentOfUS'[feature_def] : 'JohnIndividualExample::JohnAsPresident'[class_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (name "JohnIndividualExample") (declared-name "JohnIndividualExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "JohnIndividualExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (name "Country") (declared-name "Country"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::John"))) (name "John") (declared-name "John"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::JohnAsPresident"))) (name "JohnAsPresident") (declared-name "JohnAsPresident"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (name "Person") (declared-name "Person"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::President"))) (name "President") (declared-name "President"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStates"))) (name "UnitedStates") (declared-name "UnitedStates"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

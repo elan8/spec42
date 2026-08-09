@@ -232,49 +232,48 @@ semantic.unresolved_name 'MyWheel'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'OneToOneConnectorsModelToBeExecuted'
-      (documentation)
-      (membership_import public -> 'WithoutConnectorsModelToBeExecuted::Wheel'[unresolved])
-      (membership_import public -> 'WithoutConnectorsModelToBeExecuted::BikeFork'[unresolved])
-      (classifier_def 'Bicycle'
-        (feature_def 'rollsOn' : 'Wheel'[unresolved]
-          (multiplicity_range [2]))
-        (feature_def 'holdsWheel' : 'BikeFork'[unresolved]
-          (multiplicity_range [*]))
-        (connector_def 'fixWheel' : 'OneToOneConnectorsModelToBeExecuted::BikeWheelFixed'[association_def]
-          (connector_end 'rollsOn')
-          (connector_end 'holdsWheel')))
-      (association_def 'BikeWheelFixed'
-        (feature_def end 'wheel' : 'Wheel'[unresolved])
-        (feature_def end 'fixedTo' : 'BikeFork'[unresolved])))
-    (package 'OneToOneConnectorsExecution'
-      (documentation)
-      (namespace_import private -> 'Atoms'[unresolved])
-      (namespace_import public -> 'OneToOneConnectorsModelToBeExecuted'[package])
-      (membership_import public -> 'WithoutConnectorsExecution::MyWheel1'[unresolved])
-      (membership_import public -> 'WithoutConnectorsExecution::MyWheel2'[unresolved])
-      (membership_import public -> 'WithoutConnectorsExecution::MyWheel'[unresolved])
-      (classifier_def 'MyBikeFork1' :> 'BikeFork'[unresolved])
-      (classifier_def 'MyBikeFork2' :> 'BikeFork'[unresolved])
-      (classifier_def 'MyBikeFork'
-        (unioning)
-        (unioning))
-      (association_def 'MyBikeWheel1_Fork1_BWF_Link' :> 'OneToOneConnectorsModelToBeExecuted::BikeWheelFixed'[association_def]
-        (feature_def end :>> 'OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::wheel'[feature_def] : 'MyWheel1'[unresolved])
-        (feature_def end :>> 'OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::fixedTo'[feature_def] : 'OneToOneConnectorsExecution::MyBikeFork1'[classifier_def]))
-      (association_def 'MyBikeWheel2_Fork2_BWF_Link' :> 'OneToOneConnectorsModelToBeExecuted::BikeWheelFixed'[association_def]
-        (feature_def end :>> 'OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::wheel'[feature_def] : 'MyWheel2'[unresolved])
-        (feature_def end :>> 'OneToOneConnectorsModelToBeExecuted::BikeWheelFixed::fixedTo'[feature_def] : 'OneToOneConnectorsExecution::MyBikeFork2'[classifier_def]))
-      (classifier_def 'MyBikeWheel_Fork_BWF_Link'
-        (unioning)
-        (unioning))
-      (classifier_def 'MyBike' :> 'OneToOneConnectorsModelToBeExecuted::Bicycle'[classifier_def]
-        (feature_def :>> 'OneToOneConnectorsModelToBeExecuted::Bicycle::rollsOn'[feature_def] : 'MyWheel'[unresolved])
-        (feature_def :>> 'OneToOneConnectorsModelToBeExecuted::Bicycle::holdsWheel'[feature_def] : 'OneToOneConnectorsExecution::MyBikeFork'[classifier_def])
-        (connector_def :>> 'OneToOneConnectorsModelToBeExecuted::Bicycle::fixWheel'[connector_def] : 'OneToOneConnectorsExecution::MyBikeWheel_Fork_BWF_Link'[classifier_def]
-          (multiplicity_range [2])
-          (connector_end 'rollsOn')
-          (connector_end 'holdsWheel'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))) (name "OneToOneConnectorsExecution") (declared-name "OneToOneConnectorsExecution")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBike"))) (name "MyBike") (declared-name "MyBike"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork"))) (name "MyBikeFork") (declared-name "MyBikeFork"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork1"))) (name "MyBikeFork1") (declared-name "MyBikeFork1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeFork2"))) (name "MyBikeFork2") (declared-name "MyBikeFork2"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel1_Fork1_BWF_Link"))) (name "MyBikeWheel1_Fork1_BWF_Link") (declared-name "MyBikeWheel1_Fork1_BWF_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel2_Fork2_BWF_Link"))) (name "MyBikeWheel2_Fork2_BWF_Link") (declared-name "MyBikeWheel2_Fork2_BWF_Link"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyBikeWheel_Fork_BWF_Link"))) (name "MyBikeWheel_Fork_BWF_Link") (declared-name "MyBikeWheel_Fork_BWF_Link"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel"))) (name "MyWheel") (declared-name "MyWheel"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel1"))) (name "MyWheel1") (declared-name "MyWheel1"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel2"))) (name "MyWheel2") (declared-name "MyWheel2"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted"))) (name "OneToOneConnectorsModelToBeExecuted") (declared-name "OneToOneConnectorsModelToBeExecuted")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed"))) (name "BikeWheelFixed") (declared-name "BikeWheelFixed"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Wheel"))) (name "Wheel") (declared-name "Wheel"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToOneConnectorsExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "OneToOneConnectorsExecution"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

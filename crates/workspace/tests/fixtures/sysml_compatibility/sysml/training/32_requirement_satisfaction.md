@@ -118,21 +118,44 @@ semantic.unresolved_name 'generateTorque'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Requirement Satisfaction'
-      (namespace_import private -> 'Requirement Definitions'[unresolved])
-      (namespace_import private -> 'Requirement Groups'[unresolved])
-      (action_usage 'provide power'
-        (action_usage composite 'generate torque'))
-      (part_usage 'vehicle_c1' : 'Vehicle'[unresolved]
-        (perform_action_usage :>> 'Requirement Satisfaction::provide power'[action_usage])
-        (part_usage composite 'engine_v1' : 'Engine'[unresolved]
-          (port_usage composite :>> 'clutchPort'[unresolved])
-          (perform_action_usage :>> 'Requirement Satisfaction::provide power::generate torque'[action_usage])
-          (reference_usage reference :>> 'generateTorque'[unresolved])))
-      (part_usage 'Vehicle c1 Design Context'
-        (reference_usage reference 'vehicle_design' :> 'Requirement Satisfaction::vehicle_c1'[part_usage])
-        (satisfy_requirement_usage 'vehicleSpecification' by 'Requirement Satisfaction::Vehicle c1 Design Context::vehicle_design'[reference_usage])
-        (satisfy_requirement_usage 'engineSpecification' by 'Requirement Satisfaction::vehicle_c1::engine_v1'[part_usage])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Requirement Satisfaction"))) (name "Requirement Satisfaction") (declared-name "Requirement Satisfaction")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Satisfaction::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Satisfaction::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (name "Vehicle c1 Design Context") (declared-name "Vehicle c1 Design Context") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (name "provide power") (declared-name "provide power") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (name "generate torque") (declared-name "generate torque") (declared (properties (composite true) (reference false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (name "engine_v1") (declared-name "engine_v1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::provide power.generate torque"))) (name "provide power.generate torque") (declared-name "provide power.generate torque"))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (name "provide power") (declared-name "provide power"))
+          )
+        )
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::unresolved_satisfy_source#diagnostic"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))))
+  )
+  (pending-relationships
+    (perform (status pending) (document "d0") (source-qualified "Requirement Satisfaction::vehicle_c1::engine_v1") (target-qualified "Requirement Satisfaction::vehicle_c1::engine_v1::provide power::generate torque"))
+  )
+  (pending-expression-relationships
+    (satisfy (status pending-expression) (document "d0") (source-expression "engineSpecification") (target-expression "vehicle_design::engine_v1") (container-prefix "Requirement Satisfaction::Vehicle c1 Design Context"))
+    (satisfy (status pending-expression) (document "d0") (source-expression "vehicleSpecification") (target-expression "vehicle_design") (container-prefix "Requirement Satisfaction::Vehicle c1 Design Context"))
+  )
+)
 ~~~

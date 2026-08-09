@@ -5183,977 +5183,798 @@ standard library package ISQThermodynamics {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQThermodynamics'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (alias_member 'TemperatureUnit' -> 'ThermodynamicTemperatureUnit'[unresolved])
-      (alias_member 'TemperatureValue' -> 'ThermodynamicTemperatureValue'[unresolved])
-      (alias_member 'temperature' -> 'thermodynamicTemperature'[unresolved])
-      (attribute_def 'CelsiusTemperatureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::CelsiusTemperatureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'celsiusTemperature' : 'ISQThermodynamics::CelsiusTemperatureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CelsiusTemperatureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LinearExpansionCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::LinearExpansionCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearExpansionCoefficient' : 'ISQThermodynamics::LinearExpansionCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearExpansionCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CubicExpansionCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::CubicExpansionCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cubicExpansionCoefficient' : 'ISQThermodynamics::CubicExpansionCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CubicExpansionCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RelativePressureCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::RelativePressureCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'relativePressureCoefficient' : 'ISQThermodynamics::RelativePressureCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RelativePressureCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PressureCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::PressureCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'pressureCoefficient' : 'ISQThermodynamics::PressureCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PressureCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'IsothermalCompressibilityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::IsothermalCompressibilityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'isothermalCompressibility' : 'ISQThermodynamics::IsothermalCompressibilityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'IsothermalCompressibilityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'IsentropicCompressibilityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::IsentropicCompressibilityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'isentropicCompressibility' : 'ISQThermodynamics::IsentropicCompressibilityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'IsentropicCompressibilityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'heat' : 'ISQThermodynamics::EnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'amountOfHeat' -> 'ISQThermodynamics::heat'[attribute_usage])
-      (attribute_usage 'latentHeat' : 'ISQThermodynamics::EnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'HeatFlowRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::HeatFlowRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'heatFlowRate' : 'ISQThermodynamics::HeatFlowRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'HeatFlowRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'DensityOfHeatFlowRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::DensityOfHeatFlowRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'densityOfHeatFlowRate' : 'ISQThermodynamics::DensityOfHeatFlowRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DensityOfHeatFlowRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ThermalConductivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::ThermalConductivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thermalConductivity' : 'ISQThermodynamics::ThermalConductivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThermalConductivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CoefficientOfHeatTransferValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::CoefficientOfHeatTransferUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'coefficientOfHeatTransfer' : 'ISQThermodynamics::CoefficientOfHeatTransferValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CoefficientOfHeatTransferUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SurfaceCoefficientOfHeatTransferValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'surfaceCoefficientOfHeatTransfer' : 'ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SurfaceCoefficientOfHeatTransferUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ThermalInsulanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::ThermalInsulanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thermalInsulance' : 'ISQThermodynamics::ThermalInsulanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThermalInsulanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'CoefficientOfThermalInsulanceUnit' -> 'ISQThermodynamics::ThermalInsulanceUnit'[attribute_def])
-      (alias_member 'CoefficientOfThermalInsulanceValue' -> 'ISQThermodynamics::ThermalInsulanceValue'[attribute_def])
-      (alias_member 'coefficientOfThermalInsulance' -> 'ISQThermodynamics::thermalInsulance'[attribute_usage])
-      (attribute_def 'ThermalResistanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::ThermalResistanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thermalResistance' : 'ISQThermodynamics::ThermalResistanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThermalResistanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ThermalConductanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::ThermalConductanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thermalConductance' : 'ISQThermodynamics::ThermalConductanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThermalConductanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ThermalDiffusivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::ThermalDiffusivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thermalDiffusivity' : 'ISQThermodynamics::ThermalDiffusivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThermalDiffusivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'HeatCapacityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::HeatCapacityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'heatCapacity' : 'ISQThermodynamics::HeatCapacityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'HeatCapacityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpecificHeatCapacityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificHeatCapacityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificHeatCapacity' : 'ISQThermodynamics::SpecificHeatCapacityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificHeatCapacityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpecificHeatCapacityAtConstantPressureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificHeatCapacityAtConstantPressure' : 'ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificHeatCapacityAtConstantPressureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpecificHeatCapacityAtConstantVolumeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificHeatCapacityAtConstantVolume' : 'ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificHeatCapacityAtConstantVolumeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpecificHeatCapacityAtSaturatedVapourPressureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificHeatCapacityAtSaturatedVapourPressure' : 'ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificHeatCapacityAtSaturatedVapourPressureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RatioOfSpecificHeatCapacitiesValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'ratioOfSpecificHeatCapacities' : 'ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'IsentropicExponentValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'isentropicExponent' : 'ISQThermodynamics::IsentropicExponentValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'isentropicExpansionFactor' -> 'ISQThermodynamics::isentropicExponent'[attribute_usage])
-      (attribute_def 'EntropyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::EntropyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'entropy' : 'ISQThermodynamics::EntropyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EntropyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpecificEntropyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificEntropyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificEntropy' : 'ISQThermodynamics::SpecificEntropyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificEntropyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'EnergyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::EnergyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'energy' : 'ISQThermodynamics::EnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EnergyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'internalEnergy' : 'ISQThermodynamics::EnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'thermodynamicEnergy' -> 'ISQThermodynamics::internalEnergy'[attribute_usage])
-      (attribute_usage 'enthalpy' : 'ISQThermodynamics::EnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'helmholtzEnergy' : 'ISQThermodynamics::EnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'helmholtzFunction' -> 'ISQThermodynamics::helmholtzEnergy'[attribute_usage])
-      (attribute_usage 'gibbsEnergy' : 'ISQThermodynamics::EnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'gibbsFunction' -> 'ISQThermodynamics::gibbsEnergy'[attribute_usage])
-      (attribute_def 'SpecificEnergyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificEnergyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificEnergy' : 'ISQThermodynamics::SpecificEnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificEnergyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'specificInternalEnergy' : 'ISQThermodynamics::SpecificEnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'specificThermodynamicEnergy' -> 'ISQThermodynamics::specificInternalEnergy'[attribute_usage])
-      (attribute_def 'SpecificEnthalpyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificEnthalpyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificEnthalpy' : 'ISQThermodynamics::SpecificEnthalpyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificEnthalpyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'specificHelmholtzEnergy' : 'ISQThermodynamics::SpecificEnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'specificHelmholtzFunction' -> 'ISQThermodynamics::specificHelmholtzEnergy'[attribute_usage])
-      (attribute_usage 'specificGibbsEnergy' : 'ISQThermodynamics::SpecificEnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'specificGibbsFunction' -> 'ISQThermodynamics::specificGibbsEnergy'[attribute_usage])
-      (attribute_def 'MassieuFunctionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::MassieuFunctionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massieuFunction' : 'ISQThermodynamics::MassieuFunctionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassieuFunctionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PlanckFunctionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::PlanckFunctionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'planckFunction' : 'ISQThermodynamics::PlanckFunctionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PlanckFunctionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'JouleThomsonCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::JouleThomsonCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'jouleThomsonCoefficient' : 'ISQThermodynamics::JouleThomsonCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'JouleThomsonCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ThermalEfficiencyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'thermalEfficiency' : 'ISQThermodynamics::ThermalEfficiencyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'MaximumThermalEfficiencyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'maximumThermalEfficiency' : 'ISQThermodynamics::MaximumThermalEfficiencyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'SpecificGasConstantValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::SpecificGasConstantUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificGasConstant' : 'ISQThermodynamics::SpecificGasConstantValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificGasConstantUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassConcentrationOfWaterValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::MassConcentrationOfWaterUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massConcentrationOfWater' : 'ISQThermodynamics::MassConcentrationOfWaterValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassConcentrationOfWaterUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassConcentrationOfWaterVapourAbsoluteHumidityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massConcentrationOfWaterVapourAbsoluteHumidity' : 'ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassConcentrationOfWaterVapourAbsoluteHumidityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassRatioOfWaterToDryMatterValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'massRatioOfWaterToDryMatter' : 'ISQThermodynamics::MassRatioOfWaterToDryMatterValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'MassRatioOfWaterVapourToDryGasValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'massRatioOfWaterVapourToDryGas' : 'ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'MassFractionOfWaterValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'massFractionOfWater' : 'ISQThermodynamics::MassFractionOfWaterValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'MassFractionOfDryMatterValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'massFractionOfDryMatter' : 'ISQThermodynamics::MassFractionOfDryMatterValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'RelativeHumidityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeHumidity' : 'ISQThermodynamics::RelativeHumidityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'RelativeMassConcentrationOfVapourValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeMassConcentrationOfVapour' : 'ISQThermodynamics::RelativeMassConcentrationOfVapourValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'RelativeMassRatioOfVapourValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeMassRatioOfVapour' : 'ISQThermodynamics::RelativeMassRatioOfVapourValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'dewPointTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQThermodynamics"))) (name "ISQThermodynamics") (declared-name "ISQThermodynamics")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))) (name "CelsiusTemperatureUnit") (declared-name "CelsiusTemperatureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))) (name "CelsiusTemperatureValue") (declared-name "CelsiusTemperatureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))) (name "CoefficientOfHeatTransferUnit") (declared-name "CoefficientOfHeatTransferUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))) (name "CoefficientOfHeatTransferValue") (declared-name "CoefficientOfHeatTransferValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfThermalInsulanceUnit"))) (name "CoefficientOfThermalInsulanceUnit") (declared-name "CoefficientOfThermalInsulanceUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfThermalInsulanceValue"))) (name "CoefficientOfThermalInsulanceValue") (declared-name "CoefficientOfThermalInsulanceValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))) (name "CubicExpansionCoefficientUnit") (declared-name "CubicExpansionCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))) (name "CubicExpansionCoefficientValue") (declared-name "CubicExpansionCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))) (name "DensityOfHeatFlowRateUnit") (declared-name "DensityOfHeatFlowRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))) (name "DensityOfHeatFlowRateValue") (declared-name "DensityOfHeatFlowRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))) (name "EnergyUnit") (declared-name "EnergyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))) (name "EntropyUnit") (declared-name "EntropyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))) (name "EntropyValue") (declared-name "EntropyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))) (name "HeatCapacityUnit") (declared-name "HeatCapacityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))) (name "HeatCapacityValue") (declared-name "HeatCapacityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))) (name "HeatFlowRateUnit") (declared-name "HeatFlowRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))) (name "HeatFlowRateValue") (declared-name "HeatFlowRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))) (name "IsentropicCompressibilityUnit") (declared-name "IsentropicCompressibilityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))) (name "IsentropicCompressibilityValue") (declared-name "IsentropicCompressibilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))) (name "IsentropicExponentValue") (declared-name "IsentropicExponentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))) (name "IsothermalCompressibilityUnit") (declared-name "IsothermalCompressibilityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))) (name "IsothermalCompressibilityValue") (declared-name "IsothermalCompressibilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))) (name "JouleThomsonCoefficientUnit") (declared-name "JouleThomsonCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))) (name "JouleThomsonCoefficientValue") (declared-name "JouleThomsonCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))) (name "LinearExpansionCoefficientUnit") (declared-name "LinearExpansionCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))) (name "LinearExpansionCoefficientValue") (declared-name "LinearExpansionCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))) (name "MassConcentrationOfWaterUnit") (declared-name "MassConcentrationOfWaterUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))) (name "MassConcentrationOfWaterValue") (declared-name "MassConcentrationOfWaterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))) (name "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (declared-name "MassConcentrationOfWaterVapourAbsoluteHumidityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))) (name "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (declared-name "MassConcentrationOfWaterVapourAbsoluteHumidityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))) (name "MassFractionOfDryMatterValue") (declared-name "MassFractionOfDryMatterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))) (name "MassFractionOfWaterValue") (declared-name "MassFractionOfWaterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))) (name "MassRatioOfWaterToDryMatterValue") (declared-name "MassRatioOfWaterToDryMatterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))) (name "MassRatioOfWaterVapourToDryGasValue") (declared-name "MassRatioOfWaterVapourToDryGasValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))) (name "MassieuFunctionUnit") (declared-name "MassieuFunctionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))) (name "MassieuFunctionValue") (declared-name "MassieuFunctionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))) (name "MaximumThermalEfficiencyValue") (declared-name "MaximumThermalEfficiencyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))) (name "PlanckFunctionUnit") (declared-name "PlanckFunctionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))) (name "PlanckFunctionValue") (declared-name "PlanckFunctionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))) (name "PressureCoefficientUnit") (declared-name "PressureCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))) (name "PressureCoefficientValue") (declared-name "PressureCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))) (name "RatioOfSpecificHeatCapacitiesValue") (declared-name "RatioOfSpecificHeatCapacitiesValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQThermodynamics::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))) (name "RelativeHumidityValue") (declared-name "RelativeHumidityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))) (name "RelativeMassConcentrationOfVapourValue") (declared-name "RelativeMassConcentrationOfVapourValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))) (name "RelativeMassRatioOfVapourValue") (declared-name "RelativeMassRatioOfVapourValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))) (name "RelativePressureCoefficientUnit") (declared-name "RelativePressureCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))) (name "RelativePressureCoefficientValue") (declared-name "RelativePressureCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))) (name "SpecificEnergyUnit") (declared-name "SpecificEnergyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))) (name "SpecificEnergyValue") (declared-name "SpecificEnergyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))) (name "SpecificEnthalpyUnit") (declared-name "SpecificEnthalpyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))) (name "SpecificEnthalpyValue") (declared-name "SpecificEnthalpyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))) (name "SpecificEntropyUnit") (declared-name "SpecificEntropyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))) (name "SpecificEntropyValue") (declared-name "SpecificEntropyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))) (name "SpecificGasConstantUnit") (declared-name "SpecificGasConstantUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))) (name "SpecificGasConstantValue") (declared-name "SpecificGasConstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))) (name "SpecificHeatCapacityAtConstantPressureUnit") (declared-name "SpecificHeatCapacityAtConstantPressureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))) (name "SpecificHeatCapacityAtConstantPressureValue") (declared-name "SpecificHeatCapacityAtConstantPressureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))) (name "SpecificHeatCapacityAtConstantVolumeUnit") (declared-name "SpecificHeatCapacityAtConstantVolumeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))) (name "SpecificHeatCapacityAtConstantVolumeValue") (declared-name "SpecificHeatCapacityAtConstantVolumeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))) (name "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (declared-name "SpecificHeatCapacityAtSaturatedVapourPressureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))) (name "SpecificHeatCapacityAtSaturatedVapourPressureValue") (declared-name "SpecificHeatCapacityAtSaturatedVapourPressureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))) (name "SpecificHeatCapacityUnit") (declared-name "SpecificHeatCapacityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))) (name "SpecificHeatCapacityValue") (declared-name "SpecificHeatCapacityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))) (name "SurfaceCoefficientOfHeatTransferUnit") (declared-name "SurfaceCoefficientOfHeatTransferUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))) (name "SurfaceCoefficientOfHeatTransferValue") (declared-name "SurfaceCoefficientOfHeatTransferValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::TemperatureUnit"))) (name "TemperatureUnit") (declared-name "TemperatureUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::TemperatureValue"))) (name "TemperatureValue") (declared-name "TemperatureValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))) (name "ThermalConductanceUnit") (declared-name "ThermalConductanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))) (name "ThermalConductanceValue") (declared-name "ThermalConductanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))) (name "ThermalConductivityUnit") (declared-name "ThermalConductivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))) (name "ThermalConductivityValue") (declared-name "ThermalConductivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))) (name "ThermalDiffusivityUnit") (declared-name "ThermalDiffusivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))) (name "ThermalDiffusivityValue") (declared-name "ThermalDiffusivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))) (name "ThermalEfficiencyValue") (declared-name "ThermalEfficiencyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))) (name "ThermalInsulanceUnit") (declared-name "ThermalInsulanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))) (name "ThermalInsulanceValue") (declared-name "ThermalInsulanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))) (name "ThermalResistanceUnit") (declared-name "ThermalResistanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))) (name "ThermalResistanceValue") (declared-name "ThermalResistanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::_documentation"))) (name ""))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::amountOfHeat"))) (name "amountOfHeat") (declared-name "amountOfHeat"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (name "celsiusTemperature") (declared-name "celsiusTemperature") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (name "coefficientOfHeatTransfer") (declared-name "coefficientOfHeatTransfer") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfThermalInsulance"))) (name "coefficientOfThermalInsulance") (declared-name "coefficientOfThermalInsulance"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (name "cubicExpansionCoefficient") (declared-name "cubicExpansionCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (name "densityOfHeatFlowRate") (declared-name "densityOfHeatFlowRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))) (name "dewPointTemperature") (declared-name "dewPointTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (name "energy") (declared-name "energy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (name "enthalpy") (declared-name "enthalpy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (name "entropy") (declared-name "entropy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (name "gibbsEnergy") (declared-name "gibbsEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::gibbsFunction"))) (name "gibbsFunction") (declared-name "gibbsFunction"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (name "heat") (declared-name "heat") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::heat::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::heat")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (name "heatCapacity") (declared-name "heatCapacity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (name "heatFlowRate") (declared-name "heatFlowRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (name "helmholtzEnergy") (declared-name "helmholtzEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzFunction"))) (name "helmholtzFunction") (declared-name "helmholtzFunction"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (name "internalEnergy") (declared-name "internalEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (name "isentropicCompressibility") (declared-name "isentropicCompressibility") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExpansionFactor"))) (name "isentropicExpansionFactor") (declared-name "isentropicExpansionFactor"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (name "isentropicExponent") (declared-name "isentropicExponent") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (name "isothermalCompressibility") (declared-name "isothermalCompressibility") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (name "jouleThomsonCoefficient") (declared-name "jouleThomsonCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (name "latentHeat") (declared-name "latentHeat") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (name "linearExpansionCoefficient") (declared-name "linearExpansionCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (name "massConcentrationOfWater") (declared-name "massConcentrationOfWater") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (name "massConcentrationOfWaterVapourAbsoluteHumidity") (declared-name "massConcentrationOfWaterVapourAbsoluteHumidity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (name "massFractionOfDryMatter") (declared-name "massFractionOfDryMatter") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (name "massFractionOfWater") (declared-name "massFractionOfWater") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (name "massRatioOfWaterToDryMatter") (declared-name "massRatioOfWaterToDryMatter") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (name "massRatioOfWaterVapourToDryGas") (declared-name "massRatioOfWaterVapourToDryGas") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (name "massieuFunction") (declared-name "massieuFunction") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (name "maximumThermalEfficiency") (declared-name "maximumThermalEfficiency") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (name "planckFunction") (declared-name "planckFunction") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (name "pressureCoefficient") (declared-name "pressureCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (name "ratioOfSpecificHeatCapacities") (declared-name "ratioOfSpecificHeatCapacities") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (name "relativeHumidity") (declared-name "relativeHumidity") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (name "relativeMassConcentrationOfVapour") (declared-name "relativeMassConcentrationOfVapour") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (name "relativeMassRatioOfVapour") (declared-name "relativeMassRatioOfVapour") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (name "relativePressureCoefficient") (declared-name "relativePressureCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (name "specificEnergy") (declared-name "specificEnergy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (name "specificEnthalpy") (declared-name "specificEnthalpy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (name "specificEntropy") (declared-name "specificEntropy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (name "specificGasConstant") (declared-name "specificGasConstant") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (name "specificGibbsEnergy") (declared-name "specificGibbsEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsFunction"))) (name "specificGibbsFunction") (declared-name "specificGibbsFunction"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (name "specificHeatCapacity") (declared-name "specificHeatCapacity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (name "specificHeatCapacityAtConstantPressure") (declared-name "specificHeatCapacityAtConstantPressure") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (name "specificHeatCapacityAtConstantVolume") (declared-name "specificHeatCapacityAtConstantVolume") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (name "specificHeatCapacityAtSaturatedVapourPressure") (declared-name "specificHeatCapacityAtSaturatedVapourPressure") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (name "specificHelmholtzEnergy") (declared-name "specificHelmholtzEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzFunction"))) (name "specificHelmholtzFunction") (declared-name "specificHelmholtzFunction"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (name "specificInternalEnergy") (declared-name "specificInternalEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::specificThermodynamicEnergy"))) (name "specificThermodynamicEnergy") (declared-name "specificThermodynamicEnergy"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (name "surfaceCoefficientOfHeatTransfer") (declared-name "surfaceCoefficientOfHeatTransfer") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::temperature"))) (name "temperature") (declared-name "temperature"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (name "thermalConductance") (declared-name "thermalConductance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (name "thermalConductivity") (declared-name "thermalConductivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (name "thermalDiffusivity") (declared-name "thermalDiffusivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (name "thermalEfficiency") (declared-name "thermalEfficiency") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (name "thermalInsulance") (declared-name "thermalInsulance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (name "thermalResistance") (declared-name "thermalResistance") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQThermodynamics::thermodynamicEnergy"))) (name "thermodynamicEnergy") (declared-name "thermodynamicEnergy"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::dewPointTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heat::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::heat"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EntropyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::celsiusTemperature"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CelsiusTemperatureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::coefficientOfHeatTransfer"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CoefficientOfHeatTransferValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::cubicExpansionCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::CubicExpansionCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::densityOfHeatFlowRate"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::DensityOfHeatFlowRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::energy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::enthalpy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::entropy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EntropyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::gibbsEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heat"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heatCapacity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatCapacityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::heatFlowRate"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::HeatFlowRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::helmholtzEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::internalEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::isentropicCompressibility"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicCompressibilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::isentropicExponent"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsentropicExponentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::isothermalCompressibility"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::IsothermalCompressibilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::jouleThomsonCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::JouleThomsonCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::latentHeat"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::EnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::linearExpansionCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::LinearExpansionCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWater"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massConcentrationOfWaterVapourAbsoluteHumidity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassConcentrationOfWaterVapourAbsoluteHumidityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfDryMatter"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfDryMatterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massFractionOfWater"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassFractionOfWaterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterToDryMatter"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterToDryMatterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massRatioOfWaterVapourToDryGas"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassRatioOfWaterVapourToDryGasValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::massieuFunction"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MassieuFunctionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::maximumThermalEfficiency"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::MaximumThermalEfficiencyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::planckFunction"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PlanckFunctionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::pressureCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::PressureCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::ratioOfSpecificHeatCapacities"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RatioOfSpecificHeatCapacitiesValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeHumidity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeHumidityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassConcentrationOfVapour"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassConcentrationOfVapourValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativeMassRatioOfVapour"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativeMassRatioOfVapourValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::relativePressureCoefficient"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::RelativePressureCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEnthalpy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnthalpyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificEntropy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEntropyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGasConstant"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificGasConstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificGibbsEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantPressure"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantPressureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtConstantVolume"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtConstantVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHeatCapacityAtSaturatedVapourPressure"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificHeatCapacityAtSaturatedVapourPressureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificHelmholtzEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::specificInternalEnergy"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SpecificEnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::surfaceCoefficientOfHeatTransfer"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::SurfaceCoefficientOfHeatTransferValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductance"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalConductivity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalConductivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalDiffusivity"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalDiffusivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalEfficiency"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalEfficiencyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalInsulance"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalInsulanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQThermodynamics::thermalResistance"))) (to (node (document "d0") (qualified-name "ISQThermodynamics::ThermalResistanceValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

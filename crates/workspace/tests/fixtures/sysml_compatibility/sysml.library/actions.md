@@ -1670,251 +1670,502 @@ standard library package Actions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Actions'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'ScalarValues::Positive'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'SequenceFunctions::isEmpty'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensWhile'[unresolved])
-      (membership_import private -> 'Performances::Performance'[unresolved])
-      (membership_import private -> 'Performances::performances'[unresolved])
-      (membership_import private -> 'Transfers::SendPerformance'[unresolved])
-      (membership_import private -> 'Transfers::sendPerformances'[unresolved])
-      (membership_import private -> 'Transfers::AcceptPerformance'[unresolved])
-      (membership_import private -> 'Transfers::acceptPerformances'[unresolved])
-      (membership_import private -> 'FeatureReferencingPerformances::FeatureWritePerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::MergePerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::DecisionPerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::IfThenPerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::IfThenElsePerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::LoopPerformance'[unresolved])
-      (membership_import private -> 'TransitionPerformances::TransitionPerformance'[unresolved])
-      (membership_import private -> 'TransitionPerformances::NonStateTransitionPerformance'[unresolved])
-      (membership_import private -> 'Transfers::MessageTransfer'[unresolved])
-      (membership_import private -> 'Flows::MessageAction'[unresolved])
-      (membership_import private -> 'OccurrenceFunctions::destroy'[unresolved])
-      (action_def abstract 'Action' :> 'Performance'[unresolved]
-        (documentation)
-        (action_usage reference 'self' : 'Actions::Action'[action_def] :>> 'Performance::self'[unresolved] :> 'Actions::actions'[action_usage][implied])
-        (action_usage reference 'incomingTransfers' :>> 'Performance::incomingTransfers'[unresolved] :> 'Actions::actions'[action_usage][implied])
-        (action_usage composite 'start' : 'Actions::Action'[action_def] :>> 'startShot'[unresolved] :> 'Actions::Action::subactions'[action_usage][implied]
-          (documentation))
-        (action_usage composite 'done' : 'Actions::Action'[action_def] :>> 'endShot'[unresolved] :> 'Actions::Action::subactions'[action_usage][implied]
-          (documentation))
-        (action_usage composite 'subactions' : 'Actions::Action'[action_def] :> 'Actions::actions'[action_usage] :> 'subperformances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)
-          (occurrence_usage reference :>> 'Action::this'[unresolved] :>> 'actions::this'[unresolved] :>> 'subperformances::this'[unresolved]
-            (feature_value (=))
-            (documentation)))
-        (action_usage composite 'sendSubactions' : 'Actions::SendAction'[action_def] :> 'Actions::Action::subactions'[action_usage] :> 'Actions::sendActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage composite 'acceptSubactions' : 'Actions::AcceptAction'[action_def] :> 'Actions::Action::subactions'[action_usage] :> 'Actions::acceptActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'terminateSubactions' : 'Actions::TerminateAction'[action_def] :> 'Actions::Action::subactions'[action_usage] :> 'Actions::terminateActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'controls' : 'Actions::ControlAction'[action_def] :> 'Actions::Action::subactions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'merges' : 'Actions::MergeAction'[action_def] :> 'Actions::Action::controls'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'decisions' : 'Actions::DecisionAction'[action_def] :> 'Actions::Action::controls'[action_usage]
-          (documentation))
-        (action_usage abstract composite 'joins' : 'Actions::JoinAction'[action_def] :> 'Actions::Action::controls'[action_usage]
-          (documentation))
-        (action_usage abstract composite 'forks' : 'Actions::ForkAction'[action_def] :> 'Actions::Action::controls'[action_usage]
-          (documentation))
-        (action_usage abstract composite 'transitions' : 'Actions::TransitionAction'[action_def] :> 'Actions::Action::subactions'[action_usage] :> 'Actions::transitionActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'decisionTransitions' : 'Actions::DecisionTransitionAction'[action_def] :> 'Actions::Action::transitions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'assignments' : 'Actions::AssignmentAction'[action_def] :> 'Actions::Action::subactions'[action_usage] :> 'Actions::assignmentActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation)
-          (reference_usage in reference 'target' :>> 'Actions::assignmentActions::target'[reference_usage][implied]))
-        (action_usage abstract composite 'ifSubactions' : 'Actions::IfThenAction'[action_def] :> 'Actions::Action::subactions'[action_usage] :> 'Actions::ifThenActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'loops' : 'Actions::LoopAction'[action_def] :> 'Actions::Action::subactions'[action_usage] :> 'Actions::loopActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'whileLoops' : 'Actions::WhileLoopAction'[action_def] :> 'Actions::Action::loops'[action_usage] :> 'Actions::whileLoopActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'forLoops' : 'Actions::ForLoopAction'[action_def] :> 'Actions::Action::loops'[action_usage] :> 'Actions::forLoopActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (action_usage abstract 'actions' : 'Actions::Action'[action_def] :> 'performances'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_def 'SendAction' :> 'Actions::Action'[action_def] :> 'SendPerformance'[unresolved]
-        (documentation)
-        (reference_usage in reference :>> 'payload'[unresolved]
-          (multiplicity_range [0..*]))
-        (reference_usage reference 'sentMessage' :>> 'sentTransfer'[unresolved] : 'MessageTransfer'[unresolved] : 'MessageAction'[unresolved]
-          (reference_usage in reference :>> 'MessageTransfer::payload'[unresolved] :>> 'MessageAction::payload'[unresolved])))
-      (action_usage abstract 'sendActions' : 'Actions::SendAction'[action_def] :> 'Actions::actions'[action_usage] :> 'sendPerformances'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_def 'AcceptMessageAction' :> 'Actions::Action'[action_def] :> 'AcceptPerformance'[unresolved]
-        (documentation)
-        (reference_usage inout reference :>> 'payload'[unresolved])
-        (reference_usage reference 'acceptedMessage' :>> 'acceptedTransfer'[unresolved] : 'MessageTransfer'[unresolved] : 'MessageAction'[unresolved]
-          (reference_usage in reference :>> 'MessageTransfer::payload'[unresolved] :>> 'MessageAction::payload'[unresolved])))
-      (action_def 'AcceptAction' :> 'Actions::AcceptMessageAction'[action_def]
-        (documentation)
-        (reference_usage reference :>> 'Actions::AcceptMessageAction::acceptedMessage'[reference_usage]
-          (feature_value (=)))
-        (state_usage composite 'aState'
-          (transition_usage 'aTransition'))
-        (binding_connector_def
-          (connector_end 'payload')
-          (connector_end 'aState.aTransition.apayload')))
-      (action_usage abstract 'acceptActions' : 'Actions::AcceptAction'[action_def] :> 'Actions::actions'[action_usage] :> 'acceptPerformances'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_def abstract 'TerminateAction' :> 'Actions::Action'[action_def]
-        (documentation)
-        (occurrence_usage in 'terminatedOccurrence'
-          (multiplicity_range [1])
-          (documentation))
-        (action_usage composite 'terminateOccurrence' : 'destroy'[unresolved] :> 'Actions::Action::subactions'[action_usage][implied]
-          (multiplicity_range [1])
-          (reference_usage in reference 'occ'
-            (feature_value (=)))))
-      (action_usage abstract 'terminateActions' : 'Actions::TerminateAction'[action_def] :> 'Actions::actions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation)
-        (occurrence_usage in 'terminatedOccurrence'
-          (feature_value (default =))
-          (documentation)))
-      (action_def abstract 'ControlAction' :> 'Actions::Action'[action_def]
-        (documentation)
-        (binding_connector_def
-          (connector_end 'start')
-          (connector_end 'done')
-          (documentation)))
-      (action_def 'MergeAction' :> 'Actions::ControlAction'[action_def] :> 'MergePerformance'[unresolved]
-        (documentation))
-      (action_def 'DecisionAction' :> 'Actions::ControlAction'[action_def] :> 'DecisionPerformance'[unresolved]
-        (documentation))
-      (action_def 'JoinAction' :> 'Actions::ControlAction'[action_def]
-        (documentation))
-      (action_def 'ForkAction' :> 'Actions::ControlAction'[action_def]
-        (documentation))
-      (action_def abstract 'TransitionAction' :> 'Actions::Action'[action_def] :> 'TransitionPerformance'[unresolved]
-        (documentation)
-        (reference_usage in reference 'transitionLinkSource' : 'Actions::Action'[action_def] :>> 'TransitionPerformance::transitionLinkSource'[unresolved])
-        (reference_usage reference 'acceptedMessage' : 'MessageTransfer'[unresolved] : 'MessageAction'[unresolved] :>> 'trigger'[unresolved]
-          (reference_usage in reference :>> 'MessageTransfer::payload'[unresolved] :>> 'MessageAction::payload'[unresolved]))
-        (reference_usage reference 'receiver' :>> 'triggerTarget'[unresolved])
-        (action_usage composite 'accepter' : 'Actions::AcceptMessageAction'[action_def] :>> 'accept'[unresolved] :> 'Actions::Action::subactions'[action_usage][implied])
-        (binding_connector_def
-          (connector_end 'receiver')
-          (connector_end 'accepter.receiver'))
-        (binding_connector_def
-          (connector_end 'acceptedMessage')
-          (connector_end 'accepter.acceptedMessage'))
-        (action_usage composite 'effect' : 'Actions::Action'[action_def] :>> 'TransitionPerformance::effect'[unresolved] :> 'Actions::Action::subactions'[action_usage][implied]))
-      (action_def 'DecisionTransitionAction' :> 'Actions::TransitionAction'[action_def] :> 'NonStateTransitionPerformance'[unresolved]
-        (documentation)
-        (action_usage reference :>> 'Actions::TransitionAction::accepter'[action_usage]
-          (multiplicity_range [0..0]))
-        (action_usage reference :>> 'Actions::TransitionAction::effect'[action_usage]
-          (multiplicity_range [0..0])))
-      (action_usage abstract 'transitionActions' : 'Actions::TransitionAction'[action_def] :> 'Actions::actions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_def 'AssignmentAction' :> 'FeatureWritePerformance'[unresolved] :> 'Actions::Action'[action_def]
-        (documentation)
-        (reference_usage in reference 'target' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage inout reference 'replacementValues' : 'Anything'[unresolved]
-          (multiplicity_range [0..*])))
-      (action_usage abstract 'assignmentActions' : 'Actions::AssignmentAction'[action_def] :> 'Actions::actions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation)
-        (reference_usage in reference 'target' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation)))
-      (action_def 'IfThenAction' :> 'Actions::Action'[action_def] :> 'IfThenPerformance'[unresolved]
-        (documentation)
-        (reference_usage in reference 'ifTest'
-          (multiplicity_range [1]))
-        (action_usage in 'thenClause' :> 'Actions::actions'[action_usage][implied]
-          (multiplicity_range [0..1])))
-      (action_def 'IfThenElseAction' :> 'Actions::IfThenAction'[action_def] :> 'IfThenElsePerformance'[unresolved]
-        (documentation)
-        (reference_usage in reference 'ifTest' :>> 'Actions::IfThenAction::ifTest'[reference_usage][implied]
-          (multiplicity_range [1]))
-        (action_usage in 'thenClause' :>> 'Actions::IfThenAction::thenClause'[action_usage][implied]
-          (multiplicity_range [0..1]))
-        (action_usage in 'elseClause' :> 'Actions::actions'[action_usage][implied]
-          (multiplicity_range [0..1])))
-      (action_usage abstract 'ifThenActions' : 'Actions::IfThenAction'[action_def] :> 'Actions::actions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_usage abstract 'ifThenElseActions' : 'Actions::IfThenElseAction'[action_def] :> 'Actions::actions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_def abstract 'LoopAction' :> 'Actions::Action'[action_def]
-        (documentation)
-        (reference_usage in reference 'iterator')
-        (action_usage in 'body' :> 'Actions::actions'[action_usage][implied]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (action_def 'WhileLoopAction' :> 'Actions::LoopAction'[action_def] :> 'LoopPerformance'[unresolved]
-        (documentation)
-        (reference_usage in reference 'whileTest' :>> 'Actions::LoopAction::iterator'[reference_usage][implied]
-          (feature_value (default =))
-          (documentation))
-        (action_usage in 'body' :>> 'Actions::LoopAction::body'[action_usage][implied]
-          (documentation))
-        (reference_usage in reference 'untilTest'
-          (feature_value (default =))
-          (documentation)))
-      (action_def 'ForLoopAction' :> 'Actions::LoopAction'[action_def]
-        (documentation)
-        (reference_usage reference 'var' :> 'Actions::ForLoopAction::seq'[reference_usage]
-          (multiplicity_range [0..1])
-          (documentation))
-        (reference_usage in reference 'seq' :>> 'Actions::LoopAction::iterator'[reference_usage][implied]
-          (documentation))
-        (action_usage in 'body' :>> 'Actions::LoopAction::body'[action_usage][implied]
-          (documentation))
-        (attribute_usage composite 'index' : 'Positive'[unresolved]
-          (documentation))
-        (action_usage composite 'initialization' :> 'Actions::Action::subactions'[action_usage][implied])
-        (assignment_action_usage)
-        (source_succession
-          (action_usage 'whileLoop' :> 'Actions::actions'[action_usage][implied]))
-        (while_loop_action_usage
-          (assignment_action_usage)
-          (feature_def
-            (feature_value (:=)))
-          (source_succession
-            (perform_action_usage :>> 'Actions::ForLoopAction::body'[action_usage]))
-          (source_succession
-            (assignment_action_usage))))
-      (action_usage abstract 'loopActions' : 'Actions::LoopAction'[action_def] :> 'Actions::actions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_usage abstract 'whileLoopActions' : 'Actions::WhileLoopAction'[action_def] :> 'Actions::loopActions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation))
-      (action_usage abstract 'forLoopActions' : 'Actions::ForLoopAction'[action_def] :> 'Actions::loopActions'[action_usage]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Actions"))) (name "Actions") (declared-name "Actions")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::AcceptAction"))) (name "AcceptAction") (declared-name "AcceptAction")
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::AcceptAction::"))) (name "") (declared (properties (composite false) (reference true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "acceptedMessage") (children (expression (kind "memberAccess") (reference "accepter") (children (expression (kind "memberAccess") (reference "aTransition") (children (expression (kind "featureReference") (reference "aState")))))))))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptAction"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Actions::AcceptAction::"))) (role feature-value))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::AcceptAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptAction")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Actions::AcceptAction::aState"))) (name "aState") (declared-name "aState") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptAction"))))
+              (contains
+                (element (kind "transition") (id (node (document "d0") (qualified-name "Actions::AcceptAction::aState::aTransition"))) (name "aTransition") (declared-name "aTransition") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptAction"))))
+                  (contains
+                    (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Actions::AcceptAction::aState::aTransition::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptAction")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::AcceptMessageAction"))) (name "AcceptMessageAction") (declared-name "AcceptMessageAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::AcceptMessageAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptMessageAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::AcceptMessageAction::acceptedMessage"))) (name "acceptedMessage") (declared-name "acceptedMessage") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptMessageAction"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::AcceptMessageAction::acceptedMessage::MessageTransfer::payload, MessageAction::payload"))) (name "MessageTransfer::payload, MessageAction::payload") (declared-name "MessageTransfer::payload, MessageAction::payload") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptMessageAction")))))
+              )
+            )
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::AcceptMessageAction::payload"))) (name "payload") (declared-name "payload") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptMessageAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::AcceptPerformance"))) (name "AcceptPerformance") (declared-name "AcceptPerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::Action"))) (name "Action") (declared-name "Action")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::acceptSubactions"))) (name "acceptSubactions") (declared-name "acceptSubactions") (declared (properties (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::acceptSubactions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::assignments"))) (name "assignments") (declared-name "assignments") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::assignments::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AssignmentAction")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::Action::assignments::target"))) (name "target") (declared-name "target") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AssignmentAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::controls"))) (name "controls") (declared-name "controls") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::controls::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ControlAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::decisionTransitions"))) (name "decisionTransitions") (declared-name "decisionTransitions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::decisionTransitions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::DecisionTransitionAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::decisions"))) (name "decisions") (declared-name "decisions") (declared (properties (abstract true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::decisions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::DecisionAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::done"))) (name "done") (declared-name "done") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::done::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::forLoops"))) (name "forLoops") (declared-name "forLoops") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::forLoops::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::forks"))) (name "forks") (declared-name "forks") (declared (properties (abstract true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::forks::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForkAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::ifSubactions"))) (name "ifSubactions") (declared-name "ifSubactions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::ifSubactions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenAction")))))
+              )
+            )
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::Action::incomingTransfers"))) (name "incomingTransfers") (declared-name "incomingTransfers") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::joins"))) (name "joins") (declared-name "joins") (declared (properties (abstract true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::joins::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::JoinAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::loops"))) (name "loops") (declared-name "loops") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::loops::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::LoopAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::merges"))) (name "merges") (declared-name "merges") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::merges::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::MergeAction")))))
+              )
+            )
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::Action::self"))) (name "self") (declared-name "self") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::sendSubactions"))) (name "sendSubactions") (declared-name "sendSubactions") (declared (properties (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::sendSubactions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::SendAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::start"))) (name "start") (declared-name "start") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::start::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::subactions"))) (name "subactions") (declared-name "subactions") (declared (properties (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::subactions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+                (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::Action::subactions::occurrence"))) (name "occurrence") (declared-name "occurrence") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::subactions::occurrence::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+                  )
+                )
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::terminateSubactions"))) (name "terminateSubactions") (declared-name "terminateSubactions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::terminateSubactions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TerminateAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::transitions"))) (name "transitions") (declared-name "transitions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::transitions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::Action::whileLoops"))) (name "whileLoops") (declared-name "whileLoops") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::Action::whileLoops::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::WhileLoopAction")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::AssignmentAction"))) (name "AssignmentAction") (declared-name "AssignmentAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::AssignmentAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AssignmentAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::AssignmentAction::replacementValues"))) (name "replacementValues") (declared-name "replacementValues") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AssignmentAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::AssignmentAction::target"))) (name "target") (declared-name "target") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AssignmentAction")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::ControlAction"))) (name "ControlAction") (declared-name "ControlAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::ControlAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ControlAction")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::DecisionAction"))) (name "DecisionAction") (declared-name "DecisionAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::DecisionAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::DecisionAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::DecisionPerformance"))) (name "DecisionPerformance") (declared-name "DecisionPerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::DecisionTransitionAction"))) (name "DecisionTransitionAction") (declared-name "DecisionTransitionAction")
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::DecisionTransitionAction::"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::DecisionTransitionAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::DecisionTransitionAction::#ref"))) (name "") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::DecisionTransitionAction")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::DecisionTransitionAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::DecisionTransitionAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::ForLoopAction"))) (name "ForLoopAction") (declared-name "ForLoopAction")
+          (contains
+            (element (kind "assign") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+            (element (kind "while") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::_while"))) (name "while") (declared-name "while") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction"))))
+              (contains
+                (element (kind "assign") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::_while::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+                (element (kind "assign") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::_while::_assign#assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+              )
+            )
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::body"))) (name "body") (declared-name "body") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::index : Positive"))) (name "index : Positive") (declared-name "index : Positive") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::initialization"))) (name "initialization") (declared-name "initialization") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::ref"))) (name "ref") (declared-name "ref") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::var"))) (name "var") (declared-name "var") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::var::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::ForLoopAction::whileLoop"))) (name "whileLoop") (declared-name "whileLoop") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::ForkAction"))) (name "ForkAction") (declared-name "ForkAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::ForkAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForkAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::HappensWhile"))) (name "HappensWhile") (declared-name "HappensWhile"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::IfThenAction"))) (name "IfThenAction") (declared-name "IfThenAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::IfThenAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::IfThenAction::action"))) (name "action") (declared-name "action") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::IfThenAction::ifTest"))) (name "ifTest") (declared-name "ifTest") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenAction")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::IfThenElseAction"))) (name "IfThenElseAction") (declared-name "IfThenElseAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::IfThenElseAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenElseAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::IfThenElseAction::action"))) (name "action") (declared-name "action") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenElseAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::IfThenElseAction::action#in_out_parameter"))) (name "action") (declared-name "action") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenElseAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::IfThenElseAction::ifTest"))) (name "ifTest") (declared-name "ifTest") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenElseAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::IfThenElsePerformance"))) (name "IfThenElsePerformance") (declared-name "IfThenElsePerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::IfThenPerformance"))) (name "IfThenPerformance") (declared-name "IfThenPerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::JoinAction"))) (name "JoinAction") (declared-name "JoinAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::JoinAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::JoinAction")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::LoopAction"))) (name "LoopAction") (declared-name "LoopAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::LoopAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::LoopAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::LoopAction::action"))) (name "action") (declared-name "action") (effective (featuring-type (node (document "d0") (qualified-name "Actions::LoopAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::LoopAction::ref"))) (name "ref") (declared-name "ref") (effective (featuring-type (node (document "d0") (qualified-name "Actions::LoopAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::LoopPerformance"))) (name "LoopPerformance") (declared-name "LoopPerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::MergeAction"))) (name "MergeAction") (declared-name "MergeAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::MergeAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::MergeAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::MergePerformance"))) (name "MergePerformance") (declared-name "MergePerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::MessageAction"))) (name "MessageAction") (declared-name "MessageAction"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::MessageTransfer"))) (name "MessageTransfer") (declared-name "MessageTransfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::NonStateTransitionPerformance"))) (name "NonStateTransitionPerformance") (declared-name "NonStateTransitionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::Positive"))) (name "Positive") (declared-name "Positive"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::SendAction"))) (name "SendAction") (declared-name "SendAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::SendAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::SendAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::SendAction::payload"))) (name "payload") (declared-name "payload") (effective (featuring-type (node (document "d0") (qualified-name "Actions::SendAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::SendAction::sentMessage"))) (name "sentMessage") (declared-name "sentMessage") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::SendAction"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::SendAction::sentMessage::MessageTransfer::payload, MessageAction::payload"))) (name "MessageTransfer::payload, MessageAction::payload") (declared-name "MessageTransfer::payload, MessageAction::payload") (effective (featuring-type (node (document "d0") (qualified-name "Actions::SendAction")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::SendPerformance"))) (name "SendPerformance") (declared-name "SendPerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::TerminateAction"))) (name "TerminateAction") (declared-name "TerminateAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::TerminateAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TerminateAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::TerminateAction::occurrence"))) (name "occurrence") (declared-name "occurrence") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TerminateAction")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::TerminateAction::terminateOccurrence"))) (name "terminateOccurrence") (declared-name "terminateOccurrence") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::TerminateAction"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::TerminateAction::terminateOccurrence::occ"))) (name "occ") (declared-name "occ") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TerminateAction")))))
+              )
+            )
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::TransitionAction"))) (name "TransitionAction") (declared-name "TransitionAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::TransitionAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::TransitionAction::acceptedMessage"))) (name "acceptedMessage") (declared-name "acceptedMessage") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::TransitionAction::acceptedMessage::MessageTransfer::payload, MessageAction::payload"))) (name "MessageTransfer::payload, MessageAction::payload") (declared-name "MessageTransfer::payload, MessageAction::payload") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::TransitionAction::accepter"))) (name "accepter") (declared-name "accepter") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Actions::TransitionAction::effect"))) (name "effect") (declared-name "effect") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Actions::TransitionAction::receiver"))) (name "receiver") (declared-name "receiver") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (name "transitionLinkSource") (declared-name "transitionLinkSource") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::TransitionPerformance"))) (name "TransitionPerformance") (declared-name "TransitionPerformance"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Actions::WhileLoopAction"))) (name "WhileLoopAction") (declared-name "WhileLoopAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::WhileLoopAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::WhileLoopAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::WhileLoopAction::body"))) (name "body") (declared-name "body") (effective (featuring-type (node (document "d0") (qualified-name "Actions::WhileLoopAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::WhileLoopAction::untilTest"))) (name "untilTest") (declared-name "untilTest") (effective (featuring-type (node (document "d0") (qualified-name "Actions::WhileLoopAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::WhileLoopAction::whileTest"))) (name "whileTest") (declared-name "whileTest") (effective (featuring-type (node (document "d0") (qualified-name "Actions::WhileLoopAction")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::_documentation"))) (name ""))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::acceptActions"))) (name "acceptActions") (declared-name "acceptActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::acceptActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AcceptAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::acceptPerformances"))) (name "acceptPerformances") (declared-name "acceptPerformances"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::actions"))) (name "actions") (declared-name "actions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::actions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::Action")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::assignmentActions"))) (name "assignmentActions") (declared-name "assignmentActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::assignmentActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AssignmentAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::assignmentActions::target"))) (name "target") (declared-name "target") (effective (featuring-type (node (document "d0") (qualified-name "Actions::AssignmentAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::destroy"))) (name "destroy") (declared-name "destroy"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::forLoopActions"))) (name "forLoopActions") (declared-name "forLoopActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::forLoopActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::ForLoopAction")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::ifThenActions"))) (name "ifThenActions") (declared-name "ifThenActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::ifThenActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenAction")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::ifThenElseActions"))) (name "ifThenElseActions") (declared-name "ifThenElseActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::ifThenElseActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::IfThenElseAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::loopActions"))) (name "loopActions") (declared-name "loopActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::loopActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::LoopAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::performances"))) (name "performances") (declared-name "performances"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::sendActions"))) (name "sendActions") (declared-name "sendActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::sendActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::SendAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::sendPerformances"))) (name "sendPerformances") (declared-name "sendPerformances"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Actions::size"))) (name "size") (declared-name "size"))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::terminateActions"))) (name "terminateActions") (declared-name "terminateActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::terminateActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TerminateAction")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Actions::terminateActions::occurrence"))) (name "occurrence") (declared-name "occurrence") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TerminateAction")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::transitionActions"))) (name "transitionActions") (declared-name "transitionActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::transitionActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::TransitionAction")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Actions::whileLoopActions"))) (name "whileLoopActions") (declared-name "whileLoopActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Actions::whileLoopActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Actions::WhileLoopAction")))))
+          )
+        )
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Actions::AcceptAction::ambiguous_connection_endpoint"))) (name "ambiguous_connection_endpoint") (declared-name "ambiguous_connection_endpoint"))
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::AcceptAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::AcceptAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::AcceptMessageAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::AcceptMessageAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::acceptSubactions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::acceptSubactions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::assignments::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::assignments"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::controls::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::controls"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::decisionTransitions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::decisionTransitions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::decisions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::decisions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::done::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::done"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::forLoops::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::forLoops"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::forks::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::forks"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::ifSubactions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::ifSubactions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::joins::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::joins"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::loops::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::loops"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::merges::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::merges"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::sendSubactions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::sendSubactions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::start::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::start"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::subactions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::subactions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::subactions::occurrence::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::subactions::occurrence"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::terminateSubactions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::terminateSubactions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::transitions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::transitions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::whileLoops::_documentation"))) (to (node (document "d0") (qualified-name "Actions::Action::whileLoops"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::AssignmentAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::AssignmentAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::ControlAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::ControlAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::DecisionAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::DecisionAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::DecisionTransitionAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::DecisionTransitionAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::ForLoopAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::ForLoopAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::ForLoopAction::var::_documentation"))) (to (node (document "d0") (qualified-name "Actions::ForLoopAction::var"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::ForkAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::ForkAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::IfThenAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::IfThenAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::IfThenElseAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::IfThenElseAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::JoinAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::JoinAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::LoopAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::LoopAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::MergeAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::MergeAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::SendAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::SendAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::TerminateAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::TerminateAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::TransitionAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::WhileLoopAction::_documentation"))) (to (node (document "d0") (qualified-name "Actions::WhileLoopAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::_documentation"))) (to (node (document "d0") (qualified-name "Actions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::acceptActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::acceptActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::actions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::actions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::assignmentActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::assignmentActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::forLoopActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::forLoopActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::ifThenActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::ifThenActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::ifThenElseActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::ifThenElseActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::loopActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::loopActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::sendActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::sendActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::terminateActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::terminateActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::transitionActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::transitionActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Actions::whileLoopActions::_documentation"))) (to (node (document "d0") (qualified-name "Actions::whileLoopActions"))))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::start"))) (to (node (document "d0") (qualified-name "Actions::Action::done"))) (connect (source-expression "start") (target-expression "done") (container-prefix "Actions::ControlAction")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "Actions::TransitionAction::acceptedMessage"))) (to (node (document "d0") (qualified-name "Actions::AcceptMessageAction::acceptedMessage"))) (connect (source-expression "acceptedMessage") (target-expression "accepter::acceptedMessage") (container-prefix "Actions::TransitionAction")))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::acceptSubactions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::assignments"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::controls"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::decisionTransitions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::decisions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::done"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::forLoops"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::forks"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::ifSubactions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::joins"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::loops"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::merges"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::sendSubactions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::start"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::subactions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::terminateSubactions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::transitions"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::Action"))) (to (node (document "d0") (qualified-name "Actions::Action::whileLoops"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::ForLoopAction"))) (to (node (document "d0") (qualified-name "Actions::ForLoopAction::initialization"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::ForLoopAction"))) (to (node (document "d0") (qualified-name "Actions::ForLoopAction::whileLoop"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::TerminateAction"))) (to (node (document "d0") (qualified-name "Actions::TerminateAction::terminateOccurrence"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::TransitionAction"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction::accepter"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Actions::TransitionAction"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction::effect"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Actions::AcceptAction::"))) (to (node (document "d0") (qualified-name "Actions::AcceptMessageAction::acceptedMessage"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Actions::DecisionTransitionAction::"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction::accepter"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Actions::DecisionTransitionAction::#ref"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction::effect"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::AcceptAction"))) (to (node (document "d0") (qualified-name "Actions::AcceptMessageAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::AcceptMessageAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::AssignmentAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::ControlAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::DecisionAction"))) (to (node (document "d0") (qualified-name "Actions::ControlAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::DecisionTransitionAction"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::ForLoopAction"))) (to (node (document "d0") (qualified-name "Actions::LoopAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::ForkAction"))) (to (node (document "d0") (qualified-name "Actions::ControlAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::IfThenAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::IfThenElseAction"))) (to (node (document "d0") (qualified-name "Actions::IfThenAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::JoinAction"))) (to (node (document "d0") (qualified-name "Actions::ControlAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::LoopAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::MergeAction"))) (to (node (document "d0") (qualified-name "Actions::ControlAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::SendAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::TerminateAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::TransitionAction"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Actions::WhileLoopAction"))) (to (node (document "d0") (qualified-name "Actions::LoopAction"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::controls"))) (to (node (document "d0") (qualified-name "Actions::Action::subactions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::decisionTransitions"))) (to (node (document "d0") (qualified-name "Actions::Action::transitions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::decisions"))) (to (node (document "d0") (qualified-name "Actions::Action::controls"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::forks"))) (to (node (document "d0") (qualified-name "Actions::Action::controls"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::joins"))) (to (node (document "d0") (qualified-name "Actions::Action::controls"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::merges"))) (to (node (document "d0") (qualified-name "Actions::Action::controls"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::actions"))) (to (node (document "d0") (qualified-name "Actions::performances"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::assignmentActions"))) (to (node (document "d0") (qualified-name "Actions::actions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::forLoopActions"))) (to (node (document "d0") (qualified-name "Actions::loopActions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::ifThenActions"))) (to (node (document "d0") (qualified-name "Actions::actions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::ifThenElseActions"))) (to (node (document "d0") (qualified-name "Actions::actions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::loopActions"))) (to (node (document "d0") (qualified-name "Actions::actions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::terminateActions"))) (to (node (document "d0") (qualified-name "Actions::actions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::transitionActions"))) (to (node (document "d0") (qualified-name "Actions::actions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Actions::whileLoopActions"))) (to (node (document "d0") (qualified-name "Actions::loopActions"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::acceptSubactions"))) (to (node (document "d0") (qualified-name "Actions::AcceptAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::assignments"))) (to (node (document "d0") (qualified-name "Actions::AssignmentAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::controls"))) (to (node (document "d0") (qualified-name "Actions::ControlAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::decisionTransitions"))) (to (node (document "d0") (qualified-name "Actions::DecisionTransitionAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::decisions"))) (to (node (document "d0") (qualified-name "Actions::DecisionAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::done"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::forLoops"))) (to (node (document "d0") (qualified-name "Actions::ForLoopAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::forks"))) (to (node (document "d0") (qualified-name "Actions::ForkAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::ifSubactions"))) (to (node (document "d0") (qualified-name "Actions::IfThenAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::joins"))) (to (node (document "d0") (qualified-name "Actions::JoinAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::loops"))) (to (node (document "d0") (qualified-name "Actions::LoopAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::merges"))) (to (node (document "d0") (qualified-name "Actions::MergeAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::self"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::sendSubactions"))) (to (node (document "d0") (qualified-name "Actions::SendAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::start"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::subactions"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::terminateSubactions"))) (to (node (document "d0") (qualified-name "Actions::TerminateAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::transitions"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::Action::whileLoops"))) (to (node (document "d0") (qualified-name "Actions::WhileLoopAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::TransitionAction::accepter"))) (to (node (document "d0") (qualified-name "Actions::AcceptMessageAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::TransitionAction::effect"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::acceptActions"))) (to (node (document "d0") (qualified-name "Actions::AcceptAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::actions"))) (to (node (document "d0") (qualified-name "Actions::Action"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::assignmentActions"))) (to (node (document "d0") (qualified-name "Actions::AssignmentAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::forLoopActions"))) (to (node (document "d0") (qualified-name "Actions::ForLoopAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::ifThenActions"))) (to (node (document "d0") (qualified-name "Actions::IfThenAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::ifThenElseActions"))) (to (node (document "d0") (qualified-name "Actions::IfThenElseAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::loopActions"))) (to (node (document "d0") (qualified-name "Actions::LoopAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::sendActions"))) (to (node (document "d0") (qualified-name "Actions::SendAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::terminateActions"))) (to (node (document "d0") (qualified-name "Actions::TerminateAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::transitionActions"))) (to (node (document "d0") (qualified-name "Actions::TransitionAction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Actions::whileLoopActions"))) (to (node (document "d0") (qualified-name "Actions::WhileLoopAction"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "Actions::ForLoopAction::_while") (target-qualified "Actions::ForLoopAction::_while::body"))
+    (transition (status pending) (document "d0") (source-qualified "Actions::AcceptAction::aState::start") (target-qualified "Actions::AcceptAction::aState::done"))
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "receiver") (target-expression "accepter::receiver") (container-prefix "Actions::TransitionAction"))
+  )
+)
 ~~~

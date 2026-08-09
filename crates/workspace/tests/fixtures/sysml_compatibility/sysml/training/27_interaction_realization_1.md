@@ -274,49 +274,98 @@ semantic.unresolved_name 'fuelCommandMessage'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Interaction Realization-1'
-      (namespace_import private -> 'Interaction Example-1'[unresolved])
-      (part_usage 'driver_a' : 'Driver'[unresolved]
-        (action_usage composite 'driverBehavior'
-          (action_usage composite 'sendSetSpeed')
-          (send_action_usage)))
-      (part_usage 'vehicle_a' : 'Vehicle'[unresolved]
-        (part_usage composite 'cruiseController_a' : 'CruiseController'[unresolved]
-          (action_usage composite 'controllerBehavior'
-            (action_usage composite 'receiveSetSpeed')
-            (accept_action_usage)
-            (source_succession
-              (action_usage 'receiveSensedSpeed'))
-            (accept_action_usage)
-            (source_succession
-              (action_usage 'sendFuelCommand'))
-            (send_action_usage)))
-        (part_usage composite 'speedometer_a' : 'Speedometer'[unresolved]
-          (action_usage composite 'speedometerBehavior'
-            (action_usage composite 'sendSensedSpeed')
-            (send_action_usage)))
-        (part_usage composite 'engine_a' : 'Engine'[unresolved]
-          (action_usage composite 'engineBehavior'
-            (action_usage composite 'receiveFuelCommand')
-            (accept_action_usage))))
-      (occurrence_usage 'cruiseControlInteraction_a' : 'CruiseControlInteraction'[unresolved]
-        (part_usage composite :>> 'driver'[unresolved] :>> 'Interaction Realization-1::driver_a'[part_usage]
-          (not_implemented 'malformed'))
-        (part_usage composite :>> 'vehicle'[unresolved] :>> 'Interaction Realization-1::vehicle_a'[part_usage]
-          (part_usage composite :>> 'cruiseController'[unresolved] :>> 'Interaction Realization-1::vehicle_a::cruiseController_a'[part_usage]
-            (not_implemented 'malformed')
-            (not_implemented 'malformed')
-            (not_implemented 'malformed'))
-          (part_usage composite :>> 'speedometer'[unresolved] :>> 'Interaction Realization-1::vehicle_a::speedometer_a'[part_usage]
-            (not_implemented 'malformed'))
-          (part_usage composite :>> 'engine'[unresolved] :>> 'Interaction Realization-1::vehicle_a::engine_a'[part_usage]
-            (not_implemented 'malformed')))
-        (flow_usage composite :>> 'setSpeedMessage'[unresolved]
-          (feature_value (=)))
-        (flow_usage composite :>> 'sensedSpeedMessage'[unresolved]
-          (feature_value (=)))
-        (flow_usage composite :>> 'fuelCommandMessage'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Interaction Realization-1"))) (name "Interaction Realization-1") (declared-name "Interaction Realization-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interaction Realization-1::*"))) (name "*") (declared-name "*"))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a"))) (name "cruiseControlInteraction_a") (declared-name "cruiseControlInteraction_a") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::driver"))) (name "driver") (declared-name "driver") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::driver::driverBehavior.sendSetSpeed"))) (name "driverBehavior.sendSetSpeed") (declared-name "driverBehavior.sendSetSpeed") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController"))) (name "cruiseController") (declared-name "cruiseController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.receiveSensedSpeed"))) (name "controllerBehavior.receiveSensedSpeed") (declared-name "controllerBehavior.receiveSensedSpeed") (declared (properties (composite true) (reference false))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.receiveSetSpeed"))) (name "controllerBehavior.receiveSetSpeed") (declared-name "controllerBehavior.receiveSetSpeed") (declared (properties (composite true) (reference false))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.sendFuelCommand"))) (name "controllerBehavior.sendFuelCommand") (declared-name "controllerBehavior.sendFuelCommand") (declared (properties (composite true) (reference false))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::engine::engineBehavior.receiveFuelCommand"))) (name "engineBehavior.receiveFuelCommand") (declared-name "engineBehavior.receiveFuelCommand") (declared (properties (composite true) (reference false))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::speedometer"))) (name "speedometer") (declared-name "speedometer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::speedometer::speedometerBehavior.sendSensedSpeed"))) (name "speedometerBehavior.sendSensedSpeed") (declared-name "speedometerBehavior.sendSensedSpeed") (declared (properties (composite true) (reference false))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a"))) (name "driver_a") (declared-name "driver_a") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior"))) (name "driverBehavior") (declared-name "driverBehavior") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior::sendSetSpeed"))) (name "sendSetSpeed") (declared-name "sendSetSpeed") (declared (properties (composite true) (reference false))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a"))) (name "vehicle_a") (declared-name "vehicle_a") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a"))) (name "cruiseController_a") (declared-name "cruiseController_a") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior"))) (name "controllerBehavior") (declared-name "controllerBehavior") (declared (properties (composite true) (reference false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSensedSpeed"))) (name "receiveSensedSpeed") (declared-name "receiveSensedSpeed"))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSetSpeed"))) (name "receiveSetSpeed") (declared-name "receiveSetSpeed") (declared (properties (composite true) (reference false))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::sendFuelCommand"))) (name "sendFuelCommand") (declared-name "sendFuelCommand"))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a"))) (name "engine_a") (declared-name "engine_a") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior"))) (name "engineBehavior") (declared-name "engineBehavior") (declared (properties (composite true) (reference false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior::receiveFuelCommand"))) (name "receiveFuelCommand") (declared-name "receiveFuelCommand") (declared (properties (composite true) (reference false))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a"))) (name "speedometer_a") (declared-name "speedometer_a") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior"))) (name "speedometerBehavior") (declared-name "speedometerBehavior") (declared (properties (composite true) (reference false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior::sendSensedSpeed"))) (name "sendSensedSpeed") (declared-name "sendSensedSpeed") (declared (properties (composite true) (reference false))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSensedSpeed"))) (to (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::sendFuelCommand"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior"))) (to (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior::sendSetSpeed"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior"))) (to (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSensedSpeed"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior"))) (to (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSetSpeed"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior"))) (to (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::sendFuelCommand"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior"))) (to (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior::receiveFuelCommand"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior"))) (to (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior::sendSensedSpeed"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

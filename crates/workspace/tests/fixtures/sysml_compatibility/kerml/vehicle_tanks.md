@@ -147,45 +147,24 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleTanks'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'RealFunctions'[unresolved])
-      (class_def 'V6Engine')
-      (class_def 'Tank'
-        (feature_def 'capacity' : 'Real'[unresolved]))
-      (class_def 'Vehicle'
-        (feature_def composite ordered 'tanks' : 'VehicleTanks::Tank'[class_def]
-          (multiplicity_range [1..*]))
-        (feature_def 'fuelCapacity' : 'Real'[unresolved]
-          (feature_value (=))))
-      (class_def 'Vehicle1' :> 'VehicleTanks::Vehicle'[class_def]
-        (feature_def composite ordered 'tanks' : 'VehicleTanks::Tank'[class_def] :>> 'VehicleTanks::Vehicle::tanks'[feature_def]
-          (multiplicity_range [4])
-          (feature_def 'main1' :> 'VehicleTanks::Vehicle1::tanks'[feature_def]
-            (multiplicity_range [1])
-            (feature_value (=)))
-          (feature_def 'main2' :> 'VehicleTanks::Vehicle1::tanks'[feature_def]
-            (multiplicity_range [1])
-            (feature_value (=)))
-          (feature_def 'aux1' :> 'VehicleTanks::Vehicle1::tanks'[feature_def]
-            (multiplicity_range [1])
-            (feature_value (=)))
-          (feature_def 'aux2' :> 'VehicleTanks::Vehicle1::tanks'[feature_def]
-            (multiplicity_range [1])
-            (feature_value (=))))
-        (feature_def composite 'eng' : 'VehicleTanks::V6Engine'[class_def])
-        (connector_def
-          (connector_end 'eng')
-          (connector_end 'tanks.main1'))
-        (connector_def
-          (connector_end 'tanks.main1')
-          (connector_end 'tanks.aux1'))
-        (connector_def
-          (connector_end 'eng')
-          (connector_end 'tanks.main2'))
-        (connector_def
-          (connector_end 'tanks.main2')
-          (connector_end 'tanks.aux2'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleTanks"))) (name "VehicleTanks") (declared-name "VehicleTanks")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleTanks::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleTanks::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::Tank"))) (name "Tank") (declared-name "Tank"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::V6Engine"))) (name "V6Engine") (declared-name "V6Engine"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleTanks::Vehicle1"))) (name "Vehicle1") (declared-name "Vehicle1"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

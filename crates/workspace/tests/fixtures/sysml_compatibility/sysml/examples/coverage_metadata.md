@@ -75,15 +75,26 @@ package Annotated {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (metadata_def 'Classified')
-    (metadata_def 'Approval')
-    (package 'Annotated'
-      (metadata_usage :> 'Classified'[metadata_def] annotated 'Annotated'[package])
-      (part_def 'Vehicle')
-      (part_def 'Engine')
-      (metadata_usage 'm' :> 'Classified'[metadata_def] annotated 'Annotated::Vehicle'[part_def] annotated 'Annotated::Engine'[part_def])
-      (part_def 'AnnotatedPart')
-      (part_def 'MultiAnnotated'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Annotated"))) (name "Annotated") (declared-name "Annotated")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (name "AnnotatedPart") (declared-name "AnnotatedPart") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Annotated::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Annotated::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "Annotated::_Classified"))) (name "Classified") (declared-name "Classified"))
+        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Annotated::m"))) (name "m") (declared-name "m"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::_Classified"))) (to (node (document "d0") (qualified-name "Annotated"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Engine"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

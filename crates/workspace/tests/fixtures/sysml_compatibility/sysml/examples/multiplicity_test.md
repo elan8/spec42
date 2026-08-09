@@ -93,28 +93,36 @@ semantic.unresolved_name 'ScalarValues::Integer'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MultiplicityTest'
-      (part_def 'P')
-      (attribute_usage 'n' : 'ScalarValues::Integer'[unresolved]
-        (feature_value (=)))
-      (part_usage 'a'
-        (multiplicity_range [1]))
-      (part_usage 'b' : 'MultiplicityTest::P'[part_def]
-        (multiplicity_range [0..2]))
-      (part_usage 'c' : 'MultiplicityTest::P'[part_def]
-        (multiplicity_range [2..*]))
-      (part_usage 'd'
-        (multiplicity_range [*]))
-      (part_usage 'e'
-        (multiplicity_range [?]))
-      (part_usage 'f'
-        (multiplicity_range [?..*]))
-      (part_usage 'g'
-        (multiplicity_range [1..?]))
-      (attribute_def 'A'
-        (attribute_usage composite 'i' : 'ScalarValues::Integer'[unresolved])
-        (attribute_usage composite 'x' : 'MultiplicityTest::A'[attribute_def]
-          (multiplicity_range [?]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MultiplicityTest"))) (name "MultiplicityTest") (declared-name "MultiplicityTest")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MultiplicityTest::A"))) (name "A") (declared-name "A") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MultiplicityTest::A::i"))) (name "i") (declared-name "i") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MultiplicityTest::A")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MultiplicityTest::A::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MultiplicityTest::A")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MultiplicityTest::P"))) (name "P") (declared-name "P") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::b"))) (name "b") (declared-name "b") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 2) (ordered false) (provenance authored))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::c"))) (name "c") (declared-name "c") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::d"))) (name "d") (declared-name "d") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::e"))) (name "e") (declared-name "e") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unevaluated) (upper unevaluated) (ordered false) (provenance authored))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::f"))) (name "f") (declared-name "f") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unevaluated) (upper unbounded) (ordered false) (provenance authored))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::g"))) (name "g") (declared-name "g") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unevaluated) (ordered false) (provenance authored))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MultiplicityTest::n"))) (name "n") (declared-name "n") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 5)))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "MultiplicityTest::n"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::A::x"))) (to (node (document "d0") (qualified-name "MultiplicityTest::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::b"))) (to (node (document "d0") (qualified-name "MultiplicityTest::P"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::c"))) (to (node (document "d0") (qualified-name "MultiplicityTest::P"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

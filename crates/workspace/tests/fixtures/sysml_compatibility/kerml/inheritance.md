@@ -94,17 +94,25 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Inheritance'
-      (class_def 'A'
-        (feature_def 'f'))
-      (class_def 'B' :> 'Inheritance::A'[class_def])
-      (feature_def 'y' : 'Inheritance::A'[class_def]
-        (alias_member 'x' -> 'Inheritance::A::f'[feature_def])
-        (feature_def 'g' :>> 'Inheritance::A::f'[feature_def]))
-      (alias_member 'z' -> 'Inheritance::y::g'[feature_def])
-      (feature_def 'w' :> 'Inheritance::y'[feature_def])
-      (alias_member 'us' -> 'Inheritance::y::g'[feature_def])
-      (feature_def 'yy' : 'Inheritance::y'[feature_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Inheritance"))) (name "Inheritance") (declared-name "Inheritance")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Inheritance::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Inheritance::B"))) (name "B") (declared-name "B"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Inheritance::us"))) (name "us") (declared-name "us"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Inheritance::w"))) (name "w") (declared-name "w"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Inheritance::y"))) (name "y") (declared-name "y"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Inheritance::yy"))) (name "yy") (declared-name "yy"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Inheritance::z"))) (name "z") (declared-name "z"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

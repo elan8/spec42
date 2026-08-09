@@ -59,20 +59,15 @@ package ConnectorAll {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ConnectorAll'
-      (connector_def 'during' : 'HappensDuring'[unresolved]
-        (connector_end 'self')
-        (connector_end 'occ'))
-      (connector_def 'guardConstraint' : 'TPCGuardConstraint'[unresolved]
-        (multiplicity_range [*])
-        (connector_end 'transitionLink')
-        (connector_end 'guard'))
-      (connector_def 'x'
-        (connector_end 'a')
-        (connector_end 'b'))
-      (connector_def
-        (connector_end 'a')
-        (connector_end 'b')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ConnectorAll"))) (name "ConnectorAll") (declared-name "ConnectorAll"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

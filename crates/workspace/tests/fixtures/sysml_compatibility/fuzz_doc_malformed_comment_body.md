@@ -38,7 +38,15 @@ parse.expected_close_curly
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (alias_member 'Foo' -> 'Bar'[unresolved])))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -120,16 +120,36 @@ standard library package AnalysisTooling {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'AnalysisTooling'
-      (documentation)
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (metadata_def 'ToolExecution'
-        (documentation)
-        (attribute_usage composite 'toolName' : 'String'[unresolved])
-        (attribute_usage composite 'uri' : 'String'[unresolved]))
-      (metadata_def 'ToolVariable'
-        (documentation)
-        (attribute_usage composite 'name' : 'String'[unresolved])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisTooling"))) (name "AnalysisTooling") (declared-name "AnalysisTooling")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisTooling::*"))) (name "*") (declared-name "*"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (name "ToolExecution") (declared-name "ToolExecution")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (name "toolName") (declared-name "toolName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (name "uri") (declared-name "uri") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (name "ToolVariable") (declared-name "ToolVariable")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::name"))) (name "name") (declared-name "name") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisTooling::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

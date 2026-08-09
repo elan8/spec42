@@ -141,20 +141,45 @@ standard library package Calculations {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Calculations'
-      (documentation)
-      (membership_import private -> 'Performances::Evaluation'[unresolved])
-      (membership_import private -> 'Performances::evaluations'[unresolved])
-      (membership_import private -> 'Actions::Action'[unresolved])
-      (membership_import private -> 'Actions::actions'[unresolved])
-      (calculation_def abstract 'Calculation' :> 'Action'[unresolved] :> 'Evaluation'[unresolved]
-        (documentation)
-        (calculation_usage reference 'self' : 'Calculations::Calculation'[calculation_def] :>> 'Action::self'[unresolved] :>> 'Evaluation::self'[unresolved] :> 'Calculations::calculations'[calculation_usage][implied])
-        (calculation_usage abstract composite 'subcalculations' : 'Calculations::Calculation'[calculation_def] :> 'Calculations::calculations'[calculation_usage] :> 'subactions'[unresolved]
-          (documentation)))
-      (calculation_usage abstract 'calculations' : 'Calculations::Calculation'[calculation_def] :> 'actions'[unresolved] :> 'evaluations'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Calculations"))) (name "Calculations") (declared-name "Calculations")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::Action"))) (name "Action") (declared-name "Action"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculations::Calculation"))) (name "Calculation") (declared-name "Calculation")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))
+            (element (kind "calc") (id (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (name "self") (declared-name "self") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))
+            (element (kind "calc") (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (name "subcalculations") (declared-name "subcalculations") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::actions"))) (name "actions") (declared-name "actions"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculations::calculations"))) (name "calculations") (declared-name "calculations")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::calculations")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::evaluations"))) (name "evaluations") (declared-name "evaluations"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::calculations"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -561,133 +561,39 @@ standard library package OccurrenceFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'OccurrenceFunctions'
-      (documentation)
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensDuring'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Positive'[unresolved])
-      (membership_import private -> 'SequenceFunctions::notEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'SequenceFunctions::add'[unresolved])
-      (membership_import private -> 'SequenceFunctions::addAt'[unresolved])
-      (membership_import private -> 'SequenceFunctions::remove'[unresolved])
-      (membership_import private -> 'SequenceFunctions::removeAt'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (function_def '===' :> 'BaseFunctions::==='[unresolved]
-        (documentation)
-        (feature_def in 'x' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'isDuring'
-        (documentation)
-        (feature_def in 'occ' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (connector_def 'during' : 'HappensDuring'[unresolved]
-          (multiplicity_range [0..1])
-          (connector_end 'self')
-          (connector_end 'occ'))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'create'
-        (documentation)
-        (feature_def inout 'occ' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (connector_def : 'HappensDuring'[unresolved]
-          (connector_end 'occ.startShot')
-          (connector_end 'self'))
-        (return_parameter_membership
-          (feature_def out : 'Occurrence'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'destroy'
-        (documentation)
-        (feature_def inout 'occ' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (connector_def : 'HappensDuring'[unresolved]
-          (connector_end 'occ.endShot')
-          (connector_end 'self'))
-        (return_parameter_membership
-          (feature_def out : 'Occurrence'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=)))))
-      (function_def 'addNew'
-        (documentation)
-        (feature_def inout 'group' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def inout 'occ' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (step_def composite : 'add'[unresolved]
-          (feature_def inout 'seq1'
-            (feature_value (=)))
-          (feature_def in 'seq2'
-            (feature_value (=))))
-        (return_parameter_membership
-          (feature_def out : 'Occurrence'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'addNewAt'
-        (documentation)
-        (feature_def inout ordered 'group' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def inout 'occ' : 'Occurrence'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'index' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (step_def composite : 'addAt'[unresolved]
-          (feature_def inout 'seq'
-            (feature_value (=)))
-          (feature_def in 'values'
-            (feature_value (=)))
-          (feature_def in 'startIndex'
-            (feature_value (=))))
-        (return_parameter_membership
-          (feature_def out : 'Occurrence'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (behavior_def 'removeOld'
-        (documentation)
-        (feature_def inout 'group' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def inout 'occ' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (step_def composite 'removeStep' : 'remove'[unresolved]
-          (feature_def inout 'seq'
-            (feature_value (=)))
-          (feature_def in 'values'
-            (feature_value (=))))
-        (succession_def
-          (connector_end 'removeStep')
-          (connector_end 'destroyStep'))
-        (step_def composite 'destroyStep' : 'OccurrenceFunctions::destroy'[function_def]
-          (feature_def inout 'occ'
-            (feature_value (=)))))
-      (behavior_def 'removeOldAt'
-        (documentation)
-        (feature_def inout ordered 'group' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'index' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'oldOcc'
-          (feature_value (=)))
-        (step_def composite 'removeStep' : 'remove'[unresolved]
-          (feature_def inout 'seq'
-            (feature_value (=)))
-          (feature_def in 'index'
-            (feature_value (=))))
-        (succession_def
-          (connector_end 'removeStep')
-          (connector_end 'destroyStep'))
-        (step_def composite 'destroyStep' : 'OccurrenceFunctions::destroy'[function_def]
-          (feature_def inout 'occ'
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "OccurrenceFunctions"))) (name "OccurrenceFunctions") (declared-name "OccurrenceFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::Positive"))) (name "Positive") (declared-name "Positive"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "OccurrenceFunctions::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::add"))) (name "add") (declared-name "add"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::addAt"))) (name "addAt") (declared-name "addAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::addNew"))) (name "addNew") (declared-name "addNew"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::addNewAt"))) (name "addNewAt") (declared-name "addNewAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::create"))) (name "create") (declared-name "create"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::destroy"))) (name "destroy") (declared-name "destroy"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::isDuring"))) (name "isDuring") (declared-name "isDuring"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::remove"))) (name "remove") (declared-name "remove"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::removeAt"))) (name "removeAt") (declared-name "removeAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::removeOld"))) (name "removeOld") (declared-name "removeOld"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OccurrenceFunctions::removeOldAt"))) (name "removeOldAt") (declared-name "removeOldAt"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OccurrenceFunctions::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OccurrenceFunctions::_documentation"))) (to (node (document "d0") (qualified-name "OccurrenceFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

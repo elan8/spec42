@@ -107,23 +107,37 @@ semantic.unresolved_name 'TradeStudy'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'RationaleMetadataExample'
-      (membership_import private -> 'ModelingMetadata::Rationale'[unresolved])
-      (part_usage 'engine')
-      (part_usage 'engine4cyl' :> 'RationaleMetadataExample::engine'[part_usage])
-      (part_usage 'engine6cyl' :> 'RationaleMetadataExample::engine'[part_usage])
-      (metadata_usage 'engineSelectionRationale' :> 'Rationale'[unresolved] annotated 'RationaleMetadataExample::engine4cyl'[part_usage]
-        (feature_def 'text'
-          (feature_value (=)))
-        (feature_def 'explanation'
-          (feature_value (=))))
-      (namespace_import private -> 'TradeStudies'[unresolved])
-      (analysis_case_usage 'engineTradeOffAnalysis' : 'TradeStudy'[unresolved]
-        (subject_membership in 'alternatives' :> 'RationaleMetadataExample::engine'[part_usage]
-          (multiplicity_range [2])
-          (feature_value (=)))
-        (return_parameter_membership
-          (feature_def out 'selectedEngine' :> 'RationaleMetadataExample::engine'[part_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RationaleMetadataExample"))) (name "RationaleMetadataExample") (declared-name "RationaleMetadataExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "RationaleMetadataExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "RationaleMetadataExample::Rationale"))) (name "Rationale") (declared-name "Rationale"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))) (name "engine6cyl") (declared-name "engine6cyl") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (name "engineSelectionRationale") (declared-name "engineSelectionRationale")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (name "explanation") (declared-name "explanation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "analysis") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (name "engineTradeOffAnalysis") (declared-name "engineTradeOffAnalysis")
+          (contains
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis::selectedEngine"))) (name "selectedEngine") (declared-name "selectedEngine"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

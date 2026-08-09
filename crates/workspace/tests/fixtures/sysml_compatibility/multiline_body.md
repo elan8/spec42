@@ -37,8 +37,19 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Foo'
-      (feature_def 'x'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Foo"))) (name "Foo") (declared-name "Foo")
+      (contains
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Foo::x"))) (name "x") (declared-name "x"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -490,92 +490,23 @@ semantic.unresolved_name 'Return_AllItems'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AHFNorwaySequences'
-      (namespace_import private -> 'AHFProfileLib'[unresolved])
-      (namespace_import private -> 'AHFCoreLib'[unresolved])
-      (namespace_import private -> 'AHFNorway'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (part_usage 'AHFN_LocalCloudDD_Seqs'
-        (feature_value (=))
-        (occurrence_def 'APIS_transfer_lifetime'
-          (part_usage reference 'tlc'
-            (feature_value (=))
-            (event_occurrence_usage 'call_getItems1')
-            (source_succession
-              (event_occurrence_usage 'return_getItems1'))
-            (event_occurrence_usage 'call_getItems2')
-            (source_succession
-              (event_occurrence_usage 'return_getItems2')))
-          (part_usage reference 'apsp'
-            (feature_value (=))
-            (event_occurrence_usage 'send_publish_returnallitems')
-            (source_succession
-              (event_occurrence_usage 'receive_call_getItems1'))
-            (source_succession
-              (event_occurrence_usage 'send_returnallitems1'))
-            (source_succession
-              (event_occurrence_usage 'return_getItems_ack1'))
-            (source_succession
-              (event_occurrence_usage 'receive_call_getItems2'))
-            (source_succession
-              (event_occurrence_usage 'send_returnallitems2'))
-            (source_succession
-              (event_occurrence_usage 'return_getItems_ack2')))
-          (part_usage reference 'mqtts'
-            (feature_value (=))
-            (event_occurrence_usage 'receive_publish_returnallitems')
-            (source_succession
-              (event_occurrence_usage 'receive_subscribe_returnallitems'))
-            (source_succession
-              (event_occurrence_usage 'forw1' : 'AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding'[occurrence_def]))
-            (source_succession
-              (event_occurrence_usage 'forw2' : 'AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding'[occurrence_def])))
-          (part_usage reference 'apsc'
-            (feature_value (=))
-            (event_occurrence_usage 'send_subscribe_returnallitems')
-            (source_succession
-              (event_occurrence_usage 'forw1' : 'AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding'[occurrence_def]))
-            (source_succession
-              (event_occurrence_usage 'forw2' : 'AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding'[occurrence_def])))
-          (occurrence_usage composite 'forw1' : 'AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding'[occurrence_def])
-          (occurrence_usage composite 'forw2' : 'AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::MQTTforwarding'[occurrence_def])
-          (flow_usage composite 'publish_returnallitems' : 'Publish'[unresolved]
-            (connector_end 'apsp.send_publish_returnallitems')
-            (connector_end 'mqtts.receive_publish_returnallitems'))
-          (flow_usage composite 'subscribe_returnallitems' : 'Subscribe'[unresolved]
-            (connector_end 'apsc.send_subscribe_returnallitems')
-            (connector_end 'mqtts.receive_subscribe_returnallitems'))
-          (flow_usage composite 'call_getItems1' : 'CallGiveItems'[unresolved])
-          (binding_connector_def
-            (connector_end 'apsp.send_returnallitems1')
-            (connector_end 'forw1.mq'))
-          (flow_usage composite 'returnack1' : 'ResultGiveItems'[unresolved]
-            (connector_end 'apsp.return_getItems_ack1')
-            (connector_end 'tlc.return_getItems1'))
-          (flow_usage composite 'call_getItems2' : 'CallGiveItems'[unresolved])
-          (binding_connector_def
-            (connector_end 'apsp.send_returnallitems2')
-            (connector_end 'forw2.mq'))
-          (flow_usage composite 'returnack2' : 'ResultGiveItems'[unresolved]
-            (connector_end 'apsp.return_getItems_ack2')
-            (connector_end 'tlc.return_getItems2')))
-        (occurrence_def 'MQTTforwarding'
-          (part_usage reference 'mqttsf'
-            (feature_value (=))
-            (event_occurrence_usage 'receive_returnallitems')
-            (source_succession
-              (event_occurrence_usage 'send_returnallitems')))
-          (part_usage reference 'apscf' :> 'AHFNorway_LocalCloudDD::APISConsumer'[unresolved]
-            (event_occurrence_usage 'receive_returnallitems'))
-          (event_occurrence_usage in 'mq')
-          (flow_usage composite 'sendallitems1' : 'Return_AllItems'[unresolved]
-            (connector_end 'mq')
-            (connector_end 'mqttsf.receive_returnallitems'))
-          (flow_usage composite 'sendallitems2' : 'Return_AllItems'[unresolved]
-            (connector_end 'mqttsf.send_returnallitems')
-            (connector_end 'apscf.receive_returnallitems')))
-        (not_implemented 'malformed')
-        (not_implemented 'malformed')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AHFNorwaySequences"))) (name "AHFNorwaySequences") (declared-name "AHFNorwaySequences")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (name "AHFN_LocalCloudDD_Seqs") (declared-name "AHFN_LocalCloudDD_Seqs") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "AHFNorway_LocalCloudDD")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

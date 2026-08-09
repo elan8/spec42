@@ -116,27 +116,26 @@ semantic.unresolved_name 'deliver_target_event'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ServerSequenceModelOutside'
-      (namespace_import public -> 'ServerSequenceModel'[unresolved])
-      (part_def 'PubSubSequenceOutside' :> 'PubSubSequence'[unresolved]
-        (part_usage composite :>> 'producer'[unresolved]
-          (event_occurrence_usage 'publish_source_event'
-            (feature_value (=))))
-        (part_usage composite :>> 'server'[unresolved]
-          (event_occurrence_usage :>> 'subscribe_target_event'[unresolved]
-            (feature_value (=)))
-          (source_succession
-            (event_occurrence_usage :>> 'publish_target_event'[unresolved]
-              (feature_value (=))))
-          (source_succession
-            (event_occurrence_usage :>> 'deliver_source_event'[unresolved]
-              (feature_value (=)))))
-        (part_usage composite :>> 'consumer'[unresolved]
-          (event_occurrence_usage :>> 'subscribe_source_event'[unresolved]
-            (feature_value (=)))
-          (source_succession
-            (event_occurrence_usage :>> 'deliver_target_event'[unresolved]
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceModelOutside"))) (name "ServerSequenceModelOutside") (declared-name "ServerSequenceModelOutside")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))) (name "PubSubSequenceOutside") (declared-name "PubSubSequenceOutside") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))) (name "consumer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))) (name "producer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))) (name "server") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

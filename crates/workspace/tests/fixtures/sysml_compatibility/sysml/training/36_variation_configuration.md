@@ -82,18 +82,31 @@ semantic.unresolved_name 'transmission'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Variation Configuration'
-      (namespace_import private -> 'Variation Usages'[unresolved])
-      (part_usage 'vehicle4Cyl' :> 'vehicleFamily'[unresolved]
-        (part_usage composite :>> 'engine'[unresolved]
-          (feature_value (=)))
-        (part_usage composite :>> 'transmission'[unresolved]
-          (feature_value (=))))
-      (part_usage 'vehicle6Cyl' :> 'vehicleFamily'[unresolved]
-        (part_usage composite :>> 'engine'[unresolved]
-          (feature_value (=)))
-        (part_usage composite :>> 'transmission'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Variation Configuration"))) (name "Variation Configuration") (declared-name "Variation Configuration")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Variation Configuration::*"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (name "vehicle4Cyl") (declared-name "vehicle4Cyl") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "engine::4cylEngine")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (name "transmission") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "transmission::manualTransmission")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (role feature-value))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (name "vehicle6Cyl") (declared-name "vehicle6Cyl") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "engine::6cylEngine")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (name "transmission") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "transmission::manualTransmission")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -78,16 +78,28 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Comments'
-      (documentation)
-      (documentation)
-      (comment_annotating 'cmt')
-      (comment_annotating 'cmt_cmt')
-      (comment_annotating)
-      (part_def 'C'
-        (documentation)
-        (comment_annotating)
-        (comment_annotating)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Comments"))) (name "Comments") (declared-name "Comments")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Comments::C"))) (name "C") (declared-name "C") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Comments::C::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Comments::C")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Comments::_documentation"))) (name ""))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::C::_documentation"))) (to (node (document "d0") (qualified-name "Comments::C"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation"))) (to (node (document "d0") (qualified-name "Comments"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (to (node (document "d0") (qualified-name "Comments"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

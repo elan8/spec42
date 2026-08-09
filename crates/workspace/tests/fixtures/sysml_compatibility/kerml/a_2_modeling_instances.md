@@ -144,31 +144,40 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ModelingInstances'
-      (documentation)
-      (classifier_def 'Vehicle')
-      (classifier_def 'Bicycle' :> 'ModelingInstances::Vehicle'[classifier_def])
-      (classifier_def 'MyBike' :> 'ModelingInstances::Bicycle'[classifier_def]
-        (multiplicity_range [1]))
-      (classifier_def 'YourBike' :> 'ModelingInstances::Bicycle'[classifier_def]
-        (multiplicity_range [1])
-        (disjoining_decl)))
-    (package 'ModelingInstancesWithAtoms'
-      (documentation)
-      (membership_import private -> 'Atoms::atom'[unresolved])
-      (classifier_def 'Vehicle')
-      (classifier_def 'Bicycle' :> 'ModelingInstancesWithAtoms::Vehicle'[classifier_def])
-      (classifier_def 'MyBike' :> 'ModelingInstancesWithAtoms::Bicycle'[classifier_def])
-      (classifier_def 'YourBike' :> 'ModelingInstancesWithAtoms::Bicycle'[classifier_def])
-      (classifier_def 'Garage'
-        (feature_def 'stores' : 'ModelingInstancesWithAtoms::Bicycle'[classifier_def]
-          (multiplicity_range [*])))
-      (classifier_def 'OurBicycle'
-        (unioning)
-        (unioning))
-      (classifier_def 'OurGarage' :> 'ModelingInstancesWithAtoms::Garage'[classifier_def]
-        (feature_def :>> 'ModelingInstancesWithAtoms::Garage::stores'[feature_def] : 'ModelingInstancesWithAtoms::OurBicycle'[classifier_def]
-          (multiplicity_range [2]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ModelingInstances"))) (name "ModelingInstances") (declared-name "ModelingInstances")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::MyBike"))) (name "MyBike") (declared-name "MyBike"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstances::YourBike"))) (name "YourBike") (declared-name "YourBike"))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))) (name "ModelingInstancesWithAtoms") (declared-name "ModelingInstancesWithAtoms")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Garage"))) (name "Garage") (declared-name "Garage"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::MyBike"))) (name "MyBike") (declared-name "MyBike"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurBicycle"))) (name "OurBicycle") (declared-name "OurBicycle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::OurGarage"))) (name "OurGarage") (declared-name "OurGarage"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::YourBike"))) (name "YourBike") (declared-name "YourBike"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))) (name "atom") (declared-name "atom"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom"))) (to (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ModelingInstancesWithAtoms::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ModelingInstancesWithAtoms"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

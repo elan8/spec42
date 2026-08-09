@@ -77,17 +77,20 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Inverses'
-      (class_def 'A'
-        (feature_def 'f' : 'Inverses::B'[class_def]
-          (feature_inverting_decl :> 'Inverses::B::g'[feature_def]))
-        (feature_def 'h' : 'Inverses::B'[class_def]))
-      (class_def 'B'
-        (feature_def 'g' : 'Inverses::A'[class_def]))
-      (feature_inverting_decl)
-      (feature_inverting_decl 'Invert')
-      (feature_def 'gg' : 'Inverses::A'[class_def]
-        (feature_inverting_decl :> 'Inverses::A::f'[feature_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Inverses"))) (name "Inverses") (declared-name "Inverses")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Inverses::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Inverses::B"))) (name "B") (declared-name "B"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

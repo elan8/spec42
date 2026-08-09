@@ -603,217 +603,183 @@ standard library package QuantityCalculations {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'QuantityCalculations'
-      (documentation)
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'Quantities::ScalarQuantityValue'[unresolved])
-      (membership_import private -> 'MeasurementReferences::ScalarMeasurementReference'[unresolved])
-      (membership_import private -> 'MeasurementReferences::DimensionOneValue'[unresolved])
-      (calculation_def '[' :> 'BaseFunctions::['[unresolved]
-        (reference_usage in reference 'num' : 'Number'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'mRef' : 'ScalarMeasurementReference'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out 'quantity' : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'isZero' :> 'NumericalFunctions::isZero'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (calculation_def 'isUnit' :> 'NumericalFunctions::isUnit'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (calculation_def 'abs' :> 'NumericalFunctions::abs'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '+' :> 'NumericalFunctions::+'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved])))
-      (calculation_def '-' :> 'NumericalFunctions::-'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved])
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '*' :> 'NumericalFunctions::*'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '/' :> 'NumericalFunctions::/'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '**' :> 'NumericalFunctions::**'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '^' :> 'NumericalFunctions::^'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '<' :> 'NumericalFunctions::<'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '>' :> 'NumericalFunctions::>'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '<=' :> 'NumericalFunctions::<='[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '>=' :> 'NumericalFunctions::>='[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'max' :> 'NumericalFunctions::max'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'min' :> 'NumericalFunctions::min'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def '==' :> 'DataFunctions::=='[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'y' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'sqrt'
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'floor'
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'round'
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'ToString' :> 'BaseFunctions::ToString'[unresolved]
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved])))
-      (calculation_def 'ToInteger'
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'ToRational'
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'ToReal'
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'ToDimensionOneValue'
-        (reference_usage in reference 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'DimensionOneValue'[unresolved]
-            (multiplicity_range [1]))))
-      (calculation_def 'sum' :> 'NumericalFunctions::sum'[unresolved]
-        (reference_usage in reference 'collection' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (attribute_usage composite 'zero' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'product' :> 'NumericalFunctions::product'[unresolved]
-        (reference_usage in reference 'collection' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (attribute_usage composite 'one' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'ConvertQuantity'
-        (reference_usage in reference 'x' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'targetMRef' : 'ScalarMeasurementReference'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarQuantityValue'[unresolved]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "QuantityCalculations"))) (name "QuantityCalculations") (declared-name "QuantityCalculations")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "QuantityCalculations::*"))) (name "*") (declared-name "*"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::*#calc_def"))) (name "*") (declared-name "*")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::*#calc_def::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::*#calc_def")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::*#calc_def::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::*#calc_def")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::**"))) (name "**") (declared-name "**")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::**::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::**")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::**::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::**")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::+"))) (name "+") (declared-name "+")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::+::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::+")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::+::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::+")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::+::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::+")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::-"))) (name "-") (declared-name "-")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::-::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::-")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::-::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::-")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::/"))) (name "/") (declared-name "/")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::/::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::/")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::/::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::/")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::<"))) (name "<") (declared-name "<")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::<::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::<")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::<::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::<")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::<="))) (name "<=") (declared-name "<=")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::<=::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::<=")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::<=::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::<=")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::=="))) (name "==") (declared-name "==")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::==::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::==")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::==::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::==")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::>"))) (name ">") (declared-name ">")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::>::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::>")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::>::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::>")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::>="))) (name ">=") (declared-name ">=")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::>=::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::>=")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::>=::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::>=")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::ConvertQuantity"))) (name "ConvertQuantity") (declared-name "ConvertQuantity")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ConvertQuantity::targetMRef"))) (name "targetMRef") (declared-name "targetMRef") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ConvertQuantity")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ConvertQuantity::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ConvertQuantity")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "QuantityCalculations::DimensionOneValue"))) (name "DimensionOneValue") (declared-name "DimensionOneValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "QuantityCalculations::ScalarMeasurementReference"))) (name "ScalarMeasurementReference") (declared-name "ScalarMeasurementReference"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "QuantityCalculations::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::ToDimensionOneValue"))) (name "ToDimensionOneValue") (declared-name "ToDimensionOneValue")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ToDimensionOneValue::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ToDimensionOneValue")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::ToInteger"))) (name "ToInteger") (declared-name "ToInteger")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ToInteger::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ToInteger")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::ToRational"))) (name "ToRational") (declared-name "ToRational")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ToRational::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ToRational")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::ToReal"))) (name "ToReal") (declared-name "ToReal")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ToReal::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ToReal")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::ToString"))) (name "ToString") (declared-name "ToString")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ToString::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ToString")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::ToString::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::ToString")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::["))) (name "[") (declared-name "[")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::[::mRef"))) (name "mRef") (declared-name "mRef") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::[")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::[::num"))) (name "num") (declared-name "num") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::[")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::^"))) (name "^") (declared-name "^")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::^::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::^")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::^::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::^")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "QuantityCalculations::_documentation"))) (name ""))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::abs"))) (name "abs") (declared-name "abs")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::abs::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::abs")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::floor"))) (name "floor") (declared-name "floor")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::floor::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::floor")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::isUnit"))) (name "isUnit") (declared-name "isUnit")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::isUnit::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::isUnit")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::isZero"))) (name "isZero") (declared-name "isZero")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::isZero::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::isZero")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::max"))) (name "max") (declared-name "max")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::max::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::max")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::max::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::max")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::min"))) (name "min") (declared-name "min")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::min::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::min")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::min::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::min")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::product"))) (name "product") (declared-name "product")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::product::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::product")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::product::collection"))) (name "collection") (declared-name "collection") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::product")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::round"))) (name "round") (declared-name "round")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::round::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::round")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::sqrt"))) (name "sqrt") (declared-name "sqrt")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::sqrt::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::sqrt")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "QuantityCalculations::sum"))) (name "sum") (declared-name "sum")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::sum::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::sum")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "QuantityCalculations::sum::collection"))) (name "collection") (declared-name "collection") (effective (featuring-type (node (document "d0") (qualified-name "QuantityCalculations::sum")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "QuantityCalculations::_documentation"))) (to (node (document "d0") (qualified-name "QuantityCalculations"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

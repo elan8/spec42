@@ -683,139 +683,73 @@ semantic.unresolved_name 'portno'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AHFNorway'
-      (documentation)
-      (namespace_import private -> 'AHFProfileLib'[unresolved])
-      (namespace_import private -> 'AHFProfileMetadata'[unresolved])
-      (membership_import private recursive -> 'AHFCoreLib'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (definition 'APISService'
-        (documentation)
-        (attribute_usage composite :>> 'serviceDefinition'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'intrfce_protocol'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'serviceURL'[unresolved]
-          (feature_value (=))))
-      (port_def 'APIS_DD' :> 'AHFNorway::APISService'[definition]
-        (documentation)
-        (port_usage composite 'APIS_HTTP'
-          (reference_usage out reference 'cll' : 'AHFNorway::CallGiveItems'[attribute_def])
-          (reference_usage in reference 'retrn' : 'AHFNorway::ResultGiveItems'[attribute_def]))
-        (port_usage composite 'APIS_MQTT'
-          (reference_usage out reference 'pub' : 'AHFNorway::Publish'[attribute_def])
-          (reference_usage out reference 'retall' : 'AHFNorway::Return_AllItems'[attribute_def])
-          (reference_usage in reference 'subscr' : 'AHFNorway::Subscribe'[attribute_def])))
-      (attribute_def 'Publish'
-        (reference_usage reference 'nametopic' : 'String'[unresolved]))
-      (attribute_def 'Subscribe'
-        (reference_usage reference 'nametopic' : 'String'[unresolved]))
-      (attribute_def 'Return_AllItems'
-        (reference_usage reference 'itms' : 'String'[unresolved]))
-      (attribute_def 'Subscribe_giveItems'
-        (reference_usage reference 'itms' : 'String'[unresolved]))
-      (attribute_def 'Return_Ack'
-        (reference_usage reference 'ack' : 'Boolean'[unresolved]))
-      (attribute_def 'CallGiveItems'
-        (reference_usage reference 'itms' : 'String'[unresolved]))
-      (attribute_def 'ResultGiveItems'
-        (reference_usage reference 'ack' : 'Boolean'[unresolved]))
-      (reference_usage 'AHFNorway_LocalCloudDD' :> 'ArrowheadCore'[unresolved]
-        (reference_usage 'TellUConsumer'
-          (reference_usage 'serviceDiscovery' : 'ServiceDiscoveryDD'[unresolved] ~ 'ServiceDiscoveryDD'[unresolved])
-          (reference_usage 'apisp' : 'AHFNorway::APIS_DD'[port_def])
-          (attribute_usage composite :>> 'systemname'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'address'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'portno'[unresolved]
-            (feature_value (=)))
-          (state_usage composite 'TellUbehavior'
-            (not_implemented 'malformed')
-            (state_usage composite 'Wait')
-            (transition_usage)))
-        (reference_usage 'APISProducer'
-          (reference_usage 'serviceDiscovery' : 'ServiceDiscoveryDD'[unresolved] ~ 'ServiceDiscoveryDD'[unresolved])
-          (reference_usage 'tellu' : 'AHFNorway::APIS_DD'[port_def] ~ 'AHFNorway::APIS_DD'[port_def])
-          (reference_usage 'apisc' : 'AHFNorway::APIS_DD'[port_def])
-          (reference_usage reference :>> 'systemname'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'address'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'portno'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite 'x' : 'Boolean'[unresolved])
-          (action_usage composite 'giveItems' :> 'ServiceMethod'[unresolved]
-            (reference_usage in reference 'itms' : 'String'[unresolved])
-            (reference_usage out reference 'ack' : 'Boolean'[unresolved])
-            (initial_node)
-            (source_succession
-              (send_action_usage))
-            (reference_usage reference 'success'
-              (feature_value (=)))
-            (binding_connector_def
-              (connector_end 'ack')
-              (connector_end 'success')))
-          (state_usage composite 'APISPbehavior'
-            (not_implemented 'malformed')
-            (state_usage composite 'WaitOnData')
-            (transition_usage)
-            (source_succession
-              (action_usage 'giveItems'
-                (reference_usage in reference 'itms'
-                  (feature_value (=)))
-                (reference_usage out reference 'ack'
-                  (feature_value (=)))))
-            (source_succession
-              (send_action_usage)))
-          (source_succession
-            (reference_usage reference 'WaitOnData'))))
-      (reference_usage 'APISConsumer'
-        (reference_usage 'serviceDiscovery' : 'ServiceDiscovery'[unresolved] ~ 'ServiceDiscovery'[unresolved])
-        (reference_usage 'apisp' : 'AHFNorway::APIS_DD'[port_def] ~ 'AHFNorway::APIS_DD'[port_def])
-        (reference_usage reference :>> 'systemname'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'address'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'portno'[unresolved]
-          (feature_value (=)))
-        (state_usage composite 'MQTT_APISP'
-          (not_implemented 'malformed')
-          (state_usage composite 'Idle')
-          (transition_usage)))
-      (part_usage 'MQTTServer'
-        (port_usage composite 'getTopic' : 'AHFNorway::APIS_DD'[port_def] ~ 'AHFNorway::APIS_DD'[port_def])
-        (port_usage composite 'giveTopic' : 'AHFNorway::APIS_DD'[port_def])
-        (state_usage composite 'Serve'
-          (state_subaction_membership 'entry'
-            (action_usage))
-          (source_succession
-            (reference_usage reference 'Publ'))
-          (state_usage composite 'Publ')
-          (transition_usage)
-          (state_usage composite 'Subsr')
-          (transition_usage)
-          (state_usage composite 'Idle')
-          (transition_usage)))
-      (connection_usage
-        (connector_end 'APISProducer.apisc')
-        (connector_end 'MQTTServer.getTopic'))
-      (connection_usage
-        (connector_end 'MQTTServer.giveTopic')
-        (connector_end 'APISConsumer.apisp'))
-      (connection_usage
-        (connector_end 'TellUConsumer.apisp')
-        (connector_end 'APISProducer.tellu'))
-      (connection_usage
-        (connector_end 'APISProducer.serviceDiscovery')
-        (connector_end 'service_registry.serviceDiscovery'))
-      (connection_usage
-        (connector_end 'TellUConsumer.serviceDiscovery')
-        (connector_end 'service_registry.serviceDiscovery'))
-      (connection_usage
-        (connector_end 'APISConsumer.serviceDiscovery')
-        (connector_end 'service_registry.serviceDiscovery')))
-    (not_implemented 'malformed')))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AHFNorway"))) (name "AHFNorway") (declared-name "AHFNorway")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorway::AHFCoreLib"))) (name "AHFCoreLib") (declared-name "AHFCoreLib"))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))) (name "APIS_DD") (declared-name "APIS_DD")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFNorway::APIS_DD")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFNorway::APIS_DD::~APIS_DD"))) (name "~APIS_DD") (declared-name "~APIS_DD") (effective (featuring-type (node (document "d0") (qualified-name "AHFNorway::APIS_DD")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::CallGiveItems"))) (name "CallGiveItems") (declared-name "CallGiveItems") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::CallGiveItems::itms"))) (name "itms") (declared-name "itms") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::CallGiveItems")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Publish"))) (name "Publish") (declared-name "Publish") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Publish::nametopic"))) (name "nametopic") (declared-name "nametopic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Publish")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems"))) (name "ResultGiveItems") (declared-name "ResultGiveItems") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems::ack"))) (name "ack") (declared-name "ack") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::ResultGiveItems")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Return_Ack"))) (name "Return_Ack") (declared-name "Return_Ack") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Return_Ack::ack"))) (name "ack") (declared-name "ack") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Return_Ack")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Return_AllItems"))) (name "Return_AllItems") (declared-name "Return_AllItems") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Return_AllItems::itms"))) (name "itms") (declared-name "itms") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Return_AllItems")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe"))) (name "Subscribe") (declared-name "Subscribe") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe::nametopic"))) (name "nametopic") (declared-name "nametopic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Subscribe")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems"))) (name "Subscribe_giveItems") (declared-name "Subscribe_giveItems") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems::itms"))) (name "itms") (declared-name "itms") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFNorway::Subscribe_giveItems")))))
+          )
+        )
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFNorway::_clouddd"))) (name "clouddd") (declared-name "clouddd"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFNorway::_documentation"))) (name ""))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFNorway::_service"))) (name "service") (declared-name "service"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFNorway::_servicedd"))) (name "servicedd") (declared-name "servicedd"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::APIS_DD::_documentation"))) (to (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_clouddd"))) (to (node (document "d0") (qualified-name "AHFNorway"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_documentation"))) (to (node (document "d0") (qualified-name "AHFNorway"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_service"))) (to (node (document "d0") (qualified-name "AHFNorway"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::_servicedd"))) (to (node (document "d0") (qualified-name "AHFNorway"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFNorway::APIS_DD::~APIS_DD"))) (to (node (document "d0") (qualified-name "AHFNorway::APIS_DD"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -277,40 +277,29 @@ standard library package Base {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Base'
-      (documentation)
-      (classifier_def abstract 'Anything'
-        (documentation)
-        (feature_def 'self' : 'Base::Anything'[classifier_def] :> 'Base::things'[feature_def] :> 'Base::things'[feature_def] :> 'Base::things::that'[feature_def]
-          (multiplicity_range [1])
-          (documentation)))
-      (datatype_def abstract 'DataValue' :> 'Base::Anything'[classifier_def]
-        (documentation)
-        (feature_def 'self' : 'Base::DataValue'[datatype_def] :>> 'Base::Anything::self'[feature_def]))
-      (feature_def abstract 'things' : 'Base::Anything'[classifier_def]
-        (multiplicity_range [1..*])
-        (documentation)
-        (feature_def 'that' : 'Base::Anything'[classifier_def] :> 'Base::things'[feature_def][implied]
-          (multiplicity_range [1])
-          (documentation)))
-      (feature_def abstract 'dataValues' : 'Base::DataValue'[datatype_def] :> 'Base::things'[feature_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (feature_def abstract 'naturals' : 'ScalarValues::Natural'[unresolved] :> 'Base::dataValues'[feature_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (multiplicity_def 'exactlyOne'
-        (multiplicity_range [1..1])
-        (documentation))
-      (multiplicity_def 'zeroOrOne'
-        (multiplicity_range [0..1])
-        (documentation))
-      (multiplicity_def 'oneToMany'
-        (multiplicity_range [1..*])
-        (documentation))
-      (multiplicity_def 'zeroToMany'
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Base"))) (name "Base") (declared-name "Base")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Base::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::DataValue"))) (name "DataValue") (declared-name "DataValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Base::_documentation"))) (name ""))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Base::dataValues"))) (name "dataValues") (declared-name "dataValues"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::exactlyOne"))) (name "exactlyOne") (declared-name "exactlyOne"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Base::naturals"))) (name "naturals") (declared-name "naturals"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::oneToMany"))) (name "oneToMany") (declared-name "oneToMany"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Base::things"))) (name "things") (declared-name "things"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::zeroOrOne"))) (name "zeroOrOne") (declared-name "zeroOrOne"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Base::zeroToMany"))) (name "zeroToMany") (declared-name "zeroToMany"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Base::_documentation"))) (to (node (document "d0") (qualified-name "Base"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

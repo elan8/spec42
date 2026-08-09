@@ -338,157 +338,40 @@ standard library package ScalarFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ScalarFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (function_def abstract '+' :> 'DataFunctions::+'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '-' :> 'DataFunctions::-'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '*' :> 'DataFunctions::*'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '/' :> 'DataFunctions::/'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '**' :> 'DataFunctions::**'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '^' :> 'DataFunctions::^'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '%' :> 'DataFunctions::%'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'not' :> 'DataFunctions::not'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'xor' :> 'DataFunctions::xor'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '~' :> 'DataFunctions::~'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '|' :> 'DataFunctions::|'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '&' :> 'DataFunctions::&'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '<' :> 'DataFunctions::<'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '>' :> 'DataFunctions::>'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '<=' :> 'DataFunctions::<='[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '>=' :> 'DataFunctions::>='[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'max' :> 'DataFunctions::max'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'min' :> 'DataFunctions::min'[unresolved]
-        (feature_def in 'x' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '..' :> 'DataFunctions::..'[unresolved]
-        (feature_def in 'lower' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'upper' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [0..*])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ScalarFunctions"))) (name "ScalarFunctions") (declared-name "ScalarFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ScalarFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ScalarFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl10"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl11"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl12"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl13"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl14"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl15"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl16"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl9"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ScalarFunctions::min"))) (name "min") (declared-name "min"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ScalarFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ScalarFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

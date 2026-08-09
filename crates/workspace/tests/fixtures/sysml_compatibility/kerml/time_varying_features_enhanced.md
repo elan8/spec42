@@ -594,67 +594,25 @@ semantic.unresolved_name 'timeSlices'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TimeVaryingFeaturesEnhanced'
-      (namespace_import private -> 'ExtendedOccurrences'[unresolved])
-      (class_def 'CC1' :> 'ExtendedOccurrence'[unresolved]
-        (feature_def 'x')
-        (feature_def :>> 'startShot'[unresolved]
-          (feature_def :>> 'TimeVaryingFeaturesEnhanced::CC1::x'[feature_def]
-            (feature_value (=))))
-        (feature_def 't' :> 'timeSlices'[unresolved]
-          (feature_def 'y')
-          (feature_def :>> 'startShot'[unresolved]
-            (feature_def :>> 'TimeVaryingFeaturesEnhanced::CC1::x'[feature_def]
-              (feature_value (=)))
-            (feature_def :>> 'TimeVaryingFeaturesEnhanced::CC1::t::y'[feature_def]
-              (feature_value (=))))
-          (feature_def 't1' :> 'timeSlices'[unresolved]
-            (feature_def :>> 'startShot'[unresolved]
-              (feature_def :>> 'TimeVaryingFeaturesEnhanced::CC1::x'[feature_def]
-                (feature_value (=)))
-              (feature_def :>> 'TimeVaryingFeaturesEnhanced::CC1::t::y'[feature_def]
-                (feature_value (=)))))))
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (class_def 'Car' :> 'ExtendedOccurrence'[unresolved]
-        (feature_def 'driver' : 'TimeVaryingFeaturesEnhanced::Person'[class_def]
-          (multiplicity_range [0..1]))
-        (feature_def 'speed' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'operated' :> 'timeSlices'[unresolved]
-          (multiplicity_range [0..*])
-          (feature_def :>> 'TimeVaryingFeaturesEnhanced::Car::driver'[feature_def]
-            (multiplicity_range [1])))
-        (feature_def 'engine'
-          (multiplicity_range [1]))
-        (feature_def 'transmission'
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (connector_def 'drive'
-          (connector_end 'engine')
-          (connector_end 'transmission'))
-        (feature_def 'inOperable' :> 'timeSlices'[unresolved]
-          (multiplicity_range [0..1]))
-        (succession_def
-          (connector_end 'operated')
-          (connector_end 'inOperable')))
-      (class_def 'Person' :> 'ExtendedOccurrence'[unresolved]
-        (feature_def 'isLicensed' : 'Boolean'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def 'speed' : 'Real'[unresolved]
-          (multiplicity_range [1])))
-      (structure_def 'Car1' :> 'ExtendedObject'[unresolved]
-        (feature_def 'driver' : 'TimeVaryingFeaturesEnhanced::Person'[class_def]
-          (multiplicity_range [0..1]))
-        (feature_def :>> 'startShot'[unresolved]
-          (feature_def :>> 'TimeVaryingFeaturesEnhanced::Car1::driver'[feature_def]
-            (multiplicity_range [0])))
-        (succession_def
-          (connector_end 'startShot')
-          (connector_end 'driven'))
-        (feature_def 'driven' :> 'timeSlices'[unresolved]
-          (feature_def :>> 'TimeVaryingFeaturesEnhanced::Car1::driver'[feature_def]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced"))) (name "TimeVaryingFeaturesEnhanced") (declared-name "TimeVaryingFeaturesEnhanced")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::CC1"))) (name "CC1") (declared-name "CC1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car"))) (name "Car") (declared-name "Car"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Car1"))) (name "Car1") (declared-name "Car1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Person"))) (name "Person") (declared-name "Person"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))) (name "Real") (declared-name "Real"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

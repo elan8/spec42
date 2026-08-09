@@ -32,8 +32,15 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MyPkg')
-    (reference_usage in reference 'newX' : 'Real'[unresolved])))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MyPkg"))) (name "MyPkg") (declared-name "MyPkg"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

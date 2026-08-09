@@ -204,49 +204,77 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Fork Join Example'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (attribute_def 'TurnKeyToOn')
-      (attribute_def 'BrakePressure')
-      (action_def 'MonitorBrakePedal'
-        (reference_usage out reference 'pressure' : 'Fork Join Example::BrakePressure'[attribute_def]))
-      (action_def 'MonitorTraction'
-        (reference_usage out reference 'modFreq' : 'Real'[unresolved]))
-      (action_def 'Braking'
-        (reference_usage in reference 'brakePressure' : 'Fork Join Example::BrakePressure'[attribute_def])
-        (reference_usage in reference 'modulationFrequency' : 'Real'[unresolved]))
-      (action_def 'Brake'
-        (action_usage composite 'TurnOn')
-        (source_succession
-          (fork_node))
-        (source_succession
-          (reference_usage reference 'monitorBrakePedal'))
-        (source_succession
-          (reference_usage reference 'monitorTraction'))
-        (source_succession
-          (reference_usage reference 'braking'))
-        (action_usage composite 'monitorBrakePedal' : 'Fork Join Example::MonitorBrakePedal'[action_def]
-          (reference_usage out reference 'brakePressure'))
-        (source_succession
-          (reference_usage reference 'joinNode'))
-        (action_usage composite 'monitorTraction' : 'Fork Join Example::MonitorTraction'[action_def]
-          (reference_usage out reference 'modulationFrequency'))
-        (source_succession
-          (reference_usage reference 'joinNode'))
-        (flow_usage composite
-          (connector_end 'monitorBrakePedal.brakePressure')
-          (connector_end 'braking.brakePressure'))
-        (flow_usage composite
-          (connector_end 'monitorTraction.modulationFrequency')
-          (connector_end 'braking.modulationFrequency'))
-        (action_usage composite 'braking' : 'Fork Join Example::Braking'[action_def]
-          (reference_usage in reference 'brakePressure')
-          (reference_usage in reference 'modulationFrequency'))
-        (source_succession
-          (reference_usage reference 'joinNode'))
-        (join_node 'joinNode')
-        (source_succession
-          (reference_usage reference 'done'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Fork Join Example"))) (name "Fork Join Example") (declared-name "Fork Join Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Fork Join Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Fork Join Example::Brake"))) (name "Brake") (declared-name "Brake")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::TurnOn"))) (name "TurnOn") (declared-name "TurnOn") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Brake")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::braking"))) (name "braking") (declared-name "braking") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Brake"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::braking::brakePressure"))) (name "brakePressure") (declared-name "brakePressure") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Braking")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::braking::modulationFrequency"))) (name "modulationFrequency") (declared-name "modulationFrequency") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Braking")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Brake")))))
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::from#flow"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Brake")))))
+            (element (kind "join") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::joinNode"))) (name "join") (declared-name "join") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Brake")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorBrakePedal"))) (name "monitorBrakePedal") (declared-name "monitorBrakePedal") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Brake"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorBrakePedal::brakePressure"))) (name "brakePressure") (declared-name "brakePressure") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::MonitorBrakePedal")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorTraction"))) (name "monitorTraction") (declared-name "monitorTraction") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Brake"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorTraction::modulationFrequency"))) (name "modulationFrequency") (declared-name "modulationFrequency") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::MonitorTraction")))))
+              )
+            )
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Fork Join Example::BrakePressure"))) (name "BrakePressure") (declared-name "BrakePressure") (declared (properties (ordered false) (unique true))))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Fork Join Example::Braking"))) (name "Braking") (declared-name "Braking")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::Braking::brakePressure"))) (name "brakePressure") (declared-name "brakePressure") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Braking")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::Braking::modulationFrequency"))) (name "modulationFrequency") (declared-name "modulationFrequency") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::Braking")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Fork Join Example::MonitorBrakePedal"))) (name "MonitorBrakePedal") (declared-name "MonitorBrakePedal")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::MonitorBrakePedal::pressure"))) (name "pressure") (declared-name "pressure") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::MonitorBrakePedal")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Fork Join Example::MonitorTraction"))) (name "MonitorTraction") (declared-name "MonitorTraction")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Fork Join Example::MonitorTraction::modFreq"))) (name "modFreq") (declared-name "modFreq") (effective (featuring-type (node (document "d0") (qualified-name "Fork Join Example::MonitorTraction")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Fork Join Example::TurnKeyToOn"))) (name "TurnKeyToOn") (declared-name "TurnKeyToOn") (declared (properties (ordered false) (unique true))))
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake::braking"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::joinNode"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake::joinNode"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::joinNode"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorBrakePedal"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorTraction"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorTraction"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::braking"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::TurnOn"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::braking"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorBrakePedal"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake"))) (to (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorTraction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake::braking"))) (to (node (document "d0") (qualified-name "Fork Join Example::Braking"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorBrakePedal"))) (to (node (document "d0") (qualified-name "Fork Join Example::MonitorBrakePedal"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Brake::monitorTraction"))) (to (node (document "d0") (qualified-name "Fork Join Example::MonitorTraction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::Braking::brakePressure"))) (to (node (document "d0") (qualified-name "Fork Join Example::BrakePressure"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Fork Join Example::MonitorBrakePedal::pressure"))) (to (node (document "d0") (qualified-name "Fork Join Example::BrakePressure"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "Fork Join Example::Brake") (target-qualified "Fork Join Example::Brake::fork"))
+    (flow (status pending) (document "d0") (source-qualified "Fork Join Example::Brake::fork") (target-qualified "Fork Join Example::Brake::monitorBrakePedal"))
+    (flow (status pending) (document "d0") (source-qualified "Fork Join Example::Brake::joinNode") (target-qualified "Fork Join Example::Brake::done"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

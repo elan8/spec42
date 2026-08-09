@@ -107,23 +107,36 @@ semantic.unresolved_name 'EngineChoices'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Variation Usages'
-      (namespace_import private -> 'Variation Definitions'[unresolved])
-      (part_def 'Vehicle')
-      (part_def 'Transmission')
-      (part_usage 'manualTransmission')
-      (part_usage 'automaticTransmission')
-      (part_usage abstract 'vehicleFamily' : 'Variation Usages::Vehicle'[part_def]
-        (part_usage composite 'engine' : 'EngineChoices'[unresolved]
-          (multiplicity_range [1]))
-        (part_usage variation composite 'transmission' : 'Variation Usages::Transmission'[part_def]
-          (multiplicity_range [1])
-          (variant_usage
-            (reference_usage reference 'manualTransmission'))
-          (variant_usage
-            (reference_usage reference 'automaticTransmission')))
-        (assert_constraint_usage
-          (result_expr_membership))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Variation Usages"))) (name "Variation Usages") (declared-name "Variation Usages")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Variation Usages::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::automaticTransmission"))) (name "automaticTransmission") (declared-name "automaticTransmission") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::manualTransmission"))) (name "manualTransmission") (declared-name "manualTransmission") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (name "vehicleFamily") (declared-name "vehicleFamily") (declared (properties (abstract true) (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Usages::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (variation true) (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Usages::Vehicle"))))
+              (contains
+                (element (kind "variant") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::automaticTransmission"))) (name "automaticTransmission") (declared-name "automaticTransmission") (effective (featuring-type (node (document "d0") (qualified-name "Variation Usages::Transmission")))))
+                (element (kind "variant") (id (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission::manualTransmission"))) (name "manualTransmission") (declared-name "manualTransmission") (effective (featuring-type (node (document "d0") (qualified-name "Variation Usages::Transmission")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (to (node (document "d0") (qualified-name "Variation Usages::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (to (node (document "d0") (qualified-name "Variation Usages::Transmission"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

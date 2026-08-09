@@ -322,87 +322,21 @@ semantic.unresolved_name 'ScalarValues::Integer'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Expressions'
-      (namespace_import private -> 'ScalarFunctions'[unresolved])
-      (membership_import private -> 'BaseFunctions::ToString'[unresolved])
-      (namespace_import private -> 'ControlFunctions'[unresolved])
-      (feature_def 'a' : 'Integer'[unresolved])
-      (feature_def 'aa' : 'Boolean'[unresolved])
-      (feature_def 'x'
-        (feature_value (=)))
-      (feature_def 'y'
-        (feature_value (=)))
-      (feature_def 'z' : 'Boolean'[unresolved]
-        (feature_value (=)))
-      (feature_def 'zz' : 'Boolean'[unresolved]
-        (feature_value (=)))
-      (feature_def 'grp'
-        (feature_value (=)))
-      (feature_def 'b'
-        (feature_value (=)))
-      (feature_def 'c'
-        (feature_value (=)))
-      (feature_def 'c1'
-        (feature_value (=)))
-      (feature_def 'd'
-        (feature_value (=)))
-      (feature_def 'd1'
-        (feature_value (=)))
-      (feature_def 'e'
-        (feature_value (=)))
-      (behavior_def 'w'
-        (feature_def inout 'v' : 'Integer'[unresolved])
-        (step_def : 'ControlPerformances::LoopPerformance'[unresolved]
-          (expression_usage in 'whileTest'
-            (result_expr_membership))
-          (step_def in 'body'
-            (step_def 'decrement'
-              (feature_def out 'v_decr' : 'Integer'[unresolved]
-                (feature_value (=))))
-            (succession_def
-              (connector_end 'decrement')
-              (connector_end 'update'))
-            (step_def 'update' : 'FeatureReferencingPerformances::FeatureWritePerformance'[unresolved]
-              (feature_def in 'onOccurrence'
-                (feature_value (=))
-                (feature_def :>> 'startingAt'[unresolved] : 'Expressions::w'[behavior_def]
-                  (feature_def inout :>> 'accessedFeature'[unresolved] :>> 'Expressions::w::v'[feature_def])))
-              (feature_def inout 'replacementValues'
-                (feature_value (=)))))))
-      (feature_def 'xx'
-        (feature_value (=)))
-      (function_def 'TotalMass'
-        (feature_def in 'partMass')
-        (feature_def in 'subparts')
-        (result_expr_membership))
-      (expression_def 'totalMass' : 'Expressions::TotalMass'[function_def]
-        (feature_def in 'mass')
-        (feature_def in 'sub'))
-      (feature_def 'f'
-        (expression_def 's'
-          (feature_def in 'x')
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]))))
-      (feature_def 'bb' : 'Boolean'[unresolved]
-        (feature_value (=)))
-      (class_def 'C'
-        (feature_def 'count' : 'ScalarValues::Integer'[unresolved]
-          (feature_value (:=))))
-      (feature_def 'obj1' : 'Expressions::C'[class_def])
-      (feature_def 'obj2' : 'Expressions::C'[class_def])
-      (feature_def 'test1'
-        (feature_value (=)))
-      (feature_def 'test2'
-        (feature_value (=)))
-      (class_def 'L'
-        (feature_def 'c' : 'Expressions::C'[class_def]
-          (multiplicity_range [*]))
-        (feature_def 'count' : 'ScalarValues::Integer'[unresolved]
-          (feature_value (=))))
-      (feature_def 'l'
-        (feature_value (=)))
-      (feature_def 'w1'
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Expressions"))) (name "Expressions") (declared-name "Expressions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Expressions::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Expressions::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Expressions::ToString"))) (name "ToString") (declared-name "ToString"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

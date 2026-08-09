@@ -41,9 +41,20 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Vehicles'
-      (part_def 'Car')
-      (part_def 'Truck'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Vehicles"))) (name "Vehicles") (declared-name "Vehicles")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicles::Car"))) (name "Car") (declared-name "Car") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicles::Truck"))) (name "Truck") (declared-name "Truck") (declared))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -229,38 +229,66 @@ standard library package Connections {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Connections'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensDuring'[unresolved])
-      (membership_import private -> 'Objects::LinkObject'[unresolved])
-      (membership_import private -> 'Objects::linkObjects'[unresolved])
-      (membership_import private -> 'Objects::BinaryLinkObject'[unresolved])
-      (membership_import private -> 'Objects::binaryLinkObjects'[unresolved])
-      (membership_import private -> 'Transfers::Transfer'[unresolved])
-      (membership_import private -> 'Transfers::transfers'[unresolved])
-      (membership_import private -> 'Transfers::FlowTransfer'[unresolved])
-      (membership_import private -> 'Transfers::flowTransfers'[unresolved])
-      (membership_import private -> 'Transfers::FlowTransferBefore'[unresolved])
-      (membership_import private -> 'Transfers::flowTransfersBefore'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'Parts::Part'[unresolved])
-      (membership_import private -> 'Parts::parts'[unresolved])
-      (membership_import private -> 'Actions::Action'[unresolved])
-      (membership_import private -> 'Actions::actions'[unresolved])
-      (connection_def abstract 'Connection' :> 'LinkObject'[unresolved] :> 'Part'[unresolved]
-        (documentation))
-      (connection_def abstract 'BinaryConnection' :> 'BinaryLinkObject'[unresolved] :> 'Connections::Connection'[connection_def]
-        (documentation)
-        (port_usage end 'source' : 'Anything'[unresolved] :>> 'BinaryLinkObject::source'[unresolved])
-        (port_usage end 'target' : 'Anything'[unresolved] :>> 'BinaryLinkObject::target'[unresolved]))
-      (connection_usage abstract 'connections' : 'Connections::Connection'[connection_def] :> 'linkObjects'[unresolved] :> 'parts'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (connection_usage abstract 'binaryConnections' : 'Connections::Connection'[connection_def] :> 'Connections::connections'[connection_usage] :> 'binaryLinkObjects'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Connections"))) (name "Connections") (declared-name "Connections")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::Action"))) (name "Action") (declared-name "Action"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "Connections::BinaryConnection"))) (name "BinaryConnection") (declared-name "BinaryConnection")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Connections::BinaryConnection::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Connections::BinaryConnection")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Connections::BinaryConnection::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Connections::BinaryConnection")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Connections::BinaryConnection::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Connections::BinaryConnection")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::BinaryLinkObject"))) (name "BinaryLinkObject") (declared-name "BinaryLinkObject"))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "Connections::Connection"))) (name "Connection") (declared-name "Connection")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Connections::Connection::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Connections::Connection")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::FlowTransfer"))) (name "FlowTransfer") (declared-name "FlowTransfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::FlowTransferBefore"))) (name "FlowTransferBefore") (declared-name "FlowTransferBefore"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::LinkObject"))) (name "LinkObject") (declared-name "LinkObject"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::Part"))) (name "Part") (declared-name "Part"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::Transfer"))) (name "Transfer") (declared-name "Transfer"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Connections::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::actions"))) (name "actions") (declared-name "actions"))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "Connections::binaryConnections"))) (name "binaryConnections") (declared-name "binaryConnections")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Connections::binaryConnections::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Connections::binaryConnections")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::binaryLinkObjects"))) (name "binaryLinkObjects") (declared-name "binaryLinkObjects"))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "Connections::connections"))) (name "connections") (declared-name "connections")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Connections::connections::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Connections::connections")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::flowTransfers"))) (name "flowTransfers") (declared-name "flowTransfers"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::flowTransfersBefore"))) (name "flowTransfersBefore") (declared-name "flowTransfersBefore"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::linkObjects"))) (name "linkObjects") (declared-name "linkObjects"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::parts"))) (name "parts") (declared-name "parts"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Connections::transfers"))) (name "transfers") (declared-name "transfers"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::BinaryConnection::_documentation"))) (to (node (document "d0") (qualified-name "Connections::BinaryConnection"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::Connection::_documentation"))) (to (node (document "d0") (qualified-name "Connections::Connection"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::_documentation"))) (to (node (document "d0") (qualified-name "Connections"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::binaryConnections::_documentation"))) (to (node (document "d0") (qualified-name "Connections::binaryConnections"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::connections::_documentation"))) (to (node (document "d0") (qualified-name "Connections::connections"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Connections::BinaryConnection"))) (to (node (document "d0") (qualified-name "Connections::Connection"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Connections::binaryConnections"))) (to (node (document "d0") (qualified-name "Connections::connections"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

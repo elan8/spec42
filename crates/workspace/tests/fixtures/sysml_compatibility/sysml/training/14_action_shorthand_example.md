@@ -126,31 +126,61 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Action Shorthand Example'
-      (item_def 'Scene')
-      (item_def 'Image')
-      (item_def 'Picture')
-      (action_def 'Focus'
-        (reference_usage in reference 'scene' : 'Action Shorthand Example::Scene'[item_def])
-        (reference_usage out reference 'image' : 'Action Shorthand Example::Image'[item_def]))
-      (action_def 'Shoot'
-        (reference_usage in reference 'image' : 'Action Shorthand Example::Image'[item_def])
-        (reference_usage out reference 'picture' : 'Action Shorthand Example::Picture'[item_def]))
-      (action_def 'TakePicture'
-        (item_usage in 'scene' : 'Action Shorthand Example::Scene'[item_def])
-        (item_usage out 'picture' : 'Action Shorthand Example::Picture'[item_def])
-        (action_usage composite 'focus' : 'Action Shorthand Example::Focus'[action_def]
-          (item_usage in 'scene'
-            (feature_value (=)))
-          (item_usage out 'image'))
-        (flow_usage composite
-          (connector_end 'focus.image')
-          (connector_end 'shoot.image'))
-        (source_succession
-          (action_usage 'shoot' : 'Action Shorthand Example::Shoot'[action_def]
-            (item_usage in)
-            (item_usage out 'picture'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Action Shorthand Example"))) (name "Action Shorthand Example") (declared-name "Action Shorthand Example")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus"))) (name "Focus") (declared-name "Focus")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Image"))) (name "Image") (declared-name "Image"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Picture"))) (name "Picture") (declared-name "Picture"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Scene"))) (name "Scene") (declared-name "Scene"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot"))) (name "Shoot") (declared-name "Shoot")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (name "focus") (declared-name "focus") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "TakePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::scene"))) (role feature-value))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (name "shoot") (declared-name "shoot") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "TakePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (role feature-value))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::Focus::image"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::Focus::scene"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::image"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::picture"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Focus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::picture"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (to (node (document "d0") (qualified-name "Action Shorthand Example::Shoot"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

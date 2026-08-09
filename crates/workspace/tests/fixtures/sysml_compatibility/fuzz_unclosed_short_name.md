@@ -59,11 +59,20 @@ package ion {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ion'
-      (class_def 'A'
-        (not_implemented 'malformed'))
-      (class_def 'A'
-        (feature_def in 'f')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ion"))) (name "ion") (declared-name "ion")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ion::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ion::A#classifier_decl"))) (name "A") (declared-name "A"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

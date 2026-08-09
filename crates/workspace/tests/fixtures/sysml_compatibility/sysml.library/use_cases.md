@@ -201,28 +201,36 @@ standard library package UseCases {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'UseCases'
-      (documentation)
-      (membership_import private -> 'Cases::Case'[unresolved])
-      (membership_import private -> 'Cases::cases'[unresolved])
-      (use_case_def 'UseCase' :> 'Case'[unresolved]
-        (documentation)
-        (use_case_usage reference 'self' : 'UseCases::UseCase'[use_case_def] :>> 'Case::self'[unresolved])
-        (subject_membership in 'subj' :>> 'Case::subj'[unresolved])
-        (objective_membership composite 'obj' :>> 'Case::obj'[unresolved])
-        (use_case_usage reference 'start' : 'UseCases::UseCase'[use_case_def] :>> 'start'[unresolved]
-          (documentation))
-        (use_case_usage reference 'done' : 'UseCases::UseCase'[use_case_def] :>> 'done'[unresolved]
-          (documentation))
-        (use_case_usage abstract composite 'subUseCases' : 'UseCases::UseCase'[use_case_def] :> 'UseCases::useCases'[use_case_usage] :> 'subcases'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (use_case_usage abstract reference 'includedUseCases' : 'UseCases::UseCase'[use_case_def] :> 'UseCases::useCases'[use_case_usage] :> 'enclosedPerformances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (use_case_usage 'useCases' : 'UseCases::UseCase'[use_case_def] :> 'cases'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "UseCases"))) (name "UseCases") (declared-name "UseCases")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "UseCases::Case"))) (name "Case") (declared-name "Case"))
+        (element (kind "use case def") (id (node (document "d0") (qualified-name "UseCases::UseCase"))) (name "UseCase") (declared-name "UseCase")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "UseCases::UseCase")))))
+            (element (kind "objective") (id (node (document "d0") (qualified-name "UseCases::UseCase::obj"))) (name "obj") (declared-name "obj") (effective (featuring-type (node (document "d0") (qualified-name "UseCases::UseCase")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "UseCases::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "UseCases::cases"))) (name "cases") (declared-name "cases"))
+        (element (kind "use case") (id (node (document "d0") (qualified-name "UseCases::useCases"))) (name "useCases") (declared-name "useCases")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "UseCases::UseCase")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::useCases"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

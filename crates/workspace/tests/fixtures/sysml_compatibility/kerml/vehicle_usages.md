@@ -439,83 +439,28 @@ semantic.unresolved_name 'DriveIF'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleUsages'
-      (documentation)
-      (namespace_import private -> 'VehicleDefinitions'[unresolved])
-      (feature_def 'T1'
-        (feature_value (=)))
-      (feature_def 'T2'
-        (feature_value (=)))
-      (feature_def 'narrowRimWheel' : 'Wheel'[unresolved]
-        (documentation)
-        (feature_def composite 'lugbolt' : 'Lugbolt'[unresolved]
-          (multiplicity_range [4..5])))
-      (feature_def 'wideRimWheel' : 'Wheel'[unresolved]
-        (documentation)
-        (feature_def composite 'lugbolt' : 'Lugbolt'[unresolved]
-          (multiplicity_range [4..6])))
-      (feature_def 'vehicle_C1' : 'Vehicle'[unresolved]
-        (documentation)
-        (feature_def composite 'frontAxleAssembly' : 'AxleAssembly'[unresolved]
-          (feature_def composite 'frontWheel' :>> 'VehicleUsages::narrowRimWheel'[feature_def]
-            (multiplicity_range [2])
-            (feature_def composite 'lugbolt' :>> 'VehicleUsages::narrowRimWheel::lugbolt'[feature_def]
-              (multiplicity_range [4])
-              (feature_def 'tighteningTorque' :>> 'Lugbolt::tighteningTorque'[unresolved]
-                (feature_value (=)))))
-          (feature_def composite 'frontAxle' : 'Axle'[unresolved]))
-        (feature_def composite 'rearAxleAssembly' : 'VehicleDefinitions::AxleAssembly'[unresolved]
-          (feature_def composite 'rearWheel' :>> 'VehicleUsages::wideRimWheel'[feature_def]
-            (multiplicity_range [2])
-            (feature_def composite 'lugbolt' :>> 'VehicleUsages::wideRimWheel::lugbolt'[feature_def]
-              (multiplicity_range [6])
-              (feature_def 'tighteningTorque' :>> 'Lugbolt::tighteningTorque'[unresolved]
-                (feature_value (=)))))
-          (feature_def composite 'rearAxle' : 'Axle'[unresolved])))
-      (feature_def 'vehicle_C2' :> 'VehicleUsages::vehicle_C1'[feature_def]
-        (documentation)
-        (feature_def composite 'frontAxleAssembly' :>> 'VehicleUsages::vehicle_C1::frontAxleAssembly'[feature_def]
-          (feature_def composite 'leftFrontWheel' :> 'VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel'[feature_def]
-            (feature_value (=))
-            (feature_def composite 'hub' : 'VehicleDefinitions::WheelHubIF'[unresolved]))
-          (feature_def composite 'rightFrontWheel' :> 'VehicleUsages::vehicle_C1::frontAxleAssembly::frontWheel'[feature_def]
-            (feature_value (=))
-            (feature_def 'hub' : 'VehicleDefinitions::WheelHubIF'[unresolved]))
-          (feature_def composite 'frontAxle' :>> 'VehicleUsages::vehicle_C1::frontAxleAssembly::frontAxle'[feature_def]
-            (feature_def composite 'leftMountingPoint' : 'AxleMountIF'[unresolved])
-            (feature_def composite 'rightMountingPoint' : 'AxleMountIF'[unresolved]))
-          (connector_def 'leftFrontMount' : 'Mounting'[unresolved]
-            (connector_end 'frontAxle.leftMountingPoint')
-            (connector_end 'leftFrontWheel.hub'))
-          (connector_def 'rightFrontMount' : 'Mounting'[unresolved]
-            (connector_end 'frontAxle.rightMountingPoint')
-            (connector_end 'rightFrontWheel.hub')))
-        (feature_def composite 'rearAxleAssembly' :>> 'VehicleUsages::vehicle_C1::rearAxleAssembly'[feature_def]
-          (feature_def composite 'leftRearWheel' :> 'VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel'[feature_def]
-            (feature_value (=))
-            (feature_def 'hub' : 'WheelHubIF'[unresolved]))
-          (feature_def composite 'rightRearWheel' :> 'VehicleUsages::vehicle_C1::rearAxleAssembly::rearWheel'[feature_def]
-            (feature_value (=))
-            (feature_def 'hub' : 'WheelHubIF'[unresolved]))
-          (feature_def composite 'rearAxle' :>> 'VehicleUsages::vehicle_C1::rearAxleAssembly::rearAxle'[feature_def]
-            (feature_def 'leftMountingPoint' : 'AxleMountIF'[unresolved])
-            (feature_def 'rightMountingPoint' : 'AxleMountIF'[unresolved]))
-          (connector_def 'leftRearMount' : 'Mounting'[unresolved]
-            (connector_end 'rearAxle.leftMountingPoint')
-            (connector_end 'leftRearWheel.hub'))
-          (connector_def 'rightRearMount' : 'Mounting'[unresolved]
-            (connector_end 'rearAxle.rightMountingPoint')
-            (connector_end 'rightRearWheel.hub'))))
-      (feature_def 'vehicle_C3' :> 'VehicleUsages::vehicle_C2'[feature_def]
-        (documentation)
-        (feature_def composite 'transmission' : 'Transmission'[unresolved]
-          (feature_def out 'drive' : 'DriveIF'[unresolved]))
-        (feature_def composite 'rearAxleAssembly' :>> 'VehicleUsages::vehicle_C2::rearAxleAssembly'[feature_def]
-          (feature_def composite 'rearAxle' :>> 'VehicleUsages::vehicle_C2::rearAxleAssembly::rearAxle'[feature_def]
-            (feature_def in 'drive' : 'DriveIF'[unresolved])))
-        (connector_def 'driveShaft'
-          (connector_end 'transmission.drive')
-          (connector_end 'rearAxleAssembly.rearAxle.drive'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleUsages"))) (name "VehicleUsages") (declared-name "VehicleUsages")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleUsages::*"))) (name "*") (declared-name "*"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::T1"))) (name "T1") (declared-name "T1"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::T2"))) (name "T2") (declared-name "T2"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (name ""))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::narrowRimWheel"))) (name "narrowRimWheel") (declared-name "narrowRimWheel"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C1"))) (name "vehicle_C1") (declared-name "vehicle_C1"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C2"))) (name "vehicle_C2") (declared-name "vehicle_C2"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::vehicle_C3"))) (name "vehicle_C3") (declared-name "vehicle_C3"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "VehicleUsages::wideRimWheel"))) (name "wideRimWheel") (declared-name "wideRimWheel"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

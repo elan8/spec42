@@ -107,21 +107,44 @@ semantic.unresolved_name 'Integer'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_02-Basic Value Properties'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (attribute_def 'LengthValue' :> 'Real'[unresolved]
-        (documentation))
-      (part_def 'Tire'
-        (attribute_usage composite 'manufacturer' : 'String'[unresolved])
-        (attribute_usage composite 'hubDiameter' : '15_02-Basic Value Properties::LengthValue'[attribute_def])
-        (attribute_usage composite 'width' : 'Integer'[unresolved]))
-      (part_usage 'frenchTire' : '15_02-Basic Value Properties::Tire'[part_def]
-        (attribute_usage composite :>> '15_02-Basic Value Properties::Tire::manufacturer'[attribute_usage]
-          (feature_value (=)))
-        (attribute_usage composite :>> '15_02-Basic Value Properties::Tire::hubDiameter'[attribute_usage]
-          (feature_value (=)))
-        (attribute_usage composite :>> '15_02-Basic Value Properties::Tire::width'[attribute_usage]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties"))) (name "15_02-Basic Value Properties") (declared-name "15_02-Basic Value Properties")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::*"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))) (name "LengthValue") (declared-name "LengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))) (name "Tire") (declared-name "Tire") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))) (name "hubDiameter") (declared-name "hubDiameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::manufacturer"))) (name "manufacturer") (declared-name "manufacturer") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::width"))) (name "width") (declared-name "width") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire"))) (name "frenchTire") (declared-name "frenchTire") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::hubDiameter"))) (name "hubDiameter") (declared-name "hubDiameter") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "realLiteral") (literal "18.0")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::hubDiameter"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::manufacturer"))) (name "manufacturer") (declared-name "manufacturer") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "stringLiteral") (literal "Michelin")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::manufacturer"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::width"))) (name "width") (declared-name "width") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 245)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::width"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue::_documentation"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::hubDiameter"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::manufacturer"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::manufacturer"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::width"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::width"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

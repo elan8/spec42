@@ -296,59 +296,102 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'RoomModel'
-      (package 'RoomDefinitionModelLibrary'
-        (namespace_import private -> 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions'[package])
-        (namespace_import private -> 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions'[package])
-        (package 'Part_Definitions'
-          (part_def 'Classroom'
-            (port_usage composite 'classEntry' : 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom'[port_def]))
-          (part_def 'Storageroom'
-            (port_usage composite 'storageEntry' : 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom'[port_def]))
-          (part_def 'Hallway'
-            (port_usage composite 'hallExit_to_Classroom' : 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom'[port_def] ~ 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom'[port_def])
-            (port_usage composite 'hallExit_to_Storageroom' : 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom'[port_def] ~ 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom'[port_def])))
-        (package 'Port_Definitions'
-          (port_def 'EntryWay_to_Classroom'
-            (reference_usage in reference 'student' : 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Student'[part_def])
-            (reference_usage in reference 'teacher' : 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Teacher'[part_def])
-            (reference_usage in reference 'furniture' : 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Furniture'[part_def])
-            (reference_usage in reference 'air' : 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Air'[part_def]))
-          (port_def 'EntryWay_to_Storageroom'
-            (reference_usage in reference 'furniture' : 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Furniture'[part_def])
-            (reference_usage in reference 'air' : 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Air'[part_def])))
-        (package 'Flow_Definitions'
-          (part_def 'Air')
-          (part_def 'Furniture')
-          (part_def 'Student')
-          (part_def 'Teacher')))
-      (package 'Room_Configuration'
-        (namespace_import private -> 'RoomModel::RoomDefinitionModelLibrary'[package])
-        (namespace_import private -> 'RoomModel::RoomDefinitionModelLibrary::Part_Definitions'[package])
-        (namespace_import private -> 'RoomModel::RoomDefinitionModelLibrary::Port_Definitions'[package])
-        (namespace_import private -> 'RoomModel::RoomDefinitionModelLibrary::Flow_Definitions'[package])
-        (part_usage 'roomContext'
-          (part_usage composite 'c' : 'RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom'[part_def])
-          (part_usage composite 's' : 'RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom'[part_def])
-          (part_usage composite 'h' : 'RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway'[part_def])
-          (flow_usage composite 'HallToClassroom_Air'
-            (connector_end 'h.hallExit_to_Classroom.air')
-            (connector_end 'c.classEntry.air'))
-          (flow_usage composite 'HallToClassroom_Furniture'
-            (connector_end 'h.hallExit_to_Classroom.furniture')
-            (connector_end 'c.classEntry.furniture'))
-          (flow_usage composite 'HallToClassroom_Student'
-            (connector_end 'h.hallExit_to_Classroom.student')
-            (connector_end 'c.classEntry.student'))
-          (flow_usage composite 'HallToClassroom_Teacher'
-            (connector_end 'h.hallExit_to_Classroom.teacher')
-            (connector_end 'c.classEntry.teacher'))
-          (flow_usage composite 'HallToStorageroom_Air'
-            (connector_end 'h.hallExit_to_Storageroom.air')
-            (connector_end 's.storageEntry.air'))
-          (flow_usage composite 'HallToStorageroom_Furniture'
-            (connector_end 'h.hallExit_to_Storageroom.furniture')
-            (connector_end 's.storageEntry.furniture')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RoomModel"))) (name "RoomModel") (declared-name "RoomModel")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary"))) (name "RoomDefinitionModelLibrary") (declared-name "RoomDefinitionModelLibrary")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Flow_Definitions"))) (name "Flow_Definitions") (declared-name "Flow_Definitions")
+              (contains
+                (element (kind "part def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Air"))) (name "Air") (declared-name "Air") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Furniture"))) (name "Furniture") (declared-name "Furniture") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Student"))) (name "Student") (declared-name "Student") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Teacher"))) (name "Teacher") (declared-name "Teacher") (declared))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions"))) (name "Part_Definitions") (declared-name "Part_Definitions")
+              (contains
+                (element (kind "part def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom"))) (name "Classroom") (declared-name "Classroom") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom::classEntry"))) (name "classEntry") (declared-name "classEntry") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway"))) (name "Hallway") (declared-name "Hallway") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway::hallExit_to_Classroom"))) (name "hallExit_to_Classroom") (declared-name "hallExit_to_Classroom") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway::hallExit_to_Storageroom"))) (name "hallExit_to_Storageroom") (declared-name "hallExit_to_Storageroom") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom"))) (name "Storageroom") (declared-name "Storageroom") (declared)
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom::storageEntry"))) (name "storageEntry") (declared-name "storageEntry") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions"))) (name "Port_Definitions") (declared-name "Port_Definitions")
+              (contains
+                (element (kind "port def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom"))) (name "EntryWay_to_Classroom") (declared-name "EntryWay_to_Classroom")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::ref#in_out_parameter2"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::ref#in_out_parameter3"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::~EntryWay_to_Classroom"))) (name "~EntryWay_to_Classroom") (declared-name "~EntryWay_to_Classroom") (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom")))))
+                  )
+                )
+                (element (kind "port def") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom"))) (name "EntryWay_to_Storageroom") (declared-name "EntryWay_to_Storageroom")
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::ref"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::ref#in_out_parameter"))) (name "ref") (declared-name "ref") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom")))))
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::~EntryWay_to_Storageroom"))) (name "~EntryWay_to_Storageroom") (declared-name "~EntryWay_to_Storageroom") (effective (featuring-type (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration"))) (name "Room_Configuration") (declared-name "Room_Configuration")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::*#import2"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::*#import3"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext"))) (name "roomContext") (declared-name "roomContext") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "flow") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::HallToClassroom_Air"))) (name "HallToClassroom_Air") (declared-name "HallToClassroom_Air"))
+                (element (kind "flow") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::HallToClassroom_Furniture"))) (name "HallToClassroom_Furniture") (declared-name "HallToClassroom_Furniture"))
+                (element (kind "flow") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::HallToClassroom_Student"))) (name "HallToClassroom_Student") (declared-name "HallToClassroom_Student"))
+                (element (kind "flow") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::HallToClassroom_Teacher"))) (name "HallToClassroom_Teacher") (declared-name "HallToClassroom_Teacher"))
+                (element (kind "flow") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::HallToStorageroom_Air"))) (name "HallToStorageroom_Air") (declared-name "HallToStorageroom_Air"))
+                (element (kind "flow") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::HallToStorageroom_Furniture"))) (name "HallToStorageroom_Furniture") (declared-name "HallToStorageroom_Furniture"))
+                (element (kind "part") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::c"))) (name "c") (declared-name "c") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::h"))) (name "h") (declared-name "h") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::s"))) (name "s") (declared-name "s") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::~EntryWay_to_Classroom"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::~EntryWay_to_Storageroom"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom::classEntry"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway::hallExit_to_Classroom"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::~EntryWay_to_Classroom"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway::hallExit_to_Storageroom"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::~EntryWay_to_Storageroom"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom::storageEntry"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::c"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::h"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RoomModel::Room_Configuration::roomContext::s"))) (to (node (document "d0") (qualified-name "RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

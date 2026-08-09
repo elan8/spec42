@@ -99,18 +99,34 @@ semantic.unresolved_name 'eng::engineFuelPort'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Interface Example'
-      (namespace_import private -> 'Port Example'[unresolved])
-      (part_def 'Vehicle')
-      (interface_def 'FuelInterface'
-        (port_usage end 'supplierPort' : 'FuelOutPort'[unresolved])
-        (port_usage end 'consumerPort' : 'FuelInPort'[unresolved]))
-      (part_usage 'vehicle' : 'Interface Example::Vehicle'[part_def]
-        (part_usage composite 'tankAssy' : 'FuelTankAssembly'[unresolved])
-        (part_usage composite 'eng' : 'Engine'[unresolved])
-        (interface_usage composite : 'Interface Example::FuelInterface'[interface_def]
-          (connector_end 'supplierPort' :> 'tankAssy::fuelTankPort'[unresolved])
-          (connector_end 'consumerPort' :> 'eng::engineFuelPort'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Interface Example"))) (name "Interface Example") (declared-name "Interface Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Interface Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "Interface Example::FuelInterface"))) (name "FuelInterface") (declared-name "FuelInterface")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Interface Example::FuelInterface::consumerPort"))) (name "consumerPort") (declared-name "consumerPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Interface Example::FuelInterface")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Interface Example::FuelInterface::supplierPort"))) (name "supplierPort") (declared-name "supplierPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Interface Example::FuelInterface")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Interface Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Interface Example::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interface Example::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Interface Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interface Example::vehicle::tankAssy"))) (name "tankAssy") (declared-name "tankAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Interface Example::Vehicle")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interface Example::vehicle"))) (to (node (document "d0") (qualified-name "Interface Example::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (connection (status pending-expression) (document "d0") (source-expression "tankAssy::fuelTankPort") (target-expression "eng::engineFuelPort") (container-prefix "Interface Example::vehicle") (interface-usage true) (interface-type "FuelInterface"))
+  )
+)
 ~~~

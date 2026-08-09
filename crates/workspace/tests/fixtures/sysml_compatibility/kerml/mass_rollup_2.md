@@ -75,16 +75,22 @@ semantic.unresolved_name 'ScalarValues::Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MassRollup_2'
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (class_def 'MassedThing'
-        (feature_def 'mass' : 'ScalarValues::Real'[unresolved])
-        (feature_def 'totalMass' : 'ScalarValues::Real'[unresolved]
-          (feature_value (=)))
-        (feature_def 'subcomponents' :>> 'MassRollup_2::massedThings'[feature_def]))
-      (feature_def 'massedThings' : 'MassRollup_2::MassedThing'[class_def]
-        (multiplicity_range [0..*])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MassRollup_2"))) (name "MassRollup_2") (declared-name "MassRollup_2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassRollup_2::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassRollup_2::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MassRollup_2::MassedThing"))) (name "MassedThing") (declared-name "MassedThing"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "MassRollup_2::massedThings"))) (name "massedThings") (declared-name "massedThings"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

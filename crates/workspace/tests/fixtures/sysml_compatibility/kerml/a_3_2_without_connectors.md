@@ -129,26 +129,37 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'WithoutConnectorsModelToBeExecuted'
-      (documentation)
-      (classifier_def 'Bicycle'
-        (feature_def 'rollsOn' : 'WithoutConnectorsModelToBeExecuted::Wheel'[classifier_def]
-          (multiplicity_range [2]))
-        (feature_def 'holdsWheel' : 'WithoutConnectorsModelToBeExecuted::BikeFork'[classifier_def]
-          (multiplicity_range [*])))
-      (classifier_def 'Wheel')
-      (classifier_def 'BikeFork'))
-    (package 'WithoutConnectorsExecution'
-      (documentation)
-      (namespace_import private -> 'Atoms'[unresolved])
-      (namespace_import private -> 'WithoutConnectorsModelToBeExecuted'[package])
-      (classifier_def 'MyWheel1' :> 'WithoutConnectorsModelToBeExecuted::Wheel'[classifier_def])
-      (classifier_def 'MyWheel2' :> 'WithoutConnectorsModelToBeExecuted::Wheel'[classifier_def])
-      (classifier_def 'MyWheel'
-        (unioning)
-        (unioning))
-      (classifier_def 'MyBike' :> 'WithoutConnectorsModelToBeExecuted::Bicycle'[classifier_def]
-        (feature_def :>> 'WithoutConnectorsModelToBeExecuted::Bicycle::rollsOn'[feature_def] : 'WithoutConnectorsExecution::MyWheel'[classifier_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (name "WithoutConnectorsExecution") (declared-name "WithoutConnectorsExecution")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyBike"))) (name "MyBike") (declared-name "MyBike"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel"))) (name "MyWheel") (declared-name "MyWheel"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel1"))) (name "MyWheel1") (declared-name "MyWheel1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::MyWheel2"))) (name "MyWheel2") (declared-name "MyWheel2"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted"))) (name "WithoutConnectorsModelToBeExecuted") (declared-name "WithoutConnectorsModelToBeExecuted")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted::Wheel"))) (name "Wheel") (declared-name "Wheel"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

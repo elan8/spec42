@@ -248,52 +248,96 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Vehicle Decomposition - Updated'
-      (documentation)
-      (part_def 'Vehicle')
-      (part_def 'Chassis Assembly')
-      (part_def 'Wheel')
-      (part_def 'LugBolt')
-      (part_def 'RollBar')
-      (part_def 'HeavyRollBar' :> 'Vehicle Decomposition - Updated::RollBar'[part_def])
-      (part_def 'LightRollBar' :> 'Vehicle Decomposition - Updated::RollBar'[part_def])
-      (part_def 'Engine')
-      (part_def 'Cylinder')
-      (part_usage 'vehicle' : 'Vehicle Decomposition - Updated::Vehicle'[part_def]
-        (part_usage composite 'chs' : 'Vehicle Decomposition - Updated::Chassis Assembly'[part_def]
-          (multiplicity_range [1])
-          (part_usage composite 'rb' : 'Vehicle Decomposition - Updated::RollBar'[part_def]
-            (multiplicity_range [0..1]))
-          (part_usage composite 'w' : 'Vehicle Decomposition - Updated::Wheel'[part_def]
-            (multiplicity_range [4])
-            (part_usage composite 'lb' : 'Vehicle Decomposition - Updated::LugBolt'[part_def]
-              (multiplicity_range [6..10]))))
-        (part_usage composite 'eng' : 'Vehicle Decomposition - Updated::Engine'[part_def]
-          (multiplicity_range [1])
-          (part_usage composite 'cyl' : 'Vehicle Decomposition - Updated::Cylinder'[part_def]
-            (multiplicity_range [4..8]))))
-      (part_usage 'vehicle model 1' :> 'Vehicle Decomposition - Updated::vehicle'[part_usage]
-        (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs'[part_usage]
-          (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs::rb'[part_usage] : 'Vehicle Decomposition - Updated::LightRollBar'[part_def]
-            (multiplicity_range [0..1]))
-          (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs::w'[part_usage]
-            (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs::w::lb'[part_usage])))
-        (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::eng'[part_usage]
-          (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::eng::cyl'[part_usage]
-            (multiplicity_range [4])))
-        (reference_usage reference 'lugBolts'
-          (multiplicity_range [24])
-          (feature_value (=))))
-      (part_usage 'vehicle model 2' :> 'Vehicle Decomposition - Updated::vehicle'[part_usage]
-        (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs'[part_usage]
-          (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs::rb'[part_usage]
-            (multiplicity_range [0]))
-          (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs::w'[part_usage]
-            (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::chs::w::lb'[part_usage]
-              (multiplicity_range [6..7]))))
-        (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::eng'[part_usage]
-          (part_usage composite :>> 'Vehicle Decomposition - Updated::vehicle::eng::cyl'[part_usage]
-            (multiplicity_range [6..8])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))) (name "Vehicle Decomposition - Updated") (declared-name "Vehicle Decomposition - Updated")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (name "Chassis Assembly") (declared-name "Chassis Assembly") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (name "HeavyRollBar") (declared-name "HeavyRollBar") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (name "LightRollBar") (declared-name "LightRollBar") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt"))) (name "LugBolt") (declared-name "LugBolt") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))) (name "RollBar") (declared-name "RollBar") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::_documentation"))) (name ""))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (name "chs") (declared-name "chs") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (name "rb") (declared-name "rb") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (name "w") (declared-name "w") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (name "lb") (declared-name "lb") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 10) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 8) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine")))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (name "vehicle model 1") (declared-name "vehicle model 1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs"))) (name "chs") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w"))) (name "w") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::chs::w::lb"))) (name "lb") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng"))) (name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1::eng::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (name "vehicle model 2") (declared-name "vehicle model 2") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs"))) (name "chs") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::rb"))) (name "rb") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 0) (ordered false) (provenance authored))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w"))) (name "w") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::chs::w::lb"))) (name "lb") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 7) (ordered false) (provenance authored))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng"))) (name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2::eng::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 8) (ordered false) (provenance authored))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::_documentation"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::HeavyRollBar"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LightRollBar"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 1"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle model 2"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::rb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::RollBar"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::chs::w::lb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::LugBolt"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::vehicle::eng::cyl"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

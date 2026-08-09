@@ -234,38 +234,28 @@ standard library package Links {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Links'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Base::things'[unresolved])
-      (association_def abstract 'Link' :> 'Anything'[unresolved]
-        (documentation)
-        (feature_def ordered 'participant' : 'Anything'[unresolved]
-          (multiplicity_range [2..*])))
-      (association_def sufficient 'BinaryLink' :> 'Links::Link'[association_def]
-        (documentation)
-        (feature_def ordered 'participant' : 'Anything'[unresolved] :>> 'Links::Link::participant'[feature_def]
-          (multiplicity_range [2]))
-        (feature_def end 'source' : 'Anything'[unresolved] :> 'Links::BinaryLink::participant'[feature_def]
-          (multiplicity_range [1]))
-        (feature_def end 'target' : 'Anything'[unresolved] :> 'Links::BinaryLink::participant'[feature_def]
-          (multiplicity_range [1])))
-      (association_def sufficient 'SelfLink' :> 'Links::BinaryLink'[association_def]
-        (documentation)
-        (feature_def end 'thisThing' : 'Anything'[unresolved] :>> 'Links::BinaryLink::source'[feature_def] :> 'Links::SelfLink::sameThing'[feature_def] :> 'sameThing::self'[unresolved])
-        (feature_def end 'sameThing' : 'Anything'[unresolved] :>> 'Links::BinaryLink::target'[feature_def] :> 'Links::SelfLink::thisThing'[feature_def]
-          (multiplicity_range [1])))
-      (feature_def abstract 'links' : 'Links::Link'[association_def] :> 'things'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (feature_def abstract 'binaryLinks' : 'Links::BinaryLink'[association_def] :> 'Links::links'[feature_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (feature_def abstract 'selfLinks' : 'Links::SelfLink'[association_def] :> 'Links::binaryLinks'[feature_def]
-        (multiplicity_range [0..*])
-        (documentation)
-        (feature_def end 'thisThing' : 'Anything'[unresolved] :>> 'Links::SelfLink::thisThing'[feature_def] :>> 'Links::BinaryLink::source'[feature_def])
-        (feature_def end 'sameThing' : 'Anything'[unresolved] :>> 'Links::SelfLink::sameThing'[feature_def] :>> 'Links::BinaryLink::target'[feature_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Links"))) (name "Links") (declared-name "Links")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Links::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Links::Link"))) (name "Link") (declared-name "Link"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Links::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Links::all"))) (name "all") (declared-name "all"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Links::all#kermlDecl"))) (name "all") (declared-name "all"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Links::binaryLinks"))) (name "binaryLinks") (declared-name "binaryLinks"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Links::links"))) (name "links") (declared-name "links"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Links::selfLinks"))) (name "selfLinks") (declared-name "selfLinks"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Links::things"))) (name "things") (declared-name "things"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Links::_documentation"))) (to (node (document "d0") (qualified-name "Links"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

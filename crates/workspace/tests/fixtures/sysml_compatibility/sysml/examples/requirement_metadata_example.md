@@ -153,40 +153,47 @@ semantic.unresolved_name 'StatusInfo'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'RequirementMetadataExample'
-      (membership_import private -> 'Metaobjects::SemanticMetadata'[unresolved])
-      (namespace_import private -> 'ModelingMetadata'[unresolved])
-      (namespace_import private -> 'RiskMetadata'[unresolved])
-      (namespace_import private -> 'RiskLevelEnum'[unresolved])
-      (requirement_def 'Goal')
-      (requirement_usage 'goals' : 'RequirementMetadataExample::Goal'[requirement_def]
-        (multiplicity_range [*]))
-      (metadata_def 'goal' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (requirement_usage 'vehicleMassRequirement'
-        (documentation)
-        (metadata_usage :> 'StatusInfo'[unresolved]
-          (feature_def 'status'
-            (feature_value (=)))
-          (feature_def 'risk'
-            (feature_def 'totalRisk'
-              (feature_value (=)))
-            (feature_def 'technicalRisk'
-              (feature_value (=)))
-            (feature_def 'scheduleRisk'
-              (feature_value (=)))
-            (feature_def 'costRisk'
-              (feature_value (=))))
-          (feature_def 'originator'
-            (feature_value (=)))
-          (feature_def 'owner'
-            (feature_value (=)))))
-      (requirement_usage 'deliverPayload'
-        (assume_constraint_usage composite)
-        (constraint_usage composite 'payloadMassLimit')
-        (require_constraint_usage composite)
-        (reference_usage 'vehicleMassRequirement')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RequirementMetadataExample"))) (name "RequirementMetadataExample") (declared-name "RequirementMetadataExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (name "Goal") (declared-name "Goal"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (name "goal") (declared-name "goal"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "RequirementMetadataExample::deliverPayload"))) (name "deliverPayload") (declared-name "deliverPayload"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (name "goal") (declared-name "goal")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementMetadataExample::goal")))))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (name "goals") (declared-name "goals"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement")
+          (contains
+            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (name "StatusInfo") (declared-name "StatusInfo")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::originator"))) (name "originator") (declared-name "originator") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::owner"))) (name "owner") (declared-name "owner") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::status"))) (name "status") (declared-name "status") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::_documentation"))) (name ""))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

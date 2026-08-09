@@ -587,121 +587,170 @@ semantic.unresolved_name 'diameter'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleVariabilityModel'
-      (package 'DesignModel'
-        (namespace_import public -> 'VehicleVariabilityModel::DesignModel::PartDefinitions'[package])
-        (namespace_import public -> 'VehicleVariabilityModel::DesignModel::PartsTree'[package])
-        (namespace_import public -> 'VehicleVariabilityModel::DesignModel::ActionDefinitions'[package])
-        (namespace_import public -> 'VehicleVariabilityModel::DesignModel::ActionTree'[package])
-        (package 'PartDefinitions'
-          (part_def 'Vehicle')
-          (attribute_def 'Diameter')
-          (part_def 'Cylinder'
-            (attribute_usage composite 'diameter' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter'[attribute_def]
-              (multiplicity_range [1])))
-          (part_def 'Engine')
-          (part_def 'Transmission')
-          (part_def 'Sunroof')
-          (port_def 'AutoPort'))
-        (package 'PartsTree'
-          (part_usage 'vehicle' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle'[part_def]
-            (part_usage composite 'engine' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Engine'[part_def]
-              (multiplicity_range [1]))
-            (part_usage composite 'transmission' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission'[part_def]
-              (multiplicity_range [1]))
-            (part_usage composite 'sunroof' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof'[part_def]
-              (multiplicity_range [0..1])))
-          (part_usage 'engine' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Engine'[part_def]
-            (port_usage composite 'autoPort' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort'[port_def])
-            (part_usage composite 'cylinder' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder'[part_def]
-              (multiplicity_range [2..*])))
-          (part_usage '4cylEngine' :> 'VehicleVariabilityModel::DesignModel::PartsTree::engine'[part_usage]
-            (part_usage composite :>> 'VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder'[part_usage]
-              (multiplicity_range [4])))
-          (part_usage '6cylEngine' :> 'VehicleVariabilityModel::DesignModel::PartsTree::engine'[part_usage]
-            (part_usage composite :>> 'VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder'[part_usage]
-              (multiplicity_range [6])))
-          (part_usage 'transmission' : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission'[part_def])
-          (part_usage 'manualTransmission' :> 'VehicleVariabilityModel::DesignModel::PartsTree::transmission'[part_usage])
-          (part_usage 'automaticTransmission' :> 'VehicleVariabilityModel::DesignModel::PartsTree::transmission'[part_usage]))
-        (package 'ActionDefinitions'
-          (action_def 'GenerateTorque')
-          (action_def 'AmplifyTorque')
-          (action_def 'ProvidePower'))
-        (package 'ActionTree'
-          (action_usage 'generateTorque4Cyl' : 'VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque'[action_def])
-          (action_usage 'generateTorque6Cyl' : 'VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque'[action_def])
-          (action_usage 'amplifyTorqueManual' : 'VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque'[action_def])
-          (action_usage 'amplifyTorqueAutomatic' : 'VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque'[action_def])))
-      (package '150% Model'
-        (namespace_import private -> 'VehicleVariabilityModel::DesignModel'[package])
-        (package 'PartsTree'
-          (attribute_def variation 'DiameterChoices' :> 'VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter'[attribute_def]
-            (variant_usage
-              (attribute_usage composite 'diameterSmall'))
-            (variant_usage
-              (attribute_usage composite 'diameterLarge')))
-          (part_def variation 'EngineChoices' :> 'VehicleVariabilityModel::DesignModel::PartDefinitions::Engine'[part_def]
-            (variant_usage
-              (reference_usage reference '4cylEngine'))
-            (variant_usage
-              (reference_usage reference '6cylEngine'
-                (port_usage variation composite :>> 'autoPort'[unresolved]
-                  (variant_usage
-                    (port_usage composite 'autoPort1'))
-                  (variant_usage
-                    (port_usage composite 'autoPort2')))
-                (part_usage composite :>> 'cylinder'[unresolved]
-                  (attribute_usage composite :>> 'diameter'[unresolved] : 'VehicleVariabilityModel::150% Model::PartsTree::DiameterChoices'[attribute_def]))
-                (assert_constraint_usage
-                  (result_expr_membership)))))
-          (part_usage abstract 'vehicleFamily' :> 'VehicleVariabilityModel::DesignModel::PartsTree::vehicle'[part_usage]
-            (part_usage composite :>> 'VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine'[part_usage] : 'VehicleVariabilityModel::150% Model::PartsTree::EngineChoices'[part_def]
-              (multiplicity_range [1]))
-            (part_usage variation composite :>> 'VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission'[part_usage] : 'VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission'[part_def]
-              (multiplicity_range [1])
-              (variant_usage
-                (reference_usage reference 'manualTransmission'))
-              (variant_usage
-                (reference_usage reference 'automaticTransmission')))
-            (assert_constraint_usage
-              (result_expr_membership))
-            (part_usage variation composite :>> 'VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof'[part_usage]
-              (variant_usage
-                (part_usage composite 'withSunroof'
-                  (multiplicity_range [1])))
-              (variant_usage
-                (part_usage composite 'withoutSunroof'
-                  (multiplicity_range [0]))))
-            (perform_action_usage :>> 'VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily'[action_usage])))
-        (package 'ActionTree'
-          (action_usage 'providePowerFamily' : 'VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower'[action_def]
-            (action_usage variation composite 'generateTorque' : 'VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque'[action_def]
-              (variant_usage
-                (reference_usage reference 'generateTorque4Cyl'))
-              (variant_usage
-                (reference_usage reference 'generateTorque6Cyl')))
-            (action_usage variation composite 'amplifyTorque' : 'VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque'[action_def]
-              (variant_usage
-                (reference_usage reference 'amplifyTorqueManual'))
-              (variant_usage
-                (reference_usage reference 'amplifyTorqueAutomatic')))
-            (assert_constraint_usage
-              (result_expr_membership)))))
-      (package '100% Model'
-        (namespace_import private -> 'VehicleVariabilityModel::150% Model'[package])
-        (part_usage 'vehicle4Cyl' :> 'VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily'[part_usage]
-          (part_usage composite :>> ''[part_usage]
-            (feature_value (=)))
-          (part_usage composite :>> ''[part_usage]
-            (feature_value (=)))
-          (part_usage composite :>> ''[part_usage]
-            (feature_value (=)))
-          (perform_action_usage :>> ''[perform_action_usage]
-            (action_usage :>> 'VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque'[action_usage]
-              (feature_value (=)))
-            (action_usage :>> 'VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque'[action_usage]
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel"))) (name "VehicleVariabilityModel") (declared-name "VehicleVariabilityModel")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model"))) (name "100% Model") (declared-name "100% Model")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl"))) (name "vehicle4Cyl") (declared-name "vehicle4Cyl") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "engine::4cylEngine")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl::engine"))) (role feature-value))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl::sunroof"))) (name "sunroof") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "sunroof::withoutSunroof")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl::sunroof"))) (role feature-value))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl::transmission"))) (name "transmission") (declared (properties (composite true) (reference false) (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "transmission::manualTransmission")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleVariabilityModel::100% Model::vehicle4Cyl::transmission"))) (role feature-value))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model"))) (name "150% Model") (declared-name "150% Model")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::*"))) (name "*") (declared-name "*"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree"))) (name "ActionTree") (declared-name "ActionTree")
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (name "providePowerFamily") (declared-name "providePowerFamily") (declared (properties (composite true) (reference false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (name "amplifyTorque") (declared-name "amplifyTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower")))))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower")))))
+                  )
+                )
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree"))) (name "PartsTree") (declared-name "PartsTree")
+              (contains
+                (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::DiameterChoices"))) (name "DiameterChoices") (declared-name "DiameterChoices"))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (name "EngineChoices") (declared-name "EngineChoices") (declared (properties (variation true)))
+                  (contains
+                    (element (kind "variant") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily"))) (name "vehicleFamily") (declared-name "vehicleFamily") (declared (properties (abstract true) (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::sunroof"))) (name "sunroof") (declared (properties (variation true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::sunroof::withSunroof"))) (name "withSunroof") (declared-name "withSunroof") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::sunroof::withoutSunroof"))) (name "withoutSunroof") (declared-name "withoutSunroof") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 0) (ordered false) (provenance authored))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (variation true) (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+                      (contains
+                        (element (kind "variant") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::transmission::automaticTransmission"))) (name "automaticTransmission") (declared-name "automaticTransmission") (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+                        (element (kind "variant") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::transmission::manualTransmission"))) (name "manualTransmission") (declared-name "manualTransmission") (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission")))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel"))) (name "DesignModel") (declared-name "DesignModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::*#import2"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::*#import3"))) (name "*") (declared-name "*"))
+            (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions"))) (name "ActionDefinitions") (declared-name "ActionDefinitions")
+              (contains
+                (element (kind "action def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))) (name "AmplifyTorque") (declared-name "AmplifyTorque"))
+                (element (kind "action def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))) (name "GenerateTorque") (declared-name "GenerateTorque"))
+                (element (kind "action def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower"))) (name "ProvidePower") (declared-name "ProvidePower"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree"))) (name "ActionTree") (declared-name "ActionTree")
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (name "amplifyTorqueAutomatic") (declared-name "amplifyTorqueAutomatic") (declared (properties (composite true) (reference false))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (name "amplifyTorqueManual") (declared-name "amplifyTorqueManual") (declared (properties (composite true) (reference false))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (name "generateTorque4Cyl") (declared-name "generateTorque4Cyl") (declared (properties (composite true) (reference false))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (name "generateTorque6Cyl") (declared-name "generateTorque6Cyl") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions"))) (name "PartDefinitions") (declared-name "PartDefinitions")
+              (contains
+                (element (kind "port def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort"))) (name "AutoPort") (declared-name "AutoPort")
+                  (contains
+                    (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort::~AutoPort"))) (name "~AutoPort") (declared-name "~AutoPort") (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort")))))
+                  )
+                )
+                (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared)
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder")))))
+                  )
+                )
+                (element (kind "attribute def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter"))) (name "Diameter") (declared-name "Diameter") (declared (properties (ordered false) (unique true))))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof"))) (name "Sunroof") (declared-name "Sunroof") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+                (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree"))) (name "PartsTree") (declared-name "PartsTree")
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine::cylinder"))) (name "cylinder") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine::cylinder"))) (name "cylinder") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (name "automaticTransmission") (declared-name "automaticTransmission") (declared (properties (composite true) (reference false) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort"))) (name "autoPort") (declared-name "autoPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder"))) (name "cylinder") (declared-name "cylinder") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (name "manualTransmission") (declared-name "manualTransmission") (declared (properties (composite true) (reference false) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof"))) (name "sunroof") (declared-name "sunroof") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort::~AutoPort"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::4cylEngine"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::6cylEngine"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::amplifyTorque"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily::generateTorque"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::engine"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::EngineChoices"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily::transmission"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::transmission"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission"))) (to (node (document "d0") (qualified-name "VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

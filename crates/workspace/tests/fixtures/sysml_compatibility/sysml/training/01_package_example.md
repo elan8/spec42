@@ -57,12 +57,23 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Package Example'
-      (membership_import public -> 'ISQ::TorqueValue'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (part_def 'Automobile')
-      (alias_member public 'Car' -> 'Package Example::Automobile'[part_def])
-      (alias_member 'Torque' -> 'ISQ::TorqueValue'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Package Example"))) (name "Package Example") (declared-name "Package Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Package Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Package Example::Automobile"))) (name "Automobile") (declared-name "Automobile") (declared))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Package Example::Car"))) (name "Car") (declared-name "Car"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Package Example::Torque"))) (name "Torque") (declared-name "Torque"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Package Example::TorqueValue"))) (name "TorqueValue") (declared-name "TorqueValue"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

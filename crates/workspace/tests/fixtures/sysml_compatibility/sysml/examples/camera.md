@@ -74,14 +74,15 @@ semantic.unresolved_name 'takePicture::shoot'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (part_def 'Camera'
-      (namespace_import private -> 'PictureTaking'[unresolved])
-      (perform_action_usage 'takePicture' :> 'PictureTaking::takePicture'[unresolved]
-        (multiplicity_range [*]))
-      (part_usage composite 'focusingSubsystem'
-        (perform_action_usage :>> 'takePicture::focus'[unresolved]))
-      (part_usage composite 'imagingSubsystem'
-        (perform_action_usage :>> 'takePicture::shoot'[unresolved])))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -133,37 +133,50 @@ semantic.unresolved_name 'MassValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'CalculationExample'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (part_def 'VehiclePart'
-        (attribute_usage composite 'm' : 'MassValue'[unresolved]))
-      (part_def 'Vehicle' :> 'CalculationExample::VehiclePart'[part_def])
-      (part_usage 'vehicle' : 'CalculationExample::Vehicle'[part_def]
-        (part_usage composite 'eng' : 'CalculationExample::VehiclePart'[part_def])
-        (part_usage composite 'trans' : 'CalculationExample::VehiclePart'[part_def])
-        (attribute_usage composite :> 'CalculationExample::VehiclePart::m'[attribute_usage]
-          (feature_value (=))))
-      (calculation_def 'MassSum'
-        (reference_usage in reference 'partMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out 'totalMass' : 'MassValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_usage 'ms' : 'CalculationExample::MassSum'[calculation_def]
-        (reference_usage in reference 'partMasses'
-          (feature_value (=)))
-        (return_parameter_membership
-          (feature_def out 'totalMass')))
-      (part_usage 'vehicles'
-        (multiplicity_range [*])
-        (feature_value (=)))
-      (attribute_usage 'masses1'
-        (multiplicity_range [*])
-        (feature_value (=)))
-      (attribute_usage 'masses2'
-        (multiplicity_range [*])
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CalculationExample"))) (name "CalculationExample") (declared-name "CalculationExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "CalculationExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CalculationExample::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "CalculationExample::MassSum"))) (name "MassSum") (declared-name "MassSum")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CalculationExample::MassSum::partMasses"))) (name "partMasses") (declared-name "partMasses") (effective (featuring-type (node (document "d0") (qualified-name "CalculationExample::MassSum")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "CalculationExample::MassSum::totalMass"))) (name "totalMass") (declared-name "totalMass") (effective (featuring-type (node (document "d0") (qualified-name "CalculationExample::MassSum")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (name "VehiclePart") (declared-name "VehiclePart") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CalculationExample::VehiclePart::m"))) (name "m") (declared-name "m") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CalculationExample::VehiclePart")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "CalculationExample::masses1"))) (name "masses1") (declared-name "masses1") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "m") (children (expression (kind "parenthesized") (children (expression (kind "typeCheck") (reference "VehiclePart") (operator "as") (children (expression (kind "featureReference") (reference "vehicles")))))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CalculationExample::masses1"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "CalculationExample::masses2"))) (name "masses2") (declared-name "masses2") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "m") (children (expression (kind "parenthesized") (children (expression (kind "typeCheck") (reference "vehicle") (operator "as") (children (expression (kind "featureReference") (reference "vehicles")))))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CalculationExample::masses2"))) (role feature-value))))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "CalculationExample::ms"))) (name "ms") (declared-name "ms")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "CalculationExample::ms::partMasses"))) (name "partMasses") (declared-name "partMasses") (effective (featuring-type (node (document "d0") (qualified-name "CalculationExample::ms")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CalculationExample::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (name "trans") (declared-name "trans") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CalculationExample::Vehicle")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "CalculationExample::vehicles"))) (name "vehicles") (declared-name "vehicles") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "tuple") (children (expression (kind "featureReference") (reference "vehicle")) (expression (kind "featureReference") (reference "vehicle")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CalculationExample::vehicles"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -123,23 +123,30 @@ semantic.unresolved_name 'Picture'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Camera'
-      (namespace_import private -> 'Action Decomposition'[unresolved])
-      (part_def 'Camera')
-      (part_def 'FocusingSubsystem')
-      (part_def 'ImagingSubsystem')
-      (part_usage 'camera' : 'Camera::Camera'[part_def]
-        (item_usage reference 'scene' : 'Scene'[unresolved])
-        (part_usage composite 'photos' : 'Picture'[unresolved]
-          (multiplicity_range [*]))
-        (part_usage composite 'autoFocus'
-          (item_usage in reference 'scene' : 'Scene'[unresolved]
-            (feature_value (=)))
-          (item_usage out reference 'realImage' : 'Image'[unresolved]))
-        (flow_usage composite 'autoFocus')
-        (part_usage composite 'imager'
-          (item_usage in 'focusedImage' : 'Image'[unresolved])
-          (item_usage out 'photo' : 'Picture'[unresolved] :> 'Camera::camera::photos'[part_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Camera"))) (name "Camera") (declared-name "Camera")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Camera::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Camera::Camera"))) (name "Camera") (declared-name "Camera") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Camera::FocusingSubsystem"))) (name "FocusingSubsystem") (declared-name "FocusingSubsystem") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Camera::ImagingSubsystem"))) (name "ImagingSubsystem") (declared-name "ImagingSubsystem") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Camera::camera"))) (name "camera") (declared-name "camera") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Camera::camera::autoFocus"))) (name "autoFocus") (declared-name "autoFocus") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Camera::Camera")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Camera::camera::imager"))) (name "imager") (declared-name "imager") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Camera::Camera")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Camera::camera::photos"))) (name "photos") (declared-name "photos") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Camera::Camera")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Camera::camera"))) (to (node (document "d0") (qualified-name "Camera::Camera"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

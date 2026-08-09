@@ -199,31 +199,34 @@ semantic.unresolved_name 'presidentOfCountry::asPresident'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'JohnIndividualExample'
-      (item_def 'Person'
-        (documentation)
-        (attribute_usage composite 'age' : 'ScalarValues::Natural'[unresolved])
-        (occurrence_usage composite 'asPresident' : 'JohnIndividualExample::Person'[item_def]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (item_def individual 'John' :> 'JohnIndividualExample::Person'[item_def]
-        (documentation))
-      (item_def 'Country'
-        (documentation)
-        (reference_usage reference 'presidentOfCountry' : 'JohnIndividualExample::Person'[item_def] :> 'presidentOfCountry::asPresident'[unresolved]
-          (multiplicity_range [0..1])))
-      (item_def individual 'UnitedStates' :> 'JohnIndividualExample::Country'[item_def]
-        (documentation)
-        (reference_usage reference 'presidentOfUS' :>> 'JohnIndividualExample::Country::presidentOfCountry'[reference_usage]
-          (multiplicity_range [1])
-          (assert_constraint_usage
-            (result_expr_membership))))
-      (occurrence_usage individual 'UnitedStatesWithJohnAsPresident' : 'JohnIndividualExample::UnitedStates'[item_def]
-        (not_implemented 'malformed')
-        (item_usage composite 'UnitedStatesWhenJohnIsPresident' : 'JohnIndividualExample::UnitedStates'[item_def]
-          (multiplicity_range [*])
-          (documentation)
-          (reference_usage reference :>> 'JohnIndividualExample::UnitedStates::presidentOfUS'[reference_usage] : 'JohnIndividualExample::John'[item_def]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "JohnIndividualExample"))) (name "JohnIndividualExample") (declared-name "JohnIndividualExample")
+      (contains
+        (element (kind "item def") (id (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (name "Country") (declared-name "Country")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "JohnIndividualExample::Country::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "JohnIndividualExample::Country")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (name "presidentOfCountry") (declared-name "presidentOfCountry") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "JohnIndividualExample::Country")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (name "Person") (declared-name "Person")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "JohnIndividualExample::Person::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "JohnIndividualExample::Person")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "JohnIndividualExample::Person::age"))) (name "age") (declared-name "age") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "JohnIndividualExample::Person")))))
+          )
+        )
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident") (declared (properties (individual true) (composite true) (reference false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Country::_documentation"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Country"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Person::_documentation"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Person"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

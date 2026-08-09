@@ -184,36 +184,75 @@ semantic.unresolved_name 'TemperatureValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Change and Time Triggers'
-      (membership_import private -> 'ISQ::TemperatureValue'[unresolved])
-      (membership_import private -> 'ISQ::DurationValue'[unresolved])
-      (membership_import private -> 'Time::TimeInstantValue'[unresolved])
-      (membership_import private -> 'SI::h'[unresolved])
-      (attribute_def 'OverTemp')
-      (part_def 'Vehicle'
-        (attribute_usage composite 'maintenanceTime' : 'TimeInstantValue'[unresolved])
-        (attribute_usage composite 'maintenanceInterval' : 'DurationValue'[unresolved])
-        (attribute_usage composite 'maxTemperature' : 'TemperatureValue'[unresolved]))
-      (part_def 'VehicleController')
-      (action_usage 'senseTemperature'
-        (reference_usage out reference 'temp' : 'TemperatureValue'[unresolved]))
-      (state_usage 'healthStates'
-        (reference_usage in reference 'vehicle' : 'Change and Time Triggers::Vehicle'[part_def])
-        (reference_usage in reference 'controller' : 'Change and Time Triggers::VehicleController'[part_def])
-        (state_subaction_membership 'entry'
-          (action_usage))
-        (source_succession
-          (reference_usage reference 'normal'))
-        (state_subaction_membership 'do'
-          (action_usage 'senseTemperature'))
-        (state_usage composite 'normal')
-        (transition_usage)
-        (transition_usage)
-        (state_usage composite 'maintenance'
-          (not_implemented 'malformed')
-          (transition_usage)
-          (state_usage composite 'degraded')
-          (transition_usage))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Change and Time Triggers"))) (name "Change and Time Triggers") (declared-name "Change and Time Triggers")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::DurationValue"))) (name "DurationValue") (declared-name "DurationValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Change and Time Triggers::OverTemp"))) (name "OverTemp") (declared-name "OverTemp") (declared (properties (ordered false) (unique true))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::TemperatureValue"))) (name "TemperatureValue") (declared-name "TemperatureValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::TimeInstantValue"))) (name "TimeInstantValue") (declared-name "TimeInstantValue"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))) (name "maintenanceInterval") (declared-name "maintenanceInterval") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maxTemperature"))) (name "maxTemperature") (declared-name "maxTemperature") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Change and Time Triggers::VehicleController"))) (name "VehicleController") (declared-name "VehicleController") (declared))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::h"))) (name "h") (declared-name "h"))
+        (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (name "healthStates") (declared-name "healthStates") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_do"))) (name "do") (declared-name "do"))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_entry"))) (name "entry") (declared-name "entry"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::controller"))) (name "controller") (declared-name "controller"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::degraded"))) (name "degraded") (declared-name "degraded"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::maintenance"))) (name "maintenance") (declared-name "maintenance"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))) (name "normal") (declared-name "normal"))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded"))) (name "transition_healthStates_to_degraded") (declared-name "transition_healthStates_to_degraded")
+              (contains
+                (element (kind "transition effect") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded::effect"))) (name "effect") (declared-name "effect"))
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_maintenance"))) (name "transition_healthStates_to_maintenance") (declared-name "transition_healthStates_to_maintenance")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_maintenance::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal"))) (name "transition_healthStates_to_normal") (declared-name "transition_healthStates_to_normal")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal#transition"))) (name "transition_healthStates_to_normal") (declared-name "transition_healthStates_to_normal")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal#transition::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature"))) (name "senseTemperature") (declared-name "senseTemperature") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (name "temp") (declared-name "temp"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::degraded"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::maintenance"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::controller"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::VehicleController"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

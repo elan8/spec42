@@ -60,13 +60,23 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (part_usage 'vehicle' : 'Vehicle'[unresolved]
-        (part_usage composite 'eng' : 'Engine'[unresolved])
-        (flow_usage composite : 'Fuel'[unresolved]
-          (feature_value (=))
-          (connector_end 'tank.fuelSupply')
-          (connector_end 'eng.engineFuelPort'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "part") (id (node (document "d0") (qualified-name "P::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

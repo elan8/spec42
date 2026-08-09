@@ -302,100 +302,35 @@ standard library package TransitionPerformances {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'TransitionPerformances'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'SequenceFunctions::isEmpty'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensBefore'[unresolved])
-      (membership_import private -> 'Performances::Performance'[unresolved])
-      (membership_import private -> 'Performances::Evaluation'[unresolved])
-      (membership_import private -> 'Transfers::MessageTransfer'[unresolved])
-      (membership_import private -> 'Transfers::AcceptPerformance'[unresolved])
-      (membership_import private -> 'Transfers::acceptPerformances'[unresolved])
-      (membership_import private -> 'ControlFunctions::allTrue'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (behavior_def abstract 'TransitionPerformance'
-        (feature_def in 'transitionLinkSource' : 'Performance'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'trigger' : 'MessageTransfer'[unresolved]
-          (multiplicity_range [*]))
-        (boolean_expr_def 'guard' :> 'enclosedPerformances'[unresolved]
-          (multiplicity_range [*]))
-        (step_def 'effect' :> 'enclosedPerformances'[unresolved]
-          (multiplicity_range [*]))
-        (feature_def 'triggerTarget' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def 'transitionLink' : 'HappensBefore'[unresolved]
-          (multiplicity_range [0..1]))
-        (binding_connector_def
-          (multiplicity_range [0..1])
-          (connector_end 'transitionLink.earlierOccurrence')
-          (connector_end 'transitionLinkSource'))
-        (succession_def
-          (multiplicity_range [1])
-          (connector_end 'transitionLinkSource')
-          (connector_end 'effect'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'effect')
-          (connector_end 'transitionLink.laterOccurrence'))
-        (connector_def
-          (multiplicity_range [0..1])
-          (connector_end 'transitionLink')
-          (connector_end 'trigger'))
-        (connector_def 'guardConstraint' : 'TransitionPerformances::TPCGuardConstraint'[assoc_struct_def]
-          (multiplicity_range [*])
-          (connector_end 'transitionLink')
-          (connector_end 'guard'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'trigger')
-          (connector_end 'guard'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'guard')
-          (connector_end 'effect'))
-        (feature_def 'accNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (step_def 'accept' : 'AcceptPerformance'[unresolved] :> 'timeEnclosedOccurrences'[unresolved] :> 'acceptPerformances'[unresolved]
-          (multiplicity_range [?])
-          (feature_def :>> 'acceptedTransfer'[unresolved]
-            (feature_value (=))))
-        (binding_connector_def
-          (connector_end ''accept'.receiver')
-          (connector_end 'triggerTarget'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'guard')
-          (connector_end ''accept'')))
-      (behavior_def 'NonStateTransitionPerformance' :> 'TransitionPerformances::TransitionPerformance'[behavior_def]
-        (feature_def 'isTriggerAfter' : 'Boolean'[unresolved]
-          (feature_value (default =)))
-        (succession_def
-          (multiplicity_range [1])
-          (connector_end 'transitionLinkSource')
-          (connector_end 'Performance::self'))
-        (feature_def 'taNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (succession_def 'triggerAfter'
-          (multiplicity_range [?])
-          (connector_end 'transitionLinkSource')
-          (connector_end 'trigger.endShot'))
-        (succession_def
-          (multiplicity_range [*])
-          (connector_end 'guard')
-          (connector_end 'transitionLink.laterOccurrence')))
-      (assoc_struct_def 'TPCGuardConstraint'
-        (feature_def end 'constrainedHBLink' : 'HappensBefore'[unresolved]
-          (multiplicity_range [0..1]))
-        (not_implemented 'malformed')
-        (invariant_def
-          (result_expr_membership))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TransitionPerformances"))) (name "TransitionPerformances") (declared-name "TransitionPerformances")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::AcceptPerformance"))) (name "AcceptPerformance") (declared-name "AcceptPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::MessageTransfer"))) (name "MessageTransfer") (declared-name "MessageTransfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TransitionPerformances::NonStateTransitionPerformance"))) (name "NonStateTransitionPerformance") (declared-name "NonStateTransitionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TransitionPerformances::TransitionPerformance"))) (name "TransitionPerformance") (declared-name "TransitionPerformance"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "TransitionPerformances::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::acceptPerformances"))) (name "acceptPerformances") (declared-name "acceptPerformances"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::allTrue"))) (name "allTrue") (declared-name "allTrue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TransitionPerformances::size"))) (name "size") (declared-name "size"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TransitionPerformances::struct"))) (name "struct") (declared-name "struct"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TransitionPerformances::_documentation"))) (to (node (document "d0") (qualified-name "TransitionPerformances"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -153,25 +153,49 @@ standard library package ParametersOfInterestMetadata {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ParametersOfInterestMetadata'
-      (documentation)
-      (membership_import private -> 'Metaobjects::SemanticMetadata'[unresolved])
-      (attribute_usage 'measuresOfEffectiveness'
-        (multiplicity_range [*])
-        (documentation))
-      (attribute_usage 'measuresOfPerformance'
-        (multiplicity_range [*])
-        (documentation))
-      (metadata_def 'MeasureOfEffectiveness' :> 'SemanticMetadata'[unresolved]
-        (documentation)
-        (reference_usage reference :>> 'annotatedElement'[unresolved] : 'SysML::Usage'[unresolved])
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'MeasureOfPerformance' :> 'SemanticMetadata'[unresolved]
-        (documentation)
-        (reference_usage reference :>> 'annotatedElement'[unresolved] : 'SysML::Usage'[unresolved])
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata"))) (name "ParametersOfInterestMetadata") (declared-name "ParametersOfInterestMetadata")
+      (contains
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))) (name "MeasureOfEffectiveness") (declared-name "MeasureOfEffectiveness")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance"))) (name "MeasureOfPerformance") (declared-name "MeasureOfPerformance")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness"))) (name "measuresOfEffectiveness") (declared-name "measuresOfEffectiveness") (declared (properties (ordered false) (unique false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))) (name "measuresOfPerformance") (declared-name "measuresOfPerformance") (declared (properties (ordered false) (unique false)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

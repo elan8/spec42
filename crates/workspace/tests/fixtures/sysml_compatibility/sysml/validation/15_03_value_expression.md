@@ -142,33 +142,45 @@ semantic.unresolved_name 'LengthValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_03-Value Expression'
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'USCustomaryUnits'[unresolved])
-      (part_def 'Vehicle_1'
-        (attribute_usage composite 'mass' : 'MassValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'length' : 'LengthValue'[unresolved]
-          (feature_value (=)))
-        (part_usage composite 'leftFrontWheel' : '15_03-Value Expression::Wheel'[part_def])
-        (part_usage composite 'rightFrontWheel' : '15_03-Value Expression::Wheel'[part_def]))
-      (part_def 'Wheel'
-        (attribute_usage composite 'hubDiameter' : 'LengthValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'width' : 'LengthValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'outerDiameter' : 'LengthValue'[unresolved]
-          (feature_value (=))
-          (documentation))
-        (part_usage composite 'tire' : '15_03-Value Expression::Tire'[part_def]
-          (multiplicity_range [1])))
-      (part_def 'Tire'
-        (attribute_usage composite 'profileDepth' : 'LengthValue'[unresolved]
-          (feature_value (default =)))
-        (constraint_usage composite 'hasLegalProfileDepth'
-          (result_expr_membership))
-        (attribute_usage composite 'height' : 'LengthValue'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_03-Value Expression"))) (name "15_03-Value Expression") (declared-name "15_03-Value Expression")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_03-Value Expression::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_03-Value Expression::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (name "Tire") (declared-name "Tire") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (name "height") (declared-name "height") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 45)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (name "profileDepth") (declared-name "profileDepth") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "6.0")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Tire")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (name "leftFrontWheel") (declared-name "leftFrontWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (name "length") (declared-name "length") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "4.82")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1200)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (name "rightFrontWheel") (declared-name "rightFrontWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (name "hubDiameter") (declared-name "hubDiameter") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 18)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "in")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (name "outerDiameter") (declared-name "outerDiameter") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower unevaluated) (upper unevaluated) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "parenthesized") (children (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "hubDiameter")) (expression (kind "binary") (operator "*") (children (expression (kind "integerLiteral") (literal 2)) (expression (kind "memberAccess") (reference "height") (children (expression (kind "featureReference") (reference "tire")))))))))))) (effective (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (name "tire") (declared-name "tire") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (name "width") (declared-name "width") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 245)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

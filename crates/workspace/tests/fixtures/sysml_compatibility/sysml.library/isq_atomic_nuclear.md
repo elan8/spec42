@@ -9711,1420 +9711,1549 @@ standard library package ISQAtomicNuclear {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQAtomicNuclear'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (membership_import private -> 'ISQChemistryMolecular::DiffusionCoefficientUnit'[unresolved])
-      (membership_import private -> 'ISQChemistryMolecular::DiffusionCoefficientValue'[unresolved])
-      (membership_import private -> 'ISQChemistryMolecular::diffusionCoefficient'[unresolved])
-      (membership_import private -> 'ISQElectromagnetism::ElectricChargeValue'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::AngularFrequencyValue'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::AreaValue'[unresolved])
-      (membership_import private -> 'ISQThermodynamics::EnergyValue'[unresolved])
-      (attribute_usage 'atomicNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'protonNumber' -> 'ISQAtomicNuclear::atomicNumber'[attribute_usage])
-      (attribute_usage 'neutronNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'nucleonNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'massNumber' -> 'ISQAtomicNuclear::nucleonNumber'[attribute_usage])
-      (attribute_usage 'restMass' : 'MassValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'properMass' -> 'ISQAtomicNuclear::restMass'[attribute_usage])
-      (attribute_usage 'restEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'atomicMass' : 'MassValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'nuclidicMass' : 'MassValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'unifiedAtomicMassConstant' : 'MassValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'elementaryCharge' : 'ElectricChargeValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ChargeNumberValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'chargeNumber' : 'ISQAtomicNuclear::ChargeNumberValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'ionizationNumber' -> 'ISQAtomicNuclear::chargeNumber'[attribute_usage])
-      (attribute_usage 'bohrRadius' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'RydbergConstantValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::RydbergConstantUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'rydbergConstant' : 'ISQAtomicNuclear::RydbergConstantValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RydbergConstantUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'HartreeEnergyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::HartreeEnergyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'hartreeEnergy' : 'ISQAtomicNuclear::HartreeEnergyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'HartreeEnergyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MagneticDipoleMomentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::MagneticDipoleMomentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticDipoleMoment' : 'ISQAtomicNuclear::MagneticDipoleMomentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticDipoleMomentUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagneticDipoleMoment3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagneticDipoleMoment3dVector' : 'ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagneticDipoleMoment3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQAtomicNuclear::MagneticDipoleMomentUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_usage 'bohrMagneton' : 'ISQAtomicNuclear::MagneticDipoleMomentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'nuclearMagneton' : 'ISQAtomicNuclear::MagneticDipoleMomentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'SpinValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::SpinUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'spin' : 'ISQAtomicNuclear::SpinValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpinUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianSpin3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::CartesianSpin3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianSpin3dVector' : 'ISQAtomicNuclear::CartesianSpin3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianSpin3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQAtomicNuclear::SpinUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'TotalAngularMomentumValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::TotalAngularMomentumUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'totalAngularMomentum' : 'ISQAtomicNuclear::TotalAngularMomentumValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TotalAngularMomentumUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianTotalAngularMomentum3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianTotalAngularMomentum3dVector' : 'ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianTotalAngularMomentum3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQAtomicNuclear::TotalAngularMomentumUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'GyromagneticRatioValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::GyromagneticRatioUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'gyromagneticRatio' : 'ISQAtomicNuclear::GyromagneticRatioValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'GyromagneticRatioUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'MagnetogyricRatioUnit' -> 'ISQAtomicNuclear::GyromagneticRatioUnit'[attribute_def])
-      (alias_member 'MagnetogyricRatioValue' -> 'ISQAtomicNuclear::GyromagneticRatioValue'[attribute_def])
-      (alias_member 'magnetogyricRatio' -> 'ISQAtomicNuclear::gyromagneticRatio'[attribute_usage])
-      (alias_member 'GyromagneticCoefficientUnit' -> 'ISQAtomicNuclear::GyromagneticRatioUnit'[attribute_def])
-      (alias_member 'GyromagneticCoefficientValue' -> 'ISQAtomicNuclear::GyromagneticRatioValue'[attribute_def])
-      (alias_member 'gyromagneticCoefficient' -> 'ISQAtomicNuclear::gyromagneticRatio'[attribute_usage])
-      (attribute_def 'GyromagneticRatioOfTheElectronValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'gyromagneticRatioOfTheElectron' : 'ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'GyromagneticRatioOfTheElectronUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'MagnetogyricRatioOfTheElectronUnit' -> 'ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit'[attribute_def])
-      (alias_member 'MagnetogyricRatioOfTheElectronValue' -> 'ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue'[attribute_def])
-      (alias_member 'magnetogyricRatioOfTheElectron' -> 'ISQAtomicNuclear::gyromagneticRatioOfTheElectron'[attribute_usage])
-      (alias_member 'GyromagneticCoefficientOfTheElectronUnit' -> 'ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit'[attribute_def])
-      (alias_member 'GyromagneticCoefficientOfTheElectronValue' -> 'ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue'[attribute_def])
-      (alias_member 'gyromagneticCoefficientOfTheElectron' -> 'ISQAtomicNuclear::gyromagneticRatioOfTheElectron'[attribute_usage])
-      (attribute_def 'QuantumNumberValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'quantumNumber' : 'ISQAtomicNuclear::QuantumNumberValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'principalQuantumNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'orbitalAngularMomentumQuantumNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'magneticQuantumNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'spinQuantumNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'totalAngularMomentumQuantumNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'nuclearSpinQuantumNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'hyperfineStructureQuantumNumber' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'LandeFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'landeFactor' : 'ISQAtomicNuclear::LandeFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (alias_member 'gFactorOfAtom' -> 'ISQAtomicNuclear::landeFactor'[attribute_usage])
-      (attribute_def 'GFactorOfNucleusOrNuclearParticleValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'gFactorOfNucleusOrNuclearParticle' : 'ISQAtomicNuclear::GFactorOfNucleusOrNuclearParticleValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'larmorAngularFrequency' : 'AngularFrequencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'LarmorFrequencyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::LarmorFrequencyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'larmorFrequency' : 'ISQAtomicNuclear::LarmorFrequencyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LarmorFrequencyUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'nuclearPrecessionAngularFrequency' : 'AngularFrequencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'cyclotronAngularFrequency' : 'AngularFrequencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'gyroradius' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'larmorRadius' -> 'ISQAtomicNuclear::gyroradius'[attribute_usage])
-      (attribute_def 'NuclearQuadrupoleMomentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::NuclearQuadrupoleMomentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'nuclearQuadrupoleMoment' : 'ISQAtomicNuclear::NuclearQuadrupoleMomentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'NuclearQuadrupoleMomentUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'nuclearRadius' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'electronRadius' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'comptonWavelength' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'massExcess' : 'MassValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'massDefect' : 'MassValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'RelativeMassExcessValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeMassExcess' : 'ISQAtomicNuclear::RelativeMassExcessValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'RelativeMassDefectValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeMassDefect' : 'ISQAtomicNuclear::RelativeMassDefectValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'PackingFractionValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'packingFraction' : 'ISQAtomicNuclear::PackingFractionValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'BindingFractionValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'bindingFraction' : 'ISQAtomicNuclear::BindingFractionValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'DecayConstantValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::DecayConstantUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'decayConstant' : 'ISQAtomicNuclear::DecayConstantValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DecayConstantUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'DisintegrationConstantUnit' -> 'ISQAtomicNuclear::DecayConstantUnit'[attribute_def])
-      (alias_member 'DisintegrationConstantValue' -> 'ISQAtomicNuclear::DecayConstantValue'[attribute_def])
-      (alias_member 'disintegrationConstant' -> 'ISQAtomicNuclear::decayConstant'[attribute_usage])
-      (attribute_usage 'meanDurationOfLife' : 'DurationValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'meanLifeTime' -> 'ISQAtomicNuclear::meanDurationOfLife'[attribute_usage])
-      (attribute_usage 'levelWidth' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'NuclearActivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::NuclearActivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'nuclearActivity' : 'ISQAtomicNuclear::NuclearActivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'NuclearActivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpecificActivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::SpecificActivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'specificActivity' : 'ISQAtomicNuclear::SpecificActivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpecificActivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'MassicActivityUnit' -> 'ISQAtomicNuclear::SpecificActivityUnit'[attribute_def])
-      (alias_member 'MassicActivityValue' -> 'ISQAtomicNuclear::SpecificActivityValue'[attribute_def])
-      (alias_member 'massicActivity' -> 'ISQAtomicNuclear::specificActivity'[attribute_usage])
-      (attribute_def 'ActivityDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ActivityDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'activityDensity' : 'ISQAtomicNuclear::ActivityDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ActivityDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'VolumicActivityUnit' -> 'ISQAtomicNuclear::ActivityDensityUnit'[attribute_def])
-      (alias_member 'VolumicActivityValue' -> 'ISQAtomicNuclear::ActivityDensityValue'[attribute_def])
-      (alias_member 'volumicActivity' -> 'ISQAtomicNuclear::activityDensity'[attribute_usage])
-      (alias_member 'ActivityConcentrationUnit' -> 'ISQAtomicNuclear::ActivityDensityUnit'[attribute_def])
-      (alias_member 'ActivityConcentrationValue' -> 'ISQAtomicNuclear::ActivityDensityValue'[attribute_def])
-      (alias_member 'activityConcentration' -> 'ISQAtomicNuclear::activityDensity'[attribute_usage])
-      (attribute_def 'SurfaceActivityDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::SurfaceActivityDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'surfaceActivityDensity' : 'ISQAtomicNuclear::SurfaceActivityDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SurfaceActivityDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'halfLife' : 'DurationValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'alphaDisintegrationEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'maximumBetaParticleEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'betaDisintegrationEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'InternalConversionFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'internalConversionFactor' : 'ISQAtomicNuclear::InternalConversionFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ParticleEmissionRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ParticleEmissionRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'particleEmissionRate' : 'ISQAtomicNuclear::ParticleEmissionRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ParticleEmissionRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'reactionEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'resonanceEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'crossSection' : 'AreaValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'totalCrossSection' : 'AreaValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'DirectionDistributionOfCrossSectionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::DirectionDistributionOfCrossSectionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'directionDistributionOfCrossSection' : 'ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DirectionDistributionOfCrossSectionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'EnergyDistributionOfCrossSectionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'energyDistributionOfCrossSection' : 'ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EnergyDistributionOfCrossSectionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'DirectionAndEnergyDistributionOfCrossSectionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'directionAndEnergyDistributionOfCrossSection' : 'ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DirectionAndEnergyDistributionOfCrossSectionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'VolumicCrossSectionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::VolumicCrossSectionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'volumicCrossSection' : 'ISQAtomicNuclear::VolumicCrossSectionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'VolumicCrossSectionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'MacroscopicCrossSectionUnit' -> 'ISQAtomicNuclear::VolumicCrossSectionUnit'[attribute_def])
-      (alias_member 'MacroscopicCrossSectionValue' -> 'ISQAtomicNuclear::VolumicCrossSectionValue'[attribute_def])
-      (alias_member 'macroscopicCrossSection' -> 'ISQAtomicNuclear::volumicCrossSection'[attribute_usage])
-      (attribute_def 'VolumicTotalCrossSectionValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::VolumicTotalCrossSectionUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'volumicTotalCrossSection' : 'ISQAtomicNuclear::VolumicTotalCrossSectionValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'VolumicTotalCrossSectionUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'MacroscopicTotalCrossSectionUnit' -> 'ISQAtomicNuclear::VolumicTotalCrossSectionUnit'[attribute_def])
-      (alias_member 'MacroscopicTotalCrossSectionValue' -> 'ISQAtomicNuclear::VolumicTotalCrossSectionValue'[attribute_def])
-      (alias_member 'macroscopicTotalCrossSection' -> 'ISQAtomicNuclear::volumicTotalCrossSection'[attribute_usage])
-      (attribute_def 'ParticleFluenceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ParticleFluenceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'particleFluence' : 'ISQAtomicNuclear::ParticleFluenceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ParticleFluenceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ParticleFluenceRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ParticleFluenceRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'particleFluenceRate' : 'ISQAtomicNuclear::ParticleFluenceRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ParticleFluenceRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'radiantEnergyForIonizingRadiation' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'EnergyFluenceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::EnergyFluenceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'energyFluence' : 'ISQAtomicNuclear::EnergyFluenceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EnergyFluenceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'EnergyFluenceRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::EnergyFluenceRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'energyFluenceRate' : 'ISQAtomicNuclear::EnergyFluenceRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EnergyFluenceRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ParticleCurrentDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ParticleCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'particleCurrentDensity' : 'ISQAtomicNuclear::ParticleCurrentDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ParticleCurrentDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianParticleCurrentDensity3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianParticleCurrentDensity3dVector' : 'ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianParticleCurrentDensity3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQAtomicNuclear::ParticleCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'LinearAttenuationCoefficientForIonizingRadiationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearAttenuationCoefficientForIonizingRadiation' : 'ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearAttenuationCoefficientForIonizingRadiationUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassAttenuationCoefficientForIonizingRadiationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massAttenuationCoefficientForIonizingRadiation' : 'ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassAttenuationCoefficientForIonizingRadiationUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MolarAttenuationCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::MolarAttenuationCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'molarAttenuationCoefficient' : 'ISQAtomicNuclear::MolarAttenuationCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MolarAttenuationCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'amountOfSubstancePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'AtomicAttenuationCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::AtomicAttenuationCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'atomicAttenuationCoefficient' : 'ISQAtomicNuclear::AtomicAttenuationCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AtomicAttenuationCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'halfValueThickness' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'TotalLinearStoppingPowerValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::TotalLinearStoppingPowerUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'totalLinearStoppingPower' : 'ISQAtomicNuclear::TotalLinearStoppingPowerValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TotalLinearStoppingPowerUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'LinearStoppingPowerUnit' -> 'ISQAtomicNuclear::TotalLinearStoppingPowerUnit'[attribute_def])
-      (alias_member 'LinearStoppingPowerValue' -> 'ISQAtomicNuclear::TotalLinearStoppingPowerValue'[attribute_def])
-      (alias_member 'linearStoppingPower' -> 'ISQAtomicNuclear::totalLinearStoppingPower'[attribute_usage])
-      (attribute_def 'TotalMassStoppingPowerValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::TotalMassStoppingPowerUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'totalMassStoppingPower' : 'ISQAtomicNuclear::TotalMassStoppingPowerValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TotalMassStoppingPowerUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'MassStoppingPowerUnit' -> 'ISQAtomicNuclear::TotalMassStoppingPowerUnit'[attribute_def])
-      (alias_member 'MassStoppingPowerValue' -> 'ISQAtomicNuclear::TotalMassStoppingPowerValue'[attribute_def])
-      (alias_member 'massStoppingPower' -> 'ISQAtomicNuclear::totalMassStoppingPower'[attribute_usage])
-      (attribute_usage 'meanLinearRange' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'MeanMassRangeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::MeanMassRangeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'meanMassRange' : 'ISQAtomicNuclear::MeanMassRangeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MeanMassRangeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LinearIonizationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::LinearIonizationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearIonization' : 'ISQAtomicNuclear::LinearIonizationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearIonizationUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'TotalIonizationValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'totalIonization' : 'ISQAtomicNuclear::TotalIonizationValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'AverageEnergyLossPerElementaryChargeProducedValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'averageEnergyLossPerElementaryChargeProduced' : 'ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AverageEnergyLossPerElementaryChargeProducedUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MobilityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::MobilityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'mobility' : 'ISQAtomicNuclear::MobilityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MobilityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ParticleNumberDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ParticleNumberDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'particleNumberDensity' : 'ISQAtomicNuclear::ParticleNumberDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ParticleNumberDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'IonNumberDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::IonNumberDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'ionNumberDensity' : 'ISQAtomicNuclear::IonNumberDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'IonNumberDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'IonDensityUnit' -> 'ISQAtomicNuclear::IonNumberDensityUnit'[attribute_def])
-      (alias_member 'IonDensityValue' -> 'ISQAtomicNuclear::IonNumberDensityValue'[attribute_def])
-      (alias_member 'ionDensity' -> 'ISQAtomicNuclear::ionNumberDensity'[attribute_usage])
-      (attribute_def 'RecombinationCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::RecombinationCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'recombinationCoefficient' : 'ISQAtomicNuclear::RecombinationCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RecombinationCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'DiffusionCoefficientForParticleNumberDensityUnit' -> 'DiffusionCoefficientUnit'[unresolved])
-      (alias_member 'DiffusionCoefficientForParticleNumberDensityValue' -> 'DiffusionCoefficientValue'[unresolved])
-      (alias_member 'diffusionCoefficientForParticleNumberDensity' -> 'diffusionCoefficient'[unresolved])
-      (attribute_usage 'diffusionCoefficientForFluenceRate' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ParticleSourceDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ParticleSourceDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'particleSourceDensity' : 'ISQAtomicNuclear::ParticleSourceDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ParticleSourceDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SlowingDownDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::SlowingDownDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'slowingDownDensity' : 'ISQAtomicNuclear::SlowingDownDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SlowingDownDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ResonanceEscapeProbabilityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'resonanceEscapeProbability' : 'ISQAtomicNuclear::ResonanceEscapeProbabilityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LethargyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'lethargy' : 'ISQAtomicNuclear::LethargyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'AverageLogarithmicEnergyDecrementValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'averageLogarithmicEnergyDecrement' : 'ISQAtomicNuclear::AverageLogarithmicEnergyDecrementValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'meanFreePathForAtomicPhysics' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'slowingDownArea' : 'AreaValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'diffusionArea' : 'AreaValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'migrationArea' : 'AreaValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'slowingDownLength' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'diffusionLength' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'migrationLength' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'neutronYieldPerFission' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'neutronYieldPerAbsorption' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'FastFissionFactorValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::FastFissionFactorUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'fastFissionFactor' : 'ISQAtomicNuclear::FastFissionFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'FastFissionFactorUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'ThermalUtilizationFactorValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ThermalUtilizationFactorUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thermalUtilizationFactor' : 'ISQAtomicNuclear::ThermalUtilizationFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThermalUtilizationFactorUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'NonLeakageProbabilityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::NonLeakageProbabilityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'nonLeakageProbability' : 'ISQAtomicNuclear::NonLeakageProbabilityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'NonLeakageProbabilityUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'MultiplicationFactorValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::MultiplicationFactorUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'multiplicationFactor' : 'ISQAtomicNuclear::MultiplicationFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MultiplicationFactorUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'InfiniteMultiplicationFactorValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::InfiniteMultiplicationFactorUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'infiniteMultiplicationFactor' : 'ISQAtomicNuclear::InfiniteMultiplicationFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'InfiniteMultiplicationFactorUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_usage 'reactorTimeConstant' : 'DurationValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'energyImparted' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'meanEnergyImparted' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'AbsorbedDoseValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::AbsorbedDoseUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'absorbedDose' : 'ISQAtomicNuclear::AbsorbedDoseValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AbsorbedDoseUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'specificEnergyImparted' : 'ISQAtomicNuclear::AbsorbedDoseValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'QualityFactorForIonizingRadiationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::QualityFactorForIonizingRadiationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'qualityFactorForIonizingRadiation' : 'ISQAtomicNuclear::QualityFactorForIonizingRadiationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'QualityFactorForIonizingRadiationUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'DoseEquivalentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::DoseEquivalentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'doseEquivalent' : 'ISQAtomicNuclear::DoseEquivalentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DoseEquivalentUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'doseEquivalentRate' : 'ISQAtomicNuclear::DoseEquivalentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'AbsorbedDoseRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::AbsorbedDoseRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'absorbedDoseRate' : 'ISQAtomicNuclear::AbsorbedDoseRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AbsorbedDoseRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LinearEnergyTransferValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::LinearEnergyTransferUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearEnergyTransfer' : 'ISQAtomicNuclear::LinearEnergyTransferValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearEnergyTransferUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'KermaValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::KermaUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'kerma' : 'ISQAtomicNuclear::KermaValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'KermaUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'KermaRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::KermaRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'kermaRate' : 'ISQAtomicNuclear::KermaRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'KermaRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassEnergyTransferCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::MassEnergyTransferCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'massEnergyTransferCoefficient' : 'ISQAtomicNuclear::MassEnergyTransferCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassEnergyTransferCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ExposureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ExposureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'exposure' : 'ISQAtomicNuclear::ExposureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ExposureUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ExposureRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQAtomicNuclear::ExposureRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'exposureRate' : 'ISQAtomicNuclear::ExposureRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ExposureRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQAtomicNuclear"))) (name "ISQAtomicNuclear") (declared-name "ISQAtomicNuclear")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit"))) (name "AbsorbedDoseRateUnit") (declared-name "AbsorbedDoseRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue"))) (name "AbsorbedDoseRateValue") (declared-name "AbsorbedDoseRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit"))) (name "AbsorbedDoseUnit") (declared-name "AbsorbedDoseUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue"))) (name "AbsorbedDoseValue") (declared-name "AbsorbedDoseValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityConcentrationUnit"))) (name "ActivityConcentrationUnit") (declared-name "ActivityConcentrationUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityConcentrationValue"))) (name "ActivityConcentrationValue") (declared-name "ActivityConcentrationValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit"))) (name "ActivityDensityUnit") (declared-name "ActivityDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue"))) (name "ActivityDensityValue") (declared-name "ActivityDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AngularFrequencyValue"))) (name "AngularFrequencyValue") (declared-name "AngularFrequencyValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AreaValue"))) (name "AreaValue") (declared-name "AreaValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientUnit"))) (name "AtomicAttenuationCoefficientUnit") (declared-name "AtomicAttenuationCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue"))) (name "AtomicAttenuationCoefficientValue") (declared-name "AtomicAttenuationCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit"))) (name "AverageEnergyLossPerElementaryChargeProducedUnit") (declared-name "AverageEnergyLossPerElementaryChargeProducedUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue"))) (name "AverageEnergyLossPerElementaryChargeProducedValue") (declared-name "AverageEnergyLossPerElementaryChargeProducedValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageLogarithmicEnergyDecrementValue"))) (name "AverageLogarithmicEnergyDecrementValue") (declared-name "AverageLogarithmicEnergyDecrementValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageLogarithmicEnergyDecrementValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageLogarithmicEnergyDecrementValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::BindingFractionValue"))) (name "BindingFractionValue") (declared-name "BindingFractionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::BindingFractionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::BindingFractionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame"))) (name "CartesianMagneticDipoleMoment3dCoordinateFrame") (declared-name "CartesianMagneticDipoleMoment3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector"))) (name "CartesianMagneticDipoleMoment3dVector") (declared-name "CartesianMagneticDipoleMoment3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame"))) (name "CartesianParticleCurrentDensity3dCoordinateFrame") (declared-name "CartesianParticleCurrentDensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector"))) (name "CartesianParticleCurrentDensity3dVector") (declared-name "CartesianParticleCurrentDensity3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame"))) (name "CartesianSpin3dCoordinateFrame") (declared-name "CartesianSpin3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector"))) (name "CartesianSpin3dVector") (declared-name "CartesianSpin3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame"))) (name "CartesianTotalAngularMomentum3dCoordinateFrame") (declared-name "CartesianTotalAngularMomentum3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector"))) (name "CartesianTotalAngularMomentum3dVector") (declared-name "CartesianTotalAngularMomentum3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ChargeNumberValue"))) (name "ChargeNumberValue") (declared-name "ChargeNumberValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ChargeNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ChargeNumberValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantUnit"))) (name "DecayConstantUnit") (declared-name "DecayConstantUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue"))) (name "DecayConstantValue") (declared-name "DecayConstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DiffusionCoefficientForParticleNumberDensityUnit"))) (name "DiffusionCoefficientForParticleNumberDensityUnit") (declared-name "DiffusionCoefficientForParticleNumberDensityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DiffusionCoefficientForParticleNumberDensityValue"))) (name "DiffusionCoefficientForParticleNumberDensityValue") (declared-name "DiffusionCoefficientForParticleNumberDensityValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DiffusionCoefficientUnit"))) (name "DiffusionCoefficientUnit") (declared-name "DiffusionCoefficientUnit"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DiffusionCoefficientValue"))) (name "DiffusionCoefficientValue") (declared-name "DiffusionCoefficientValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit"))) (name "DirectionAndEnergyDistributionOfCrossSectionUnit") (declared-name "DirectionAndEnergyDistributionOfCrossSectionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue"))) (name "DirectionAndEnergyDistributionOfCrossSectionValue") (declared-name "DirectionAndEnergyDistributionOfCrossSectionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionUnit"))) (name "DirectionDistributionOfCrossSectionUnit") (declared-name "DirectionDistributionOfCrossSectionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue"))) (name "DirectionDistributionOfCrossSectionValue") (declared-name "DirectionDistributionOfCrossSectionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DisintegrationConstantUnit"))) (name "DisintegrationConstantUnit") (declared-name "DisintegrationConstantUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DisintegrationConstantValue"))) (name "DisintegrationConstantValue") (declared-name "DisintegrationConstantValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit"))) (name "DoseEquivalentUnit") (declared-name "DoseEquivalentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue"))) (name "DoseEquivalentValue") (declared-name "DoseEquivalentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ElectricChargeValue"))) (name "ElectricChargeValue") (declared-name "ElectricChargeValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit"))) (name "EnergyDistributionOfCrossSectionUnit") (declared-name "EnergyDistributionOfCrossSectionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue"))) (name "EnergyDistributionOfCrossSectionValue") (declared-name "EnergyDistributionOfCrossSectionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit"))) (name "EnergyFluenceRateUnit") (declared-name "EnergyFluenceRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue"))) (name "EnergyFluenceRateValue") (declared-name "EnergyFluenceRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit"))) (name "EnergyFluenceUnit") (declared-name "EnergyFluenceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue"))) (name "EnergyFluenceValue") (declared-name "EnergyFluenceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit"))) (name "ExposureRateUnit") (declared-name "ExposureRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue"))) (name "ExposureRateValue") (declared-name "ExposureRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit"))) (name "ExposureUnit") (declared-name "ExposureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue"))) (name "ExposureValue") (declared-name "ExposureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorUnit"))) (name "FastFissionFactorUnit") (declared-name "FastFissionFactorUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue"))) (name "FastFissionFactorValue") (declared-name "FastFissionFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GFactorOfNucleusOrNuclearParticleValue"))) (name "GFactorOfNucleusOrNuclearParticleValue") (declared-name "GFactorOfNucleusOrNuclearParticleValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GFactorOfNucleusOrNuclearParticleValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GFactorOfNucleusOrNuclearParticleValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticCoefficientOfTheElectronUnit"))) (name "GyromagneticCoefficientOfTheElectronUnit") (declared-name "GyromagneticCoefficientOfTheElectronUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticCoefficientOfTheElectronValue"))) (name "GyromagneticCoefficientOfTheElectronValue") (declared-name "GyromagneticCoefficientOfTheElectronValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticCoefficientUnit"))) (name "GyromagneticCoefficientUnit") (declared-name "GyromagneticCoefficientUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticCoefficientValue"))) (name "GyromagneticCoefficientValue") (declared-name "GyromagneticCoefficientValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit"))) (name "GyromagneticRatioOfTheElectronUnit") (declared-name "GyromagneticRatioOfTheElectronUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue"))) (name "GyromagneticRatioOfTheElectronValue") (declared-name "GyromagneticRatioOfTheElectronValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit"))) (name "GyromagneticRatioUnit") (declared-name "GyromagneticRatioUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue"))) (name "GyromagneticRatioValue") (declared-name "GyromagneticRatioValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit"))) (name "HartreeEnergyUnit") (declared-name "HartreeEnergyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue"))) (name "HartreeEnergyValue") (declared-name "HartreeEnergyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorUnit"))) (name "InfiniteMultiplicationFactorUnit") (declared-name "InfiniteMultiplicationFactorUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue"))) (name "InfiniteMultiplicationFactorValue") (declared-name "InfiniteMultiplicationFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::InternalConversionFactorValue"))) (name "InternalConversionFactorValue") (declared-name "InternalConversionFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::InternalConversionFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::InternalConversionFactorValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonDensityUnit"))) (name "IonDensityUnit") (declared-name "IonDensityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonDensityValue"))) (name "IonDensityValue") (declared-name "IonDensityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityUnit"))) (name "IonNumberDensityUnit") (declared-name "IonNumberDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue"))) (name "IonNumberDensityValue") (declared-name "IonNumberDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit"))) (name "KermaRateUnit") (declared-name "KermaRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue"))) (name "KermaRateValue") (declared-name "KermaRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit"))) (name "KermaUnit") (declared-name "KermaUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue"))) (name "KermaValue") (declared-name "KermaValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LandeFactorValue"))) (name "LandeFactorValue") (declared-name "LandeFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LandeFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LandeFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyUnit"))) (name "LarmorFrequencyUnit") (declared-name "LarmorFrequencyUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue"))) (name "LarmorFrequencyValue") (declared-name "LarmorFrequencyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LethargyValue"))) (name "LethargyValue") (declared-name "LethargyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LethargyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LethargyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationUnit"))) (name "LinearAttenuationCoefficientForIonizingRadiationUnit") (declared-name "LinearAttenuationCoefficientForIonizingRadiationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue"))) (name "LinearAttenuationCoefficientForIonizingRadiationValue") (declared-name "LinearAttenuationCoefficientForIonizingRadiationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit"))) (name "LinearEnergyTransferUnit") (declared-name "LinearEnergyTransferUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue"))) (name "LinearEnergyTransferValue") (declared-name "LinearEnergyTransferValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationUnit"))) (name "LinearIonizationUnit") (declared-name "LinearIonizationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue"))) (name "LinearIonizationValue") (declared-name "LinearIonizationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearStoppingPowerUnit"))) (name "LinearStoppingPowerUnit") (declared-name "LinearStoppingPowerUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearStoppingPowerValue"))) (name "LinearStoppingPowerValue") (declared-name "LinearStoppingPowerValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MacroscopicCrossSectionUnit"))) (name "MacroscopicCrossSectionUnit") (declared-name "MacroscopicCrossSectionUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MacroscopicCrossSectionValue"))) (name "MacroscopicCrossSectionValue") (declared-name "MacroscopicCrossSectionValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MacroscopicTotalCrossSectionUnit"))) (name "MacroscopicTotalCrossSectionUnit") (declared-name "MacroscopicTotalCrossSectionUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MacroscopicTotalCrossSectionValue"))) (name "MacroscopicTotalCrossSectionValue") (declared-name "MacroscopicTotalCrossSectionValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit"))) (name "MagneticDipoleMomentUnit") (declared-name "MagneticDipoleMomentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue"))) (name "MagneticDipoleMomentValue") (declared-name "MagneticDipoleMomentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagnetogyricRatioOfTheElectronUnit"))) (name "MagnetogyricRatioOfTheElectronUnit") (declared-name "MagnetogyricRatioOfTheElectronUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagnetogyricRatioOfTheElectronValue"))) (name "MagnetogyricRatioOfTheElectronValue") (declared-name "MagnetogyricRatioOfTheElectronValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagnetogyricRatioUnit"))) (name "MagnetogyricRatioUnit") (declared-name "MagnetogyricRatioUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MagnetogyricRatioValue"))) (name "MagnetogyricRatioValue") (declared-name "MagnetogyricRatioValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit"))) (name "MassAttenuationCoefficientForIonizingRadiationUnit") (declared-name "MassAttenuationCoefficientForIonizingRadiationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue"))) (name "MassAttenuationCoefficientForIonizingRadiationValue") (declared-name "MassAttenuationCoefficientForIonizingRadiationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit"))) (name "MassEnergyTransferCoefficientUnit") (declared-name "MassEnergyTransferCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue"))) (name "MassEnergyTransferCoefficientValue") (declared-name "MassEnergyTransferCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassStoppingPowerUnit"))) (name "MassStoppingPowerUnit") (declared-name "MassStoppingPowerUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassStoppingPowerValue"))) (name "MassStoppingPowerValue") (declared-name "MassStoppingPowerValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassicActivityUnit"))) (name "MassicActivityUnit") (declared-name "MassicActivityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MassicActivityValue"))) (name "MassicActivityValue") (declared-name "MassicActivityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit"))) (name "MeanMassRangeUnit") (declared-name "MeanMassRangeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue"))) (name "MeanMassRangeValue") (declared-name "MeanMassRangeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit"))) (name "MobilityUnit") (declared-name "MobilityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue"))) (name "MobilityValue") (declared-name "MobilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit"))) (name "MolarAttenuationCoefficientUnit") (declared-name "MolarAttenuationCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue"))) (name "MolarAttenuationCoefficientValue") (declared-name "MolarAttenuationCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorUnit"))) (name "MultiplicationFactorUnit") (declared-name "MultiplicationFactorUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue"))) (name "MultiplicationFactorValue") (declared-name "MultiplicationFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityUnit"))) (name "NonLeakageProbabilityUnit") (declared-name "NonLeakageProbabilityUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue"))) (name "NonLeakageProbabilityValue") (declared-name "NonLeakageProbabilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityUnit"))) (name "NuclearActivityUnit") (declared-name "NuclearActivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue"))) (name "NuclearActivityValue") (declared-name "NuclearActivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentUnit"))) (name "NuclearQuadrupoleMomentUnit") (declared-name "NuclearQuadrupoleMomentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue"))) (name "NuclearQuadrupoleMomentValue") (declared-name "NuclearQuadrupoleMomentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::PackingFractionValue"))) (name "PackingFractionValue") (declared-name "PackingFractionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::PackingFractionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::PackingFractionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit"))) (name "ParticleCurrentDensityUnit") (declared-name "ParticleCurrentDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue"))) (name "ParticleCurrentDensityValue") (declared-name "ParticleCurrentDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateUnit"))) (name "ParticleEmissionRateUnit") (declared-name "ParticleEmissionRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue"))) (name "ParticleEmissionRateValue") (declared-name "ParticleEmissionRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit"))) (name "ParticleFluenceRateUnit") (declared-name "ParticleFluenceRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue"))) (name "ParticleFluenceRateValue") (declared-name "ParticleFluenceRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceUnit"))) (name "ParticleFluenceUnit") (declared-name "ParticleFluenceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue"))) (name "ParticleFluenceValue") (declared-name "ParticleFluenceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityUnit"))) (name "ParticleNumberDensityUnit") (declared-name "ParticleNumberDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue"))) (name "ParticleNumberDensityValue") (declared-name "ParticleNumberDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit"))) (name "ParticleSourceDensityUnit") (declared-name "ParticleSourceDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue"))) (name "ParticleSourceDensityValue") (declared-name "ParticleSourceDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationUnit"))) (name "QualityFactorForIonizingRadiationUnit") (declared-name "QualityFactorForIonizingRadiationUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue"))) (name "QualityFactorForIonizingRadiationValue") (declared-name "QualityFactorForIonizingRadiationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::QuantumNumberValue"))) (name "QuantumNumberValue") (declared-name "QuantumNumberValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::QuantumNumberValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::QuantumNumberValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit"))) (name "RecombinationCoefficientUnit") (declared-name "RecombinationCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue"))) (name "RecombinationCoefficientValue") (declared-name "RecombinationCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassDefectValue"))) (name "RelativeMassDefectValue") (declared-name "RelativeMassDefectValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassDefectValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassDefectValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassExcessValue"))) (name "RelativeMassExcessValue") (declared-name "RelativeMassExcessValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassExcessValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassExcessValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ResonanceEscapeProbabilityValue"))) (name "ResonanceEscapeProbabilityValue") (declared-name "ResonanceEscapeProbabilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ResonanceEscapeProbabilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ResonanceEscapeProbabilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantUnit"))) (name "RydbergConstantUnit") (declared-name "RydbergConstantUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue"))) (name "RydbergConstantValue") (declared-name "RydbergConstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit"))) (name "SlowingDownDensityUnit") (declared-name "SlowingDownDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue"))) (name "SlowingDownDensityValue") (declared-name "SlowingDownDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit"))) (name "SpecificActivityUnit") (declared-name "SpecificActivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue"))) (name "SpecificActivityValue") (declared-name "SpecificActivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit"))) (name "SpinUnit") (declared-name "SpinUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue"))) (name "SpinValue") (declared-name "SpinValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit"))) (name "SurfaceActivityDensityUnit") (declared-name "SurfaceActivityDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue"))) (name "SurfaceActivityDensityValue") (declared-name "SurfaceActivityDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorUnit"))) (name "ThermalUtilizationFactorUnit") (declared-name "ThermalUtilizationFactorUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue"))) (name "ThermalUtilizationFactorValue") (declared-name "ThermalUtilizationFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit"))) (name "TotalAngularMomentumUnit") (declared-name "TotalAngularMomentumUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue"))) (name "TotalAngularMomentumValue") (declared-name "TotalAngularMomentumValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalIonizationValue"))) (name "TotalIonizationValue") (declared-name "TotalIonizationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalIonizationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalIonizationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit"))) (name "TotalLinearStoppingPowerUnit") (declared-name "TotalLinearStoppingPowerUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue"))) (name "TotalLinearStoppingPowerValue") (declared-name "TotalLinearStoppingPowerValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit"))) (name "TotalMassStoppingPowerUnit") (declared-name "TotalMassStoppingPowerUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue"))) (name "TotalMassStoppingPowerValue") (declared-name "TotalMassStoppingPowerValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicActivityUnit"))) (name "VolumicActivityUnit") (declared-name "VolumicActivityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicActivityValue"))) (name "VolumicActivityValue") (declared-name "VolumicActivityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionUnit"))) (name "VolumicCrossSectionUnit") (declared-name "VolumicCrossSectionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue"))) (name "VolumicCrossSectionValue") (declared-name "VolumicCrossSectionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionUnit"))) (name "VolumicTotalCrossSectionUnit") (declared-name "VolumicTotalCrossSectionUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue"))) (name "VolumicTotalCrossSectionValue") (declared-name "VolumicTotalCrossSectionValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::absorbedDose"))) (name "absorbedDose") (declared-name "absorbedDose") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::absorbedDoseRate"))) (name "absorbedDoseRate") (declared-name "absorbedDoseRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::activityConcentration"))) (name "activityConcentration") (declared-name "activityConcentration"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::activityDensity"))) (name "activityDensity") (declared-name "activityDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::alphaDisintegrationEnergy"))) (name "alphaDisintegrationEnergy") (declared-name "alphaDisintegrationEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::alphaDisintegrationEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::alphaDisintegrationEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicAttenuationCoefficient"))) (name "atomicAttenuationCoefficient") (declared-name "atomicAttenuationCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicMass"))) (name "atomicMass") (declared-name "atomicMass") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicMass::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicMass")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicNumber"))) (name "atomicNumber") (declared-name "atomicNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::averageEnergyLossPerElementaryChargeProduced"))) (name "averageEnergyLossPerElementaryChargeProduced") (declared-name "averageEnergyLossPerElementaryChargeProduced") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::averageLogarithmicEnergyDecrement"))) (name "averageLogarithmicEnergyDecrement") (declared-name "averageLogarithmicEnergyDecrement") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::betaDisintegrationEnergy"))) (name "betaDisintegrationEnergy") (declared-name "betaDisintegrationEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::betaDisintegrationEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::betaDisintegrationEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::bindingFraction"))) (name "bindingFraction") (declared-name "bindingFraction") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrMagneton"))) (name "bohrMagneton") (declared-name "bohrMagneton") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrMagneton::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrMagneton")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrRadius"))) (name "bohrRadius") (declared-name "bohrRadius") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrRadius::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrRadius")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianMagneticDipoleMoment3dVector"))) (name "cartesianMagneticDipoleMoment3dVector") (declared-name "cartesianMagneticDipoleMoment3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianParticleCurrentDensity3dVector"))) (name "cartesianParticleCurrentDensity3dVector") (declared-name "cartesianParticleCurrentDensity3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianSpin3dVector"))) (name "cartesianSpin3dVector") (declared-name "cartesianSpin3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianTotalAngularMomentum3dVector"))) (name "cartesianTotalAngularMomentum3dVector") (declared-name "cartesianTotalAngularMomentum3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::chargeNumber"))) (name "chargeNumber") (declared-name "chargeNumber") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::comptonWavelength"))) (name "comptonWavelength") (declared-name "comptonWavelength") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::comptonWavelength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::comptonWavelength")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::crossSection"))) (name "crossSection") (declared-name "crossSection") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::crossSection::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::crossSection")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::cyclotronAngularFrequency"))) (name "cyclotronAngularFrequency") (declared-name "cyclotronAngularFrequency") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::cyclotronAngularFrequency::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::cyclotronAngularFrequency")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::decayConstant"))) (name "decayConstant") (declared-name "decayConstant") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionArea"))) (name "diffusionArea") (declared-name "diffusionArea") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionArea::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionArea")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionCoefficient"))) (name "diffusionCoefficient") (declared-name "diffusionCoefficient"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionCoefficientForFluenceRate"))) (name "diffusionCoefficientForFluenceRate") (declared-name "diffusionCoefficientForFluenceRate") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionCoefficientForFluenceRate::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionCoefficientForFluenceRate")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionCoefficientForParticleNumberDensity"))) (name "diffusionCoefficientForParticleNumberDensity") (declared-name "diffusionCoefficientForParticleNumberDensity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionLength"))) (name "diffusionLength") (declared-name "diffusionLength") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionLength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionLength")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::directionAndEnergyDistributionOfCrossSection"))) (name "directionAndEnergyDistributionOfCrossSection") (declared-name "directionAndEnergyDistributionOfCrossSection") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::directionDistributionOfCrossSection"))) (name "directionDistributionOfCrossSection") (declared-name "directionDistributionOfCrossSection") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::disintegrationConstant"))) (name "disintegrationConstant") (declared-name "disintegrationConstant"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalent"))) (name "doseEquivalent") (declared-name "doseEquivalent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalentRate"))) (name "doseEquivalentRate") (declared-name "doseEquivalentRate") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalentRate::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalentRate")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::electronRadius"))) (name "electronRadius") (declared-name "electronRadius") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::electronRadius::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::electronRadius")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::elementaryCharge"))) (name "elementaryCharge") (declared-name "elementaryCharge") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::elementaryCharge::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::elementaryCharge")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::energyDistributionOfCrossSection"))) (name "energyDistributionOfCrossSection") (declared-name "energyDistributionOfCrossSection") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::energyFluence"))) (name "energyFluence") (declared-name "energyFluence") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::energyFluenceRate"))) (name "energyFluenceRate") (declared-name "energyFluenceRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::energyImparted"))) (name "energyImparted") (declared-name "energyImparted") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::energyImparted::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::energyImparted")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::exposure"))) (name "exposure") (declared-name "exposure") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::exposureRate"))) (name "exposureRate") (declared-name "exposureRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::fastFissionFactor"))) (name "fastFissionFactor") (declared-name "fastFissionFactor") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gFactorOfAtom"))) (name "gFactorOfAtom") (declared-name "gFactorOfAtom"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gFactorOfNucleusOrNuclearParticle"))) (name "gFactorOfNucleusOrNuclearParticle") (declared-name "gFactorOfNucleusOrNuclearParticle") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gyromagneticCoefficient"))) (name "gyromagneticCoefficient") (declared-name "gyromagneticCoefficient"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gyromagneticCoefficientOfTheElectron"))) (name "gyromagneticCoefficientOfTheElectron") (declared-name "gyromagneticCoefficientOfTheElectron"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gyromagneticRatio"))) (name "gyromagneticRatio") (declared-name "gyromagneticRatio") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gyromagneticRatioOfTheElectron"))) (name "gyromagneticRatioOfTheElectron") (declared-name "gyromagneticRatioOfTheElectron") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gyroradius"))) (name "gyroradius") (declared-name "gyroradius") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::gyroradius::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::gyroradius")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::halfLife"))) (name "halfLife") (declared-name "halfLife") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::halfLife::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::halfLife")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::halfValueThickness"))) (name "halfValueThickness") (declared-name "halfValueThickness") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::halfValueThickness::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::halfValueThickness")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::hartreeEnergy"))) (name "hartreeEnergy") (declared-name "hartreeEnergy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::hyperfineStructureQuantumNumber"))) (name "hyperfineStructureQuantumNumber") (declared-name "hyperfineStructureQuantumNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::hyperfineStructureQuantumNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::hyperfineStructureQuantumNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::infiniteMultiplicationFactor"))) (name "infiniteMultiplicationFactor") (declared-name "infiniteMultiplicationFactor") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::internalConversionFactor"))) (name "internalConversionFactor") (declared-name "internalConversionFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ionDensity"))) (name "ionDensity") (declared-name "ionDensity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ionNumberDensity"))) (name "ionNumberDensity") (declared-name "ionNumberDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::ionizationNumber"))) (name "ionizationNumber") (declared-name "ionizationNumber"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::kerma"))) (name "kerma") (declared-name "kerma") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::kermaRate"))) (name "kermaRate") (declared-name "kermaRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::landeFactor"))) (name "landeFactor") (declared-name "landeFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorAngularFrequency"))) (name "larmorAngularFrequency") (declared-name "larmorAngularFrequency") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorAngularFrequency::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorAngularFrequency")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorFrequency"))) (name "larmorFrequency") (declared-name "larmorFrequency") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorRadius"))) (name "larmorRadius") (declared-name "larmorRadius"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::lethargy"))) (name "lethargy") (declared-name "lethargy") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::levelWidth"))) (name "levelWidth") (declared-name "levelWidth") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::levelWidth::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::levelWidth")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::linearAttenuationCoefficientForIonizingRadiation"))) (name "linearAttenuationCoefficientForIonizingRadiation") (declared-name "linearAttenuationCoefficientForIonizingRadiation") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::linearEnergyTransfer"))) (name "linearEnergyTransfer") (declared-name "linearEnergyTransfer") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::linearIonization"))) (name "linearIonization") (declared-name "linearIonization") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::linearStoppingPower"))) (name "linearStoppingPower") (declared-name "linearStoppingPower"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::macroscopicCrossSection"))) (name "macroscopicCrossSection") (declared-name "macroscopicCrossSection"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::macroscopicTotalCrossSection"))) (name "macroscopicTotalCrossSection") (declared-name "macroscopicTotalCrossSection"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::magneticDipoleMoment"))) (name "magneticDipoleMoment") (declared-name "magneticDipoleMoment") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::magneticQuantumNumber"))) (name "magneticQuantumNumber") (declared-name "magneticQuantumNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::magneticQuantumNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::magneticQuantumNumber")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::magnetogyricRatio"))) (name "magnetogyricRatio") (declared-name "magnetogyricRatio"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::magnetogyricRatioOfTheElectron"))) (name "magnetogyricRatioOfTheElectron") (declared-name "magnetogyricRatioOfTheElectron"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massAttenuationCoefficientForIonizingRadiation"))) (name "massAttenuationCoefficientForIonizingRadiation") (declared-name "massAttenuationCoefficientForIonizingRadiation") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massDefect"))) (name "massDefect") (declared-name "massDefect") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massDefect::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::massDefect")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massEnergyTransferCoefficient"))) (name "massEnergyTransferCoefficient") (declared-name "massEnergyTransferCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massExcess"))) (name "massExcess") (declared-name "massExcess") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massExcess::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::massExcess")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massNumber"))) (name "massNumber") (declared-name "massNumber"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massStoppingPower"))) (name "massStoppingPower") (declared-name "massStoppingPower"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::massicActivity"))) (name "massicActivity") (declared-name "massicActivity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::maximumBetaParticleEnergy"))) (name "maximumBetaParticleEnergy") (declared-name "maximumBetaParticleEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::maximumBetaParticleEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::maximumBetaParticleEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanDurationOfLife"))) (name "meanDurationOfLife") (declared-name "meanDurationOfLife") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanDurationOfLife::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::meanDurationOfLife")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanEnergyImparted"))) (name "meanEnergyImparted") (declared-name "meanEnergyImparted") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanEnergyImparted::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::meanEnergyImparted")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanFreePathForAtomicPhysics"))) (name "meanFreePathForAtomicPhysics") (declared-name "meanFreePathForAtomicPhysics") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanFreePathForAtomicPhysics::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::meanFreePathForAtomicPhysics")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanLifeTime"))) (name "meanLifeTime") (declared-name "meanLifeTime"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanLinearRange"))) (name "meanLinearRange") (declared-name "meanLinearRange") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanLinearRange::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::meanLinearRange")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::meanMassRange"))) (name "meanMassRange") (declared-name "meanMassRange") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationArea"))) (name "migrationArea") (declared-name "migrationArea") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationArea::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationArea")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationLength"))) (name "migrationLength") (declared-name "migrationLength") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationLength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationLength")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::mobility"))) (name "mobility") (declared-name "mobility") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::molarAttenuationCoefficient"))) (name "molarAttenuationCoefficient") (declared-name "molarAttenuationCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::multiplicationFactor"))) (name "multiplicationFactor") (declared-name "multiplicationFactor") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronNumber"))) (name "neutronNumber") (declared-name "neutronNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerAbsorption"))) (name "neutronYieldPerAbsorption") (declared-name "neutronYieldPerAbsorption") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerAbsorption::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerAbsorption")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerFission"))) (name "neutronYieldPerFission") (declared-name "neutronYieldPerFission") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerFission::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerFission")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nonLeakageProbability"))) (name "nonLeakageProbability") (declared-name "nonLeakageProbability") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearActivity"))) (name "nuclearActivity") (declared-name "nuclearActivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearMagneton"))) (name "nuclearMagneton") (declared-name "nuclearMagneton") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearMagneton::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearMagneton")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearPrecessionAngularFrequency"))) (name "nuclearPrecessionAngularFrequency") (declared-name "nuclearPrecessionAngularFrequency") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearPrecessionAngularFrequency::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearPrecessionAngularFrequency")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearQuadrupoleMoment"))) (name "nuclearQuadrupoleMoment") (declared-name "nuclearQuadrupoleMoment") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearRadius"))) (name "nuclearRadius") (declared-name "nuclearRadius") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearRadius::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearRadius")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearSpinQuantumNumber"))) (name "nuclearSpinQuantumNumber") (declared-name "nuclearSpinQuantumNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearSpinQuantumNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearSpinQuantumNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nucleonNumber"))) (name "nucleonNumber") (declared-name "nucleonNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nucleonNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::nucleonNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclidicMass"))) (name "nuclidicMass") (declared-name "nuclidicMass") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclidicMass::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclidicMass")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::orbitalAngularMomentumQuantumNumber"))) (name "orbitalAngularMomentumQuantumNumber") (declared-name "orbitalAngularMomentumQuantumNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::orbitalAngularMomentumQuantumNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::orbitalAngularMomentumQuantumNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::packingFraction"))) (name "packingFraction") (declared-name "packingFraction") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::particleCurrentDensity"))) (name "particleCurrentDensity") (declared-name "particleCurrentDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::particleEmissionRate"))) (name "particleEmissionRate") (declared-name "particleEmissionRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::particleFluence"))) (name "particleFluence") (declared-name "particleFluence") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::particleFluenceRate"))) (name "particleFluenceRate") (declared-name "particleFluenceRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::particleNumberDensity"))) (name "particleNumberDensity") (declared-name "particleNumberDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::particleSourceDensity"))) (name "particleSourceDensity") (declared-name "particleSourceDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::principalQuantumNumber"))) (name "principalQuantumNumber") (declared-name "principalQuantumNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::principalQuantumNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::principalQuantumNumber")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::properMass"))) (name "properMass") (declared-name "properMass"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::protonNumber"))) (name "protonNumber") (declared-name "protonNumber"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::qualityFactorForIonizingRadiation"))) (name "qualityFactorForIonizingRadiation") (declared-name "qualityFactorForIonizingRadiation") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::quantumNumber"))) (name "quantumNumber") (declared-name "quantumNumber") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::radiantEnergyForIonizingRadiation"))) (name "radiantEnergyForIonizingRadiation") (declared-name "radiantEnergyForIonizingRadiation") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::radiantEnergyForIonizingRadiation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::radiantEnergyForIonizingRadiation")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::reactionEnergy"))) (name "reactionEnergy") (declared-name "reactionEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::reactionEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::reactionEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::reactorTimeConstant"))) (name "reactorTimeConstant") (declared-name "reactorTimeConstant") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::reactorTimeConstant::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::reactorTimeConstant")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::recombinationCoefficient"))) (name "recombinationCoefficient") (declared-name "recombinationCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::relativeMassDefect"))) (name "relativeMassDefect") (declared-name "relativeMassDefect") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::relativeMassExcess"))) (name "relativeMassExcess") (declared-name "relativeMassExcess") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::resonanceEnergy"))) (name "resonanceEnergy") (declared-name "resonanceEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::resonanceEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::resonanceEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::resonanceEscapeProbability"))) (name "resonanceEscapeProbability") (declared-name "resonanceEscapeProbability") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::restEnergy"))) (name "restEnergy") (declared-name "restEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::restEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::restEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::restMass"))) (name "restMass") (declared-name "restMass") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::restMass::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::restMass")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::rydbergConstant"))) (name "rydbergConstant") (declared-name "rydbergConstant") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownArea"))) (name "slowingDownArea") (declared-name "slowingDownArea") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownArea::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownArea")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownDensity"))) (name "slowingDownDensity") (declared-name "slowingDownDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownLength"))) (name "slowingDownLength") (declared-name "slowingDownLength") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownLength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownLength")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::specificActivity"))) (name "specificActivity") (declared-name "specificActivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::specificEnergyImparted"))) (name "specificEnergyImparted") (declared-name "specificEnergyImparted") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::specificEnergyImparted::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::specificEnergyImparted")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::spin"))) (name "spin") (declared-name "spin") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::spinQuantumNumber"))) (name "spinQuantumNumber") (declared-name "spinQuantumNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::spinQuantumNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::spinQuantumNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::surfaceActivityDensity"))) (name "surfaceActivityDensity") (declared-name "surfaceActivityDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::thermalUtilizationFactor"))) (name "thermalUtilizationFactor") (declared-name "thermalUtilizationFactor") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalAngularMomentum"))) (name "totalAngularMomentum") (declared-name "totalAngularMomentum") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalAngularMomentumQuantumNumber"))) (name "totalAngularMomentumQuantumNumber") (declared-name "totalAngularMomentumQuantumNumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalAngularMomentumQuantumNumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::totalAngularMomentumQuantumNumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalCrossSection"))) (name "totalCrossSection") (declared-name "totalCrossSection") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalCrossSection::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::totalCrossSection")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalIonization"))) (name "totalIonization") (declared-name "totalIonization") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalLinearStoppingPower"))) (name "totalLinearStoppingPower") (declared-name "totalLinearStoppingPower") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::totalMassStoppingPower"))) (name "totalMassStoppingPower") (declared-name "totalMassStoppingPower") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::unifiedAtomicMassConstant"))) (name "unifiedAtomicMassConstant") (declared-name "unifiedAtomicMassConstant") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::unifiedAtomicMassConstant::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQAtomicNuclear::unifiedAtomicMassConstant")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::volumicActivity"))) (name "volumicActivity") (declared-name "volumicActivity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::volumicCrossSection"))) (name "volumicCrossSection") (declared-name "volumicCrossSection") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQAtomicNuclear::volumicTotalCrossSection"))) (name "volumicTotalCrossSection") (declared-name "volumicTotalCrossSection") (declared (properties (ordered false) (unique false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageLogarithmicEnergyDecrementValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageLogarithmicEnergyDecrementValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::BindingFractionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::BindingFractionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ChargeNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ChargeNumberValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::GFactorOfNucleusOrNuclearParticleValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GFactorOfNucleusOrNuclearParticleValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::InternalConversionFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::InternalConversionFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LandeFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LandeFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LethargyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LethargyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::PackingFractionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::PackingFractionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::QuantumNumberValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::QuantumNumberValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassDefectValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassDefectValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassExcessValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassExcessValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ResonanceEscapeProbabilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ResonanceEscapeProbabilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalIonizationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalIonizationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::alphaDisintegrationEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::alphaDisintegrationEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicMass::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicMass"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::betaDisintegrationEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::betaDisintegrationEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrMagneton::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrMagneton"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrRadius::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrRadius"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::comptonWavelength::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::comptonWavelength"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::crossSection::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::crossSection"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::cyclotronAngularFrequency::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::cyclotronAngularFrequency"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionArea::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionArea"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionCoefficientForFluenceRate::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionCoefficientForFluenceRate"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionLength::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::diffusionLength"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalentRate::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalentRate"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::electronRadius::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::electronRadius"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::elementaryCharge::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::elementaryCharge"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::energyImparted::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::energyImparted"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::gyroradius::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::gyroradius"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::halfLife::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::halfLife"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::halfValueThickness::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::halfValueThickness"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::hyperfineStructureQuantumNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::hyperfineStructureQuantumNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorAngularFrequency::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorAngularFrequency"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::levelWidth::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::levelWidth"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::magneticQuantumNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::magneticQuantumNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::massDefect::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::massDefect"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::massExcess::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::massExcess"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::maximumBetaParticleEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::maximumBetaParticleEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::meanDurationOfLife::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::meanDurationOfLife"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::meanEnergyImparted::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::meanEnergyImparted"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::meanFreePathForAtomicPhysics::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::meanFreePathForAtomicPhysics"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::meanLinearRange::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::meanLinearRange"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationArea::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationArea"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationLength::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::migrationLength"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerAbsorption::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerAbsorption"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerFission::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::neutronYieldPerFission"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearMagneton::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearMagneton"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearPrecessionAngularFrequency::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearPrecessionAngularFrequency"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearRadius::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearRadius"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearSpinQuantumNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearSpinQuantumNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nucleonNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::nucleonNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclidicMass::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclidicMass"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::orbitalAngularMomentumQuantumNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::orbitalAngularMomentumQuantumNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::principalQuantumNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::principalQuantumNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::radiantEnergyForIonizingRadiation::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::radiantEnergyForIonizingRadiation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::reactionEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::reactionEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::reactorTimeConstant::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::reactorTimeConstant"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::resonanceEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::resonanceEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::restEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::restEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::restMass::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::restMass"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownArea::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownArea"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownLength::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownLength"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::specificEnergyImparted::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::specificEnergyImparted"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::spinQuantumNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::spinQuantumNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::totalAngularMomentumQuantumNumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::totalAngularMomentumQuantumNumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::totalCrossSection::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::totalCrossSection"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::unifiedAtomicMassConstant::_documentation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::unifiedAtomicMassConstant"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue::mRef"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::absorbedDose"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::absorbedDoseRate"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::activityDensity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ActivityDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::atomicAttenuationCoefficient"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AtomicAttenuationCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::averageEnergyLossPerElementaryChargeProduced"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageEnergyLossPerElementaryChargeProducedValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::averageLogarithmicEnergyDecrement"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AverageLogarithmicEnergyDecrementValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::bindingFraction"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::BindingFractionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::bohrMagneton"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianMagneticDipoleMoment3dVector"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianMagneticDipoleMoment3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianParticleCurrentDensity3dVector"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianParticleCurrentDensity3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianSpin3dVector"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianSpin3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::cartesianTotalAngularMomentum3dVector"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::CartesianTotalAngularMomentum3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::chargeNumber"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ChargeNumberValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::decayConstant"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DecayConstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::directionAndEnergyDistributionOfCrossSection"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionAndEnergyDistributionOfCrossSectionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::directionDistributionOfCrossSection"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DirectionDistributionOfCrossSectionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalent"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::doseEquivalentRate"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::DoseEquivalentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::energyDistributionOfCrossSection"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyDistributionOfCrossSectionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::energyFluence"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::energyFluenceRate"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::EnergyFluenceRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::exposure"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::exposureRate"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ExposureRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::fastFissionFactor"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::FastFissionFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::gFactorOfNucleusOrNuclearParticle"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GFactorOfNucleusOrNuclearParticleValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::gyromagneticRatio"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::gyromagneticRatioOfTheElectron"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::GyromagneticRatioOfTheElectronValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::hartreeEnergy"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::HartreeEnergyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::infiniteMultiplicationFactor"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::InfiniteMultiplicationFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::internalConversionFactor"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::InternalConversionFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::ionNumberDensity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::IonNumberDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::kerma"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::kermaRate"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::KermaRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::landeFactor"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LandeFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::larmorFrequency"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LarmorFrequencyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::lethargy"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LethargyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::linearAttenuationCoefficientForIonizingRadiation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearAttenuationCoefficientForIonizingRadiationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::linearEnergyTransfer"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearEnergyTransferValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::linearIonization"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::LinearIonizationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::magneticDipoleMoment"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::massAttenuationCoefficientForIonizingRadiation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MassAttenuationCoefficientForIonizingRadiationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::massEnergyTransferCoefficient"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MassEnergyTransferCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::meanMassRange"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MeanMassRangeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::mobility"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MobilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::molarAttenuationCoefficient"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MolarAttenuationCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::multiplicationFactor"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MultiplicationFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nonLeakageProbability"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NonLeakageProbabilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearActivity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearActivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearMagneton"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::MagneticDipoleMomentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::nuclearQuadrupoleMoment"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::NuclearQuadrupoleMomentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::packingFraction"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::PackingFractionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::particleCurrentDensity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleCurrentDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::particleEmissionRate"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleEmissionRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::particleFluence"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::particleFluenceRate"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleFluenceRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::particleNumberDensity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleNumberDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::particleSourceDensity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ParticleSourceDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::qualityFactorForIonizingRadiation"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::QualityFactorForIonizingRadiationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::quantumNumber"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::QuantumNumberValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::recombinationCoefficient"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RecombinationCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::relativeMassDefect"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassDefectValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::relativeMassExcess"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RelativeMassExcessValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::resonanceEscapeProbability"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ResonanceEscapeProbabilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::rydbergConstant"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::RydbergConstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::slowingDownDensity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SlowingDownDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::specificActivity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SpecificActivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::specificEnergyImparted"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::AbsorbedDoseValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::spin"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SpinValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::surfaceActivityDensity"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::SurfaceActivityDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::thermalUtilizationFactor"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::ThermalUtilizationFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::totalAngularMomentum"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalAngularMomentumValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::totalIonization"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalIonizationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::totalLinearStoppingPower"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalLinearStoppingPowerValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::totalMassStoppingPower"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::TotalMassStoppingPowerValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::volumicCrossSection"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicCrossSectionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQAtomicNuclear::volumicTotalCrossSection"))) (to (node (document "d0") (qualified-name "ISQAtomicNuclear::VolumicTotalCrossSectionValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

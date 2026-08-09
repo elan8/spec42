@@ -105,23 +105,39 @@ semantic.unresolved_name 'breadth'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AliasTest'
-      (membership_import private -> 'ISQSpaceTime::breadth'[unresolved])
-      (attribute_usage 'b' :> 'breadth'[unresolved])
-      (part_def 'P1'
-        (port_usage composite 'porig1')
-        (alias_member 'po1' -> 'AliasTest::P1::porig1'[port_usage]))
-      (part_usage 'p1' : 'AliasTest::P1'[part_def]
-        (port_usage composite 'po1' :>> 'AliasTest::P1::po1'[alias_member]))
-      (part_usage 'p2' : 'AliasTest::P1'[part_def]
-        (port_usage composite 'pdest')
-        (alias_member 'pd1' -> 'AliasTest::p2::pdest'[port_usage]))
-      (connection_usage
-        (connector_end 'p1.po1')
-        (connector_end 'p2.pdest'))
-      (connection_usage
-        (connector_end 'p1.po1')
-        (connector_end 'p2.pd1')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AliasTest"))) (name "AliasTest") (declared-name "AliasTest")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AliasTest::P1"))) (name "P1") (declared-name "P1") (declared)
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "AliasTest::P1::porig1"))) (name "porig1") (declared-name "porig1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AliasTest::P1")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "AliasTest::b"))) (name "b") (declared-name "b") (declared (properties (ordered false) (unique true))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AliasTest::breadth"))) (name "breadth") (declared-name "breadth"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "AliasTest::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "AliasTest::p1::po1"))) (name "po1") (declared-name "po1") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AliasTest::P1")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "AliasTest::p2"))) (name "p2") (declared-name "p2") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "AliasTest::p2::pdest"))) (name "pdest") (declared-name "pdest") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AliasTest::P1")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (connection (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p1::po1"))) (to (node (document "d0") (qualified-name "AliasTest::p2::pdest"))) (connect (source-expression "p1::po1") (target-expression "p2::pdest") (container-prefix "AliasTest")))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p1"))) (to (node (document "d0") (qualified-name "AliasTest::P1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p2"))) (to (node (document "d0") (qualified-name "AliasTest::P1"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (connection (status pending-expression) (document "d0") (source-expression "p1::po1") (target-expression "p2::pd1") (container-prefix "AliasTest"))
+  )
+)
 ~~~

@@ -343,77 +343,100 @@ semantic.unresolved_name 'DimensionOneValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_19-Materials with Properties'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (attribute_def 'AtomicMassValue' :> 'MassValue'[unresolved])
-      (attribute_def 'TensileStrengthUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'TensileStrengthValue' :> 'ScalarQuantityValue'[unresolved]
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : '15_19-Materials with Properties::TensileStrengthUnit'[attribute_def]))
-      (attribute_usage 'newton per square millimetre' : '15_19-Materials with Properties::TensileStrengthUnit'[attribute_def]
-        (feature_value (=)))
-      (part_def 'Substance')
-      (part_def 'Material' :> '15_19-Materials with Properties::Substance'[part_def])
-      (part_def 'Metal' :> '15_19-Materials with Properties::Material'[part_def]
-        (attribute_usage composite 'atomicMass' : '15_19-Materials with Properties::AtomicMassValue'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_def 'MaterialFraction'
-        (reference_usage reference 'material' : '15_19-Materials with Properties::Material'[part_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'massFraction' : '15_19-Materials with Properties::MassFractionValue'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_def 'MassFractionValue' :> 'DimensionOneValue'[unresolved])
-      (part_def 'Alloy' :> '15_19-Materials with Properties::Material'[part_def]
-        (attribute_usage composite 'fractions' : '15_19-Materials with Properties::MaterialFraction'[attribute_def]
-          (multiplicity_range [2..*])))
-      (occurrence_def individual 'Iron' :> '15_19-Materials with Properties::Metal'[part_def]
-        (attribute_usage composite :>> '15_19-Materials with Properties::Metal::atomicMass'[attribute_usage]
-          (feature_value (=))))
-      (occurrence_def individual 'Carbon' :> '15_19-Materials with Properties::Metal'[part_def]
-        (attribute_usage composite 'atomicMass' :>> '15_19-Materials with Properties::Metal::atomicMass'[attribute_usage]
-          (feature_value (=))))
-      (occurrence_def individual 'Manganese' :> '15_19-Materials with Properties::Metal'[part_def]
-        (attribute_usage composite 'atomicMass' :>> '15_19-Materials with Properties::Metal::atomicMass'[attribute_usage]
-          (feature_value (=))))
-      (occurrence_def individual 'Steel_980' :> '15_19-Materials with Properties::Alloy'[part_def]
-        (attribute_usage composite 'fraction1' :> '15_19-Materials with Properties::Alloy::fractions'[attribute_usage]
-          (reference_usage reference :>> '15_19-Materials with Properties::MaterialFraction::material'[reference_usage] : '15_19-Materials with Properties::Iron'[occurrence_def])
-          (attribute_usage composite :>> '15_19-Materials with Properties::MaterialFraction::massFraction'[attribute_usage]
-            (feature_value (=))))
-        (attribute_usage composite 'fraction2' :> '15_19-Materials with Properties::Alloy::fractions'[attribute_usage]
-          (reference_usage reference :>> '15_19-Materials with Properties::MaterialFraction::material'[reference_usage] : '15_19-Materials with Properties::Carbon'[occurrence_def])
-          (attribute_usage composite :>> '15_19-Materials with Properties::MaterialFraction::massFraction'[attribute_usage]
-            (feature_value (=))))
-        (attribute_usage composite 'fraction3' :> '15_19-Materials with Properties::Alloy::fractions'[attribute_usage]
-          (reference_usage reference :>> '15_19-Materials with Properties::MaterialFraction::material'[reference_usage] : '15_19-Materials with Properties::Manganese'[occurrence_def])
-          (attribute_usage composite :>> '15_19-Materials with Properties::MaterialFraction::massFraction'[attribute_usage]
-            (feature_value (=))))
-        (attribute_usage composite 'tensileStrength' : '15_19-Materials with Properties::TensileStrengthValue'[attribute_def]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_19-Materials with Properties"))) (name "15_19-Materials with Properties") (declared-name "15_19-Materials with Properties")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy"))) (name "Alloy") (declared-name "Alloy") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy::fractions"))) (name "fractions") (declared-name "fractions") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::AtomicMassValue"))) (name "AtomicMassValue") (declared-name "AtomicMassValue") (declared (properties (ordered false) (unique true))))
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Carbon"))) (name "Carbon") (declared-name "Carbon")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Carbon::atomicMass"))) (name "atomicMass") (declared-name "atomicMass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Carbon")))))
+          )
+        )
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Iron"))) (name "Iron") (declared-name "Iron")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Iron::atomicMass"))) (name "atomicMass") (declared-name "atomicMass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Iron")))))
+          )
+        )
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Manganese"))) (name "Manganese") (declared-name "Manganese")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Manganese::atomicMass"))) (name "atomicMass") (declared-name "atomicMass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Manganese")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::MassFractionValue"))) (name "MassFractionValue") (declared-name "MassFractionValue") (declared (properties (ordered false) (unique true))))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Material"))) (name "Material") (declared-name "Material") (declared))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction"))) (name "MaterialFraction") (declared-name "MaterialFraction") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction::massFraction"))) (name "massFraction") (declared-name "massFraction") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction::material"))) (name "material") (declared-name "material") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal"))) (name "Metal") (declared-name "Metal") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal::atomicMass"))) (name "atomicMass") (declared-name "atomicMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "individual def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980"))) (name "Steel_980") (declared-name "Steel_980")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::fraction1"))) (name "fraction1") (declared-name "fraction1") (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::fraction2"))) (name "fraction2") (declared-name "fraction2") (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::fraction3"))) (name "fraction3") (declared-name "fraction3") (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::tensileStrength"))) (name "tensileStrength") (declared-name "tensileStrength") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Substance"))) (name "Substance") (declared-name "Substance") (declared))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit"))) (name "TensileStrengthUnit") (declared-name "TensileStrengthUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthValue"))) (name "TensileStrengthValue") (declared-name "TensileStrengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::newton per square millimetre"))) (name "newton per square millimetre") (declared-name "newton per square millimetre") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "^") (children (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "N")) (expression (kind "featureReference") (reference "mm")))) (expression (kind "integerLiteral") (literal 2)))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_19-Materials with Properties::newton per square millimetre"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Carbon::atomicMass"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal::atomicMass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Iron::atomicMass"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal::atomicMass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Manganese::atomicMass"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal::atomicMass"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Material"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Carbon"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Iron"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Manganese"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Material"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Substance"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Material"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::fraction1"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy::fractions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::fraction2"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy::fractions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::fraction3"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy::fractions"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy::fractions"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction::massFraction"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::MassFractionValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::MaterialFraction::material"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::Material"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal::atomicMass"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::AtomicMassValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::Steel_980::tensileStrength"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthValue::mRef"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_19-Materials with Properties::newton per square millimetre"))) (to (node (document "d0") (qualified-name "15_19-Materials with Properties::TensileStrengthUnit"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

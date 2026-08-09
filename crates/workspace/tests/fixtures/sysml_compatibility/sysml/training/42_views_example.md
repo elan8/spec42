@@ -145,27 +145,39 @@ semantic.unresolved_name 'columnView'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Views Example'
-      (namespace_import private -> 'Views'[unresolved])
-      (namespace_import private -> 'Viewpoint Example'[unresolved])
-      (namespace_import private -> 'Filtering Example-2'[unresolved])
-      (view_def 'Part Structure View'
-        (satisfy_requirement_usage 'system structure perspective')
-        (element_filter_membership))
-      (view_usage 'vehicle structure view' : 'Views Example::Part Structure View'[view_def]
-        (namespace_expose all recursive -> 'vehicle'[unresolved])
-        (view_rendering_membership -> 'asTreeDiagram'[unresolved]))
-      (rendering_usage 'asTextualNotationTable' :> 'asElementTable'[unresolved]
-        (view_usage composite :>> 'columnView'[unresolved]
-          (multiplicity_range [1])
-          (view_rendering_membership -> 'asTextualNotation'[unresolved])))
-      (view_usage 'vehicle tabular views'
-        (view_usage composite 'safety features view' : 'Views Example::Part Structure View'[view_def]
-          (namespace_expose all recursive -> 'vehicle'[unresolved])
-          (view_rendering_membership -> 'Views Example::asTextualNotationTable'[rendering_usage]))
-        (view_usage composite 'non-safety features view' : 'Views Example::Part Structure View'[view_def]
-          (namespace_expose all recursive -> 'vehicle'[unresolved])
-          (view_rendering_membership -> 'Views Example::asTextualNotationTable'[rendering_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Views Example"))) (name "Views Example") (declared-name "Views Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Views Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Views Example::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Views Example::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "view def") (id (node (document "d0") (qualified-name "Views Example::Part Structure View"))) (name "Part Structure View") (declared-name "Part Structure View")
+          (contains
+            (element (kind "filter") (id (node (document "d0") (qualified-name "Views Example::Part Structure View::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "SysML::PartUsage")))) (effective (featuring-type (node (document "d0") (qualified-name "Views Example::Part Structure View")))))
+          )
+        )
+        (element (kind "rendering") (id (node (document "d0") (qualified-name "Views Example::asTextualNotationTable"))) (name "asTextualNotationTable") (declared-name "asTextualNotationTable")
+          (contains
+            (element (kind "view column") (id (node (document "d0") (qualified-name "Views Example::asTextualNotationTable::columnView[1]"))) (name "columnView[1]") (declared-name "columnView[1]"))
+          )
+        )
+        (element (kind "view") (id (node (document "d0") (qualified-name "Views Example::vehicle structure view"))) (name "vehicle structure view") (declared-name "vehicle structure view")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Views Example::vehicle structure view::**"))) (name "**") (declared-name "**") (effective (featuring-type (node (document "d0") (qualified-name "Views Example::Part Structure View")))))
+            (element (kind "view rendering") (id (node (document "d0") (qualified-name "Views Example::vehicle structure view::asTreeDiagram"))) (name "asTreeDiagram") (declared-name "asTreeDiagram") (effective (featuring-type (node (document "d0") (qualified-name "Views Example::Part Structure View")))))
+          )
+        )
+        (element (kind "view") (id (node (document "d0") (qualified-name "Views Example::vehicle tabular views"))) (name "vehicle tabular views") (declared-name "vehicle tabular views"))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Views Example::vehicle structure view"))) (to (node (document "d0") (qualified-name "Views Example::Part Structure View"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

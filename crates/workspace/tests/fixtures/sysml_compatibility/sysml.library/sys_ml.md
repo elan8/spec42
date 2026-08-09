@@ -2557,559 +2557,336 @@ standard library package SysML {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'SysML'
-      (documentation)
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import public -> 'SysML::Systems'[package])
-      (package 'Systems'
-        (namespace_import public -> 'KerML::Kernel'[unresolved])
-        (metadata_def 'AcceptActionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference 'receiverArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'payloadParameter' : 'SysML::Systems::ReferenceUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedReference'[item_usage] :> 'parameter'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'payloadArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'ActionDefinition' :> 'Behavior'[unresolved] :> 'SysML::Systems::OccurrenceDefinition'[metadata_def]
-          (item_usage derived reference ordered 'action' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'step'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ActionUsage' :> 'Step'[unresolved] :> 'SysML::Systems::OccurrenceUsage'[metadata_def]
-          (item_usage derived reference ordered 'actionDefinition' : 'Behavior'[unresolved] :>> 'behavior'[unresolved] :>> 'SysML::Systems::OccurrenceUsage::occurrenceDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ActorMembership' :> 'ParameterMembership'[unresolved]
-          (item_usage derived composite 'ownedActorParameter' : 'SysML::Systems::PartUsage'[metadata_def] :>> 'ownedMemberParameter'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'AllocationDefinition' :> 'SysML::Systems::ConnectionDefinition'[metadata_def]
-          (item_usage derived reference ordered 'allocation' : 'SysML::Systems::AllocationUsage'[metadata_def] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'AllocationUsage' :> 'SysML::Systems::ConnectionUsage'[metadata_def]
-          (item_usage derived reference ordered 'allocationDefinition' : 'SysML::Systems::AllocationDefinition'[metadata_def] :>> 'SysML::Systems::ConnectionUsage::connectionDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'AnalysisCaseDefinition' :> 'SysML::Systems::CaseDefinition'[metadata_def]
-          (item_usage derived reference 'resultExpression' : 'Expression'[unresolved] :> 'expression'[unresolved] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'AnalysisCaseUsage' :> 'SysML::Systems::CaseUsage'[metadata_def]
-          (item_usage derived reference 'analysisCaseDefinition' : 'SysML::Systems::AnalysisCaseDefinition'[metadata_def] :>> 'SysML::Systems::CaseUsage::caseDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'resultExpression' : 'Expression'[unresolved] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'AssertConstraintUsage' :> 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'Invariant'[unresolved]
-          (item_usage derived reference 'assertedConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'AssignmentActionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference 'targetArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'valueExpression' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'referent' : 'Feature'[unresolved] :> 'member'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'AttributeDefinition' :> 'DataType'[unresolved] :> 'SysML::Systems::Definition'[metadata_def])
-        (metadata_def 'AttributeUsage' :> 'SysML::Systems::Usage'[metadata_def]
-          (attribute_usage derived composite 'isReference' : 'Boolean'[unresolved] :>> 'SysML::Systems::Usage::isReference'[attribute_usage]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'attributeDefinition' : 'DataType'[unresolved] :>> 'SysML::Systems::Usage::definition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'BindingConnectorAsUsage' :> 'BindingConnector'[unresolved] :> 'SysML::Systems::ConnectorAsUsage'[metadata_def])
-        (metadata_def 'CalculationDefinition' :> 'Function'[unresolved] :> 'SysML::Systems::ActionDefinition'[metadata_def]
-          (item_usage derived reference ordered 'calculation' : 'SysML::Systems::CalculationUsage'[metadata_def] :> 'SysML::Systems::ActionDefinition::action'[item_usage] :> 'expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'CalculationUsage' :> 'Expression'[unresolved] :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference ordered 'calculationDefinition' : 'Function'[unresolved] :>> 'function'[unresolved] :>> 'SysML::Systems::ActionUsage::actionDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'CaseDefinition' :> 'SysML::Systems::CalculationDefinition'[metadata_def]
-          (item_usage derived reference ordered 'objectiveRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'subjectParameter' : 'SysML::Systems::Usage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'actorParameter' : 'SysML::Systems::PartUsage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'CaseUsage' :> 'SysML::Systems::CalculationUsage'[metadata_def]
-          (item_usage derived reference ordered 'objectiveRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'caseDefinition' : 'SysML::Systems::CaseDefinition'[metadata_def] :>> 'SysML::Systems::CalculationUsage::calculationDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'subjectParameter' : 'SysML::Systems::Usage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'actorParameter' : 'SysML::Systems::PartUsage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ConcernDefinition' :> 'SysML::Systems::RequirementDefinition'[metadata_def])
-        (metadata_def 'ConcernUsage' :> 'SysML::Systems::RequirementUsage'[metadata_def]
-          (item_usage derived reference 'concernDefinition' : 'SysML::Systems::ConcernDefinition'[metadata_def] :>> 'SysML::Systems::RequirementUsage::requirementDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'ConjugatedPortDefinition' :> 'SysML::Systems::PortDefinition'[metadata_def]
-          (item_usage derived reference 'originalPortDefinition' : 'SysML::Systems::PortDefinition'[metadata_def] :>> 'owningNamespace'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'ownedPortConjugator' : 'SysML::Systems::PortConjugation'[metadata_def] :>> 'ownedConjugator'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'ConjugatedPortTyping' :> 'FeatureTyping'[unresolved]
-          (item_usage reference 'conjugatedPortDefinition' : 'SysML::Systems::ConjugatedPortDefinition'[metadata_def] :>> 'type'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'portDefinition' : 'SysML::Systems::PortDefinition'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'ConnectionDefinition' :> 'AssociationStructure'[unresolved] :> 'SysML::Systems::PartDefinition'[metadata_def]
-          (attribute_usage composite 'isSufficient' : 'Boolean'[unresolved] :>> 'isSufficient'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'connectionEnd' : 'SysML::Systems::Usage'[metadata_def] :>> 'associationEnd'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ConnectionUsage' :> 'SysML::Systems::ConnectorAsUsage'[metadata_def] :> 'SysML::Systems::PartUsage'[metadata_def]
-          (item_usage derived reference ordered 'connectionDefinition' : 'AssociationStructure'[unresolved] :> 'SysML::Systems::ItemUsage::itemDefinition'[item_usage] :>> 'association'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def abstract 'ConnectorAsUsage' :> 'SysML::Systems::Usage'[metadata_def] :> 'Connector'[unresolved])
-        (metadata_def 'ConstraintDefinition' :> 'SysML::Systems::OccurrenceDefinition'[metadata_def] :> 'Predicate'[unresolved])
-        (metadata_def 'ConstraintUsage' :> 'BooleanExpression'[unresolved] :> 'SysML::Systems::OccurrenceUsage'[metadata_def]
-          (item_usage derived reference 'constraintDefinition' : 'Predicate'[unresolved] :>> 'predicate'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def abstract 'ControlNode' :> 'SysML::Systems::ActionUsage'[metadata_def])
-        (metadata_def 'DecisionNode' :> 'SysML::Systems::ControlNode'[metadata_def])
-        (metadata_def 'Definition' :> 'Classifier'[unresolved]
-          (attribute_usage composite 'isVariation' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'variant' : 'SysML::Systems::Usage'[metadata_def] :> 'ownedMember'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived composite 'variantMembership' : 'SysML::Systems::VariantMembership'[metadata_def] :> 'ownedMembership'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'usage' : 'SysML::Systems::Usage'[metadata_def] :> 'feature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'directedUsage' : 'SysML::Systems::Usage'[metadata_def] :> 'directedFeature'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedUsage' : 'SysML::Systems::Usage'[metadata_def] :> 'ownedFeature'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedReference' : 'SysML::Systems::ReferenceUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedAttribute' : 'SysML::Systems::AttributeUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedEnumeration' : 'SysML::Systems::EnumerationUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedAttribute'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedOccurrence' : 'SysML::Systems::OccurrenceUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedItem' : 'SysML::Systems::ItemUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedOccurrence'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedPart' : 'SysML::Systems::PartUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedItem'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedPort' : 'SysML::Systems::PortUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedConnection' : 'SysML::Systems::ConnectorAsUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'ownedFlow' : 'SysML::Systems::FlowUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedConnection'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedInterface' : 'SysML::Systems::InterfaceUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedConnection'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedAllocation' : 'SysML::Systems::AllocationUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedConnection'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedOccurrence'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedState' : 'SysML::Systems::StateUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedAction'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'ownedTransition' : 'SysML::Systems::TransitionUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedCalculation' : 'SysML::Systems::CalculationUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedAction'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedOccurrence'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'ownedConcern' : 'SysML::Systems::ConcernUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedRequirement'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedCase' : 'SysML::Systems::CaseUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedCalculation'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedAnalysisCase' : 'SysML::Systems::AnalysisCaseUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedCase'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedVerificationCase' : 'SysML::Systems::VerificationCaseUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedCase'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedUseCase' : 'SysML::Systems::UseCaseUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedCase'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedView' : 'SysML::Systems::ViewUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedPart'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedViewpoint' : 'SysML::Systems::ViewpointUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedRequirement'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedRendering' : 'SysML::Systems::RenderingUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedPart'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'ownedMetadata' : 'SysML::Systems::MetadataUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedItem'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'EnumerationDefinition' :> 'SysML::Systems::AttributeDefinition'[metadata_def]
-          (attribute_usage composite 'isVariation' : 'Boolean'[unresolved] :>> 'SysML::Systems::Definition::isVariation'[attribute_usage]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'enumeratedValue' : 'SysML::Systems::EnumerationUsage'[metadata_def] :>> 'SysML::Systems::Definition::variant'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'EnumerationUsage' :> 'SysML::Systems::AttributeUsage'[metadata_def]
-          (item_usage derived reference 'enumerationDefinition' : 'SysML::Systems::EnumerationDefinition'[metadata_def] :>> 'SysML::Systems::AttributeUsage::attributeDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'EventOccurrenceUsage' :> 'SysML::Systems::OccurrenceUsage'[metadata_def]
-          (attribute_usage derived composite 'isReference' : 'Boolean'[unresolved] :>> 'SysML::Systems::Usage::isReference'[attribute_usage]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'eventOccurrence' : 'SysML::Systems::OccurrenceUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'ExhibitStateUsage' :> 'SysML::Systems::StateUsage'[metadata_def] :> 'SysML::Systems::PerformActionUsage'[metadata_def]
-          (item_usage derived reference 'exhibitedState' : 'SysML::Systems::StateUsage'[metadata_def] :>> 'SysML::Systems::PerformActionUsage::performedAction'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def abstract 'Expose' :> 'Import'[unresolved]
-          (attribute_usage composite 'visibility' : 'VisibilityKind'[unresolved] :>> 'visibility'[unresolved]
-            (multiplicity_range [1..1]))
-          (attribute_usage composite 'isImportAll' : 'Boolean'[unresolved] :>> 'isImportAll'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'FlowDefinition' :> 'Interaction'[unresolved] :> 'SysML::Systems::ActionDefinition'[metadata_def]
-          (item_usage derived reference 'flowEnd' : 'SysML::Systems::Usage'[metadata_def] :>> 'associationEnd'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'FlowUsage' :> 'SysML::Systems::ConnectorAsUsage'[metadata_def] :> 'Flow'[unresolved] :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference ordered 'flowDefinition' : 'Interaction'[unresolved] :>> 'SysML::Systems::ActionUsage::actionDefinition'[item_usage] :>> 'interaction'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ForLoopActionUsage' :> 'SysML::Systems::LoopActionUsage'[metadata_def]
-          (item_usage derived reference 'seqArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'loopVariable' : 'SysML::Systems::ReferenceUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'ForkNode' :> 'SysML::Systems::ControlNode'[metadata_def])
-        (metadata_def 'FramedConcernMembership' :> 'SysML::Systems::RequirementConstraintMembership'[metadata_def]
-          (attribute_usage composite 'kind' : 'SysML::Systems::RequirementConstraintKind'[enum_def] :>> 'SysML::Systems::RequirementConstraintMembership::kind'[attribute_usage]
-            (multiplicity_range [1..1]))
-          (item_usage derived composite 'ownedConcern' : 'SysML::Systems::ConcernUsage'[metadata_def] :>> 'SysML::Systems::RequirementConstraintMembership::ownedConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'referencedConcern' : 'SysML::Systems::ConcernUsage'[metadata_def] :>> 'SysML::Systems::RequirementConstraintMembership::referencedConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'IfActionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference 'elseAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'thenAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'ifArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'IncludeUseCaseUsage' :> 'SysML::Systems::UseCaseUsage'[metadata_def] :> 'SysML::Systems::PerformActionUsage'[metadata_def]
-          (item_usage derived reference 'useCaseIncluded' : 'SysML::Systems::UseCaseUsage'[metadata_def] :>> 'SysML::Systems::PerformActionUsage::performedAction'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'InterfaceDefinition' :> 'SysML::Systems::ConnectionDefinition'[metadata_def]
-          (item_usage derived reference ordered 'interfaceEnd' : 'SysML::Systems::PortUsage'[metadata_def] :>> 'SysML::Systems::ConnectionDefinition::connectionEnd'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'InterfaceUsage' :> 'SysML::Systems::ConnectionUsage'[metadata_def]
-          (item_usage derived reference 'interfaceDefinition' : 'SysML::Systems::InterfaceDefinition'[metadata_def] :>> 'SysML::Systems::ConnectionUsage::connectionDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ItemDefinition' :> 'Structure'[unresolved] :> 'SysML::Systems::OccurrenceDefinition'[metadata_def])
-        (metadata_def 'ItemUsage' :> 'SysML::Systems::OccurrenceUsage'[metadata_def]
-          (item_usage derived reference ordered 'itemDefinition' : 'Structure'[unresolved] :> 'SysML::Systems::OccurrenceUsage::occurrenceDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'JoinNode' :> 'SysML::Systems::ControlNode'[metadata_def])
-        (metadata_def abstract 'LoopActionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference 'bodyAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'MembershipExpose' :> 'MembershipImport'[unresolved] :> 'SysML::Systems::Expose'[metadata_def])
-        (metadata_def 'MergeNode' :> 'SysML::Systems::ControlNode'[metadata_def])
-        (metadata_def 'MetadataDefinition' :> 'SysML::Systems::ItemDefinition'[metadata_def] :> 'Metaclass'[unresolved])
-        (metadata_def 'MetadataUsage' :> 'SysML::Systems::ItemUsage'[metadata_def] :> 'MetadataFeature'[unresolved]
-          (item_usage derived reference 'metadataDefinition' : 'Metaclass'[unresolved] :>> 'SysML::Systems::ItemUsage::itemDefinition'[item_usage] :>> 'metaclass'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'NamespaceExpose' :> 'SysML::Systems::Expose'[metadata_def] :> 'NamespaceImport'[unresolved])
-        (metadata_def 'ObjectiveMembership' :> 'FeatureMembership'[unresolved]
-          (item_usage derived composite 'ownedObjectiveRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :>> 'ownedMemberFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'OccurrenceDefinition' :> 'SysML::Systems::Definition'[metadata_def] :> 'Class'[unresolved]
-          (attribute_usage composite 'isIndividual' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'OccurrenceUsage' :> 'SysML::Systems::Usage'[metadata_def]
-          (attribute_usage composite 'isIndividual' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (attribute_usage composite 'portionKind' : 'SysML::Systems::PortionKind'[enum_def]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'occurrenceDefinition' : 'Class'[unresolved] :>> 'SysML::Systems::Usage::definition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'individualDefinition' : 'SysML::Systems::OccurrenceDefinition'[metadata_def] :> 'SysML::Systems::OccurrenceUsage::occurrenceDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'PartDefinition' :> 'SysML::Systems::ItemDefinition'[metadata_def])
-        (metadata_def 'PartUsage' :> 'SysML::Systems::ItemUsage'[metadata_def]
-          (item_usage derived reference ordered 'partDefinition' : 'SysML::Systems::PartDefinition'[metadata_def] :> 'SysML::Systems::ItemUsage::itemDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'PerformActionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def] :> 'SysML::Systems::EventOccurrenceUsage'[metadata_def]
-          (item_usage derived reference 'performedAction' : 'SysML::Systems::ActionUsage'[metadata_def] :>> 'SysML::Systems::EventOccurrenceUsage::eventOccurrence'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'PortConjugation' :> 'Conjugation'[unresolved]
-          (item_usage reference 'originalPortDefinition' : 'SysML::Systems::PortDefinition'[metadata_def] :>> 'originalType'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'conjugatedPortDefinition' : 'SysML::Systems::ConjugatedPortDefinition'[metadata_def] :>> 'owningType'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'PortDefinition' :> 'SysML::Systems::OccurrenceDefinition'[metadata_def] :> 'Structure'[unresolved]
-          (item_usage derived reference 'conjugatedPortDefinition' : 'SysML::Systems::ConjugatedPortDefinition'[metadata_def] :> 'ownedMember'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'PortUsage' :> 'SysML::Systems::OccurrenceUsage'[metadata_def]
-          (item_usage derived reference ordered 'portDefinition' : 'SysML::Systems::PortDefinition'[metadata_def] :>> 'SysML::Systems::OccurrenceUsage::occurrenceDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (enum_def 'PortionKind'
-          (enum_usage composite 'timeslice')
-          (enum_usage composite 'snapshot'))
-        (metadata_def 'ReferenceUsage' :> 'SysML::Systems::Usage'[metadata_def]
-          (attribute_usage derived composite 'isReference' : 'Boolean'[unresolved] :>> 'SysML::Systems::Usage::isReference'[attribute_usage]
-            (multiplicity_range [1..1])))
-        (metadata_def 'RenderingDefinition' :> 'SysML::Systems::PartDefinition'[metadata_def]
-          (item_usage derived reference ordered 'rendering' : 'SysML::Systems::RenderingUsage'[metadata_def] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'RenderingUsage' :> 'SysML::Systems::PartUsage'[metadata_def]
-          (item_usage derived reference 'renderingDefinition' : 'SysML::Systems::RenderingDefinition'[metadata_def] :>> 'SysML::Systems::PartUsage::partDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (enum_def 'RequirementConstraintKind'
-          (enum_usage composite 'assumption')
-          (enum_usage composite 'requirement'))
-        (metadata_def 'RequirementConstraintMembership' :> 'FeatureMembership'[unresolved]
-          (attribute_usage composite 'kind' : 'SysML::Systems::RequirementConstraintKind'[enum_def]
-            (multiplicity_range [1..1]))
-          (item_usage derived composite 'ownedConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :>> 'ownedMemberFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'referencedConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'RequirementDefinition' :> 'SysML::Systems::ConstraintDefinition'[metadata_def]
-          (attribute_usage composite 'reqId' : 'String'[unresolved] :>> 'declaredShortName'[unresolved]
-            (multiplicity_range [0..1]))
-          (attribute_usage derived composite 'text' : 'String'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'subjectParameter' : 'SysML::Systems::Usage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'actorParameter' : 'SysML::Systems::PartUsage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'stakeholderParameter' : 'SysML::Systems::PartUsage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'assumedConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'requiredConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'framedConcern' : 'SysML::Systems::ConcernUsage'[metadata_def] :> 'SysML::Systems::RequirementUsage::requiredConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'RequirementUsage' :> 'SysML::Systems::ConstraintUsage'[metadata_def]
-          (attribute_usage composite 'reqId' : 'String'[unresolved] :>> 'declaredShortName'[unresolved]
-            (multiplicity_range [0..1]))
-          (attribute_usage derived composite 'text' : 'String'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'requirementDefinition' : 'SysML::Systems::RequirementDefinition'[metadata_def] :>> 'SysML::Systems::ConstraintUsage::constraintDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'requiredConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'assumedConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'subjectParameter' : 'SysML::Systems::Usage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'framedConcern' : 'SysML::Systems::ConcernUsage'[metadata_def] :> 'SysML::Systems::RequirementUsage::requiredConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'actorParameter' : 'SysML::Systems::PartUsage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'stakeholderParameter' : 'SysML::Systems::PartUsage'[metadata_def] :> 'parameter'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'RequirementVerificationMembership' :> 'SysML::Systems::RequirementConstraintMembership'[metadata_def]
-          (attribute_usage composite 'kind' : 'SysML::Systems::RequirementConstraintKind'[enum_def] :>> 'SysML::Systems::RequirementConstraintMembership::kind'[attribute_usage]
-            (multiplicity_range [1..1]))
-          (item_usage derived composite 'ownedRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :>> 'SysML::Systems::RequirementConstraintMembership::ownedConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'verifiedRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :>> 'SysML::Systems::RequirementConstraintMembership::referencedConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'SatisfyRequirementUsage' :> 'SysML::Systems::RequirementUsage'[metadata_def] :> 'SysML::Systems::AssertConstraintUsage'[metadata_def]
-          (item_usage derived reference 'satisfiedRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :>> 'SysML::Systems::AssertConstraintUsage::assertedConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'satisfyingFeature' : 'Feature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'SendActionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference 'receiverArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'payloadArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'senderArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'StakeholderMembership' :> 'ParameterMembership'[unresolved]
-          (item_usage derived composite 'ownedStakeholderParameter' : 'SysML::Systems::PartUsage'[metadata_def] :>> 'ownedMemberParameter'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'StateDefinition' :> 'SysML::Systems::ActionDefinition'[metadata_def]
-          (attribute_usage composite 'isParallel' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'state' : 'SysML::Systems::StateUsage'[metadata_def] :> 'SysML::Systems::ActionDefinition::action'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'entryAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'doAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'exitAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (enum_def 'StateSubactionKind'
-          (enum_usage composite 'entry')
-          (enum_usage composite 'do')
-          (enum_usage composite 'exit'))
-        (metadata_def 'StateSubactionMembership' :> 'FeatureMembership'[unresolved]
-          (attribute_usage composite 'kind' : 'SysML::Systems::StateSubactionKind'[enum_def]
-            (multiplicity_range [1..1]))
-          (item_usage derived composite 'action' : 'SysML::Systems::ActionUsage'[metadata_def] :>> 'ownedMemberFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'StateUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (attribute_usage composite 'isParallel' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference ordered 'stateDefinition' : 'Behavior'[unresolved] :>> 'SysML::Systems::ActionUsage::actionDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'entryAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'doAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'exitAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (metadata_def 'SubjectMembership' :> 'ParameterMembership'[unresolved]
-          (item_usage derived composite 'ownedSubjectParameter' : 'SysML::Systems::Usage'[metadata_def] :>> 'ownedMemberParameter'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'SuccessionAsUsage' :> 'SysML::Systems::ConnectorAsUsage'[metadata_def] :> 'Succession'[unresolved])
-        (metadata_def 'SuccessionFlowUsage' :> 'SuccessionFlow'[unresolved] :> 'SysML::Systems::FlowUsage'[metadata_def])
-        (metadata_def 'TerminateActionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference 'terminatedOccurrenceArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))
-        (enum_def 'TransitionFeatureKind'
-          (enum_usage composite 'trigger')
-          (enum_usage composite 'guard')
-          (enum_usage composite 'effect'))
-        (metadata_def 'TransitionFeatureMembership' :> 'FeatureMembership'[unresolved]
-          (attribute_usage composite 'kind' : 'SysML::Systems::TransitionFeatureKind'[enum_def]
-            (multiplicity_range [1..1]))
-          (item_usage derived composite 'transitionFeature' : 'Step'[unresolved] :>> 'ownedMemberFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'TransitionUsage' :> 'SysML::Systems::ActionUsage'[metadata_def]
-          (item_usage derived reference 'source' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'target' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'triggerAction' : 'SysML::Systems::AcceptActionUsage'[metadata_def] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'guardExpression' : 'Expression'[unresolved] :> 'ownedFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'effectAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'feature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'succession' : 'Succession'[unresolved] :> 'ownedMember'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'TriggerInvocationExpression' :> 'InvocationExpression'[unresolved]
-          (attribute_usage composite 'kind' : 'SysML::Systems::TriggerKind'[enum_def]
-            (multiplicity_range [1..1])))
-        (enum_def 'TriggerKind'
-          (enum_usage composite 'when')
-          (enum_usage composite 'at')
-          (enum_usage composite 'after'))
-        (metadata_def 'Usage' :> 'Feature'[unresolved]
-          (attribute_usage composite 'isVariation' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (attribute_usage derived composite 'mayTimeVary' : 'Boolean'[unresolved] :>> 'isVariable'[unresolved]
-            (multiplicity_range [1..1]))
-          (attribute_usage derived composite 'isReference' : 'Boolean'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'variant' : 'SysML::Systems::Usage'[metadata_def] :> 'ownedMember'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived composite 'variantMembership' : 'SysML::Systems::VariantMembership'[metadata_def] :> 'ownedMembership'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'owningDefinition' : 'SysML::Systems::Definition'[metadata_def] :> 'owningType'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference 'owningUsage' : 'SysML::Systems::Usage'[metadata_def] :> 'owningType'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'definition' : 'Classifier'[unresolved] :>> 'type'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'usage' : 'SysML::Systems::Usage'[metadata_def] :> 'feature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'directedUsage' : 'SysML::Systems::Usage'[metadata_def] :> 'directedFeature'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedUsage' : 'SysML::Systems::Usage'[metadata_def] :> 'ownedFeature'[unresolved] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedReference' : 'SysML::Systems::ReferenceUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedAttribute' : 'SysML::Systems::AttributeUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedEnumeration' : 'SysML::Systems::EnumerationUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedAttribute'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedOccurrence' : 'SysML::Systems::OccurrenceUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedItem' : 'SysML::Systems::ItemUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedOccurrence'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedPart' : 'SysML::Systems::PartUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedItem'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedPort' : 'SysML::Systems::PortUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedConnection' : 'SysML::Systems::ConnectorAsUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'nestedFlow' : 'SysML::Systems::FlowUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedConnection'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedInterface' : 'SysML::Systems::InterfaceUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedConnection'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedAllocation' : 'SysML::Systems::AllocationUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedConnection'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedAction' : 'SysML::Systems::ActionUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedOccurrence'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedState' : 'SysML::Systems::StateUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedAction'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'nestedTransition' : 'SysML::Systems::TransitionUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedUsage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedCalculation' : 'SysML::Systems::CalculationUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedAction'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedConstraint' : 'SysML::Systems::ConstraintUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedOccurrence'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedConstraint'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'nestedConcern' : 'SysML::Systems::ConcernUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedRequirement'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedCase' : 'SysML::Systems::CaseUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedCalculation'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedAnalysisCase' : 'SysML::Systems::AnalysisCaseUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedCase'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedVerificationCase' : 'SysML::Systems::VerificationCaseUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedCase'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedUseCase' : 'SysML::Systems::UseCaseUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedCase'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedView' : 'SysML::Systems::ViewUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedPart'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedViewpoint' : 'SysML::Systems::ViewpointUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedRequirement'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedRendering' : 'SysML::Systems::RenderingUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedPart'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'nestedMetadata' : 'SysML::Systems::MetadataUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedItem'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'UseCaseDefinition' :> 'SysML::Systems::CaseDefinition'[metadata_def]
-          (item_usage derived reference ordered 'includedUseCase' : 'SysML::Systems::UseCaseUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'UseCaseUsage' :> 'SysML::Systems::CaseUsage'[metadata_def]
-          (item_usage derived reference 'useCaseDefinition' : 'SysML::Systems::UseCaseDefinition'[metadata_def] :>> 'SysML::Systems::CaseUsage::caseDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'includedUseCase' : 'SysML::Systems::UseCaseUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'VariantMembership' :> 'OwningMembership'[unresolved]
-          (item_usage derived composite 'ownedVariantUsage' : 'SysML::Systems::Usage'[metadata_def] :>> 'ownedMemberElement'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'VerificationCaseDefinition' :> 'SysML::Systems::CaseDefinition'[metadata_def]
-          (item_usage derived reference ordered 'verifiedRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'VerificationCaseUsage' :> 'SysML::Systems::CaseUsage'[metadata_def]
-          (item_usage derived reference 'verificationCaseDefinition' : 'SysML::Systems::VerificationCaseDefinition'[metadata_def] :> 'SysML::Systems::CaseUsage::caseDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'verifiedRequirement' : 'SysML::Systems::RequirementUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ViewDefinition' :> 'SysML::Systems::PartDefinition'[metadata_def]
-          (item_usage derived reference ordered 'view' : 'SysML::Systems::ViewUsage'[metadata_def] :> 'SysML::Systems::Usage::usage'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'satisfiedViewpoint' : 'SysML::Systems::ViewpointUsage'[metadata_def] :> 'SysML::Systems::Definition::ownedRequirement'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'viewRendering' : 'SysML::Systems::RenderingUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'viewCondition' : 'Expression'[unresolved] :> 'ownedMember'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ViewRenderingMembership' :> 'FeatureMembership'[unresolved]
-          (item_usage derived composite 'ownedRendering' : 'SysML::Systems::RenderingUsage'[metadata_def] :>> 'ownedMemberFeature'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'referencedRendering' : 'SysML::Systems::RenderingUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1])))
-        (metadata_def 'ViewUsage' :> 'SysML::Systems::PartUsage'[metadata_def]
-          (item_usage derived reference 'viewDefinition' : 'SysML::Systems::ViewDefinition'[metadata_def] :>> 'SysML::Systems::PartUsage::partDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'satisfiedViewpoint' : 'SysML::Systems::ViewpointUsage'[metadata_def] :> 'SysML::Systems::Usage::nestedRequirement'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference ordered 'exposedElement' : 'Element'[unresolved] :> 'member'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*]))
-          (item_usage derived reference 'viewRendering' : 'SysML::Systems::RenderingUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'viewCondition' : 'Expression'[unresolved] :> 'ownedMember'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ViewpointDefinition' :> 'SysML::Systems::RequirementDefinition'[metadata_def]
-          (item_usage derived reference ordered 'viewpointStakeholder' : 'SysML::Systems::PartUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'ViewpointUsage' :> 'SysML::Systems::RequirementUsage'[metadata_def]
-          (item_usage derived reference 'viewpointDefinition' : 'SysML::Systems::ViewpointDefinition'[metadata_def] :>> 'SysML::Systems::RequirementUsage::requirementDefinition'[item_usage] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1]))
-          (item_usage derived reference ordered 'viewpointStakeholder' : 'SysML::Systems::PartUsage'[metadata_def] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..*])))
-        (metadata_def 'WhileLoopActionUsage' :> 'SysML::Systems::LoopActionUsage'[metadata_def]
-          (item_usage derived reference 'whileArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [1..1]))
-          (item_usage derived reference 'untilArgument' : 'Expression'[unresolved] :> 'Metadata::metadataItems'[unresolved]
-            (multiplicity_range [0..1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SysML"))) (name "SysML") (declared-name "SysML")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SysML::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SysML::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "SysML::Systems"))) (name "Systems") (declared-name "Systems")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "SysML::Systems::*"))) (name "*") (declared-name "*"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (name "AcceptActionUsage") (declared-name "AcceptActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (name "ActionDefinition") (declared-name "ActionDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (name "ActionUsage") (declared-name "ActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ActorMembership"))) (name "ActorMembership") (declared-name "ActorMembership"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (name "AllocationDefinition") (declared-name "AllocationDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (name "AllocationUsage") (declared-name "AllocationUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (name "AnalysisCaseDefinition") (declared-name "AnalysisCaseDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (name "AnalysisCaseUsage") (declared-name "AnalysisCaseUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (name "AssertConstraintUsage") (declared-name "AssertConstraintUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (name "AssignmentActionUsage") (declared-name "AssignmentActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (name "AttributeDefinition") (declared-name "AttributeDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (name "AttributeUsage") (declared-name "AttributeUsage")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (name "BindingConnectorAsUsage") (declared-name "BindingConnectorAsUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (name "CalculationDefinition") (declared-name "CalculationDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (name "CalculationUsage") (declared-name "CalculationUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (name "CaseDefinition") (declared-name "CaseDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (name "CaseUsage") (declared-name "CaseUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (name "ConcernDefinition") (declared-name "ConcernDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (name "ConcernUsage") (declared-name "ConcernUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (name "ConjugatedPortDefinition") (declared-name "ConjugatedPortDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortTyping"))) (name "ConjugatedPortTyping") (declared-name "ConjugatedPortTyping"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (name "ConnectionDefinition") (declared-name "ConnectionDefinition")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition::isSufficient"))) (name "isSufficient") (declared-name "isSufficient") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (name "ConnectionUsage") (declared-name "ConnectionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (name "ConnectorAsUsage") (declared-name "ConnectorAsUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (name "ConstraintDefinition") (declared-name "ConstraintDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (name "ConstraintUsage") (declared-name "ConstraintUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (name "ControlNode") (declared-name "ControlNode"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (name "DecisionNode") (declared-name "DecisionNode"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::Definition"))) (name "Definition") (declared-name "Definition")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Definition::isVariation"))) (name "isVariation") (declared-name "isVariation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Definition")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (name "EnumerationDefinition") (declared-name "EnumerationDefinition")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (name "isVariation") (declared-name "isVariation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (name "EnumerationUsage") (declared-name "EnumerationUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (name "EventOccurrenceUsage") (declared-name "EventOccurrenceUsage")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (name "ExhibitStateUsage") (declared-name "ExhibitStateUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::Expose"))) (name "Expose") (declared-name "Expose")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Expose::isImportAll"))) (name "isImportAll") (declared-name "isImportAll") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Expose")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Expose::visibility"))) (name "visibility") (declared-name "visibility") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Expose")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (name "FlowDefinition") (declared-name "FlowDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (name "FlowUsage") (declared-name "FlowUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (name "ForLoopActionUsage") (declared-name "ForLoopActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (name "ForkNode") (declared-name "ForkNode"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (name "FramedConcernMembership") (declared-name "FramedConcernMembership")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (name "IfActionUsage") (declared-name "IfActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (name "IncludeUseCaseUsage") (declared-name "IncludeUseCaseUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (name "InterfaceDefinition") (declared-name "InterfaceDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (name "InterfaceUsage") (declared-name "InterfaceUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (name "ItemDefinition") (declared-name "ItemDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (name "ItemUsage") (declared-name "ItemUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (name "JoinNode") (declared-name "JoinNode"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (name "LoopActionUsage") (declared-name "LoopActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (name "MembershipExpose") (declared-name "MembershipExpose"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (name "MergeNode") (declared-name "MergeNode"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (name "MetadataDefinition") (declared-name "MetadataDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (name "MetadataUsage") (declared-name "MetadataUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (name "NamespaceExpose") (declared-name "NamespaceExpose"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ObjectiveMembership"))) (name "ObjectiveMembership") (declared-name "ObjectiveMembership"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (name "OccurrenceDefinition") (declared-name "OccurrenceDefinition")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition::isIndividual"))) (name "isIndividual") (declared-name "isIndividual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (name "OccurrenceUsage") (declared-name "OccurrenceUsage")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::isIndividual"))) (name "isIndividual") (declared-name "isIndividual") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (name "portionKind") (declared-name "portionKind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (name "PartDefinition") (declared-name "PartDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (name "PartUsage") (declared-name "PartUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (name "PerformActionUsage") (declared-name "PerformActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PortConjugation"))) (name "PortConjugation") (declared-name "PortConjugation"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (name "PortDefinition") (declared-name "PortDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (name "PortUsage") (declared-name "PortUsage"))
+            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))) (name "PortionKind") (declared-name "PortionKind")
+              (contains
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind::snapshot"))) (name "snapshot") (declared-name "snapshot") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::PortionKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::PortionKind::timeslice"))) (name "timeslice") (declared-name "timeslice") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::PortionKind")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (name "ReferenceUsage") (declared-name "ReferenceUsage")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (name "RenderingDefinition") (declared-name "RenderingDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (name "RenderingUsage") (declared-name "RenderingUsage"))
+            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))) (name "RequirementConstraintKind") (declared-name "RequirementConstraintKind")
+              (contains
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::assumption"))) (name "assumption") (declared-name "assumption") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind::requirement"))) (name "requirement") (declared-name "requirement") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))) (name "RequirementConstraintMembership") (declared-name "RequirementConstraintMembership")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (name "RequirementDefinition") (declared-name "RequirementDefinition")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::reqId"))) (name "reqId") (declared-name "reqId") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (name "RequirementUsage") (declared-name "RequirementUsage")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::reqId"))) (name "reqId") (declared-name "reqId") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (name "RequirementVerificationMembership") (declared-name "RequirementVerificationMembership")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (name "SatisfyRequirementUsage") (declared-name "SatisfyRequirementUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (name "SendActionUsage") (declared-name "SendActionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StakeholderMembership"))) (name "StakeholderMembership") (declared-name "StakeholderMembership"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (name "StateDefinition") (declared-name "StateDefinition")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::StateDefinition::isParallel"))) (name "isParallel") (declared-name "isParallel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateDefinition")))))
+              )
+            )
+            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))) (name "StateSubactionKind") (declared-name "StateSubactionKind")
+              (contains
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::do"))) (name "do") (declared-name "do") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind::exit"))) (name "exit") (declared-name "exit") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership"))) (name "StateSubactionMembership") (declared-name "StateSubactionMembership")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (name "StateUsage") (declared-name "StateUsage")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::StateUsage::isParallel"))) (name "isParallel") (declared-name "isParallel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::StateUsage")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SubjectMembership"))) (name "SubjectMembership") (declared-name "SubjectMembership"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (name "SuccessionAsUsage") (declared-name "SuccessionAsUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (name "SuccessionFlowUsage") (declared-name "SuccessionFlowUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (name "TerminateActionUsage") (declared-name "TerminateActionUsage"))
+            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))) (name "TransitionFeatureKind") (declared-name "TransitionFeatureKind")
+              (contains
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::guard"))) (name "guard") (declared-name "guard") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership"))) (name "TransitionFeatureMembership") (declared-name "TransitionFeatureMembership")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (name "TransitionUsage") (declared-name "TransitionUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression"))) (name "TriggerInvocationExpression") (declared-name "TriggerInvocationExpression")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression")))))
+              )
+            )
+            (element (kind "enum def") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))) (name "TriggerKind") (declared-name "TriggerKind")
+              (contains
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::after"))) (name "after") (declared-name "after") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::at"))) (name "at") (declared-name "at") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerKind")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "SysML::Systems::TriggerKind::when"))) (name "when") (declared-name "when") (effective (featuring-type (node (document "d0") (qualified-name "SysML::Systems::TriggerKind")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::Usage"))) (name "Usage") (declared-name "Usage")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))) (name "isReference") (declared-name "isReference") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Usage::isVariation"))) (name "isVariation") (declared-name "isVariation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SysML::Systems::Usage::mayTimeVary"))) (name "mayTimeVary") (declared-name "mayTimeVary") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SysML::Systems::Usage")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (name "UseCaseDefinition") (declared-name "UseCaseDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (name "UseCaseUsage") (declared-name "UseCaseUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::VariantMembership"))) (name "VariantMembership") (declared-name "VariantMembership"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (name "VerificationCaseDefinition") (declared-name "VerificationCaseDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (name "VerificationCaseUsage") (declared-name "VerificationCaseUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (name "ViewDefinition") (declared-name "ViewDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewRenderingMembership"))) (name "ViewRenderingMembership") (declared-name "ViewRenderingMembership"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (name "ViewUsage") (declared-name "ViewUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (name "ViewpointDefinition") (declared-name "ViewpointDefinition"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (name "ViewpointUsage") (declared-name "ViewpointUsage"))
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (name "WhileLoopActionUsage") (declared-name "WhileLoopActionUsage"))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "SysML::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SysML::_documentation"))) (to (node (document "d0") (qualified-name "SysML"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage::isReference"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition::isVariation"))) (to (node (document "d0") (qualified-name "SysML::Systems::Definition::isVariation"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage::isReference"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage::isReference"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage::isReference"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AcceptActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AllocationDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AllocationUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AnalysisCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AssignmentActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::Definition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::BindingConnectorAsUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CalculationDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CalculationUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConcernDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConcernUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConjugatedPortDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::DecisionNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::AttributeDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EnumerationUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::AttributeUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ExhibitStateUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FlowDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ForLoopActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ForkNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::IfActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::IncludeUseCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::InterfaceDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::InterfaceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::JoinNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MembershipExpose"))) (to (node (document "d0") (qualified-name "SysML::Systems::Expose"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MergeNode"))) (to (node (document "d0") (qualified-name "SysML::Systems::ControlNode"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MetadataDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::MetadataUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::NamespaceExpose"))) (to (node (document "d0") (qualified-name "SysML::Systems::Expose"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::Definition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ItemUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PerformActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::EventOccurrenceUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PortDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::PortUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ReferenceUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::Usage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RenderingDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RenderingUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConstraintDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConstraintUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::AssertConstraintUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SatisfyRequirementUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SendActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::StateDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::StateUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SuccessionAsUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ConnectorAsUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::SuccessionFlowUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::FlowUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TerminateActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TransitionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::ActionUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::UseCaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::UseCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::VerificationCaseUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::CaseUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::PartUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewpointDefinition"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementDefinition"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::ViewpointUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementUsage"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::WhileLoopActionUsage"))) (to (node (document "d0") (qualified-name "SysML::Systems::LoopActionUsage"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::FramedConcernMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::OccurrenceUsage::portionKind"))) (to (node (document "d0") (qualified-name "SysML::Systems::PortionKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::RequirementVerificationMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::RequirementConstraintKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::StateSubactionMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::StateSubactionKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureMembership::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::TransitionFeatureKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SysML::Systems::TriggerInvocationExpression::kind"))) (to (node (document "d0") (qualified-name "SysML::Systems::TriggerKind"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

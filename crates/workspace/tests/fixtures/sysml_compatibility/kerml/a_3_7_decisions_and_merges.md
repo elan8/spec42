@@ -553,119 +553,68 @@ semantic.unresolved_name 'timeEnclosedOccurrences'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'DecisionsAndMergesModelToBeExecuted'
-      (documentation)
-      (membership_import private -> 'ControlPerformances::DecisionPerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::MergePerformance'[unresolved])
-      (membership_import private -> 'Occurrences::HappensBefore'[unresolved])
-      (membership_import private -> 'Links::SelfLink'[unresolved])
-      (behavior_def 'Manufacture'
-        (step_def 'admit' : 'DecisionsAndMergesModelToBeExecuted::Admit'[behavior_def]
-          (multiplicity_range [1]))
-        (succession_def 'a_before_i'
-          (connector_end 'admit')
-          (connector_end 'inspect'))
-        (step_def 'inspect' : 'DecisionPerformance'[unresolved]
-          (multiplicity_range [*]))
-        (succession_def 'i_before_f'
-          (connector_end 'inspect')
-          (connector_end 'finish'))
-        (step_def 'finish' : 'DecisionsAndMergesModelToBeExecuted::Touchup'[behavior_def]
-          (multiplicity_range [*]))
-        (succession_def 'i_before_r'
-          (connector_end 'inspect')
-          (connector_end 'recycle'))
-        (step_def 'recycle' : 'DecisionsAndMergesModelToBeExecuted::MarkForRecycling'[behavior_def]
-          (multiplicity_range [*]))
-        (succession_def 'f_before_ms'
-          (connector_end 'finish')
-          (connector_end 'mShip'))
-        (succession_def 'r_before_ms'
-          (connector_end 'recycle')
-          (connector_end 'mShip'))
-        (step_def 'mShip' : 'MergePerformance'[unresolved]
-          (multiplicity_range [*]))
-        (succession_def 'ms_before_s'
-          (connector_end 'mShip')
-          (connector_end 'ship'))
-        (step_def 'ship' : 'DecisionsAndMergesModelToBeExecuted::Ship'[behavior_def]
-          (multiplicity_range [*]))
-        (feature_def 'inspectOutgoingHBLinks' : 'HappensBefore'[unresolved]
-          (multiplicity_range [*]))
-        (connector_def 'bindIOHBL' : 'SelfLink'[unresolved]
-          (connector_end 'inspectOutgoingHBLinks')
-          (connector_end 'inspect.outgoingHBLink'))
-        (feature_def 'mShipIncomingHBLinks' : 'HappensBefore'[unresolved]
-          (multiplicity_range [*]))
-        (connector_def 'bindmSIHBL' : 'SelfLink'[unresolved]
-          (connector_end 'mShipIncomingHBLinks')
-          (connector_end 'mShip.incomingHBLink')))
-      (behavior_def 'Admit')
-      (behavior_def 'Touchup')
-      (behavior_def 'MarkForRecycling')
-      (behavior_def 'Ship'))
-    (package 'DecisionsAndMergesExecution'
-      (documentation)
-      (namespace_import private -> 'Atoms'[unresolved])
-      (namespace_import private -> 'DecisionsAndMergesModelToBeExecuted'[package])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensBefore'[unresolved])
-      (membership_import private -> 'ControlPerformances::DecisionPerformance'[unresolved])
-      (membership_import private -> 'ControlPerformances::MergePerformance'[unresolved])
-      (behavior_def 'MyAdmit' :> 'DecisionsAndMergesModelToBeExecuted::Admit'[behavior_def])
-      (behavior_def 'MyInspect' :> 'DecisionPerformance'[unresolved])
-      (association_def 'MyAdmit_Before_Inspect_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'DecisionsAndMergesExecution::MyAdmit'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'DecisionsAndMergesExecution::MyInspect'[behavior_def]))
-      (behavior_def 'MyTouchup' :> 'DecisionsAndMergesModelToBeExecuted::Touchup'[behavior_def])
-      (association_def 'MyInspect_Before_Touchup_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'DecisionsAndMergesExecution::MyInspect'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'DecisionsAndMergesExecution::MyTouchup'[behavior_def]))
-      (behavior_def 'MyMergeToShip' :> 'MergePerformance'[unresolved])
-      (association_def 'MyTouchup_Before_Merge_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'DecisionsAndMergesExecution::MyTouchup'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'DecisionsAndMergesExecution::MyMergeToShip'[behavior_def]))
-      (behavior_def 'MyShip' :> 'DecisionsAndMergesModelToBeExecuted::Ship'[behavior_def])
-      (association_def 'MyMerge_Before_Ship_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'DecisionsAndMergesExecution::MyMergeToShip'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'DecisionsAndMergesModelToBeExecuted::Ship'[behavior_def]))
-      (behavior_def 'MyManufactureSteps'
-        (unioning)
-        (unioning)
-        (unioning)
-        (unioning)
-        (unioning))
-      (behavior_def 'MyManufacture' :> 'DecisionsAndMergesModelToBeExecuted::Manufacture'[behavior_def]
-        (feature_def :>> 'timeEnclosedOccurrences'[unresolved] : 'DecisionsAndMergesExecution::MyManufactureSteps'[behavior_def]
-          (multiplicity_range [5]))
-        (step_def :>> 'DecisionsAndMergesModelToBeExecuted::Manufacture::admit'[step_def] : 'DecisionsAndMergesExecution::MyAdmit'[behavior_def]
-          (multiplicity_range [1]))
-        (step_def :>> 'DecisionsAndMergesModelToBeExecuted::Manufacture::inspect'[step_def] : 'DecisionsAndMergesExecution::MyInspect'[behavior_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'admit')
-          (connector_end 'inspect'))
-        (step_def :>> 'DecisionsAndMergesModelToBeExecuted::Manufacture::finish'[step_def] : 'DecisionsAndMergesExecution::MyTouchup'[behavior_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'inspect')
-          (connector_end 'finish'))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'finish')
-          (connector_end 'mShip'))
-        (step_def :>> 'DecisionsAndMergesModelToBeExecuted::Manufacture::mShip'[step_def] : 'DecisionsAndMergesExecution::MyMergeToShip'[behavior_def]
-          (multiplicity_range [1]))
-        (step_def :>> 'DecisionsAndMergesModelToBeExecuted::Manufacture::ship'[step_def] : 'DecisionsAndMergesExecution::MyShip'[behavior_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'mShip')
-          (connector_end 'ship'))
-        (feature_def :>> 'DecisionsAndMergesModelToBeExecuted::Manufacture::inspectOutgoingHBLinks'[feature_def] : 'DecisionsAndMergesExecution::MyInspect_Before_Touchup_Link'[association_def])
-        (feature_def :>> 'DecisionsAndMergesModelToBeExecuted::Manufacture::mShipIncomingHBLinks'[feature_def] : 'DecisionsAndMergesExecution::MyTouchup_Before_Merge_Link'[association_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))) (name "DecisionsAndMergesExecution") (declared-name "DecisionsAndMergesExecution")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::DecisionPerformance"))) (name "DecisionPerformance") (declared-name "DecisionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MergePerformance"))) (name "MergePerformance") (declared-name "MergePerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyAdmit"))) (name "MyAdmit") (declared-name "MyAdmit"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyAdmit_Before_Inspect_Link"))) (name "MyAdmit_Before_Inspect_Link") (declared-name "MyAdmit_Before_Inspect_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyInspect"))) (name "MyInspect") (declared-name "MyInspect"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyInspect_Before_Touchup_Link"))) (name "MyInspect_Before_Touchup_Link") (declared-name "MyInspect_Before_Touchup_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyManufacture"))) (name "MyManufacture") (declared-name "MyManufacture"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyManufactureSteps"))) (name "MyManufactureSteps") (declared-name "MyManufactureSteps"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyMergeToShip"))) (name "MyMergeToShip") (declared-name "MyMergeToShip"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyMerge_Before_Ship_Link"))) (name "MyMerge_Before_Ship_Link") (declared-name "MyMerge_Before_Ship_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyShip"))) (name "MyShip") (declared-name "MyShip"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyTouchup"))) (name "MyTouchup") (declared-name "MyTouchup"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::MyTouchup_Before_Merge_Link"))) (name "MyTouchup_Before_Merge_Link") (declared-name "MyTouchup_Before_Merge_Link"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword5"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword6"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword7"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword8"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword9"))) (name "atom") (declared-name "atom"))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted"))) (name "DecisionsAndMergesModelToBeExecuted") (declared-name "DecisionsAndMergesModelToBeExecuted")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::Admit"))) (name "Admit") (declared-name "Admit"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::DecisionPerformance"))) (name "DecisionPerformance") (declared-name "DecisionPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::Manufacture"))) (name "Manufacture") (declared-name "Manufacture"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::MarkForRecycling"))) (name "MarkForRecycling") (declared-name "MarkForRecycling"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::MergePerformance"))) (name "MergePerformance") (declared-name "MergePerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::SelfLink"))) (name "SelfLink") (declared-name "SelfLink"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::Ship"))) (name "Ship") (declared-name "Ship"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "DecisionsAndMergesModelToBeExecuted::Touchup"))) (name "Touchup") (declared-name "Touchup"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword5"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword6"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword7"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword8"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DecisionsAndMergesExecution::_atom#metadata_keyword9"))) (to (node (document "d0") (qualified-name "DecisionsAndMergesExecution"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -242,54 +242,126 @@ semantic.unresolved_name 'Boolean'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '13b-Safety and Security Features Element Group-2'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions'[package])
-      (namespace_import private -> '13b-Safety and Security Features Element Group-2::PartsTree'[package])
-      (package 'AnnotationDefinitions'
-        (metadata_def 'Safety'
-          (attribute_usage composite 'isMandatory' : 'Boolean'[unresolved]))
-        (metadata_def 'Security'))
-      (package 'PartsTree'
-        (part_usage 'vehicle'
-          (part_usage composite 'interior'
-            (part_usage composite 'alarm'
-              (metadata_usage :> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security'[metadata_def]))
-            (part_usage composite 'seatBelt'
-              (multiplicity_range [2])
-              (metadata_usage :> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=)))))
-            (part_usage composite 'frontSeat'
-              (multiplicity_range [2]))
-            (part_usage composite 'driverAirBag'
-              (metadata_usage :> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=))))))
-          (part_usage composite 'bodyAssy'
-            (part_usage composite 'body')
-            (part_usage composite 'bumper'
-              (metadata_usage :> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=)))))
-            (part_usage composite 'keylessEntry'
-              (metadata_usage :> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security'[metadata_def])))
-          (part_usage composite 'wheelAssy'
-            (part_usage composite 'wheel'
-              (multiplicity_range [2]))
-            (part_usage composite 'antilockBrakes'
-              (multiplicity_range [2])
-              (metadata_usage :> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety'[metadata_def]
-                (feature_def 'isMandatory' :>> '13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory'[attribute_usage][implied]
-                  (feature_value (=))))))))
-      (package 'Safety Features'
-        (membership_import public recursive -> '13b-Safety and Security Features Element Group-2::PartsTree::vehicle'[part_usage]))
-      (package 'Security Features'
-        (membership_import public recursive -> '13b-Safety and Security Features Element Group-2::PartsTree::vehicle'[part_usage]))
-      (package 'Safety & Security Features'
-        (membership_import public recursive -> '13b-Safety and Security Features Element Group-2::PartsTree::vehicle'[part_usage]))
-      (package 'Mandatory Saftey Features'
-        (membership_import public recursive -> '13b-Safety and Security Features Element Group-2::PartsTree::vehicle'[part_usage])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2"))) (name "13b-Safety and Security Features Element Group-2") (declared-name "13b-Safety and Security Features Element Group-2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions"))) (name "AnnotationDefinitions") (declared-name "AnnotationDefinitions")
+          (contains
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety"))) (name "Safety") (declared-name "Safety")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Safety")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::AnnotationDefinitions::Security"))) (name "Security") (declared-name "Security"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Mandatory Saftey Features"))) (name "Mandatory Saftey Features") (declared-name "Mandatory Saftey Features")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Mandatory Saftey Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree"))) (name "PartsTree") (declared-name "PartsTree")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry::Security"))) (name "Security") (declared-name "Security"))
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior"))) (name "interior") (declared-name "interior") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm::Security"))) (name "Security") (declared-name "Security"))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy"))) (name "wheelAssy") (declared-name "wheelAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))) (name "antilockBrakes") (declared-name "antilockBrakes") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                      (contains
+                        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes::Safety"))) (name "Safety") (declared-name "Safety")
+                          (contains
+                            (element (kind "attribute") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes::Safety::isMandatory"))) (name "isMandatory") (declared-name "isMandatory") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Safety & Security Features"))) (name "Safety & Security Features") (declared-name "Safety & Security Features")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Safety & Security Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Safety Features"))) (name "Safety Features") (declared-name "Safety Features")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Safety Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Security Features"))) (name "Security Features") (declared-name "Security Features")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::Security Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper::Safety"))) (to (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::bumper"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry::Security"))) (to (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::bodyAssy::keylessEntry"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm::Security"))) (to (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::alarm"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag::Safety"))) (to (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::driverAirBag"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt::Safety"))) (to (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::interior::seatBelt"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes::Safety"))) (to (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-2::PartsTree::vehicle::wheelAssy::antilockBrakes"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

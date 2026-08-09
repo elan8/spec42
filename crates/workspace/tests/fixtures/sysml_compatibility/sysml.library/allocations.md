@@ -117,17 +117,32 @@ standard library package Allocations {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Allocations'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (namespace_import private -> 'Connections'[unresolved])
-      (allocation_def 'Allocation' :> 'BinaryConnection'[unresolved]
-        (documentation)
-        (port_usage end 'source' : 'Anything'[unresolved] :>> 'BinaryConnection::source'[unresolved])
-        (port_usage end 'target' : 'Anything'[unresolved] :>> 'BinaryConnection::target'[unresolved]))
-      (allocation_usage abstract 'allocations' : 'Allocations::Allocation'[allocation_def] :> 'binaryConnections'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Allocations"))) (name "Allocations") (declared-name "Allocations")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Allocations::*"))) (name "*") (declared-name "*"))
+        (element (kind "allocation def") (id (node (document "d0") (qualified-name "Allocations::Allocation"))) (name "Allocation") (declared-name "Allocation")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Allocations::Allocation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Allocations::Allocation")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Allocations::Allocation::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Allocations::Allocation")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Allocations::Allocation::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Allocations::Allocation")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Allocations::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Allocations::_documentation"))) (name ""))
+        (element (kind "allocation") (id (node (document "d0") (qualified-name "Allocations::allocations"))) (name "allocations") (declared-name "allocations"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Allocations::Allocation::_documentation"))) (to (node (document "d0") (qualified-name "Allocations::Allocation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Allocations::_documentation"))) (to (node (document "d0") (qualified-name "Allocations"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocations::allocations"))) (to (node (document "d0") (qualified-name "Allocations::Allocation"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -27,6 +27,14 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace))
+(semantic-graph
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

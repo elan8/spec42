@@ -206,6 +206,39 @@ fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId
     }
 }
 
+fn sorted_node_ids(g: &SemanticGraph) -> Vec<NodeId> {
+    let mut node_ids = g.node_index_by_id.keys().cloned().collect::<Vec<_>>();
+    node_ids.sort_by(|left, right| {
+        left.uri
+            .as_str()
+            .cmp(right.uri.as_str())
+            .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+    });
+    node_ids
+}
+
+fn link_workspace_relationships_pass(g: &mut SemanticGraph) {
+    for node_id in sorted_node_ids(g) {
+        let Some(node) = g.get_node(&node_id).cloned() else {
+            continue;
+        };
+        for key in TYPE_REFERENCE_ATTR_KEYS {
+            if let Some(type_ref) = node.attributes.get(*key).and_then(|value| value.as_str()) {
+                add_typing_edge_for_node(g, &node_id, type_ref);
+            }
+        }
+        let specializes_refs = node
+            .attributes
+            .get("specializes")
+            .map(specializes_refs_from_value)
+            .unwrap_or_default();
+        for specializes_ref in specializes_refs {
+            add_specializes_edges_for_node(g, &node_id, &specializes_ref);
+        }
+        link_subsetting_family_edges_for_node(g, &node_id);
+    }
+}
+
 mod cross_document;
 mod derivation;
 mod pending;
@@ -507,37 +540,25 @@ pub fn add_specializes_edges_for_node(
 }
 
 pub fn link_workspace_relationships(g: &mut SemanticGraph) {
-    let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
-    for node_id in node_ids {
-        let Some(node) = g.get_node(&node_id).cloned() else {
-            continue;
-        };
-        for key in TYPE_REFERENCE_ATTR_KEYS {
-            if let Some(type_ref) = node.attributes.get(*key).and_then(|value| value.as_str()) {
-                add_typing_edge_for_node(g, &node_id, type_ref);
-            }
+    // Typing and inherited-member resolution are mutually dependent for nested
+    // redefinitions. Iterate to the monotonic edge-set fixed point rather than
+    // letting hash-map traversal decide which prerequisites happen to exist first.
+    for _ in 0..=g.graph.node_count() {
+        let edge_count = g.graph.edge_count();
+        link_workspace_relationships_pass(g);
+        if g.graph.edge_count() == edge_count {
+            break;
         }
-        let specializes_refs = node
-            .attributes
-            .get("specializes")
-            .map(specializes_refs_from_value)
-            .unwrap_or_default();
-        for specializes_ref in specializes_refs {
-            add_specializes_edges_for_node(g, &node_id, &specializes_ref);
-        }
-        link_subsetting_family_edges_for_node(g, &node_id);
     }
 
     // Per-document graph build cannot see imported elements from other files; re-wire after merge.
-    let connection_ids: Vec<NodeId> = g
-        .node_index_by_id
-        .keys()
+    let connection_ids: Vec<NodeId> = sorted_node_ids(g)
+        .into_iter()
         .filter(|node_id| {
             g.get_node(node_id)
                 .map(|node| node.element_kind == ElementKind::DerivationConnection)
                 .unwrap_or(false)
         })
-        .cloned()
         .collect();
     for connection_id in connection_ids {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
@@ -558,15 +579,13 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
 /// The incremental update path (single-file change) still needs the full
 /// [`link_workspace_relationships`] because only one URI's edges were refreshed.
 pub fn link_workspace_derivations(g: &mut SemanticGraph) {
-    let connection_ids: Vec<NodeId> = g
-        .node_index_by_id
-        .keys()
+    let connection_ids: Vec<NodeId> = sorted_node_ids(g)
+        .into_iter()
         .filter(|node_id| {
             g.get_node(node_id)
                 .map(|node| node.element_kind == ElementKind::DerivationConnection)
                 .unwrap_or(false)
         })
-        .cloned()
         .collect();
     for connection_id in connection_ids {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
@@ -574,8 +593,13 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
     // Full parallel builds resolve typing/specializes/subject in
     // `resolve_cross_document_edges_for_uri`; subsetting/redefinition still need
     // a whole-graph pass after merge (same shape as derivation rewiring).
-    let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
-    for node_id in node_ids {
-        link_subsetting_family_edges_for_node(g, &node_id);
+    for _ in 0..=g.graph.node_count() {
+        let edge_count = g.graph.edge_count();
+        for node_id in sorted_node_ids(g) {
+            link_subsetting_family_edges_for_node(g, &node_id);
+        }
+        if g.graph.edge_count() == edge_count {
+            break;
+        }
     }
 }

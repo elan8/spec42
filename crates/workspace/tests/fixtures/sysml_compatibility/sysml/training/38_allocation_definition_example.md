@@ -153,29 +153,72 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Allocation Definition Example'
-      (package 'LogicalModel'
-        (action_def 'ProvidePower')
-        (action_def 'GenerateTorque')
-        (part_def 'LogicalElement')
-        (part_def 'TorqueGenerator' :> 'Allocation Definition Example::LogicalModel::LogicalElement'[part_def])
-        (action_usage 'providePower' : 'Allocation Definition Example::LogicalModel::ProvidePower'[action_def]
-          (action_usage composite 'generateTorque' : 'Allocation Definition Example::LogicalModel::GenerateTorque'[action_def]))
-        (part_usage 'torqueGenerator' : 'Allocation Definition Example::LogicalModel::TorqueGenerator'[part_def]
-          (perform_action_usage :>> 'Allocation Definition Example::LogicalModel::providePower::generateTorque'[action_usage])))
-      (package 'PhysicalModel'
-        (namespace_import private -> 'Allocation Definition Example::LogicalModel'[package])
-        (part_def 'PhysicalElement')
-        (part_def 'PowerTrain' :> 'Allocation Definition Example::PhysicalModel::PhysicalElement'[part_def])
-        (part_usage 'powerTrain' : 'Allocation Definition Example::PhysicalModel::PowerTrain'[part_def]
-          (part_usage composite 'engine'
-            (perform_action_usage :>> 'Allocation Definition Example::LogicalModel::providePower::generateTorque'[action_usage])))
-        (allocation_def 'LogicalToPhysical'
-          (port_usage end 'logical' : 'Allocation Definition Example::LogicalModel::LogicalElement'[part_def])
-          (port_usage end 'physical' : 'Allocation Definition Example::PhysicalModel::PhysicalElement'[part_def]))
-        (allocation_usage 'torqueGenAlloc' : 'Allocation Definition Example::PhysicalModel::LogicalToPhysical'[allocation_def]
-          (connector_end 'torqueGenerator')
-          (connector_end 'powerTrain'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Allocation Definition Example"))) (name "Allocation Definition Example") (declared-name "Allocation Definition Example")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel"))) (name "LogicalModel") (declared-name "LogicalModel")
+          (contains
+            (element (kind "action def") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::GenerateTorque"))) (name "GenerateTorque") (declared-name "GenerateTorque"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::LogicalElement"))) (name "LogicalElement") (declared-name "LogicalElement") (declared))
+            (element (kind "action def") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::ProvidePower"))) (name "ProvidePower") (declared-name "ProvidePower"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator"))) (name "TorqueGenerator") (declared-name "TorqueGenerator") (declared))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::ProvidePower")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel"))) (name "PhysicalModel") (declared-name "PhysicalModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "allocation def") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical"))) (name "LogicalToPhysical") (declared-name "LogicalToPhysical")
+              (contains
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical::logical"))) (name "logical") (declared-name "logical") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical")))))
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical::physical"))) (name "physical") (declared-name "physical") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PhysicalElement"))) (name "PhysicalElement") (declared-name "PhysicalElement") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))) (name "PowerTrain") (declared-name "PowerTrain") (declared))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain::engine::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain")))))
+                  )
+                )
+              )
+            )
+            (element (kind "allocation") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::torqueGenAlloc"))) (name "torqueGenAlloc") (declared-name "torqueGenAlloc"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (allocate (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower::generateTorque"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::LogicalElement"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PhysicalElement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::ProvidePower"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower::generateTorque"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::GenerateTorque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical::logical"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::LogicalElement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical::physical"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PhysicalElement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::torqueGenAlloc"))) (to (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::LogicalToPhysical"))))
+  )
+  (pending-relationships
+    (perform (status pending) (document "d0") (source-qualified "Allocation Definition Example::LogicalModel::torqueGenerator") (target-qualified "Allocation Definition Example::LogicalModel::torqueGenerator::providePower::generateTorque"))
+    (perform (status pending) (document "d0") (source-qualified "Allocation Definition Example::PhysicalModel::powerTrain::engine") (target-qualified "Allocation Definition Example::PhysicalModel::powerTrain::engine::providePower::generateTorque"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

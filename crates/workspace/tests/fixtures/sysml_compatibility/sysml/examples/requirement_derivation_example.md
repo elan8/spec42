@@ -159,30 +159,55 @@ semantic.feature_typing_kind_mismatch
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'RequirementDerivationExample'
-      (namespace_import private -> 'RequirementDerivation'[unresolved])
-      (requirement_def 'Req1')
-      (requirement_def 'Req1_1')
-      (requirement_def 'Req1_2')
-      (connection_def 'Req1_Derivation'
-        (port_usage end 'r1' : 'RequirementDerivationExample::Req1'[requirement_def])
-        (port_usage end 'r1_1' : 'RequirementDerivationExample::Req1_1'[requirement_def])
-        (port_usage end 'r1_2' : 'RequirementDerivationExample::Req1_2'[requirement_def]))
-      (part_def 'System')
-      (part_def 'Subsystem1')
-      (part_def 'Subsystem2')
-      (part_usage 'system' : 'RequirementDerivationExample::System'[part_def]
-        (part_usage composite 'sub1' : 'RequirementDerivationExample::Subsystem1'[part_def])
-        (part_usage composite 'sub2' : 'RequirementDerivationExample::Subsystem2'[part_def]))
-      (part_usage 'satisfactionContext'
-        (reference_usage reference :>> 'RequirementDerivationExample::system'[part_usage])
-        (satisfy_requirement_usage 'req1' : 'RequirementDerivationExample::Req1'[requirement_def] by ''[reference_usage])
-        (satisfy_requirement_usage 'req1_1' : 'RequirementDerivationExample::Req1_1'[requirement_def] by 'RequirementDerivationExample::system::sub1'[part_usage])
-        (satisfy_requirement_usage 'req1_2' : 'RequirementDerivationExample::Req1_2'[requirement_def] by 'RequirementDerivationExample::system::sub2'[part_usage])
-        (connection_usage composite : 'RequirementDerivationExample::Req1_Derivation'[connection_def]
-          (port_usage end 'r1' :> 'RequirementDerivationExample::satisfactionContext::req1'[satisfy_requirement_usage])
-          (port_usage end 'r1_1' :> 'RequirementDerivationExample::satisfactionContext::req1_1'[satisfy_requirement_usage])
-          (port_usage end 'r1_2' :> 'RequirementDerivationExample::satisfactionContext::req1_1'[satisfy_requirement_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RequirementDerivationExample"))) (name "RequirementDerivationExample") (declared-name "RequirementDerivationExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementDerivationExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Req1"))) (name "Req1") (declared-name "Req1"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_1"))) (name "Req1_1") (declared-name "Req1_1"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_2"))) (name "Req1_2") (declared-name "Req1_2"))
+        (element (kind "derivation connection") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_Derivation"))) (name "Req1_Derivation") (declared-name "Req1_Derivation")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1"))) (name "r1") (declared-name "r1") (declared (properties (end true))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_1"))) (name "r1_1") (declared-name "r1_1") (declared (properties (end true))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_2"))) (name "r1_2") (declared-name "r1_2") (declared (properties (end true))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Subsystem1"))) (name "Subsystem1") (declared-name "Subsystem1") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "RequirementDerivationExample::Subsystem2"))) (name "Subsystem2") (declared-name "Subsystem2") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "RequirementDerivationExample::System"))) (name "System") (declared-name "System") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::satisfactionContext"))) (name "satisfactionContext") (declared-name "satisfactionContext") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "RequirementDerivationExample::satisfactionContext::system"))) (name "system") (declared-name "system") (declared (properties (composite false) (reference true))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system"))) (name "system") (declared-name "system") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub1"))) (name "sub1") (declared-name "sub1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivationExample::System")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub2"))) (name "sub2") (declared-name "sub2") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivationExample::System")))))
+          )
+        )
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "RequirementDerivationExample::satisfactionContext::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "RequirementDerivationExample::satisfactionContext::unresolved_satisfy_source#diagnostic"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "RequirementDerivationExample::satisfactionContext::unresolved_satisfy_source#diagnostic2"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1"))) (to (node (document "d0") (qualified-name "RequirementDerivationExample::Req1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_1"))) (to (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_2"))) (to (node (document "d0") (qualified-name "RequirementDerivationExample::Req1_2"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivationExample::system"))) (to (node (document "d0") (qualified-name "RequirementDerivationExample::System"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub1"))) (to (node (document "d0") (qualified-name "RequirementDerivationExample::Subsystem1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub2"))) (to (node (document "d0") (qualified-name "RequirementDerivationExample::Subsystem2"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (satisfy (status pending-expression) (document "d0") (source-expression "req1") (target-expression "system") (container-prefix "RequirementDerivationExample::satisfactionContext"))
+    (satisfy (status pending-expression) (document "d0") (source-expression "req1_1") (target-expression "system::sub1") (container-prefix "RequirementDerivationExample::satisfactionContext"))
+    (satisfy (status pending-expression) (document "d0") (source-expression "req1_2") (target-expression "system::sub2") (container-prefix "RequirementDerivationExample::satisfactionContext"))
+  )
+)
 ~~~

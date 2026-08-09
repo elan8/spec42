@@ -469,81 +469,95 @@ standard library package Flows {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Flows'
-      (documentation)
-      (membership_import private -> 'Links::Link'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensDuring'[unresolved])
-      (membership_import private -> 'Objects::binaryLinkObjects'[unresolved])
-      (membership_import private -> 'Transfers::Transfer'[unresolved])
-      (membership_import private -> 'Transfers::transfers'[unresolved])
-      (membership_import private -> 'Transfers::FlowTransfer'[unresolved])
-      (membership_import private -> 'Transfers::flowTransfers'[unresolved])
-      (membership_import private -> 'Transfers::FlowTransferBefore'[unresolved])
-      (membership_import private -> 'Transfers::flowTransfersBefore'[unresolved])
-      (membership_import private -> 'Actions::Action'[unresolved])
-      (membership_import private -> 'Actions::actions'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (flow_def abstract 'MessageAction' :> 'Action'[unresolved] :> 'Link'[unresolved]
-        (documentation)
-        (reference_usage reference 'payload'
-          (multiplicity_range [0..*])
-          (documentation)))
-      (flow_def abstract 'Message' :> 'Flows::MessageAction'[flow_def] :> 'Transfer'[unresolved]
-        (documentation)
-        (reference_usage reference 'payload' :>> 'Flows::MessageAction::payload'[reference_usage] :>> 'Transfer::payload'[unresolved])
-        (action_usage reference 'thisConnection'
-          (feature_value (=)))
-        (event_occurrence_usage in 'sourceEvent'
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (event_occurrence_usage in 'targetEvent'
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (connection_usage composite : 'HappensDuring'[unresolved]
-          (connector_end 'sourceEvent')
-          (connector_end 'source'))
-        (connection_usage composite : 'HappensDuring'[unresolved]
-          (connector_end 'targetEvent')
-          (connector_end 'target'))
-        (attribute_usage composite 'seBeforeNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite 'teAfterNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (succession_def
-          (multiplicity_range [?])
-          (connector_end 'sourceEvent')
-          (connector_end 'self'))
-        (succession_def
-          (multiplicity_range [?])
-          (connector_end 'self')
-          (connector_end 'targetEvent')))
-      (flow_def abstract 'Flow' :> 'Flows::Message'[flow_def] :> 'FlowTransfer'[unresolved]
-        (documentation)
-        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Message::source'[unresolved] :>> 'FlowTransfer::source'[unresolved])
-        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Message::target'[unresolved] :>> 'FlowTransfer::target'[unresolved]))
-      (flow_def abstract 'SuccessionFlow' :> 'Flows::Flow'[flow_def] :> 'FlowTransferBefore'[unresolved]
-        (documentation)
-        (reference_usage reference 'self' : 'Flows::SuccessionFlow'[flow_def] :>> 'Flow::self'[unresolved] :>> 'FlowTransferBefore::self'[unresolved])
-        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Flows::Flow::source'[port_usage] :>> 'FlowTransferBefore::source'[unresolved])
-        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Flows::Flow::target'[port_usage] :>> 'FlowTransferBefore::target'[unresolved]))
-      (flow_usage abstract 'messages' : 'Flows::Message'[flow_def] :> 'transfers'[unresolved] :> 'actions'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (flow_usage abstract 'flows' : 'Flows::Flow'[flow_def] :> 'Flows::messages'[flow_usage] :> 'flowTransfers'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)
-        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Flows::Flow::source'[port_usage] :>> 'messages::source'[unresolved] :>> 'flowTransfers::source'[unresolved])
-        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Flows::Flow::target'[port_usage] :>> 'messages::target'[unresolved] :>> 'flowTransfers::target'[unresolved]))
-      (flow_usage abstract 'successionFlows' : 'Flows::SuccessionFlow'[flow_def] :> 'Flows::flows'[flow_usage] :> 'flowTransfersBefore'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)
-        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Flows::SuccessionFlow::source'[port_usage] :>> 'Flows::flows::source'[port_usage] :>> 'flowTransfersBefore::source'[unresolved])
-        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Flows::SuccessionFlow::target'[port_usage] :>> 'Flows::flows::target'[port_usage] :>> 'flowTransfersBefore::target'[unresolved])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Flows"))) (name "Flows") (declared-name "Flows")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::Action"))) (name "Action") (declared-name "Action"))
+        (element (kind "flow def") (id (node (document "d0") (qualified-name "Flows::Flow"))) (name "Flow") (declared-name "Flow")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::Flow::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Flows::Flow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::Flow::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::Flow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::Flow::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::Flow")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::FlowTransfer"))) (name "FlowTransfer") (declared-name "FlowTransfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::FlowTransferBefore"))) (name "FlowTransferBefore") (declared-name "FlowTransferBefore"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::Link"))) (name "Link") (declared-name "Link"))
+        (element (kind "flow def") (id (node (document "d0") (qualified-name "Flows::Message"))) (name "Message") (declared-name "Message")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::Message::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Flows::Message")))))
+          )
+        )
+        (element (kind "flow def") (id (node (document "d0") (qualified-name "Flows::MessageAction"))) (name "MessageAction") (declared-name "MessageAction")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::MessageAction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Flows::MessageAction")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "flow def") (id (node (document "d0") (qualified-name "Flows::SuccessionFlow"))) (name "SuccessionFlow") (declared-name "SuccessionFlow")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::SuccessionFlow::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Flows::SuccessionFlow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::SuccessionFlow::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::SuccessionFlow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::SuccessionFlow::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::SuccessionFlow")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::Transfer"))) (name "Transfer") (declared-name "Transfer"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::actions"))) (name "actions") (declared-name "actions"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::binaryLinkObjects"))) (name "binaryLinkObjects") (declared-name "binaryLinkObjects"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::flowTransfers"))) (name "flowTransfers") (declared-name "flowTransfers"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::flowTransfersBefore"))) (name "flowTransfersBefore") (declared-name "flowTransfersBefore"))
+        (element (kind "flow") (id (node (document "d0") (qualified-name "Flows::flows"))) (name "flows") (declared-name "flows")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::flows::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Flows::Flow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::flows::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::Flow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::flows::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::Flow")))))
+          )
+        )
+        (element (kind "flow") (id (node (document "d0") (qualified-name "Flows::messages"))) (name "messages") (declared-name "messages")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::messages::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Flows::Message")))))
+          )
+        )
+        (element (kind "flow") (id (node (document "d0") (qualified-name "Flows::successionFlows"))) (name "successionFlows") (declared-name "successionFlows")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Flows::successionFlows::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Flows::SuccessionFlow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::successionFlows::source"))) (name "source") (declared-name "source") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::SuccessionFlow")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Flows::successionFlows::target"))) (name "target") (declared-name "target") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "Flows::SuccessionFlow")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flows::transfers"))) (name "transfers") (declared-name "transfers"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::Flow::_documentation"))) (to (node (document "d0") (qualified-name "Flows::Flow"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::Message::_documentation"))) (to (node (document "d0") (qualified-name "Flows::Message"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::MessageAction::_documentation"))) (to (node (document "d0") (qualified-name "Flows::MessageAction"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::SuccessionFlow::_documentation"))) (to (node (document "d0") (qualified-name "Flows::SuccessionFlow"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::_documentation"))) (to (node (document "d0") (qualified-name "Flows"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::flows::_documentation"))) (to (node (document "d0") (qualified-name "Flows::flows"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::messages::_documentation"))) (to (node (document "d0") (qualified-name "Flows::messages"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Flows::successionFlows::_documentation"))) (to (node (document "d0") (qualified-name "Flows::successionFlows"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Flows::SuccessionFlow::source"))) (to (node (document "d0") (qualified-name "Flows::Flow::source"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Flows::SuccessionFlow::target"))) (to (node (document "d0") (qualified-name "Flows::Flow::target"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Flows::flows::source"))) (to (node (document "d0") (qualified-name "Flows::Flow::source"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Flows::flows::target"))) (to (node (document "d0") (qualified-name "Flows::Flow::target"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Flows::successionFlows::source"))) (to (node (document "d0") (qualified-name "Flows::SuccessionFlow::source"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Flows::successionFlows::target"))) (to (node (document "d0") (qualified-name "Flows::SuccessionFlow::target"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Flows::Flow"))) (to (node (document "d0") (qualified-name "Flows::Message"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Flows::Message"))) (to (node (document "d0") (qualified-name "Flows::MessageAction"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Flows::SuccessionFlow"))) (to (node (document "d0") (qualified-name "Flows::Flow"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flows::flows"))) (to (node (document "d0") (qualified-name "Flows::Flow"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flows::messages"))) (to (node (document "d0") (qualified-name "Flows::Message"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flows::successionFlows"))) (to (node (document "d0") (qualified-name "Flows::SuccessionFlow"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

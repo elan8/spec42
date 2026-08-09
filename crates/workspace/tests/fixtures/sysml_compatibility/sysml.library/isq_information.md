@@ -3149,384 +3149,535 @@ standard library package ISQInformation {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQInformation'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (membership_import private -> 'ISQMechanics::PowerValue'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::FrequencyValue'[unresolved])
-      (membership_import private -> 'ISQThermodynamics::EnergyValue'[unresolved])
-      (attribute_def 'TrafficIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::TrafficIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'trafficIntensity' : 'ISQInformation::TrafficIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TrafficIntensityUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'TrafficOfferedIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::TrafficOfferedIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'trafficOfferedIntensity' : 'ISQInformation::TrafficOfferedIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TrafficOfferedIntensityUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'TrafficCarriedIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::TrafficCarriedIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'trafficCarriedIntensity' : 'ISQInformation::TrafficCarriedIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TrafficCarriedIntensityUnit' :> 'DimensionOneUnit'[unresolved])
-      (alias_member 'TrafficLoadUnit' -> 'ISQInformation::TrafficCarriedIntensityUnit'[attribute_def])
-      (alias_member 'TrafficLoadValue' -> 'ISQInformation::TrafficCarriedIntensityValue'[attribute_def])
-      (alias_member 'trafficLoad' -> 'ISQInformation::trafficCarriedIntensity'[attribute_usage])
-      (attribute_def 'MeanQueueLengthValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'meanQueueLength' : 'ISQInformation::MeanQueueLengthValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LossProbabilityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'lossProbability' : 'ISQInformation::LossProbabilityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'WaitingProbabilityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'waitingProbability' : 'ISQInformation::WaitingProbabilityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'CallIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::CallIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'callIntensity' : 'ISQInformation::CallIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CallIntensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'CallingRateUnit' -> 'ISQInformation::CallIntensityUnit'[attribute_def])
-      (alias_member 'CallingRateValue' -> 'ISQInformation::CallIntensityValue'[attribute_def])
-      (alias_member 'callingRate' -> 'ISQInformation::callIntensity'[attribute_usage])
-      (attribute_def 'CompletedCallIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::CompletedCallIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'completedCallIntensity' : 'ISQInformation::CompletedCallIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CompletedCallIntensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'StorageCapacityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::StorageCapacityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'storageCapacity' : 'ISQInformation::StorageCapacityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'StorageCapacityUnit' :> 'DimensionOneUnit'[unresolved])
-      (alias_member 'StorageSizeUnit' -> 'ISQInformation::StorageCapacityUnit'[attribute_def])
-      (alias_member 'StorageSizeValue' -> 'ISQInformation::StorageCapacityValue'[attribute_def])
-      (alias_member 'storageSize' -> 'ISQInformation::storageCapacity'[attribute_usage])
-      (attribute_def 'EquivalentBinaryStorageCapacityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::EquivalentBinaryStorageCapacityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'equivalentBinaryStorageCapacity' : 'ISQInformation::EquivalentBinaryStorageCapacityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EquivalentBinaryStorageCapacityUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'TransferRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::TransferRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'transferRate' : 'ISQInformation::TransferRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TransferRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'periodOfDataElements' : 'DurationValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'BinaryDigitRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::BinaryDigitRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'binaryDigitRate' : 'ISQInformation::BinaryDigitRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'BinaryDigitRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'BitRateUnit' -> 'ISQInformation::BinaryDigitRateUnit'[attribute_def])
-      (alias_member 'BitRateValue' -> 'ISQInformation::BinaryDigitRateValue'[attribute_def])
-      (alias_member 'bitRate' -> 'ISQInformation::binaryDigitRate'[attribute_usage])
-      (attribute_usage 'periodOfBinaryDigits' : 'DurationValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'bitPeriod' -> 'ISQInformation::periodOfBinaryDigits'[attribute_usage])
-      (attribute_def 'EquivalentBinaryDigitRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::EquivalentBinaryDigitRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'equivalentBinaryDigitRate' : 'ISQInformation::EquivalentBinaryDigitRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EquivalentBinaryDigitRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'EquivalentBitRateUnit' -> 'ISQInformation::EquivalentBinaryDigitRateUnit'[attribute_def])
-      (alias_member 'EquivalentBitRateValue' -> 'ISQInformation::EquivalentBinaryDigitRateValue'[attribute_def])
-      (alias_member 'equivalentBitRate' -> 'ISQInformation::equivalentBinaryDigitRate'[attribute_usage])
-      (attribute_def 'ModulationRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::ModulationRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'modulationRate' : 'ISQInformation::ModulationRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ModulationRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'LineDigitRateUnit' -> 'ISQInformation::ModulationRateUnit'[attribute_def])
-      (alias_member 'LineDigitRateValue' -> 'ISQInformation::ModulationRateValue'[attribute_def])
-      (alias_member 'lineDigitRate' -> 'ISQInformation::modulationRate'[attribute_usage])
-      (attribute_usage 'quantizingDistortionRate' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'carrierPower' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'signalEnergyPerBinaryDigit' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ErrorProbabilityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'errorProbability' : 'ISQInformation::ErrorProbabilityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'hammingDistance' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'clockFrequency' : 'FrequencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'clockRate' -> 'ISQInformation::clockFrequency'[attribute_usage])
-      (attribute_def 'DecisionContentValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'decisionContent' : 'ISQInformation::DecisionContentValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'InformationContentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::InformationContentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'informationContent' : 'ISQInformation::InformationContentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'InformationContentUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'EntropyForInformationScienceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::EntropyForInformationScienceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'entropyForInformationScience' : 'ISQInformation::EntropyForInformationScienceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EntropyForInformationScienceUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'MaximumEntropyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::MaximumEntropyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'maximumEntropy' : 'ISQInformation::MaximumEntropyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MaximumEntropyUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'RelativeEntropyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeEntropy' : 'ISQInformation::RelativeEntropyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'RedundancyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::RedundancyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'redundancy' : 'ISQInformation::RedundancyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RedundancyUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'RelativeRedundancyValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativeRedundancy' : 'ISQInformation::RelativeRedundancyValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'JointInformationContentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::JointInformationContentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'jointInformationContent' : 'ISQInformation::JointInformationContentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'JointInformationContentUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'ConditionalInformationContentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::ConditionalInformationContentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'conditionalInformationContent' : 'ISQInformation::ConditionalInformationContentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ConditionalInformationContentUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'ConditionalEntropyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::ConditionalEntropyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'conditionalEntropy' : 'ISQInformation::ConditionalEntropyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ConditionalEntropyUnit' :> 'DimensionOneUnit'[unresolved])
-      (alias_member 'MeanConditionalInformationContentUnit' -> 'ISQInformation::ConditionalEntropyUnit'[attribute_def])
-      (alias_member 'MeanConditionalInformationContentValue' -> 'ISQInformation::ConditionalEntropyValue'[attribute_def])
-      (alias_member 'meanConditionalInformationContent' -> 'ISQInformation::conditionalEntropy'[attribute_usage])
-      (alias_member 'AverageConditionalInformationContentUnit' -> 'ISQInformation::ConditionalEntropyUnit'[attribute_def])
-      (alias_member 'AverageConditionalInformationContentValue' -> 'ISQInformation::ConditionalEntropyValue'[attribute_def])
-      (alias_member 'averageConditionalInformationContent' -> 'ISQInformation::conditionalEntropy'[attribute_usage])
-      (attribute_def 'EquivocationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::EquivocationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'equivocation' : 'ISQInformation::EquivocationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EquivocationUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'IrrelevanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::IrrelevanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'irrelevance' : 'ISQInformation::IrrelevanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'IrrelevanceUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'TransinformationContentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::TransinformationContentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'transinformationContent' : 'ISQInformation::TransinformationContentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TransinformationContentUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'MeanTransinformationContentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::MeanTransinformationContentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'meanTransinformationContent' : 'ISQInformation::MeanTransinformationContentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MeanTransinformationContentUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'CharacterMeanEntropyValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::CharacterMeanEntropyUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'characterMeanEntropy' : 'ISQInformation::CharacterMeanEntropyValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CharacterMeanEntropyUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'AverageInformationRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::AverageInformationRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'averageInformationRate' : 'ISQInformation::AverageInformationRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AverageInformationRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CharacterMeanTransinformationContentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::CharacterMeanTransinformationContentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'characterMeanTransinformationContent' : 'ISQInformation::CharacterMeanTransinformationContentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CharacterMeanTransinformationContentUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_def 'AverageTransinformationRateValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::AverageTransinformationRateUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'averageTransinformationRate' : 'ISQInformation::AverageTransinformationRateValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AverageTransinformationRateUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ChannelCapacityPerCharacterValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::ChannelCapacityPerCharacterUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'channelCapacityPerCharacter' : 'ISQInformation::ChannelCapacityPerCharacterValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ChannelCapacityPerCharacterUnit' :> 'DimensionOneUnit'[unresolved])
-      (alias_member 'ChannelCapacityUnit' -> 'ISQInformation::ChannelCapacityPerCharacterUnit'[attribute_def])
-      (alias_member 'ChannelCapacityValue' -> 'ISQInformation::ChannelCapacityPerCharacterValue'[attribute_def])
-      (alias_member 'channelCapacity' -> 'ISQInformation::channelCapacityPerCharacter'[attribute_usage])
-      (attribute_def 'ChannelTimeCapacityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQInformation::ChannelTimeCapacityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'channelTimeCapacity' : 'ISQInformation::ChannelTimeCapacityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ChannelTimeCapacityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQInformation"))) (name "ISQInformation") (declared-name "ISQInformation")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQInformation::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQInformation::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQInformation::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::AverageConditionalInformationContentUnit"))) (name "AverageConditionalInformationContentUnit") (declared-name "AverageConditionalInformationContentUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::AverageConditionalInformationContentValue"))) (name "AverageConditionalInformationContentValue") (declared-name "AverageConditionalInformationContentValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateUnit"))) (name "AverageInformationRateUnit") (declared-name "AverageInformationRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue"))) (name "AverageInformationRateValue") (declared-name "AverageInformationRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateUnit"))) (name "AverageTransinformationRateUnit") (declared-name "AverageTransinformationRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue"))) (name "AverageTransinformationRateValue") (declared-name "AverageTransinformationRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateUnit"))) (name "BinaryDigitRateUnit") (declared-name "BinaryDigitRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue"))) (name "BinaryDigitRateValue") (declared-name "BinaryDigitRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::BitRateUnit"))) (name "BitRateUnit") (declared-name "BitRateUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::BitRateValue"))) (name "BitRateValue") (declared-name "BitRateValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CallIntensityUnit"))) (name "CallIntensityUnit") (declared-name "CallIntensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CallIntensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CallIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CallIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CallIntensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue"))) (name "CallIntensityValue") (declared-name "CallIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::CallingRateUnit"))) (name "CallingRateUnit") (declared-name "CallingRateUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::CallingRateValue"))) (name "CallingRateValue") (declared-name "CallingRateValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterUnit"))) (name "ChannelCapacityPerCharacterUnit") (declared-name "ChannelCapacityPerCharacterUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue"))) (name "ChannelCapacityPerCharacterValue") (declared-name "ChannelCapacityPerCharacterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityUnit"))) (name "ChannelCapacityUnit") (declared-name "ChannelCapacityUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityValue"))) (name "ChannelCapacityValue") (declared-name "ChannelCapacityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityUnit"))) (name "ChannelTimeCapacityUnit") (declared-name "ChannelTimeCapacityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue"))) (name "ChannelTimeCapacityValue") (declared-name "ChannelTimeCapacityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyUnit"))) (name "CharacterMeanEntropyUnit") (declared-name "CharacterMeanEntropyUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue"))) (name "CharacterMeanEntropyValue") (declared-name "CharacterMeanEntropyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentUnit"))) (name "CharacterMeanTransinformationContentUnit") (declared-name "CharacterMeanTransinformationContentUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue"))) (name "CharacterMeanTransinformationContentValue") (declared-name "CharacterMeanTransinformationContentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityUnit"))) (name "CompletedCallIntensityUnit") (declared-name "CompletedCallIntensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue"))) (name "CompletedCallIntensityValue") (declared-name "CompletedCallIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyUnit"))) (name "ConditionalEntropyUnit") (declared-name "ConditionalEntropyUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue"))) (name "ConditionalEntropyValue") (declared-name "ConditionalEntropyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentUnit"))) (name "ConditionalInformationContentUnit") (declared-name "ConditionalInformationContentUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue"))) (name "ConditionalInformationContentValue") (declared-name "ConditionalInformationContentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::DecisionContentValue"))) (name "DecisionContentValue") (declared-name "DecisionContentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::DecisionContentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::DecisionContentValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQInformation::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceUnit"))) (name "EntropyForInformationScienceUnit") (declared-name "EntropyForInformationScienceUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue"))) (name "EntropyForInformationScienceValue") (declared-name "EntropyForInformationScienceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateUnit"))) (name "EquivalentBinaryDigitRateUnit") (declared-name "EquivalentBinaryDigitRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue"))) (name "EquivalentBinaryDigitRateValue") (declared-name "EquivalentBinaryDigitRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityUnit"))) (name "EquivalentBinaryStorageCapacityUnit") (declared-name "EquivalentBinaryStorageCapacityUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue"))) (name "EquivalentBinaryStorageCapacityValue") (declared-name "EquivalentBinaryStorageCapacityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBitRateUnit"))) (name "EquivalentBitRateUnit") (declared-name "EquivalentBitRateUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::EquivalentBitRateValue"))) (name "EquivalentBitRateValue") (declared-name "EquivalentBitRateValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EquivocationUnit"))) (name "EquivocationUnit") (declared-name "EquivocationUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::EquivocationValue"))) (name "EquivocationValue") (declared-name "EquivocationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::EquivocationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivocationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivocationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivocationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::EquivocationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::EquivocationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ErrorProbabilityValue"))) (name "ErrorProbabilityValue") (declared-name "ErrorProbabilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::ErrorProbabilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::ErrorProbabilityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQInformation::FrequencyValue"))) (name "FrequencyValue") (declared-name "FrequencyValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::InformationContentUnit"))) (name "InformationContentUnit") (declared-name "InformationContentUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::InformationContentValue"))) (name "InformationContentValue") (declared-name "InformationContentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::InformationContentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::InformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::InformationContentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::InformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::InformationContentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::InformationContentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::IrrelevanceUnit"))) (name "IrrelevanceUnit") (declared-name "IrrelevanceUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue"))) (name "IrrelevanceValue") (declared-name "IrrelevanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::JointInformationContentUnit"))) (name "JointInformationContentUnit") (declared-name "JointInformationContentUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue"))) (name "JointInformationContentValue") (declared-name "JointInformationContentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::LineDigitRateUnit"))) (name "LineDigitRateUnit") (declared-name "LineDigitRateUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::LineDigitRateValue"))) (name "LineDigitRateValue") (declared-name "LineDigitRateValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::LossProbabilityValue"))) (name "LossProbabilityValue") (declared-name "LossProbabilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::LossProbabilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::LossProbabilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyUnit"))) (name "MaximumEntropyUnit") (declared-name "MaximumEntropyUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue"))) (name "MaximumEntropyValue") (declared-name "MaximumEntropyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::MeanConditionalInformationContentUnit"))) (name "MeanConditionalInformationContentUnit") (declared-name "MeanConditionalInformationContentUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::MeanConditionalInformationContentValue"))) (name "MeanConditionalInformationContentValue") (declared-name "MeanConditionalInformationContentValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::MeanQueueLengthValue"))) (name "MeanQueueLengthValue") (declared-name "MeanQueueLengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::MeanQueueLengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::MeanQueueLengthValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentUnit"))) (name "MeanTransinformationContentUnit") (declared-name "MeanTransinformationContentUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue"))) (name "MeanTransinformationContentValue") (declared-name "MeanTransinformationContentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ModulationRateUnit"))) (name "ModulationRateUnit") (declared-name "ModulationRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ModulationRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ModulationRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ModulationRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ModulationRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue"))) (name "ModulationRateValue") (declared-name "ModulationRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQInformation::PowerValue"))) (name "PowerValue") (declared-name "PowerValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQInformation::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::RedundancyUnit"))) (name "RedundancyUnit") (declared-name "RedundancyUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::RedundancyValue"))) (name "RedundancyValue") (declared-name "RedundancyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::RedundancyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::RedundancyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::RedundancyValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::RedundancyValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::RedundancyValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::RedundancyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::RelativeEntropyValue"))) (name "RelativeEntropyValue") (declared-name "RelativeEntropyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::RelativeEntropyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::RelativeEntropyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::RelativeRedundancyValue"))) (name "RelativeRedundancyValue") (declared-name "RelativeRedundancyValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::RelativeRedundancyValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::RelativeRedundancyValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::StorageCapacityUnit"))) (name "StorageCapacityUnit") (declared-name "StorageCapacityUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue"))) (name "StorageCapacityValue") (declared-name "StorageCapacityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::StorageSizeUnit"))) (name "StorageSizeUnit") (declared-name "StorageSizeUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::StorageSizeValue"))) (name "StorageSizeValue") (declared-name "StorageSizeValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityUnit"))) (name "TrafficCarriedIntensityUnit") (declared-name "TrafficCarriedIntensityUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue"))) (name "TrafficCarriedIntensityValue") (declared-name "TrafficCarriedIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityUnit"))) (name "TrafficIntensityUnit") (declared-name "TrafficIntensityUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue"))) (name "TrafficIntensityValue") (declared-name "TrafficIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::TrafficLoadUnit"))) (name "TrafficLoadUnit") (declared-name "TrafficLoadUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::TrafficLoadValue"))) (name "TrafficLoadValue") (declared-name "TrafficLoadValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityUnit"))) (name "TrafficOfferedIntensityUnit") (declared-name "TrafficOfferedIntensityUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue"))) (name "TrafficOfferedIntensityValue") (declared-name "TrafficOfferedIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TransferRateUnit"))) (name "TransferRateUnit") (declared-name "TransferRateUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TransferRateUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransferRateUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TransferRateUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransferRateUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TransferRateValue"))) (name "TransferRateValue") (declared-name "TransferRateValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::TransferRateValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransferRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TransferRateValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransferRateValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TransferRateValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransferRateValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TransinformationContentUnit"))) (name "TransinformationContentUnit") (declared-name "TransinformationContentUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue"))) (name "TransinformationContentValue") (declared-name "TransinformationContentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::WaitingProbabilityValue"))) (name "WaitingProbabilityValue") (declared-name "WaitingProbabilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::WaitingProbabilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::WaitingProbabilityValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::_documentation"))) (name ""))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::averageConditionalInformationContent"))) (name "averageConditionalInformationContent") (declared-name "averageConditionalInformationContent"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::averageInformationRate"))) (name "averageInformationRate") (declared-name "averageInformationRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::averageTransinformationRate"))) (name "averageTransinformationRate") (declared-name "averageTransinformationRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::binaryDigitRate"))) (name "binaryDigitRate") (declared-name "binaryDigitRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::bitPeriod"))) (name "bitPeriod") (declared-name "bitPeriod"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::bitRate"))) (name "bitRate") (declared-name "bitRate"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::callIntensity"))) (name "callIntensity") (declared-name "callIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::callingRate"))) (name "callingRate") (declared-name "callingRate"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::carrierPower"))) (name "carrierPower") (declared-name "carrierPower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::carrierPower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::carrierPower")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::channelCapacity"))) (name "channelCapacity") (declared-name "channelCapacity"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::channelCapacityPerCharacter"))) (name "channelCapacityPerCharacter") (declared-name "channelCapacityPerCharacter") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::channelTimeCapacity"))) (name "channelTimeCapacity") (declared-name "channelTimeCapacity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::characterMeanEntropy"))) (name "characterMeanEntropy") (declared-name "characterMeanEntropy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::characterMeanTransinformationContent"))) (name "characterMeanTransinformationContent") (declared-name "characterMeanTransinformationContent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::clockFrequency"))) (name "clockFrequency") (declared-name "clockFrequency") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::clockFrequency::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::clockFrequency")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::clockRate"))) (name "clockRate") (declared-name "clockRate"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::completedCallIntensity"))) (name "completedCallIntensity") (declared-name "completedCallIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::conditionalEntropy"))) (name "conditionalEntropy") (declared-name "conditionalEntropy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::conditionalInformationContent"))) (name "conditionalInformationContent") (declared-name "conditionalInformationContent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::decisionContent"))) (name "decisionContent") (declared-name "decisionContent") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::entropyForInformationScience"))) (name "entropyForInformationScience") (declared-name "entropyForInformationScience") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::equivalentBinaryDigitRate"))) (name "equivalentBinaryDigitRate") (declared-name "equivalentBinaryDigitRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::equivalentBinaryStorageCapacity"))) (name "equivalentBinaryStorageCapacity") (declared-name "equivalentBinaryStorageCapacity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::equivalentBitRate"))) (name "equivalentBitRate") (declared-name "equivalentBitRate"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::equivocation"))) (name "equivocation") (declared-name "equivocation") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::errorProbability"))) (name "errorProbability") (declared-name "errorProbability") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::hammingDistance"))) (name "hammingDistance") (declared-name "hammingDistance") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::hammingDistance::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::hammingDistance")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::informationContent"))) (name "informationContent") (declared-name "informationContent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::irrelevance"))) (name "irrelevance") (declared-name "irrelevance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::jointInformationContent"))) (name "jointInformationContent") (declared-name "jointInformationContent") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::lineDigitRate"))) (name "lineDigitRate") (declared-name "lineDigitRate"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::lossProbability"))) (name "lossProbability") (declared-name "lossProbability") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::maximumEntropy"))) (name "maximumEntropy") (declared-name "maximumEntropy") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::meanConditionalInformationContent"))) (name "meanConditionalInformationContent") (declared-name "meanConditionalInformationContent"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::meanQueueLength"))) (name "meanQueueLength") (declared-name "meanQueueLength") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::meanTransinformationContent"))) (name "meanTransinformationContent") (declared-name "meanTransinformationContent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::modulationRate"))) (name "modulationRate") (declared-name "modulationRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::periodOfBinaryDigits"))) (name "periodOfBinaryDigits") (declared-name "periodOfBinaryDigits") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::periodOfBinaryDigits::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::periodOfBinaryDigits")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::periodOfDataElements"))) (name "periodOfDataElements") (declared-name "periodOfDataElements") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::periodOfDataElements::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::periodOfDataElements")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::quantizingDistortionRate"))) (name "quantizingDistortionRate") (declared-name "quantizingDistortionRate") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::quantizingDistortionRate::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::quantizingDistortionRate")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::redundancy"))) (name "redundancy") (declared-name "redundancy") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::relativeEntropy"))) (name "relativeEntropy") (declared-name "relativeEntropy") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::relativeRedundancy"))) (name "relativeRedundancy") (declared-name "relativeRedundancy") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::signalEnergyPerBinaryDigit"))) (name "signalEnergyPerBinaryDigit") (declared-name "signalEnergyPerBinaryDigit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQInformation::signalEnergyPerBinaryDigit::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQInformation::signalEnergyPerBinaryDigit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::storageCapacity"))) (name "storageCapacity") (declared-name "storageCapacity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::storageSize"))) (name "storageSize") (declared-name "storageSize"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::trafficCarriedIntensity"))) (name "trafficCarriedIntensity") (declared-name "trafficCarriedIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::trafficIntensity"))) (name "trafficIntensity") (declared-name "trafficIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQInformation::trafficLoad"))) (name "trafficLoad") (declared-name "trafficLoad"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::trafficOfferedIntensity"))) (name "trafficOfferedIntensity") (declared-name "trafficOfferedIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::transferRate"))) (name "transferRate") (declared-name "transferRate") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::transinformationContent"))) (name "transinformationContent") (declared-name "transinformationContent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQInformation::waitingProbability"))) (name "waitingProbability") (declared-name "waitingProbability") (declared (properties (ordered false) (unique true))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::DecisionContentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::DecisionContentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EquivocationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivocationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ErrorProbabilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::ErrorProbabilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::InformationContentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::InformationContentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::LossProbabilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::LossProbabilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::MeanQueueLengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::MeanQueueLengthValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::RedundancyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::RedundancyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::RelativeEntropyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::RelativeEntropyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::RelativeRedundancyValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::RelativeRedundancyValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TransferRateValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::TransferRateValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::WaitingProbabilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::WaitingProbabilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::carrierPower::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::carrierPower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::clockFrequency::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::clockFrequency"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::hammingDistance::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::hammingDistance"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::periodOfBinaryDigits::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::periodOfBinaryDigits"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::periodOfDataElements::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::periodOfDataElements"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::quantizingDistortionRate::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::quantizingDistortionRate"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::signalEnergyPerBinaryDigit::_documentation"))) (to (node (document "d0") (qualified-name "ISQInformation::signalEnergyPerBinaryDigit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::CallIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::EquivocationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivocationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::InformationContentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::InformationContentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::IrrelevanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::JointInformationContentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::ModulationRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::RedundancyValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::RedundancyUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::StorageCapacityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TransferRateValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::TransferRateUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQInformation::TransinformationContentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::averageInformationRate"))) (to (node (document "d0") (qualified-name "ISQInformation::AverageInformationRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::averageTransinformationRate"))) (to (node (document "d0") (qualified-name "ISQInformation::AverageTransinformationRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::binaryDigitRate"))) (to (node (document "d0") (qualified-name "ISQInformation::BinaryDigitRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::callIntensity"))) (to (node (document "d0") (qualified-name "ISQInformation::CallIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::channelCapacityPerCharacter"))) (to (node (document "d0") (qualified-name "ISQInformation::ChannelCapacityPerCharacterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::channelTimeCapacity"))) (to (node (document "d0") (qualified-name "ISQInformation::ChannelTimeCapacityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::characterMeanEntropy"))) (to (node (document "d0") (qualified-name "ISQInformation::CharacterMeanEntropyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::characterMeanTransinformationContent"))) (to (node (document "d0") (qualified-name "ISQInformation::CharacterMeanTransinformationContentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::completedCallIntensity"))) (to (node (document "d0") (qualified-name "ISQInformation::CompletedCallIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::conditionalEntropy"))) (to (node (document "d0") (qualified-name "ISQInformation::ConditionalEntropyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::conditionalInformationContent"))) (to (node (document "d0") (qualified-name "ISQInformation::ConditionalInformationContentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::decisionContent"))) (to (node (document "d0") (qualified-name "ISQInformation::DecisionContentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::entropyForInformationScience"))) (to (node (document "d0") (qualified-name "ISQInformation::EntropyForInformationScienceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::equivalentBinaryDigitRate"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryDigitRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::equivalentBinaryStorageCapacity"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivalentBinaryStorageCapacityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::equivocation"))) (to (node (document "d0") (qualified-name "ISQInformation::EquivocationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::errorProbability"))) (to (node (document "d0") (qualified-name "ISQInformation::ErrorProbabilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::informationContent"))) (to (node (document "d0") (qualified-name "ISQInformation::InformationContentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::irrelevance"))) (to (node (document "d0") (qualified-name "ISQInformation::IrrelevanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::jointInformationContent"))) (to (node (document "d0") (qualified-name "ISQInformation::JointInformationContentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::lossProbability"))) (to (node (document "d0") (qualified-name "ISQInformation::LossProbabilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::maximumEntropy"))) (to (node (document "d0") (qualified-name "ISQInformation::MaximumEntropyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::meanQueueLength"))) (to (node (document "d0") (qualified-name "ISQInformation::MeanQueueLengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::meanTransinformationContent"))) (to (node (document "d0") (qualified-name "ISQInformation::MeanTransinformationContentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::modulationRate"))) (to (node (document "d0") (qualified-name "ISQInformation::ModulationRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::redundancy"))) (to (node (document "d0") (qualified-name "ISQInformation::RedundancyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::relativeEntropy"))) (to (node (document "d0") (qualified-name "ISQInformation::RelativeEntropyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::relativeRedundancy"))) (to (node (document "d0") (qualified-name "ISQInformation::RelativeRedundancyValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::storageCapacity"))) (to (node (document "d0") (qualified-name "ISQInformation::StorageCapacityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::trafficCarriedIntensity"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficCarriedIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::trafficIntensity"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::trafficOfferedIntensity"))) (to (node (document "d0") (qualified-name "ISQInformation::TrafficOfferedIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::transferRate"))) (to (node (document "d0") (qualified-name "ISQInformation::TransferRateValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::transinformationContent"))) (to (node (document "d0") (qualified-name "ISQInformation::TransinformationContentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQInformation::waitingProbability"))) (to (node (document "d0") (qualified-name "ISQInformation::WaitingProbabilityValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

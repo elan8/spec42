@@ -166,27 +166,44 @@ semantic.unresolved_name 'mass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleMasses'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'MassRollup'[unresolved])
-      (part_def 'CarPart' :> 'MassedThing'[unresolved]
-        (attribute_usage composite 'serialNumber' : 'String'[unresolved]))
-      (part_usage 'car' : 'VehicleMasses::CarPart'[part_def] :> 'compositeThing'[unresolved]
-        (attribute_usage composite 'vin' :>> 'VehicleMasses::CarPart::serialNumber'[attribute_usage])
-        (part_usage composite 'carParts' : 'VehicleMasses::CarPart'[part_def] :>> 'subcomponents'[unresolved]
-          (multiplicity_range [*]))
-        (part_usage composite 'engine' :> 'simpleThing'[unresolved] :> 'VehicleMasses::car::carParts'[part_usage])
-        (part_usage composite 'transmission' :> 'simpleThing'[unresolved] :> 'VehicleMasses::car::carParts'[part_usage]))
-      (namespace_import private -> 'SI'[unresolved])
-      (part_usage 'c' :> 'VehicleMasses::car'[part_usage]
-        (reference_usage reference :>> 'mass'[unresolved]
-          (feature_value (=)))
-        (part_usage composite :>> 'VehicleMasses::car::engine'[part_usage]
-          (reference_usage reference :>> 'mass'[unresolved]
-            (feature_value (=))))
-        (part_usage composite :>> 'VehicleMasses::car::transmission'[part_usage]
-          (reference_usage reference :>> 'mass'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleMasses"))) (name "VehicleMasses") (declared-name "VehicleMasses")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleMasses::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleMasses::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleMasses::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleMasses::CarPart"))) (name "CarPart") (declared-name "CarPart") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleMasses::CarPart::serialNumber"))) (name "serialNumber") (declared-name "serialNumber") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::c"))) (name "c") (declared-name "c") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::c::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::c::transmission"))) (name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car"))) (name "car") (declared-name "car") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::carParts"))) (name "carParts") (declared-name "carParts") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleMasses::car::vin"))) (name "vin") (declared-name "vin") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car::vin"))) (to (node (document "d0") (qualified-name "VehicleMasses::CarPart::serialNumber"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::c"))) (to (node (document "d0") (qualified-name "VehicleMasses::car"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car"))) (to (node (document "d0") (qualified-name "VehicleMasses::CarPart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car::carParts"))) (to (node (document "d0") (qualified-name "VehicleMasses::CarPart"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

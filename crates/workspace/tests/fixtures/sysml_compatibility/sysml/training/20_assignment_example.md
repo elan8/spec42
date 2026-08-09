@@ -187,50 +187,51 @@ semantic.unresolved_name 'ISQ::length'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'For Loop Example'
-      (namespace_import private -> 'SequenceFunctions'[unresolved])
-      (action_def 'StraightLineDynamics'
-        (reference_usage in reference 'power' : 'ISQ::PowerValue'[unresolved])
-        (reference_usage in reference 'mass' : 'ISQ::MassValue'[unresolved])
-        (reference_usage in reference 'delta_t' : 'ISQ::TimeValue'[unresolved])
-        (reference_usage in reference 'x_in' : 'ISQ::LengthValue'[unresolved])
-        (reference_usage in reference 'v_in' : 'ISQ::SpeedValue'[unresolved])
-        (reference_usage out reference 'x_out' : 'ISQ::LengthValue'[unresolved])
-        (reference_usage out reference 'v_out' : 'ISQ::SpeedValue'[unresolved]))
-      (action_def 'ComputeMotion'
-        (attribute_usage in 'powerProfile' :> 'ISQ::power'[unresolved]
-          (multiplicity_range [*]))
-        (attribute_usage in 'vehicleMass' :> 'ISQ::mass'[unresolved])
-        (attribute_usage in 'initialPosition' :> 'ISQ::length'[unresolved])
-        (attribute_usage in 'initialSpeed' :> 'ISQ::speed'[unresolved])
-        (attribute_usage in 'deltaT' :> 'ISQ::time'[unresolved])
-        (attribute_usage out 'positions' :> 'ISQ::length'[unresolved]
-          (multiplicity_range [*])
-          (feature_value (:=)))
-        (attribute_usage composite 'position'
-          (feature_value (:=)))
-        (attribute_usage composite 'speed'
-          (feature_value (:=)))
-        (for_loop_action_usage
-          (perform_action_usage 'dynamics' : 'For Loop Example::StraightLineDynamics'[action_def]
-            (reference_usage in reference 'power'
-              (feature_value (=)))
-            (reference_usage in reference 'mass'
-              (feature_value (=)))
-            (reference_usage in reference 'delta_t'
-              (feature_value (=)))
-            (reference_usage in reference 'x_in'
-              (feature_value (=)))
-            (reference_usage in reference 'v_in'
-              (feature_value (=)))
-            (reference_usage out reference 'x_out')
-            (reference_usage out reference 'v_out'))
-          (source_succession
-            (assignment_action_usage))
-          (source_succession
-            (assignment_action_usage))
-          (source_succession
-            (assignment_action_usage)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "For Loop Example"))) (name "For Loop Example") (declared-name "For Loop Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "For Loop Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (name "ComputeMotion") (declared-name "ComputeMotion")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::deltaT"))) (name "deltaT") (declared-name "deltaT") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+            (element (kind "for loop") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))) (name "vehiclePower") (declared-name "vehiclePower") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))))
+              (contains
+                (element (kind "assign") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+                (element (kind "assign") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+                (element (kind "assign") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign2"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+                (element (kind "perform") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (name "dynamics") (declared-name "dynamics") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+              )
+            )
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialPosition"))) (name "initialPosition") (declared-name "initialPosition") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::initialSpeed"))) (name "initialSpeed") (declared-name "initialSpeed") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::position := initialPosition"))) (name "position := initialPosition") (declared-name "position := initialPosition") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::positions"))) (name "positions") (declared-name "positions") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::powerProfile"))) (name "powerProfile") (declared-name "powerProfile") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::speed := initialSpeed"))) (name "speed := initialSpeed") (declared-name "speed := initialSpeed") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::vehicleMass"))) (name "vehicleMass") (declared-name "vehicleMass") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::ComputeMotion")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (name "StraightLineDynamics") (declared-name "StraightLineDynamics")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::delta_t"))) (name "delta_t") (declared-name "delta_t") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::v_out"))) (name "v_out") (declared-name "v_out") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics::x_out"))) (name "x_out") (declared-name "x_out") (effective (featuring-type (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (to (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

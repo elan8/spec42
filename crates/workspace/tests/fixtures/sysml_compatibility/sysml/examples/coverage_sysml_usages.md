@@ -183,42 +183,15 @@ part def Vehicle {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (part_def 'Sensor')
-    (part_def 'Engine')
-    (part_def 'DataPort')
-    (part_def 'Widget')
-    (part_def 'Color')
-    (enum_def 'Priority'
-      (enum_usage composite 'low')
-      (enum_usage composite 'medium')
-      (enum_usage composite 'high'))
-    (part_def 'Vehicle'
-      (attribute_usage in 'speed' : 'Integer'[unresolved])
-      (attribute_usage out 'temp' : 'Integer'[unresolved])
-      (attribute_usage inout 'velocity' : 'Integer'[unresolved])
-      (attribute_usage composite 'mass' : 'Integer'[unresolved]
-        (feature_value (=)))
-      (attribute_usage composite 'weights' : 'Integer'[unresolved]
-        (multiplicity_range [3]))
-      (enum_usage composite 'color' : 'Color'[part_def])
-      (occurrence_usage composite 'event1')
-      (occurrence_usage individual composite 'person1' : 'Sensor'[part_def])
-      (item_usage composite 'payload' : 'Widget'[part_def])
-      (port_usage composite 'out1' : 'DataPort'[part_def])
-      (event_occurrence_usage 'startEvent')
-      (occurrence_usage composite 's1')
-      (occurrence_usage composite 'ts1')
-      (reference_usage reference 'r1' : 'Sensor'[part_def])
-      (attribute_usage reference 'refAttr' : 'Integer'[unresolved])
-      (item_usage reference 'refItem' : 'Widget'[part_def])
-      (part_usage reference 'refPart' : 'Engine'[part_def])
-      (event_occurrence_usage reference 'refEvent')
-      (source_succession
-        (event_occurrence_usage 'nextEvent'))
-      (variant_usage
-        (part_usage composite 'optionA'))
-      (variant_usage
-        (part_usage composite 'optionB')))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

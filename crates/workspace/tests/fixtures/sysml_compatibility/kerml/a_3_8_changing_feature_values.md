@@ -840,194 +840,66 @@ semantic.unresolved_name 'objectToFinish::afterShip::timeCoincidentOccurrences'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ChangingFeatureValuesModelToBeExecuted'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'FeatureReferencingPerformances::FeatureWritePerformance'[unresolved])
-      (behavior_def 'Manufacture'
-        (feature_def 'objectToFinish' : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-          (multiplicity_range [1]))
-        (step_def 'paint' : 'ChangingFeatureValuesModelToBeExecuted::Paint'[behavior_def]
-          (multiplicity_range [1])
-          (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Paint::objectToPaint'[feature_def]
-            (feature_value (=))))
-        (step_def 'dry' : 'ChangingFeatureValuesModelToBeExecuted::Dry'[behavior_def]
-          (multiplicity_range [*])
-          (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Dry::objectToDry'[feature_def]
-            (feature_value (=))))
-        (succession_def 'p_before_d'
-          (connector_end 'paint')
-          (connector_end 'dry'))
-        (step_def 'ship' : 'ChangingFeatureValuesModelToBeExecuted::Ship'[behavior_def]
-          (multiplicity_range [*])
-          (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Ship::objectToShip'[feature_def]
-            (feature_value (=))))
-        (succession_def 'd_before_s'
-          (connector_end 'dry')
-          (connector_end 'ship')))
-      (structure_def 'Product'
-        (feature_def 'isPainted' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (:=)))
-        (feature_def 'isDry' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (:=)))
-        (feature_def 'isShipped' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (:=))))
-      (behavior_def 'Paint'
-        (feature_def 'objectToPaint' : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-          (multiplicity_range [1]))
-        (step_def 'painting' : 'FeatureWritePerformance'[unresolved]
-          (multiplicity_range [1])
-          (feature_def in :>> 'onOccurrence'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-            (feature_value (=))
-            (feature_def :>> 'startingAt'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-              (feature_def :>> 'accessedFeature'[unresolved] : 'Boolean'[unresolved] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def]
-                (multiplicity_range [1]))))
-          (feature_def in :>> 'replacementValues'[unresolved]
-            (feature_value (=))))
-        (succession_def 'p_before_p'
-          (connector_end 'painting')
-          (connector_end 'painted'))
-        (step_def 'painted' : 'FeatureWritePerformance'[unresolved]
-          (multiplicity_range [*])
-          (feature_def in :>> 'onOccurrence'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-            (feature_value (=))
-            (feature_def :>> 'startingAt'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-              (feature_def :>> 'accessedFeature'[unresolved] : 'Boolean'[unresolved] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isPainted'[feature_def]
-                (multiplicity_range [1]))))
-          (feature_def in :>> 'replacementValues'[unresolved]
-            (feature_value (=)))))
-      (behavior_def 'Dry'
-        (feature_def 'objectToDry' : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-          (multiplicity_range [1]))
-        (step_def 'dried' : 'FeatureWritePerformance'[unresolved]
-          (multiplicity_range [1])
-          (feature_def in :>> 'onOccurrence'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-            (feature_value (=))
-            (feature_def :>> 'startingAt'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-              (feature_def :>> 'accessedFeature'[unresolved] : 'Boolean'[unresolved] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def]
-                (multiplicity_range [1]))))
-          (feature_def in :>> 'replacementValues'[unresolved]
-            (feature_value (=)))))
-      (behavior_def 'Ship'
-        (feature_def 'objectToShip' : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-          (multiplicity_range [1]))
-        (step_def 'shipped' : 'FeatureWritePerformance'[unresolved]
-          (multiplicity_range [1])
-          (feature_def in :>> 'onOccurrence'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-            (feature_value (=))
-            (feature_def :>> 'startingAt'[unresolved] : 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-              (feature_def :>> 'accessedFeature'[unresolved] : 'Boolean'[unresolved] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isShipped'[feature_def]
-                (multiplicity_range [1]))))
-          (feature_def in :>> 'replacementValues'[unresolved]
-            (feature_value (=))))))
-    (package 'ChangingFeatureValuesExecution'
-      (documentation)
-      (namespace_import private -> 'Atoms'[unresolved])
-      (namespace_import private -> 'ChangingFeatureValuesModelToBeExecuted'[package])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::HappensBefore'[unresolved])
-      (membership_import private -> 'FeatureReferencingPerformances::FeatureWritePerformance'[unresolved])
-      (structure_def 'ProductTimeSlice' :> 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-        (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Product::isPainted'[feature_def])
-        (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def])
-        (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Product::isShipped'[feature_def]))
-      (structure_def 'MyProduct' :> 'ChangingFeatureValuesModelToBeExecuted::Product'[structure_def]
-        (feature_def 'beforePaint' : 'ChangingFeatureValuesExecution::ProductTimeSlice'[structure_def] :> 'timeSlices'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'whilePainting' : 'ChangingFeatureValuesExecution::ProductTimeSlice'[structure_def] :> 'timeSlices'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'afterPaint' : 'ChangingFeatureValuesExecution::ProductTimeSlice'[structure_def] :> 'timeSlices'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'afterDry' : 'ChangingFeatureValuesExecution::ProductTimeSlice'[structure_def] :> 'timeSlices'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def 'afterShip' : 'ChangingFeatureValuesExecution::ProductTimeSlice'[structure_def] :> 'timeSlices'[unresolved]
-          (multiplicity_range [1])))
-      (behavior_def 'MyProductFeatureWrite' :> 'FeatureWritePerformance'[unresolved]
-        (feature_def in :>> 'onOccurrence'[unresolved] : 'ChangingFeatureValuesExecution::MyProduct'[structure_def]))
-      (behavior_def 'PaintingMyProductFeatureWrite' :> 'ChangingFeatureValuesExecution::MyProductFeatureWrite'[behavior_def])
-      (behavior_def 'PaintedMyProductFeatureWrite' :> 'ChangingFeatureValuesExecution::MyProductFeatureWrite'[behavior_def])
-      (association_def 'MyPaintingFW_Before_PaintFW_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'ChangingFeatureValuesExecution::PaintingMyProductFeatureWrite'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'ChangingFeatureValuesExecution::PaintedMyProductFeatureWrite'[behavior_def]))
-      (behavior_def 'MyPaint' :> 'ChangingFeatureValuesModelToBeExecuted::Paint'[behavior_def]
-        (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Paint::objectToPaint'[feature_def] : 'ChangingFeatureValuesExecution::MyProduct'[structure_def])
-        (step_def :>> 'ChangingFeatureValuesModelToBeExecuted::Paint::painting'[step_def] : 'ChangingFeatureValuesExecution::PaintingMyProductFeatureWrite'[behavior_def]
-          (feature_def in 'onOccurrence'))
-        (step_def :>> 'ChangingFeatureValuesModelToBeExecuted::Paint::painted'[step_def] : 'ChangingFeatureValuesExecution::PaintedMyProductFeatureWrite'[behavior_def]
-          (feature_def in 'onOccurrence'))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'painting')
-          (connector_end 'painted')))
-      (behavior_def 'MyDry' :> 'ChangingFeatureValuesModelToBeExecuted::Dry'[behavior_def]
-        (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Dry::objectToDry'[feature_def] : 'ChangingFeatureValuesExecution::MyProduct'[structure_def])
-        (step_def :>> 'ChangingFeatureValuesModelToBeExecuted::Dry::dried'[step_def] : 'ChangingFeatureValuesExecution::MyProductFeatureWrite'[behavior_def]
-          (feature_def in 'onOccurrence')))
-      (association_def 'MyPaint_Before_Dry_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'ChangingFeatureValuesExecution::MyPaint'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'ChangingFeatureValuesExecution::MyDry'[behavior_def]))
-      (behavior_def 'MyShip' :> 'ChangingFeatureValuesModelToBeExecuted::Ship'[behavior_def]
-        (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Ship::objectToShip'[feature_def] : 'ChangingFeatureValuesExecution::MyProduct'[structure_def])
-        (step_def :>> 'ChangingFeatureValuesModelToBeExecuted::Ship::shipped'[step_def] : 'ChangingFeatureValuesExecution::MyProductFeatureWrite'[behavior_def]
-          (feature_def in 'onOccurrence')))
-      (association_def 'MyDry_Before_Ship_Link' :> 'HappensBefore'[unresolved]
-        (feature_def end :>> 'earlierOccurrence'[unresolved] : 'ChangingFeatureValuesExecution::MyDry'[behavior_def])
-        (feature_def end :>> 'laterOccurrence'[unresolved] : 'ChangingFeatureValuesExecution::MyShip'[behavior_def]))
-      (behavior_def 'MyManufacture' :> 'ChangingFeatureValuesModelToBeExecuted::Manufacture'[behavior_def]
-        (feature_def :>> 'ChangingFeatureValuesModelToBeExecuted::Manufacture::objectToFinish'[feature_def] : 'ChangingFeatureValuesExecution::MyProduct'[structure_def])
-        (feature_def :>> 'startShot'[unresolved] :> 'objectToFinish::beforePaint::startShot::timeCoincidentOccurrences'[unresolved])
-        (feature_def 'obPiP' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::beforePaint'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isPainted'[feature_def]
-          (feature_value (=)))
-        (feature_def 'obPiD' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::beforePaint'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def]
-          (feature_value (=)))
-        (feature_def 'obPiS' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::beforePaint'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isShipped'[feature_def]
-          (feature_value (=)))
-        (step_def :>> 'ChangingFeatureValuesModelToBeExecuted::Manufacture::paint'[step_def] : 'ChangingFeatureValuesExecution::MyPaint'[behavior_def]
-          (feature_def :>> ''[feature_def] :>> ''[feature_def]))
-        (feature_def :> 'objectToFinish::beforePaint::immediateSuccessors'[unresolved] :> 'objectToFinish::whilePainting::startShot::timeCoincidentOccurrences'[unresolved] :> ''[step_def] :> 'painting'[unresolved] :> 'endShot'[unresolved])
-        (feature_def 'owPiP' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::whilePainting'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isPainted'[feature_def]
-          (feature_value (=)))
-        (feature_def 'owPiD' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::whilePainting'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def]
-          (feature_value (=)))
-        (feature_def 'owPiS' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::whilePainting'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isShipped'[feature_def]
-          (feature_value (=)))
-        (feature_def :> 'objectToFinish::whilePainting::immediateSuccessors'[unresolved] :> 'objectToFinish::afterPaint::startShot::timeCoincidentOccurrences'[unresolved] :> ''[step_def] :> 'painted'[unresolved] :> 'endShot'[unresolved])
-        (feature_def 'oaPiP' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterPaint'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isPainted'[feature_def]
-          (feature_value (=)))
-        (feature_def 'oaPiD' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterPaint'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def]
-          (feature_value (=)))
-        (feature_def 'oaPiS' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterPaint'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isShipped'[feature_def]
-          (feature_value (=)))
-        (step_def :>> 'ChangingFeatureValuesModelToBeExecuted::Manufacture::dry'[step_def] : 'ChangingFeatureValuesExecution::MyDry'[behavior_def]
-          (feature_def :>> ''[feature_def] :>> ''[feature_def]))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'paint')
-          (connector_end 'dry'))
-        (feature_def :> 'objectToFinish::afterPaint::immediateSuccessors'[unresolved] :> 'objectToFinish::afterDry::startShot::timeCoincidentOccurrences'[unresolved] :> ''[step_def] :> 'dried'[unresolved] :> 'endShot'[unresolved])
-        (feature_def 'oaDiP' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterDry'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isPainted'[feature_def]
-          (feature_value (=)))
-        (feature_def 'oaDiD' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterDry'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def]
-          (feature_value (=)))
-        (feature_def 'oaDiS' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterDry'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isShipped'[feature_def]
-          (feature_value (=)))
-        (step_def :>> 'ChangingFeatureValuesModelToBeExecuted::Manufacture::ship'[step_def] : 'ChangingFeatureValuesExecution::MyShip'[behavior_def]
-          (feature_def :>> ''[feature_def] :>> ''[feature_def]))
-        (not_implemented 'malformed')
-        (succession_def
-          (connector_end 'dry')
-          (connector_end 'ship'))
-        (feature_def :> 'objectToFinish::afterDry::immediateSuccessors'[unresolved] :> 'objectToFinish::afterShip::startShot::timeCoincidentOccurrences'[unresolved] :> ''[step_def] :> 'shipped'[unresolved] :> 'endShot'[unresolved])
-        (feature_def :>> 'endShot'[unresolved] :> 'objectToFinish::afterShip::timeCoincidentOccurrences'[unresolved])
-        (feature_def 'oaSiP' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterShip'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isPainted'[feature_def]
-          (feature_value (=)))
-        (feature_def 'oaSiD' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterShip'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isDry'[feature_def]
-          (feature_value (=)))
-        (feature_def 'oaSiS' :> ''[feature_def] :> 'ChangingFeatureValuesExecution::MyProduct::afterShip'[feature_def] :> 'ChangingFeatureValuesModelToBeExecuted::Product::isShipped'[feature_def]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))) (name "ChangingFeatureValuesExecution") (declared-name "ChangingFeatureValuesExecution")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::HappensBefore"))) (name "HappensBefore") (declared-name "HappensBefore"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyDry"))) (name "MyDry") (declared-name "MyDry"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyDry_Before_Ship_Link"))) (name "MyDry_Before_Ship_Link") (declared-name "MyDry_Before_Ship_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyManufacture"))) (name "MyManufacture") (declared-name "MyManufacture"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaint"))) (name "MyPaint") (declared-name "MyPaint"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaint_Before_Dry_Link"))) (name "MyPaint_Before_Dry_Link") (declared-name "MyPaint_Before_Dry_Link"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyPaintingFW_Before_PaintFW_Link"))) (name "MyPaintingFW_Before_PaintFW_Link") (declared-name "MyPaintingFW_Before_PaintFW_Link"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyProduct"))) (name "MyProduct") (declared-name "MyProduct"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyProductFeatureWrite"))) (name "MyProductFeatureWrite") (declared-name "MyProductFeatureWrite"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::MyShip"))) (name "MyShip") (declared-name "MyShip"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::PaintedMyProductFeatureWrite"))) (name "PaintedMyProductFeatureWrite") (declared-name "PaintedMyProductFeatureWrite"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::PaintingMyProductFeatureWrite"))) (name "PaintingMyProductFeatureWrite") (declared-name "PaintingMyProductFeatureWrite"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::ProductTimeSlice"))) (name "ProductTimeSlice") (declared-name "ProductTimeSlice"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword5"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword6"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword7"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword8"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword9"))) (name "atom") (declared-name "atom"))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted"))) (name "ChangingFeatureValuesModelToBeExecuted") (declared-name "ChangingFeatureValuesModelToBeExecuted")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Dry"))) (name "Dry") (declared-name "Dry"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::FeatureWritePerformance"))) (name "FeatureWritePerformance") (declared-name "FeatureWritePerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Manufacture"))) (name "Manufacture") (declared-name "Manufacture"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Paint"))) (name "Paint") (declared-name "Paint"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Product"))) (name "Product") (declared-name "Product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Ship"))) (name "Ship") (declared-name "Ship"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword5"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword6"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword7"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword8"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ChangingFeatureValuesExecution::_atom#metadata_keyword9"))) (to (node (document "d0") (qualified-name "ChangingFeatureValuesExecution"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

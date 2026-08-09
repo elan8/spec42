@@ -120,23 +120,46 @@ semantic.unresolved_name 'massReqd'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Requirement Usages'
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'Requirement Definitions'[unresolved])
-      (requirement_usage 'fullVehicleMassLimit' : 'VehicleMassLimitationRequirement'[unresolved]
-        (subject_membership in 'vehicle' : 'Vehicle'[unresolved])
-        (attribute_usage composite :>> 'massReqd'[unresolved]
-          (feature_value (=)))
-        (assume_constraint_usage composite
-          (documentation)
-          (result_expr_membership)))
-      (requirement_usage 'emptyVehicleMassLimit' : 'VehicleMassLimitationRequirement'[unresolved]
-        (subject_membership in 'vehicle' : 'Vehicle'[unresolved])
-        (attribute_usage composite :>> 'massReqd'[unresolved]
-          (feature_value (=)))
-        (assume_constraint_usage composite
-          (documentation)
-          (result_expr_membership))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Requirement Usages"))) (name "Requirement Usages") (declared-name "Requirement Usages")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Usages::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Usages::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (name "emptyVehicleMassLimit") (declared-name "emptyVehicleMassLimit")
+          (contains
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (name ""))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (name "fullVehicleMassLimit") (declared-name "fullVehicleMassLimit")
+          (contains
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (name ""))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

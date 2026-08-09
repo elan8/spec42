@@ -90,16 +90,21 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TextualRepresentation'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (class_def 'C'
-        (feature_def 'x' : 'Real'[unresolved])
-        (invariant_def 'x_constraint'
-          (textual_rep 'inOCL')))
-      (behavior_def 'setX'
-        (feature_def in 'c' : 'TextualRepresentation::C'[class_def])
-        (feature_def in 'newX' : 'Real'[unresolved])
-        (textual_rep)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TextualRepresentation"))) (name "TextualRepresentation") (declared-name "TextualRepresentation")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TextualRepresentation::C"))) (name "C") (declared-name "C"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "TextualRepresentation::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TextualRepresentation::setX"))) (name "setX") (declared-name "setX"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -186,69 +186,33 @@ standard library package TrigFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'TrigFunctions'
-      (documentation)
-      (membership_import public -> 'ScalarValues::Real'[unresolved])
-      (feature_def 'pi' : 'Real'[unresolved])
-      (invariant_def 'piPrecision'
-        (result_expr_membership))
-      (function_def 'deg'
-        (feature_def in 'theta_rad' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'rad'
-        (feature_def in 'theta_deg' : 'Real'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (datatype_def 'UnitBoundedReal' :> 'Real'[unresolved]
-        (invariant_def 'unitBound'
-          (result_expr_membership)))
-      (function_def 'sin'
-        (feature_def in 'theta' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TrigFunctions::UnitBoundedReal'[datatype_def]
-            (multiplicity_range [1]))))
-      (function_def 'cos'
-        (feature_def in 'theta' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'TrigFunctions::UnitBoundedReal'[datatype_def]
-            (multiplicity_range [1]))))
-      (function_def 'tan'
-        (feature_def in 'theta' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (feature_value (=)))))
-      (function_def 'cot'
-        (feature_def in 'theta' : 'Real'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (feature_value (=)))))
-      (function_def 'arcsin'
-        (feature_def in 'x' : 'TrigFunctions::UnitBoundedReal'[datatype_def]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'arccos'
-        (feature_def in 'x' : 'TrigFunctions::UnitBoundedReal'[datatype_def]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'arctan'
-        (feature_def in 'x' : 'Real'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TrigFunctions"))) (name "TrigFunctions") (declared-name "TrigFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "TrigFunctions::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::UnitBoundedReal"))) (name "UnitBoundedReal") (declared-name "UnitBoundedReal"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "TrigFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::arccos"))) (name "arccos") (declared-name "arccos"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::arcsin"))) (name "arcsin") (declared-name "arcsin"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::arctan"))) (name "arctan") (declared-name "arctan"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::cos"))) (name "cos") (declared-name "cos"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::cot"))) (name "cot") (declared-name "cot"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::deg"))) (name "deg") (declared-name "deg"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "TrigFunctions::pi"))) (name "pi") (declared-name "pi"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::piPrecision"))) (name "piPrecision") (declared-name "piPrecision"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::rad"))) (name "rad") (declared-name "rad"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::sin"))) (name "sin") (declared-name "sin"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "TrigFunctions::tan"))) (name "tan") (declared-name "tan"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TrigFunctions::_documentation"))) (to (node (document "d0") (qualified-name "TrigFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -113,27 +113,26 @@ semantic.feature_typing_kind_mismatch
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Behaviors'
-      (behavior_def 'A'
-        (feature_def in 'x')
-        (feature_def out 'y'
-          (feature_value (=)))
-        (step_def composite 'b' : 'Behaviors::B'[behavior_def]
-          (feature_def in 'x1'
-            (feature_value (=)))))
-      (behavior_def 'B' :> 'Behaviors::A'[behavior_def]
-        (feature_def in 'x1' :>> 'Behaviors::A::x'[feature_def][implied])
-        (feature_def out 'y1' :>> 'Behaviors::A::y'[feature_def][implied]))
-      (class_def 'C'
-        (feature_def 'z'
-          (feature_value (=)))
-        (step_def 'a' : 'Behaviors::A'[behavior_def])
-        (step_def 'b' : 'Behaviors::B'[behavior_def])
-        (binding_connector_def
-          (connector_end 'z')
-          (connector_end 'a.y'))
-        (flow_usage composite 'a'))
-      (flow_usage abstract 'msg' : 'Behaviors::C'[class_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Behaviors"))) (name "Behaviors") (declared-name "Behaviors")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Behaviors::A"))) (name "A") (declared-name "A"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Behaviors::B"))) (name "B") (declared-name "B"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Behaviors::C"))) (name "C") (declared-name "C"))
+        (element (kind "flow") (id (node (document "d0") (qualified-name "Behaviors::msg"))) (name "msg") (declared-name "msg")
+          (contains
+            (element (kind "flow payload") (id (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (name "_payload") (declared-name "_payload"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

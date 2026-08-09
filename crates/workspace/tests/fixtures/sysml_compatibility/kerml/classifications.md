@@ -57,17 +57,19 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Classifications'
-      (class_def 'T')
-      (feature_def 'x')
-      (feature_def 'y'
-        (feature_value (=)))
-      (feature_def 'z'
-        (feature_value (=)))
-      (feature_def 'a'
-        (feature_value (=)))
-      (feature_def 'b'
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Classifications"))) (name "Classifications") (declared-name "Classifications")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Classifications::T"))) (name "T") (declared-name "T"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

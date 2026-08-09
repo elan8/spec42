@@ -210,48 +210,43 @@ semantic.unresolved_name 'LengthValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_05-Unification of Expression and Constraint Definition'
-      (namespace_import private -> '15_03-Value Expression'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (constraint_def 'DiscBrakeConstraint'
-        (reference_usage in reference 'wheelAssy' : '15_05-Unification of Expression and Constraint Definition::WheelAssy'[part_def]
-          (multiplicity_range [4]))
-        (result_expr_membership))
-      (constraint_def 'DiscBrakeFitConstraint_Alt'
-        (reference_usage in reference 'discBrakeAssy' : '15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy'[part_def]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'wheel' : 'Wheel'[unresolved]
-          (multiplicity_range [1]))
-        (result_expr_membership))
-      (part_def 'Vehicle_2'
-        (attribute_usage composite 'mass' : 'MassValue'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite 'length' : 'LengthValue'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (part_usage composite 'wheelAssy' : '15_05-Unification of Expression and Constraint Definition::WheelAssy'[part_def]
-          (multiplicity_range [4]))
-        (constraint_usage composite 'discBrakeConstraint' : '15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint'[constraint_def]
-          (documentation)
-          (reference_usage in reference 'wheelAssy'
-            (feature_value (=)))))
-      (part_def 'WheelAssy'
-        (part_usage composite 'wheel' : 'Wheel'[unresolved]
-          (multiplicity_range [1]))
-        (part_usage composite 'discBrakeAssy' : '15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy'[part_def]
-          (multiplicity_range [1]))
-        (assert_constraint_usage 'discBrakeFitConstraint_Alt' : '15_05-Unification of Expression and Constraint Definition::DiscBrakeFitConstraint_Alt'[constraint_def]
-          (documentation)
-          (reference_usage in reference 'discBrakeAssy'
-            (feature_value (=)))
-          (reference_usage in reference 'wheel'
-            (feature_value (=)))))
-      (part_def 'DiscBrakeAssy'
-        (attribute_usage composite 'radius' : 'LengthValue'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition"))) (name "15_05-Unification of Expression and Constraint Definition") (declared-name "15_05-Unification of Expression and Constraint Definition")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy"))) (name "DiscBrakeAssy") (declared-name "DiscBrakeAssy") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (name "radius") (declared-name "radius") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 95)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (featuring-type (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (role feature-value))))
+          )
+        )
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint"))) (name "DiscBrakeConstraint") (declared-name "DiscBrakeConstraint"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeFitConstraint_Alt"))) (name "DiscBrakeFitConstraint_Alt") (declared-name "DiscBrakeFitConstraint_Alt"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2"))) (name "Vehicle_2") (declared-name "Vehicle_2") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::length"))) (name "length") (declared-name "length") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "4.82")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))) (effective (featuring-type (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::length"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1200)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (featuring-type (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::mass"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::wheelAssy"))) (name "wheelAssy") (declared-name "wheelAssy") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy"))) (name "WheelAssy") (declared-name "WheelAssy") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeAssy"))) (name "discBrakeAssy") (declared-name "discBrakeAssy") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::forAll"))) (name "forAll") (declared-name "forAll"))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::wheelAssy"))) (to (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeAssy"))) (to (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -345,84 +345,92 @@ semantic.unresolved_name 'ISQ::acceleration'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '10d-Dynamics Analysis'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (package 'VehicleModel'
-        (part_def 'Vehicle'
-          (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])))
-      (package 'DynamicsModel'
-        (calculation_def 'Acceleration'
-          (reference_usage in reference 'p' : 'PowerValue'[unresolved])
-          (reference_usage in reference 'm' : 'MassValue'[unresolved])
-          (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'AccelerationValue'[unresolved]
-              (feature_value (=)))))
-        (calculation_def 'Velocity'
-          (reference_usage in reference 'v0' : 'SpeedValue'[unresolved])
-          (reference_usage in reference 'a' : 'AccelerationValue'[unresolved])
-          (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'SpeedValue'[unresolved]
-              (feature_value (=)))))
-        (calculation_def 'Position'
-          (reference_usage in reference 'x0' : 'LengthValue'[unresolved])
-          (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-          (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : 'LengthValue'[unresolved]
-              (feature_value (=)))))
-        (action_def 'StraightLineDynamics'
-          (reference_usage in reference 'power' : 'PowerValue'[unresolved])
-          (reference_usage in reference 'mass' : 'MassValue'[unresolved])
-          (reference_usage in reference 'delta_t' : 'TimeValue'[unresolved])
-          (reference_usage in reference 'x_in' : 'LengthValue'[unresolved])
-          (reference_usage in reference 'v_in' : 'SpeedValue'[unresolved])
-          (reference_usage out reference 'x_out' : 'LengthValue'[unresolved]
-            (feature_value (=)))
-          (reference_usage out reference 'v_out' : 'SpeedValue'[unresolved]
-            (feature_value (=)))
-          (reference_usage out reference 'a_out' : 'AccelerationValue'[unresolved]
-            (feature_value (=)))))
-      (package 'AnalysisModel'
-        (namespace_import private -> '10d-Dynamics Analysis::VehicleModel'[package])
-        (namespace_import private -> '10d-Dynamics Analysis::DynamicsModel'[package])
-        (namespace_import private -> 'SampledFunctions'[unresolved])
-        (membership_import private -> 'ScalarValues::Natural'[unresolved])
-        (namespace_import private -> 'SequenceFunctions'[unresolved])
-        (analysis_case_def 'DynamicsAnalysis'
-          (subject_membership in 'vehicle' : '10d-Dynamics Analysis::VehicleModel::Vehicle'[part_def])
-          (attribute_usage in 'powerProfile' :> 'ISQ::power'[unresolved]
-            (multiplicity_range [*]))
-          (attribute_usage in 'initialPosition' :> 'ISQ::length'[unresolved])
-          (attribute_usage in 'initialSpeed' :> 'ISQ::speed'[unresolved])
-          (attribute_usage in 'deltaT' :> 'ISQ::time'[unresolved])
-          (return_parameter_membership
-            (attribute_usage out 'accelerationProfile' :> 'ISQ::acceleration'[unresolved]
-              (multiplicity_range [*])
-              (feature_value (:=))))
-          (attribute_usage composite 'position'
-            (feature_value (:=)))
-          (attribute_usage composite 'speed'
-            (feature_value (:=)))
-          (for_loop_action_usage
-            (perform_action_usage 'dynamics' : '10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics'[action_def]
-              (reference_usage in reference 'power'
-                (feature_value (=)))
-              (reference_usage in reference 'mass'
-                (feature_value (=)))
-              (reference_usage in reference 'delta_t'
-                (feature_value (=)))
-              (reference_usage in reference 'x_in'
-                (feature_value (=)))
-              (reference_usage in reference 'v_in'
-                (feature_value (=))))
-            (source_succession
-              (assignment_action_usage))
-            (source_succession
-              (assignment_action_usage))
-            (source_succession
-              (assignment_action_usage))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis"))) (name "10d-Dynamics Analysis") (declared-name "10d-Dynamics Analysis")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::*"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel"))) (name "AnalysisModel") (declared-name "AnalysisModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::*#import2"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::*#import3"))) (name "*") (declared-name "*"))
+            (element (kind "analysis def") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis"))) (name "DynamicsAnalysis") (declared-name "DynamicsAnalysis")
+              (contains
+                (element (kind "analysis result") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::accelerationProfile"))) (name "accelerationProfile") (declared-name "accelerationProfile") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::deltaT"))) (name "deltaT") (declared-name "deltaT") (declared (properties (direction "in") (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::initialPosition"))) (name "initialPosition") (declared-name "initialPosition") (declared (properties (direction "in") (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::initialSpeed"))) (name "initialSpeed") (declared-name "initialSpeed") (declared (properties (direction "in") (composite true) (reference false) (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::position"))) (name "position") (declared-name "position") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind initial) (expression (kind "featureReference") (reference "initialPosition")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::powerProfile"))) (name "powerProfile") (declared-name "powerProfile") (declared (properties (direction "in") (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::speed"))) (name "speed") (declared-name "speed") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind initial) (expression (kind "featureReference") (reference "initialSpeed")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis")))))
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::Natural"))) (name "Natural") (declared-name "Natural"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel"))) (name "DynamicsModel") (declared-name "DynamicsModel")
+          (contains
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration"))) (name "Acceleration") (declared-name "Acceleration")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration::m"))) (name "m") (declared-name "m") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration::p"))) (name "p") (declared-name "p") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position"))) (name "Position") (declared-name "Position")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position::x0"))) (name "x0") (declared-name "x0") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position")))))
+              )
+            )
+            (element (kind "action def") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics"))) (name "StraightLineDynamics") (declared-name "StraightLineDynamics")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::a_out"))) (name "a_out") (declared-name "a_out") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::delta_t"))) (name "delta_t") (declared-name "delta_t") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::v_out"))) (name "v_out") (declared-name "v_out") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics::x_out"))) (name "x_out") (declared-name "x_out") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity"))) (name "Velocity") (declared-name "Velocity")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity::v0"))) (name "v0") (declared-name "v0") (effective (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel"))) (name "VehicleModel") (declared-name "VehicleModel")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::initialSpeed"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::speed"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

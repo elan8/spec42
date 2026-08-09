@@ -174,36 +174,55 @@ semantic.unresolved_name 'TemperatureValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Time Constraints'
-      (membership_import private -> 'ISQ::TemperatureValue'[unresolved])
-      (membership_import private -> 'ISQ::DurationValue'[unresolved])
-      (membership_import private -> 'Time::TimeInstantValue'[unresolved])
-      (membership_import private -> 'Time::TimeOf'[unresolved])
-      (membership_import private -> 'Time::DurationOf'[unresolved])
-      (membership_import private -> 'SI::h'[unresolved])
-      (membership_import private -> 'SI::s'[unresolved])
-      (attribute_def 'MaintenanceDone')
-      (part_def 'Vehicle'
-        (attribute_usage composite 'maintenanceTime' : 'TimeInstantValue'[unresolved])
-        (attribute_usage composite 'maintenanceInterval' : 'DurationValue'[unresolved])
-        (attribute_usage composite 'maxTemperature' : 'TemperatureValue'[unresolved]))
-      (state_usage 'healthStates'
-        (reference_usage in reference 'vehicle' : 'Time Constraints::Vehicle'[part_def])
-        (state_subaction_membership 'entry'
-          (action_usage))
-        (source_succession
-          (reference_usage reference 'normal'))
-        (state_usage composite 'normal')
-        (transition_usage)
-        (state_usage composite 'maintenance'
-          (assert_constraint_usage
-            (result_expr_membership))
-          (assert_constraint_usage
-            (result_expr_membership))
-          (not_implemented 'malformed')
-          (transition_usage)
-          (constraint_usage composite
-            (result_expr_membership)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Time Constraints"))) (name "Time Constraints") (declared-name "Time Constraints")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::DurationOf"))) (name "DurationOf") (declared-name "DurationOf"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::DurationValue"))) (name "DurationValue") (declared-name "DurationValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time Constraints::MaintenanceDone"))) (name "MaintenanceDone") (declared-name "MaintenanceDone") (declared (properties (ordered false) (unique true))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::TemperatureValue"))) (name "TemperatureValue") (declared-name "TemperatureValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::TimeInstantValue"))) (name "TimeInstantValue") (declared-name "TimeInstantValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::TimeOf"))) (name "TimeOf") (declared-name "TimeOf"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Time Constraints::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time Constraints::Vehicle::maintenanceInterval"))) (name "maintenanceInterval") (declared-name "maintenanceInterval") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time Constraints::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time Constraints::Vehicle::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time Constraints::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time Constraints::Vehicle::maxTemperature"))) (name "maxTemperature") (declared-name "maxTemperature") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time Constraints::Vehicle")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::h"))) (name "h") (declared-name "h"))
+        (element (kind "state") (id (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (name "healthStates") (declared-name "healthStates") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::_entry"))) (name "entry") (declared-name "entry"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::maintenance"))) (name "maintenance") (declared-name "maintenance"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))) (name "normal") (declared-name "normal"))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_maintenance"))) (name "transition_healthStates_to_maintenance") (declared-name "transition_healthStates_to_maintenance")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_maintenance::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_normal"))) (name "transition_healthStates_to_normal") (declared-name "transition_healthStates_to_normal")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_normal::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::s"))) (name "s") (declared-name "s"))
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::maintenance"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates::vehicle"))) (to (node (document "d0") (qualified-name "Time Constraints::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

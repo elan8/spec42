@@ -246,109 +246,34 @@ standard library package NaturalFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'NaturalFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (function_def '+' :> 'IntegerFunctions::+'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '*' :> 'IntegerFunctions::*'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '/' :> 'IntegerFunctions::/'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '%' :> 'IntegerFunctions::%'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<' :> 'IntegerFunctions::<'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>' :> 'IntegerFunctions::>'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<=' :> 'IntegerFunctions::<='[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>=' :> 'IntegerFunctions::>='[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'max' :> 'IntegerFunctions::max'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'min' :> 'IntegerFunctions::min'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '==' :> 'IntegerFunctions::=='[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToString' :> 'IntegerFunctions::ToString'[unresolved]
-        (feature_def in 'x' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToNatural'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "NaturalFunctions"))) (name "NaturalFunctions") (declared-name "NaturalFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "NaturalFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::ToNatural"))) (name "ToNatural") (declared-name "ToNatural"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "NaturalFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "NaturalFunctions::min"))) (name "min") (declared-name "min"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "NaturalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "NaturalFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

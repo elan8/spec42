@@ -41,9 +41,19 @@ parse.unexpected_token
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Foo'
-      (not_implemented 'malformed')
-      (part_def 'Bar'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Foo"))) (name "Foo") (declared-name "Foo")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Foo::Bar"))) (name "Bar") (declared-name "Bar") (declared))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

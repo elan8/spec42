@@ -366,91 +366,30 @@ semantic.unresolved_name 'target'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ProductSelection_OwnedEnds'
-      (class_def 'SelectionInfo')
-      (class_def 'ShoppingCart')
-      (class_def 'Product')
-      (association_def 'ProductSelection'
-        (feature_def 'info' : 'ProductSelection_OwnedEnds::SelectionInfo'[class_def])
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (feature_def 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def]
-          (multiplicity_range [1])))
-      (association_def 'ProductSelection1'
-        (feature_def 'info' : 'ProductSelection_OwnedEnds::SelectionInfo'[class_def])
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def]
-          (multiplicity_range [1])))
-      (association_def 'ProductSelection2'
-        (feature_def 'info' : 'ProductSelection_OwnedEnds::SelectionInfo'[class_def])
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def]
-          (multiplicity_range [1])
-          (feature_def 'inCart'
-            (multiplicity_range [0..1])))
-        (feature_def end 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def]
-          (multiplicity_range [1])
-          (feature_def 'selectedProducts'
-            (multiplicity_range [0..*]))))
-      (association_def 'ProductSelection3' :> 'Links::BinaryLink'[unresolved]
-        (feature_def 'info' : 'ProductSelection_OwnedEnds::SelectionInfo'[class_def])
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def] :>> 'source'[unresolved] :> 'ProductSelection_OwnedEnds::ProductSelection3::cart::inCart'[feature_def]
-          (multiplicity_range [1])
-          (feature_def 'inCart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def]
-            (multiplicity_range [0..1]))
-          (membership_import public -> 'ProductSelection_OwnedEnds::ProductSelection3::selectedProduct::selectedProducts'[feature_def]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def] :>> 'target'[unresolved] :> 'ProductSelection_OwnedEnds::ProductSelection3::selectedProduct::selectedProducts'[feature_def]
-          (multiplicity_range [1])
-          (feature_def 'selectedProducts' : 'ProductSelection_OwnedEnds::Product'[class_def]
-            (multiplicity_range [0..*]))
-          (membership_import public -> 'ProductSelection_OwnedEnds::ProductSelection3::cart::inCart'[feature_def])))
-      (association_def 'SingleProductSelection' :> 'ProductSelection_OwnedEnds::ProductSelection'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection::cart'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection::selectedProduct'[feature_def][implied]
-          (multiplicity_range [1])))
-      (association_def 'SingleProductSelection1' :> 'ProductSelection_OwnedEnds::ProductSelection1'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection1::cart'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection1::selectedProduct'[feature_def][implied]
-          (multiplicity_range [1])))
-      (association_def 'SingleProductSelection2' :> 'ProductSelection_OwnedEnds::ProductSelection2'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection2::cart'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_def 'inCart1'
-            (multiplicity_range [0..1])))
-        (feature_def end 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection2::selectedProduct'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_def 'selectedProduct1'
-            (multiplicity_range [0..1]))))
-      (association_def 'SingleProductSelection3' :> 'ProductSelection_OwnedEnds::ProductSelection3'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection3::cart'[feature_def] :> 'ProductSelection_OwnedEnds::SingleProductSelection3::cart::inCart1'[feature_def]
-          (multiplicity_range [1])
-          (feature_def 'inCart1' :> 'ProductSelection_OwnedEnds::ProductSelection3::cart::inCart'[feature_def]
-            (multiplicity_range [0..1]))
-          (membership_import public -> 'ProductSelection_OwnedEnds::SingleProductSelection3::selectedProduct::selectedProduct1'[feature_def]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_OwnedEnds::Product'[class_def] :>> 'ProductSelection_OwnedEnds::ProductSelection3::selectedProduct'[feature_def] :> 'ProductSelection_OwnedEnds::SingleProductSelection3::selectedProduct::selectedProduct1'[feature_def]
-          (multiplicity_range [1])
-          (feature_def 'selectedProduct1' :> 'ProductSelection_OwnedEnds::ProductSelection3::selectedProduct::selectedProducts'[feature_def]
-            (multiplicity_range [0..1]))
-          (membership_import public -> 'ProductSelection_OwnedEnds::SingleProductSelection3::cart::inCart1'[feature_def])))
-      (class_def 'OnlineCustomer'
-        (feature_def 'info1' : 'ProductSelection_OwnedEnds::SelectionInfo'[class_def])
-        (feature_def 'myCart' : 'ProductSelection_OwnedEnds::ShoppingCart'[class_def]
-          (multiplicity_range [1]))
-        (feature_def 'products' : 'ProductSelection_OwnedEnds::Product'[class_def]
-          (multiplicity_range [0..*]))
-        (connector_def 'ps1' : 'ProductSelection_OwnedEnds::ProductSelection'[association_def]
-          (connector_end 'myCart')
-          (connector_end 'products')
-          (feature_def :>> 'ProductSelection_OwnedEnds::ProductSelection::info'[feature_def]
-            (feature_value (=))))
-        (connector_def 'ps2' : 'ProductSelection_OwnedEnds::ProductSelection'[association_def]
-          (connector_end 'myCart')
-          (connector_end 'products')
-          (feature_def :>> 'ProductSelection_OwnedEnds::ProductSelection::info'[feature_def]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds"))) (name "ProductSelection_OwnedEnds") (declared-name "ProductSelection_OwnedEnds")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::Product"))) (name "Product") (declared-name "Product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection1"))) (name "ProductSelection1") (declared-name "ProductSelection1"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection2"))) (name "ProductSelection2") (declared-name "ProductSelection2"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ProductSelection3"))) (name "ProductSelection3") (declared-name "ProductSelection3"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SelectionInfo"))) (name "SelectionInfo") (declared-name "SelectionInfo"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection1"))) (name "SingleProductSelection1") (declared-name "SingleProductSelection1"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection2"))) (name "SingleProductSelection2") (declared-name "SingleProductSelection2"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_OwnedEnds::SingleProductSelection3"))) (name "SingleProductSelection3") (declared-name "SingleProductSelection3"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

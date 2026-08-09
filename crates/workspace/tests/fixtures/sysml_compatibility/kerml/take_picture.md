@@ -101,29 +101,15 @@ semantic.unresolved_name 'involvedObjects'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (behavior_def 'TakePicture'
-      (membership_import private -> 'Camera'[unresolved])
-      (feature_def 'camera' : 'Camera'[unresolved] :> 'involvedObjects'[unresolved]
-        (multiplicity_range [1]))
-      (class_def 'Exposure')
-      (behavior_def 'Focus'
-        (feature_def out 'xrsl' : 'TakePicture::Exposure'[class_def]))
-      (behavior_def 'Shoot'
-        (feature_def in 'xsf' : 'TakePicture::Exposure'[class_def]))
-      (step_def 'step1' : 'TakePicture::Focus'[behavior_def]
-        (multiplicity_range [1]))
-      (step_def 'step2' : 'TakePicture::Shoot'[behavior_def]
-        (multiplicity_range [1]))
-      (flow_usage composite 'exposure' : 'TakePicture::Exposure'[class_def]
-        (multiplicity_range [1])
-        (connector_end 'step1.xrsl')
-        (connector_end 'step2.xsf'))
-      (succession_def
-        (connector_end 'step1')
-        (connector_end 'camera.focusedState'))
-      (succession_def
-        (connector_end 'step2')
-        (connector_end 'camera.shotState')))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

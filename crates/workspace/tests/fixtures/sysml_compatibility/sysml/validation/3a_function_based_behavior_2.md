@@ -357,80 +357,121 @@ semantic.invalid_connection_end_count
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '3a-Function-based Behavior-2'
-      (namespace_import public -> '3a-Function-based Behavior-2::Definitions'[package])
-      (namespace_import public -> '3a-Function-based Behavior-2::Usages'[package])
-      (package 'Definitions'
-        (alias_member 'Torque' -> 'ISQ::TorqueValue'[unresolved])
-        (attribute_def 'FuelCmd')
-        (attribute_def 'EngineStart')
-        (attribute_def 'EngineOff')
-        (action_def 'Generate Torque'
-          (reference_usage in reference 'fuelCmd' : '3a-Function-based Behavior-2::Definitions::FuelCmd'[attribute_def])
-          (reference_usage out reference 'engineTorque' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member]))
-        (action_def 'Amplify Torque'
-          (reference_usage in reference 'engineTorque' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])
-          (reference_usage out reference 'transmissionTorque' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member]))
-        (action_def 'Transfer Torque'
-          (reference_usage in reference 'transmissionTorque' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])
-          (reference_usage out reference 'driveshaftTorque' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member]))
-        (action_def 'Distribute Torque'
-          (reference_usage in reference 'driveShaftTorque' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])
-          (reference_usage out reference 'wheelTorque1' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])
-          (reference_usage out reference 'wheelTorque2' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member]))
-        (action_def 'Provide Power'
-          (reference_usage in reference 'fuelCmd' : '3a-Function-based Behavior-2::Definitions::FuelCmd'[attribute_def])
-          (reference_usage out reference 'wheelTorque1' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])
-          (reference_usage out reference 'wheelTorque2' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])))
-      (package 'Usages'
-        (action_usage 'provide power' : '3a-Function-based Behavior-2::Definitions::Provide Power'[action_def]
-          (reference_usage in reference 'fuelCmd' : '3a-Function-based Behavior-2::Definitions::FuelCmd'[attribute_def])
-          (reference_usage out reference 'wheelTorque1' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])
-          (reference_usage out reference 'wheelTorque2' : '3a-Function-based Behavior-2::Definitions::Torque'[alias_member])
-          (action_usage composite 'generate torque' : '3a-Function-based Behavior-2::Definitions::Generate Torque'[action_def]
-            (reference_usage in reference 'fuelCmd'
-              (feature_value (=))))
-          (flow_usage composite 'generate torque')
-          (action_usage composite 'amplify torque' : '3a-Function-based Behavior-2::Definitions::Amplify Torque'[action_def])
-          (flow_usage composite 'amplify torque')
-          (action_usage composite 'transfer torque' : '3a-Function-based Behavior-2::Definitions::Transfer Torque'[action_def])
-          (flow_usage composite 'transfer torque')
-          (action_usage composite 'distribute torque' : '3a-Function-based Behavior-2::Definitions::Distribute Torque'[action_def])
-          (initial_node)
-          (source_succession
-            (merge_node 'continue'))
-          (source_succession
-            (action_usage 'engineStarted'))
-          (accept_action_usage)
-          (source_succession
-            (action_usage 'engineStopped'))
-          (accept_action_usage)
-          (source_succession
-            (reference_usage reference 'continue'))
-          (succession_def
-            (connector_end 'engineStarted')
-            (connector_end ''generate torque''))
-          (succession_def
-            (connector_end 'engineStarted')
-            (connector_end ''amplify torque''))
-          (succession_def
-            (connector_end 'engineStarted')
-            (connector_end ''transfer torque''))
-          (succession_def
-            (connector_end 'engineStarted')
-            (connector_end ''distribute torque''))
-          (succession_def
-            (connector_end ''generate torque'')
-            (connector_end 'engineStopped'))
-          (succession_def
-            (connector_end ''amplify torque'')
-            (connector_end 'engineStopped'))
-          (succession_def
-            (connector_end ''transfer torque'')
-            (connector_end 'engineStopped'))
-          (succession_def
-            (connector_end ''distribute torque'')
-            (connector_end 'engineStopped')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2"))) (name "3a-Function-based Behavior-2") (declared-name "3a-Function-based Behavior-2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "action def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque"))) (name "Amplify Torque") (declared-name "Amplify Torque")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque::engineTorque"))) (name "engineTorque") (declared-name "engineTorque") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque::transmissionTorque"))) (name "transmissionTorque") (declared-name "transmissionTorque") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque")))))
+              )
+            )
+            (element (kind "action def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque"))) (name "Distribute Torque") (declared-name "Distribute Torque")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque::driveShaftTorque"))) (name "driveShaftTorque") (declared-name "driveShaftTorque") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque::wheelTorque1"))) (name "wheelTorque1") (declared-name "wheelTorque1") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque::wheelTorque2"))) (name "wheelTorque2") (declared-name "wheelTorque2") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::EngineOff"))) (name "EngineOff") (declared-name "EngineOff") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::EngineStart"))) (name "EngineStart") (declared-name "EngineStart") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::FuelCmd"))) (name "FuelCmd") (declared-name "FuelCmd") (declared (properties (ordered false) (unique true))))
+            (element (kind "action def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque"))) (name "Generate Torque") (declared-name "Generate Torque")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque::engineTorque"))) (name "engineTorque") (declared-name "engineTorque") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque")))))
+              )
+            )
+            (element (kind "action def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power"))) (name "Provide Power") (declared-name "Provide Power")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power::wheelTorque1"))) (name "wheelTorque1") (declared-name "wheelTorque1") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power::wheelTorque2"))) (name "wheelTorque2") (declared-name "wheelTorque2") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+              )
+            )
+            (element (kind "alias") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))) (name "Torque") (declared-name "Torque"))
+            (element (kind "action def") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque"))) (name "Transfer Torque") (declared-name "Transfer Torque")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque::driveshaftTorque"))) (name "driveshaftTorque") (declared-name "driveshaftTorque") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque::transmissionTorque"))) (name "transmissionTorque") (declared-name "transmissionTorque") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (name "provide power") (declared-name "provide power") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "initial") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::amplify torque"))) (name "amplify torque") (declared-name "amplify torque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "merge") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::continue"))) (name "merge") (declared-name "merge") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::distribute torque"))) (name "distribute torque") (declared-name "distribute torque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))) (name "engineStarted") (declared-name "engineStarted") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))) (name "engineStopped") (declared-name "engineStopped") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))) (name "generate torque") (declared-name "generate torque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque")))))
+                  )
+                )
+                (element (kind "action") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))) (name "transfer torque") (declared-name "transfer torque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque1"))) (name "wheelTorque1") (declared-name "wheelTorque1") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque2"))) (name "wheelTorque2") (declared-name "wheelTorque2") (effective (featuring-type (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::amplify torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::continue"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::distribute torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::amplify torque"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::distribute torque"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::continue"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::amplify torque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::distribute torque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStarted"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::engineStopped"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque::engineTorque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque::transmissionTorque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque::driveShaftTorque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque::wheelTorque1"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque::wheelTorque2"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque::engineTorque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque::fuelCmd"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power::fuelCmd"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power::wheelTorque1"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power::wheelTorque2"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque::driveshaftTorque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque::transmissionTorque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Provide Power"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::amplify torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Amplify Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::distribute torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Distribute Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::fuelCmd"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::FuelCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::generate torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Generate Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::transfer torque"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Transfer Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque1"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::wheelTorque2"))) (to (node (document "d0") (qualified-name "3a-Function-based Behavior-2::Definitions::Torque"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "3a-Function-based Behavior-2::Usages::provide power::_initial") (target-qualified "3a-Function-based Behavior-2::Usages::provide power::start"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

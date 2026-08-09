@@ -229,50 +229,94 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Flashlight Example'
-      (attribute_def 'OnOffCmd')
-      (attribute_def 'Light')
-      (port_def 'OnOffCmdPort'
-        (reference_usage out reference 'onOffCmd' : 'Flashlight Example::OnOffCmd'[attribute_def]))
-      (port_def 'LightPort'
-        (reference_usage out reference 'light' : 'Flashlight Example::Light'[attribute_def]))
-      (part_usage 'context'
-        (part_usage composite 'user'
-          (port_usage composite 'onOffCmdPort' : 'Flashlight Example::OnOffCmdPort'[port_def])
-          (perform_action_usage :>> 'Flashlight Example::illuminateRegion::sendOnOffCmd'[action_usage]
-            (reference_usage out reference 'onOffCmd'
-              (feature_value (=)))))
-        (interface_usage composite 'userToFlashlight'
-          (connector_end 'user.onOffCmdPort')
-          (connector_end 'flashlight.onOffCmdPort')
-          (perform_action_usage :>> 'Flashlight Example::illuminateRegion::onOffCmdFlow'[succession_flow_usage]))
-        (part_usage composite 'flashlight'
-          (port_usage composite 'onOffCmdPort' : 'Flashlight Example::OnOffCmdPort'[port_def] ~ 'Flashlight Example::OnOffCmdPort'[port_def])
-          (perform_action_usage :>> 'Flashlight Example::illuminateRegion::produceDirectedLight'[action_usage]
-            (reference_usage in reference 'onOffCmd'
-              (feature_value (=)))
-            (reference_usage out reference 'light'
-              (feature_value (=))))
-          (port_usage composite 'lightPort' : 'Flashlight Example::LightPort'[port_def]))
-        (part_usage composite 'reflectingSource'
-          (port_usage composite 'lightPort' : 'Flashlight Example::LightPort'[port_def] ~ 'Flashlight Example::LightPort'[port_def])
-          (perform_action_usage :>> 'Flashlight Example::illuminateRegion::reflectLight'[action_usage]
-            (reference_usage in reference 'light'
-              (feature_value (=))))))
-      (action_usage 'illuminateRegion'
-        (action_usage composite 'sendOnOffCmd'
-          (reference_usage out reference 'onOffCmd' : 'Flashlight Example::OnOffCmd'[attribute_def]))
-        (succession_flow_usage composite 'onOffCmdFlow'
-          (connector_end 'sendOnOffCmd.onOffCmd')
-          (connector_end 'produceDirectedLight.onOffCmd'))
-        (action_usage composite 'produceDirectedLight'
-          (reference_usage in reference 'onOffCmd')
-          (reference_usage out reference 'light' : 'Flashlight Example::Light'[attribute_def]))
-        (succession_flow_usage composite 'lightFlow'
-          (connector_end 'produceDirectedLight.light')
-          (connector_end 'reflectLight.light'))
-        (action_usage composite 'reflectLight'
-          (reference_usage in reference 'light' : 'Flashlight Example::Light'[attribute_def]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Flashlight Example"))) (name "Flashlight Example") (declared-name "Flashlight Example")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Flashlight Example::Light"))) (name "Light") (declared-name "Light") (declared (properties (ordered false) (unique true))))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Flashlight Example::LightPort"))) (name "LightPort") (declared-name "LightPort")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::LightPort::light"))) (name "light") (declared-name "light") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Flashlight Example::LightPort")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Flashlight Example::LightPort::~LightPort"))) (name "~LightPort") (declared-name "~LightPort") (effective (featuring-type (node (document "d0") (qualified-name "Flashlight Example::LightPort")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Flashlight Example::OnOffCmd"))) (name "OnOffCmd") (declared-name "OnOffCmd") (declared (properties (ordered false) (unique true))))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort"))) (name "OnOffCmdPort") (declared-name "OnOffCmdPort")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd"))) (name "onOffCmd") (declared-name "onOffCmd") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort::~OnOffCmdPort"))) (name "~OnOffCmdPort") (declared-name "~OnOffCmdPort") (effective (featuring-type (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Flashlight Example::context"))) (name "context") (declared-name "context") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Flashlight Example::context::flashlight"))) (name "flashlight") (declared-name "flashlight") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::context::flashlight::illuminateRegion.produceDirectedLight"))) (name "illuminateRegion.produceDirectedLight") (declared-name "illuminateRegion.produceDirectedLight"))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Flashlight Example::context::flashlight::lightPort"))) (name "lightPort") (declared-name "lightPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort"))) (name "onOffCmdPort") (declared-name "onOffCmdPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Flashlight Example::context::reflectingSource"))) (name "reflectingSource") (declared-name "reflectingSource") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::context::reflectingSource::illuminateRegion.reflectLight"))) (name "illuminateRegion.reflectLight") (declared-name "illuminateRegion.reflectLight"))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Flashlight Example::context::reflectingSource::lightPort"))) (name "lightPort") (declared-name "lightPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Flashlight Example::context::user"))) (name "user") (declared-name "user") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::context::user::illuminateRegion.sendOnOffCmd"))) (name "illuminateRegion.sendOnOffCmd") (declared-name "illuminateRegion.sendOnOffCmd"))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Flashlight Example::context::user::onOffCmdPort"))) (name "onOffCmdPort") (declared-name "onOffCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))) (name "illuminateRegion") (declared-name "illuminateRegion") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::lightFlow"))) (name "lightFlow") (declared-name "lightFlow"))
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::onOffCmdFlow"))) (name "onOffCmdFlow") (declared-name "onOffCmdFlow"))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight"))) (name "produceDirectedLight") (declared-name "produceDirectedLight") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::light"))) (name "light") (declared-name "light"))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::onOffCmd"))) (name "onOffCmd") (declared-name "onOffCmd"))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight"))) (name "reflectLight") (declared-name "reflectLight") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight::light"))) (name "light") (declared-name "light"))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd"))) (name "sendOnOffCmd") (declared-name "sendOnOffCmd") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd::onOffCmd"))) (name "onOffCmd") (declared-name "onOffCmd"))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))) (to (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))) (to (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))) (to (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::LightPort::~LightPort"))) (to (node (document "d0") (qualified-name "Flashlight Example::LightPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort::~OnOffCmdPort"))) (to (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::LightPort::light"))) (to (node (document "d0") (qualified-name "Flashlight Example::Light"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd"))) (to (node (document "d0") (qualified-name "Flashlight Example::OnOffCmd"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::context::flashlight::lightPort"))) (to (node (document "d0") (qualified-name "Flashlight Example::LightPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort"))) (to (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort::~OnOffCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::context::reflectingSource::lightPort"))) (to (node (document "d0") (qualified-name "Flashlight Example::LightPort::~LightPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::context::user::onOffCmdPort"))) (to (node (document "d0") (qualified-name "Flashlight Example::OnOffCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::light"))) (to (node (document "d0") (qualified-name "Flashlight Example::Light"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight::light"))) (to (node (document "d0") (qualified-name "Flashlight Example::Light"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd::onOffCmd"))) (to (node (document "d0") (qualified-name "Flashlight Example::OnOffCmd"))))
+  )
+  (pending-relationships
+    (perform (status pending) (document "d0") (source-qualified "Flashlight Example::context::flashlight") (target-qualified "Flashlight Example::context::flashlight::illuminateRegion::produceDirectedLight"))
+    (perform (status pending) (document "d0") (source-qualified "Flashlight Example::context::reflectingSource") (target-qualified "Flashlight Example::context::reflectingSource::illuminateRegion::reflectLight"))
+    (perform (status pending) (document "d0") (source-qualified "Flashlight Example::context::user") (target-qualified "Flashlight Example::context::user::illuminateRegion::sendOnOffCmd"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

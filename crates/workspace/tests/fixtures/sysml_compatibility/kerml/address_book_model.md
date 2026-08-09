@@ -69,14 +69,20 @@ semantic.unresolved_name 'String'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (namespace_import private -> 'ScalarValues'[unresolved])
-    (package 'AddressBookModel'
-      (class_def 'Entry'
-        (feature_def 'name' : 'String'[unresolved])
-        (feature_def 'address' : 'String'[unresolved]))
-      (class_def 'AddressBook'
-        (feature_def 'entries' : 'AddressBookModel::Entry'[class_def]
-          (multiplicity_range [*]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AddressBookModel"))) (name "AddressBookModel") (declared-name "AddressBookModel")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "AddressBookModel::AddressBook"))) (name "AddressBook") (declared-name "AddressBook"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "AddressBookModel::Entry"))) (name "Entry") (declared-name "Entry"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

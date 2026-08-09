@@ -226,51 +226,48 @@ semantic.unresolved_name 'MyBikeFork'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'OneToUnrestrictedConnectorsModelToBeExecuted'
-      (documentation)
-      (membership_import private -> 'WithoutConnectorsModelToBeExecuted::BikeFork'[unresolved])
-      (classifier_def 'Bicycle'
-        (feature_def 'carrier' : 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasket'[classifier_def]
-          (multiplicity_range [*]))
-        (feature_def 'holdsWheel' : 'BikeFork'[unresolved]
-          (multiplicity_range [*]))
-        (connector_def 'carrierFixed' : 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed'[association_def]
-          (connector_end 'carrier')
-          (connector_end 'holdsWheel')))
-      (classifier_def 'BikeBasket')
-      (association_def 'BikeBasketFixed'
-        (feature_def end 'basket' : 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasket'[classifier_def])
-        (feature_def end 'fixedTo' : 'BikeFork'[unresolved])))
-    (package 'OneToUnrestrictedConnectorsExecution'
-      (documentation)
-      (namespace_import private -> 'Atoms'[unresolved])
-      (namespace_import private -> 'OneToUnrestrictedConnectorsModelToBeExecuted'[package])
-      (membership_import private -> 'OneToOneConnectorsExecution::MyBikeFork1'[unresolved])
-      (membership_import private -> 'OneToOneConnectorsExecution::MyBikeFork2'[unresolved])
-      (membership_import private -> 'OneToOneConnectorsExecution::MyBikeFork'[unresolved])
-      (classifier_def 'MyBikeBasket1' :> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasket'[classifier_def])
-      (classifier_def 'MyBikeBasket2' :> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasket'[classifier_def])
-      (classifier_def 'MyBikeBasket'
-        (unioning)
-        (unioning))
-      (association_def 'MyBikeBasket1_Fork1_BBF_Link' :> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed'[association_def]
-        (feature_def end :>> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket'[feature_def] : 'OneToUnrestrictedConnectorsExecution::MyBikeBasket1'[classifier_def])
-        (feature_def end :>> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo'[feature_def] : 'MyBikeFork1'[unresolved]))
-      (association_def 'MyBikeBasket2_Fork1_BBF_Link' :> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed'[association_def]
-        (feature_def end :>> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::basket'[feature_def] : 'OneToUnrestrictedConnectorsExecution::MyBikeBasket2'[classifier_def])
-        (feature_def end :>> 'OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed::fixedTo'[feature_def] : 'MyBikeFork1'[unresolved]))
-      (classifier_def 'MyBikeBasket_Fork_BBF_Link'
-        (unioning)
-        (unioning))
-      (classifier_def 'MyBike' :> 'OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle'[classifier_def]
-        (feature_def :>> 'OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier'[feature_def] : 'OneToUnrestrictedConnectorsExecution::MyBikeBasket'[classifier_def]
-          (multiplicity_range [2]))
-        (feature_def :>> 'OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel'[feature_def] : 'MyBikeFork'[unresolved]
-          (multiplicity_range [2]))
-        (connector_def :>> 'OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed'[connector_def] : 'OneToUnrestrictedConnectorsExecution::MyBikeBasket_Fork_BBF_Link'[classifier_def]
-          (multiplicity_range [2])
-          (connector_end 'carrier')
-          (connector_end 'holdsWheel'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (name "OneToUnrestrictedConnectorsExecution") (declared-name "OneToUnrestrictedConnectorsExecution")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBike"))) (name "MyBike") (declared-name "MyBike"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket"))) (name "MyBikeBasket") (declared-name "MyBikeBasket"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1"))) (name "MyBikeBasket1") (declared-name "MyBikeBasket1"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket1_Fork1_BBF_Link"))) (name "MyBikeBasket1_Fork1_BBF_Link") (declared-name "MyBikeBasket1_Fork1_BBF_Link"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2"))) (name "MyBikeBasket2") (declared-name "MyBikeBasket2"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket2_Fork1_BBF_Link"))) (name "MyBikeBasket2_Fork1_BBF_Link") (declared-name "MyBikeBasket2_Fork1_BBF_Link"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeBasket_Fork_BBF_Link"))) (name "MyBikeBasket_Fork_BBF_Link") (declared-name "MyBikeBasket_Fork_BBF_Link"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork"))) (name "MyBikeFork") (declared-name "MyBikeFork"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork1"))) (name "MyBikeFork1") (declared-name "MyBikeFork1"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork2"))) (name "MyBikeFork2") (declared-name "MyBikeFork2"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword2"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword3"))) (name "atom") (declared-name "atom"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword4"))) (name "atom") (declared-name "atom"))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted"))) (name "OneToUnrestrictedConnectorsModelToBeExecuted") (declared-name "OneToUnrestrictedConnectorsModelToBeExecuted")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle"))) (name "Bicycle") (declared-name "Bicycle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasket"))) (name "BikeBasket") (declared-name "BikeBasket"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed"))) (name "BikeBasketFixed") (declared-name "BikeBasketFixed"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeFork"))) (name "BikeFork") (declared-name "BikeFork"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword3"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::_atom#metadata_keyword4"))) (to (node (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

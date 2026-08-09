@@ -97,22 +97,33 @@ package ClassifierCoverage {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ClassifierCoverage'
-      (datatype_def 'Scalar')
-      (class_def 'Entity')
-      (structure_def 'Vector')
-      (association_def 'Relationship')
-      (assoc_struct_def 'AssocStruct')
-      (metaclass_def 'MetaEntity')
-      (datatype_def 'D' :> 'ClassifierCoverage::Scalar'[datatype_def])
-      (class_def 'C' :> 'ClassifierCoverage::Entity'[class_def])
-      (structure_def 'S' :> 'ClassifierCoverage::Vector'[structure_def])
-      (association_def 'A' :> 'ClassifierCoverage::Relationship'[association_def])
-      (metaclass_def 'M' :> 'ClassifierCoverage::MetaEntity'[metaclass_def])
-      (datatype_def abstract 'AbstractScalar')
-      (structure_def abstract 'AbstractVector')
-      (association_def abstract 'AbstractRel')
-      (metaclass_def abstract 'AbstractMeta'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ClassifierCoverage"))) (name "ClassifierCoverage") (declared-name "ClassifierCoverage")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::A"))) (name "A") (declared-name "A"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractMeta"))) (name "AbstractMeta") (declared-name "AbstractMeta"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractRel"))) (name "AbstractRel") (declared-name "AbstractRel"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractScalar"))) (name "AbstractScalar") (declared-name "AbstractScalar"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::AbstractVector"))) (name "AbstractVector") (declared-name "AbstractVector"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::C"))) (name "C") (declared-name "C"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::D"))) (name "D") (declared-name "D"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Entity"))) (name "Entity") (declared-name "Entity"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::M"))) (name "M") (declared-name "M"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::MetaEntity"))) (name "MetaEntity") (declared-name "MetaEntity"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Relationship"))) (name "Relationship") (declared-name "Relationship"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::S"))) (name "S") (declared-name "S"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Scalar"))) (name "Scalar") (declared-name "Scalar"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ClassifierCoverage::Vector"))) (name "Vector") (declared-name "Vector"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ClassifierCoverage::struct"))) (name "struct") (declared-name "struct"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -165,43 +165,54 @@ semantic.unresolved_name 'LengthValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Calculation Definitions'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (calculation_def 'Power'
-        (reference_usage in reference 'whlpwr' : 'PowerValue'[unresolved])
-        (reference_usage in reference 'Cd' : 'Real'[unresolved])
-        (reference_usage in reference 'Cf' : 'Real'[unresolved])
-        (reference_usage in reference 'tm' : 'MassValue'[unresolved])
-        (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-        (attribute_usage composite 'drag'
-          (feature_value (=)))
-        (attribute_usage composite 'friction'
-          (feature_value (=)))
-        (return_parameter_membership
-          (feature_def out : 'PowerValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'Acceleration'
-        (reference_usage in reference 'tp' : 'PowerValue'[unresolved])
-        (reference_usage in reference 'tm' : 'MassValue'[unresolved])
-        (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'AccelerationValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'Velocity'
-        (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'v0' : 'SpeedValue'[unresolved])
-        (reference_usage in reference 'a' : 'AccelerationValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'SpeedValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'Position'
-        (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'x0' : 'LengthValue'[unresolved])
-        (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'LengthValue'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Calculation Definitions"))) (name "Calculation Definitions") (declared-name "Calculation Definitions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Definitions::*"))) (name "*") (declared-name "*"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculation Definitions::Acceleration"))) (name "Acceleration") (declared-name "Acceleration")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Acceleration::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Acceleration")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Acceleration::tm"))) (name "tm") (declared-name "tm") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Acceleration")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Acceleration::tp"))) (name "tp") (declared-name "tp") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Acceleration")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Acceleration::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Acceleration")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculation Definitions::Position"))) (name "Position") (declared-name "Position")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Position::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Position")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Position::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Position")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Position::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Position")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Position::x0"))) (name "x0") (declared-name "x0") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Position")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculation Definitions::Power"))) (name "Power") (declared-name "Power")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Power::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Power::Cd"))) (name "Cd") (declared-name "Cd") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Power::Cf"))) (name "Cf") (declared-name "Cf") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Power::tm"))) (name "tm") (declared-name "tm") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Power::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Power::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Power")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Definitions::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculation Definitions::Velocity"))) (name "Velocity") (declared-name "Velocity")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Velocity::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Velocity")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Velocity::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Velocity")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Velocity::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Velocity")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Definitions::Velocity::v0"))) (name "v0") (declared-name "v0") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Definitions::Velocity")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

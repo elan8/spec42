@@ -144,28 +144,38 @@ semantic.unresolved_name 'Fuel'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Binding Connectors Example-1'
-      (namespace_import private -> 'Port Example'[unresolved])
-      (part_def 'Vehicle')
-      (part_def 'FuelPump')
-      (part_def 'FuelTank')
-      (part_usage 'vehicle' : 'Binding Connectors Example-1::Vehicle'[part_def]
-        (part_usage composite 'tank' : 'FuelTankAssembly'[unresolved]
-          (port_usage composite :>> 'fuelTankPort'[unresolved]
-            (item_usage out :>> 'fuelSupply'[unresolved])
-            (item_usage in :>> 'fuelReturn'[unresolved]))
-          (binding_connector_def
-            (connector_end 'fuelTankPort.fuelSupply')
-            (connector_end 'pump.pumpOut'))
-          (binding_connector_def
-            (connector_end 'fuelTankPort.fuelReturn')
-            (connector_end 'tank.fuelIn'))
-          (part_usage composite 'pump' : 'Binding Connectors Example-1::FuelPump'[part_def]
-            (item_usage out 'pumpOut' : 'Fuel'[unresolved])
-            (item_usage in 'pumpIn' : 'Fuel'[unresolved]))
-          (part_usage composite 'tank' : 'Binding Connectors Example-1::FuelTank'[part_def]
-            (item_usage out 'fuelOut' : 'Fuel'[unresolved])
-            (item_usage in 'fuelIn' : 'Fuel'[unresolved])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Binding Connectors Example-1"))) (name "Binding Connectors Example-1") (declared-name "Binding Connectors Example-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelPump"))) (name "FuelPump") (declared-name "FuelPump") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelTank"))) (name "FuelTank") (declared-name "FuelTank") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank"))) (name "tank") (declared-name "tank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle"))))
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::fuelTankPort"))) (name "fuelTankPort") (declared-name "fuelTankPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::pump"))) (name "pump") (declared-name "pump") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::tank"))) (name "tank") (declared-name "tank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::pump"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelPump"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::tank"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelTank"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "fuelTankPort::fuelReturn") (target-expression "tank::fuelIn") (container-prefix "Binding Connectors Example-1::vehicle::tank"))
+    (bind (status pending-expression) (document "d0") (source-expression "fuelTankPort::fuelSupply") (target-expression "pump::pumpOut") (container-prefix "Binding Connectors Example-1::vehicle::tank"))
+  )
+)
 ~~~

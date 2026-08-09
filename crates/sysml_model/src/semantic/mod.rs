@@ -11,6 +11,7 @@ pub(crate) mod expression_fold;
 pub mod extracted_model;
 pub mod graph;
 pub mod graph_builder;
+pub mod graph_sexpr;
 pub mod ibd;
 pub mod import_resolution;
 pub mod interconnection_elk;

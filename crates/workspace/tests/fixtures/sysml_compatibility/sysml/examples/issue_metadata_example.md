@@ -125,23 +125,56 @@ semantic.unresolved_name 'Issue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'IssueMetadataExample'
-      (membership_import private -> 'ModelingMetadata::Issue'[unresolved])
-      (metadata_usage 'InterfaceCompatibilityIssue' :> 'Issue'[unresolved] annotated 'IssueMetadataExample::engineToTransmissionInterface'[interface_usage]
-        (feature_def 'text'
-          (feature_value (=))))
-      (interface_def 'EngineToTransmissionInterface'
-        (port_usage end 'p1' : 'IssueMetadataExample::DrivePwrPort'[port_def])
-        (port_usage end 'p2' : 'IssueMetadataExample::ClutchPort'[port_def]))
-      (port_def 'DrivePwrPort')
-      (port_def 'ClutchPort')
-      (part_usage 'engine'
-        (port_usage composite 'drivePwrPort' : 'IssueMetadataExample::DrivePwrPort'[port_def]))
-      (part_usage 'transmission'
-        (port_usage composite 'clutchPort' : 'IssueMetadataExample::DrivePwrPort'[port_def] ~ 'IssueMetadataExample::DrivePwrPort'[port_def]))
-      (interface_usage 'engineToTransmissionInterface' : 'IssueMetadataExample::EngineToTransmissionInterface'[interface_def]
-        (connector_end 'engine.drivePwrPort')
-        (connector_end 'transmission.clutchPort')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "IssueMetadataExample"))) (name "IssueMetadataExample") (declared-name "IssueMetadataExample")
+      (contains
+        (element (kind "port def") (id (node (document "d0") (qualified-name "IssueMetadataExample::ClutchPort"))) (name "ClutchPort") (declared-name "ClutchPort")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "IssueMetadataExample::ClutchPort::~ClutchPort"))) (name "~ClutchPort") (declared-name "~ClutchPort") (effective (featuring-type (node (document "d0") (qualified-name "IssueMetadataExample::ClutchPort")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort"))) (name "DrivePwrPort") (declared-name "DrivePwrPort")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort::~DrivePwrPort"))) (name "~DrivePwrPort") (declared-name "~DrivePwrPort") (effective (featuring-type (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort")))))
+          )
+        )
+        (element (kind "interface def") (id (node (document "d0") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface"))) (name "EngineToTransmissionInterface") (declared-name "EngineToTransmissionInterface")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p1"))) (name "p1") (declared-name "p1") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p2"))) (name "p2") (declared-name "p2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface")))))
+          )
+        )
+        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue"))) (name "InterfaceCompatibilityIssue") (declared-name "InterfaceCompatibilityIssue")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "IssueMetadataExample::InterfaceCompatibilityIssue::text"))) (name "text") (declared-name "text") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "IssueMetadataExample::Issue"))) (name "Issue") (declared-name "Issue"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "IssueMetadataExample::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "IssueMetadataExample::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "IssueMetadataExample::ClutchPort::~ClutchPort"))) (to (node (document "d0") (qualified-name "IssueMetadataExample::ClutchPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort::~DrivePwrPort"))) (to (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p1"))) (to (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p2"))) (to (node (document "d0") (qualified-name "IssueMetadataExample::ClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) (to (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) (to (node (document "d0") (qualified-name "IssueMetadataExample::DrivePwrPort::~DrivePwrPort"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -88,17 +88,30 @@ package ExtendedExamples {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ExtendedExamples'
-      (definition 'Failure')
-      (definition 'Failure' :> 'Base'[unresolved])
-      (definition abstract 'AbstractFailure')
-      (definition 'Vulnerability')
-      (definition 'Failure'
-        (part_usage composite 'p'))
-      (reference_usage 'batteryLow')
-      (reference_usage 'x' : 'T'[unresolved])
-      (reference_usage 'x' : 'T'[unresolved])
-      (definition variation 'V'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ExtendedExamples"))) (name "ExtendedExamples") (declared-name "ExtendedExamples")
+      (contains
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (name "situation") (declared-name "situation"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (name "situation") (declared-name "situation"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (name "situation") (declared-name "situation"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (name "situation") (declared-name "situation"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (name "situation") (declared-name "situation"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (name "situation") (declared-name "situation"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

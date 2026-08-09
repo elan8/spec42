@@ -217,40 +217,52 @@ standard library package ISQ {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQ'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import public -> 'ISQBase'[unresolved])
-      (namespace_import public -> 'ISQSpaceTime'[unresolved])
-      (namespace_import public -> 'ISQMechanics'[unresolved])
-      (namespace_import public -> 'ISQThermodynamics'[unresolved])
-      (namespace_import public -> 'ISQElectromagnetism'[unresolved])
-      (namespace_import public -> 'ISQLight'[unresolved])
-      (namespace_import public -> 'ISQAcoustics'[unresolved])
-      (namespace_import public -> 'ISQChemistryMolecular'[unresolved])
-      (namespace_import public -> 'ISQAtomicNuclear'[unresolved])
-      (namespace_import public -> 'ISQCharacteristicNumbers'[unresolved])
-      (namespace_import public -> 'ISQCondensedMatter'[unresolved])
-      (namespace_import public -> 'ISQInformation'[unresolved])
-      (attribute_def 'TemperatureDifferenceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQ::TemperatureDifferenceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'temperatureDifference' : 'ISQ::TemperatureDifferenceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TemperatureDifferenceUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQ"))) (name "ISQ") (declared-name "ISQ")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import10"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import11"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import12"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import13"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import4"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import5"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import6"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import7"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import8"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::*#import9"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQ::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit"))) (name "TemperatureDifferenceUnit") (declared-name "TemperatureDifferenceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))) (name "TemperatureDifferenceValue") (declared-name "TemperatureDifferenceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQ::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQ::temperatureDifference"))) (name "temperatureDifference") (declared-name "temperatureDifference") (declared (properties (ordered false) (unique false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQ::_documentation"))) (to (node (document "d0") (qualified-name "ISQ"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQ::temperatureDifference"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

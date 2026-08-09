@@ -125,24 +125,45 @@ semantic.unresolved_name 'baseType'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Semantic Metadata Example'
-      (namespace_import private -> 'Model Library Example'[unresolved])
-      (membership_import private -> 'Metaobjects::SemanticMetadata'[unresolved])
-      (metadata_def 'situation' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'cause' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'failure' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'causation' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'scenario' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Semantic Metadata Example"))) (name "Semantic Metadata Example") (declared-name "Semantic Metadata Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Semantic Metadata Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Semantic Metadata Example::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Semantic Metadata Example::causation"))) (name "causation") (declared-name "causation")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Semantic Metadata Example::causation::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Semantic Metadata Example::causation")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Semantic Metadata Example::cause"))) (name "cause") (declared-name "cause")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Semantic Metadata Example::cause::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Semantic Metadata Example::cause")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Semantic Metadata Example::failure"))) (name "failure") (declared-name "failure")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Semantic Metadata Example::failure::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Semantic Metadata Example::failure")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Semantic Metadata Example::scenario"))) (name "scenario") (declared-name "scenario")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Semantic Metadata Example::scenario::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Semantic Metadata Example::scenario")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Semantic Metadata Example::situation"))) (name "situation") (declared-name "situation")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Semantic Metadata Example::situation::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Semantic Metadata Example::situation")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

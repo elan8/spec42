@@ -392,95 +392,63 @@ semantic.unresolved_name 'massLimit'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ConstraintTest'
-      (membership_import private -> 'ISQ::MassValue'[unresolved])
-      (membership_import private -> 'SI::kg'[unresolved])
-      (membership_import private -> 'NumericalFunctions::sum'[unresolved])
-      (constraint_def 'MassAnalysis'
-        (attribute_usage composite 'totalMass' : 'MassValue'[unresolved])
-        (attribute_usage composite 'componentMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (result_expr_membership))
-      (part_def 'Component'
-        (attribute_usage composite 'mass' : 'MassValue'[unresolved]))
-      (part_usage 'vehicle' : 'ConstraintTest::Component'[part_def]
-        (part_usage composite 'engine' : 'ConstraintTest::Component'[part_def])
-        (part_usage composite 'frontAxleAssembly' : 'ConstraintTest::Component'[part_def])
-        (part_usage composite 'rearAxleAssembly' : 'ConstraintTest::Component'[part_def]))
-      (part_usage 'vehicle1a' :> 'ConstraintTest::vehicle'[part_usage]
-        (assert_constraint_usage 'massAnalysis' : 'ConstraintTest::MassAnalysis'[constraint_def]
-          (attribute_usage :>> 'ConstraintTest::MassAnalysis::totalMass'[attribute_usage])
-          (attribute_usage :>> 'ConstraintTest::MassAnalysis::componentMasses'[attribute_usage]))
-        (binding_connector_def
-          (connector_end 'massAnalysis.totalMass')
-          (connector_end 'mass'))
-        (binding_connector_def
-          (connector_end 'massAnalysis.componentMasses')
-          (connector_end 'engine.mass'))
-        (binding_connector_def
-          (connector_end 'massAnalysis.componentMasses')
-          (connector_end 'frontAxleAssembly.mass'))
-        (binding_connector_def
-          (connector_end 'massAnalysis.componentMasses')
-          (connector_end 'rearAxleAssembly.mass')))
-      (part_usage 'vehicle1b' :> 'ConstraintTest::vehicle'[part_usage]
-        (assert_constraint_usage 'massAnalysis' : 'ConstraintTest::MassAnalysis'[constraint_def]
-          (attribute_usage :>> 'ConstraintTest::MassAnalysis::totalMass'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage :>> 'ConstraintTest::MassAnalysis::componentMasses'[attribute_usage]
-            (feature_value (=)))))
-      (constraint_def 'MassAnalysis2'
-        (reference_usage in reference 'totalMass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'componentMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (result_expr_membership))
-      (part_usage 'vehicle2a' :> 'ConstraintTest::vehicle'[part_usage]
-        (assert_constraint_usage 'massConstraint' : 'ConstraintTest::MassAnalysis2'[constraint_def])
-        (binding_connector_def
-          (connector_end 'massConstraint.totalMass')
-          (connector_end 'mass'))
-        (binding_connector_def
-          (connector_end 'massConstraint.componentMasses')
-          (connector_end 'engine.mass'))
-        (binding_connector_def
-          (connector_end 'massConstraint.componentMasses')
-          (connector_end 'frontAxleAssembly.mass'))
-        (binding_connector_def
-          (connector_end 'massConstraint.componentMasses')
-          (connector_end 'rearAxleAssembly.mass')))
-      (part_usage 'vehicle2b' :> 'ConstraintTest::vehicle'[part_usage]
-        (assert_constraint_usage 'massAnalysis2' : 'ConstraintTest::MassAnalysis2'[constraint_def]
-          (reference_usage in reference 'totalMass'
-            (feature_value (=)))
-          (reference_usage in reference 'componentMasses'
-            (feature_value (=)))))
-      (constraint_def 'MassAnalysis3'
-        (reference_usage in reference 'totalMass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'componentMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*])))
-      (constraint_usage 'massAnalysis3' : 'ConstraintTest::MassAnalysis3'[constraint_def]
-        (reference_usage in reference 'totalMass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'componentMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (result_expr_membership))
-      (part_usage 'vehicle3' :> 'ConstraintTest::vehicle'[part_usage]
-        (assert_constraint_usage 'massAnalysis3'
-          (reference_usage in reference 'totalMass'
-            (feature_value (=)))
-          (reference_usage in reference 'componentMasses'
-            (feature_value (=)))))
-      (part_usage 'vehicle4' :> 'ConstraintTest::vehicle'[part_usage]
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (constraint_usage 'massLimitation'
-        (reference_usage reference 'mass' : 'MassValue'[unresolved])
-        (reference_usage reference 'massLimit' : 'MassValue'[unresolved])
-        (result_expr_membership))
-      (assert_constraint_usage not 'massLimitation'
-        (reference_usage reference :>> 'mass'[unresolved]
-          (feature_value (=)))
-        (reference_usage reference :>> 'massLimit'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ConstraintTest"))) (name "ConstraintTest") (declared-name "ConstraintTest")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "ConstraintTest::Component"))) (name "Component") (declared-name "Component") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ConstraintTest::Component::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
+          )
+        )
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis"))) (name "MassAnalysis") (declared-name "MassAnalysis"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis2"))) (name "MassAnalysis2") (declared-name "MassAnalysis2"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3"))) (name "MassAnalysis3") (declared-name "MassAnalysis3"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ConstraintTest::MassValue"))) (name "MassValue") (declared-name "MassValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ConstraintTest::kg"))) (name "kg") (declared-name "kg"))
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (name "massAnalysis3") (declared-name "massAnalysis3"))
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "ConstraintTest::massLimitation"))) (name "massLimitation") (declared-name "massLimitation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ConstraintTest::sum"))) (name "sum") (declared-name "sum"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConstraintTest::Component")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (name "vehicle1a") (declared-name "vehicle1a") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (name "vehicle1b") (declared-name "vehicle1b") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (name "vehicle2a") (declared-name "vehicle2a") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (name "vehicle2b") (declared-name "vehicle2b") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (name "vehicle3") (declared-name "vehicle3") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (name "vehicle4") (declared-name "vehicle4") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle1a"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle1b"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle2a"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle2b"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle3"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle4"))) (to (node (document "d0") (qualified-name "ConstraintTest::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::massAnalysis3"))) (to (node (document "d0") (qualified-name "ConstraintTest::MassAnalysis3"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::engine"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::frontAxleAssembly"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConstraintTest::vehicle::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "ConstraintTest::Component"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::componentMasses") (target-expression "engine::mass") (container-prefix "ConstraintTest::vehicle1a"))
+    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::componentMasses") (target-expression "frontAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle1a"))
+    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::componentMasses") (target-expression "rearAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle1a"))
+    (bind (status pending-expression) (document "d0") (source-expression "massAnalysis::totalMass") (target-expression "mass") (container-prefix "ConstraintTest::vehicle1a"))
+    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::componentMasses") (target-expression "engine::mass") (container-prefix "ConstraintTest::vehicle2a"))
+    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::componentMasses") (target-expression "frontAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle2a"))
+    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::componentMasses") (target-expression "rearAxleAssembly::mass") (container-prefix "ConstraintTest::vehicle2a"))
+    (bind (status pending-expression) (document "d0") (source-expression "massConstraint::totalMass") (target-expression "mass") (container-prefix "ConstraintTest::vehicle2a"))
+  )
+)
 ~~~

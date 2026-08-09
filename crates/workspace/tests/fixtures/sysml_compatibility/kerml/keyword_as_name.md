@@ -144,31 +144,25 @@ package KeywordAsName {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'KeywordAsName'
-      (function_def 'IfThenElse'
-        (boolean_expr_usage in 'condition'
-          (multiplicity_range [1])
-          (result_expr_membership))
-        (expression_usage in 'thenValue'
-          (multiplicity_range [0..*])
-          (result_expr_membership))
-        (expression_usage in 'elseValue'
-          (multiplicity_range [0..*])
-          (result_expr_membership)))
-      (behavior_def 'TestBehavior'
-        (expression_usage in 'whileTest'
-          (result_expr_membership))
-        (boolean_expr_usage in 'guardCondition'
-          (result_expr_membership)))
-      (classifier_def 'SpatialFrame')
-      (structure_def 'MyStruct'
-        (feature_def in 'frame' : 'KeywordAsName::SpatialFrame'[classifier_def]
-          (multiplicity_range [1]))
-        (feature_def in 'type' : 'KeywordAsName::SpatialFrame'[classifier_def]))
-      (alias_member 'multiplicity' -> 'KeywordAsName::SpatialFrame'[classifier_def])
-      (feature_def : 'KeywordAsName::SpatialFrame'[classifier_def])
-      (classifier_def 'Container'
-        (part_usage in : 'KeywordAsName::SpatialFrame'[classifier_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "KeywordAsName"))) (name "KeywordAsName") (declared-name "KeywordAsName")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "KeywordAsName::Container"))) (name "Container") (declared-name "Container"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KeywordAsName::IfThenElse"))) (name "IfThenElse") (declared-name "IfThenElse"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "KeywordAsName::MyStruct"))) (name "MyStruct") (declared-name "MyStruct"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "KeywordAsName::SpatialFrame"))) (name "SpatialFrame") (declared-name "SpatialFrame"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "KeywordAsName::TestBehavior"))) (name "TestBehavior") (declared-name "TestBehavior"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "KeywordAsName::do"))) (name "do") (declared-name "do"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "KeywordAsName::multiplicity"))) (name "multiplicity") (declared-name "multiplicity"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

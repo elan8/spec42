@@ -138,29 +138,42 @@ semantic.unresolved_name 'PowerValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Calculation Usages-2'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'Calculation Definitions'[unresolved])
-      (attribute_def 'DynamicState'
-        (attribute_usage composite 'v' : 'SpeedValue'[unresolved])
-        (attribute_usage composite 'x' : 'LengthValue'[unresolved]))
-      (part_def 'VehicleDynamics'
-        (attribute_usage composite 'C_d' : 'Real'[unresolved])
-        (attribute_usage composite 'C_f' : 'Real'[unresolved])
-        (attribute_usage composite 'wheelPower' : 'PowerValue'[unresolved])
-        (attribute_usage composite 'mass' : 'MassValue'[unresolved])
-        (calculation_usage composite 'updateState'
-          (reference_usage in reference 'delta_t' : 'TimeValue'[unresolved])
-          (reference_usage in reference 'currState' : 'Calculation Usages-2::DynamicState'[attribute_def])
-          (attribute_usage composite 'totalPower' : 'PowerValue'[unresolved]
-            (feature_value (=)))
-          (return_parameter_membership
-            (attribute_usage out 'newState' : 'Calculation Usages-2::DynamicState'[attribute_def]
-              (reference_usage reference :>> 'Calculation Usages-2::DynamicState::v'[attribute_usage]
-                (feature_value (=)))
-              (reference_usage reference :>> 'Calculation Usages-2::DynamicState::x'[attribute_usage]
-                (feature_value (=))))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Calculation Usages-2"))) (name "Calculation Usages-2") (declared-name "Calculation Usages-2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Usages-2::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Usages-2::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState"))) (name "DynamicState") (declared-name "DynamicState") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState::v"))) (name "v") (declared-name "v") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Calculation Usages-2::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics"))) (name "VehicleDynamics") (declared-name "VehicleDynamics") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::C_d"))) (name "C_d") (declared-name "C_d") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::C_f"))) (name "C_f") (declared-name "C_f") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics")))))
+            (element (kind "calc") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState"))) (name "updateState") (declared-name "updateState") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::currState"))) (name "currState") (declared-name "currState") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::delta_t"))) (name "delta_t") (declared-name "delta_t") (effective (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::wheelPower"))) (name "wheelPower") (declared-name "wheelPower") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::currState"))) (to (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -332,111 +332,37 @@ standard library package CollectionFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'CollectionFunctions'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'SequenceFunctions::equals'[unresolved])
-      (membership_import private -> 'SequenceFunctions::includes'[unresolved])
-      (membership_import private -> 'ControlFunctions::exists'[unresolved])
-      (namespace_import public -> 'Collections'[unresolved])
-      (function_def '==' :> 'BaseFunctions::=='[unresolved]
-        (feature_def in 'col1' : 'Collection'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'col2' : 'Collection'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'size'
-        (feature_def in 'col' : 'Collection'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'isEmpty'
-        (feature_def in 'col' : 'Collection'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'notEmpty'
-        (feature_def in 'col' : 'Collection'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'contains'
-        (feature_def in 'col' : 'Collection'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'values' : 'Anything'[unresolved]
-          (multiplicity_range [*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'containsAll'
-        (feature_def in 'col1' : 'Collection'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'col2' : 'Collection'[unresolved]
-          (multiplicity_range [2]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'head'
-        (feature_def in 'col' : 'OrderedCollection'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=)))))
-      (function_def 'tail'
-        (feature_def in 'col' : 'OrderedCollection'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*])
-            (feature_value (=)))))
-      (function_def 'last'
-        (feature_def in 'col' : 'OrderedCollection'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=)))))
-      (function_def '#' :> 'BaseFunctions::#'[unresolved]
-        (feature_def in 'col' : 'OrderedCollection'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'index' : 'Positive'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=)))))
-      (function_def 'array#' :> 'BaseFunctions::#'[unresolved]
-        (feature_def in 'arr' : 'Array'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in ordered 'indexes' : 'Positive'[unresolved]
-          (multiplicity_range [?]))
-        (feature_def 'n' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (function_def 'index'
-          (feature_def in 'arr' : 'Array'[unresolved]
-            (multiplicity_range [1]))
-          (feature_def in 'i' : 'Natural'[unresolved])
-          (feature_def in 'indexes' : 'Positive'[unresolved]
-            (multiplicity_range [1..*]))
-          (result_expr_membership))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CollectionFunctions"))) (name "CollectionFunctions") (declared-name "CollectionFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "CollectionFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CollectionFunctions::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CollectionFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "CollectionFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::contains"))) (name "contains") (declared-name "contains"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::containsAll"))) (name "containsAll") (declared-name "containsAll"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CollectionFunctions::equals"))) (name "equals") (declared-name "equals"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CollectionFunctions::exists"))) (name "exists") (declared-name "exists"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::head"))) (name "head") (declared-name "head"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CollectionFunctions::includes"))) (name "includes") (declared-name "includes"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::last"))) (name "last") (declared-name "last"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::size"))) (name "size") (declared-name "size"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "CollectionFunctions::tail"))) (name "tail") (declared-name "tail"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CollectionFunctions::_documentation"))) (to (node (document "d0") (qualified-name "CollectionFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

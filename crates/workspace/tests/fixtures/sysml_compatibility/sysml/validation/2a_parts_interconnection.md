@@ -674,116 +674,258 @@ parse.expected_semicolon_or_body
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '2a-Parts Interconnection'
-      (namespace_import public -> '2a-Parts Interconnection::Definitions'[package])
-      (namespace_import public -> '2a-Parts Interconnection::Usages'[package])
-      (package 'Definitions'
-        (port_def 'FuelCmdPort')
-        (port_def 'DrivePwrPort')
-        (port_def 'ClutchPort')
-        (port_def 'ShaftPort_a')
-        (port_def 'ShaftPort_b')
-        (port_def 'ShaftPort_c')
-        (port_def 'ShaftPort_d')
-        (port_def 'DiffPort')
-        (port_def 'AxlePort')
-        (port_def 'AxleToWheelPort')
-        (port_def 'WheelToAxlePort')
-        (port_def 'WheelToRoadPort')
-        (port_def 'VehicleToRoadPort'
-          (port_usage composite 'wheelToRoadPort' : '2a-Parts Interconnection::Definitions::WheelToRoadPort'[port_def]
-            (multiplicity_range [2])))
-        (part_def 'VehicleA'
-          (port_usage composite 'fuelCmdPort' : '2a-Parts Interconnection::Definitions::FuelCmdPort'[port_def])
-          (port_usage composite 'vehicleToRoadPort' : '2a-Parts Interconnection::Definitions::VehicleToRoadPort'[port_def]))
-        (part_def 'AxleAssembly')
-        (part_def 'RearAxleAssembly' :> '2a-Parts Interconnection::Definitions::AxleAssembly'[part_def]
-          (port_usage composite 'shaftPort_d' : '2a-Parts Interconnection::Definitions::ShaftPort_d'[port_def]))
-        (part_def 'Axle')
-        (part_def 'RearAxle' :> '2a-Parts Interconnection::Definitions::Axle'[part_def])
-        (part_def 'HalfAxle'
-          (port_usage composite 'axleToDiffPort' : '2a-Parts Interconnection::Definitions::AxlePort'[port_def])
-          (port_usage composite 'axleToWheelPort' : '2a-Parts Interconnection::Definitions::AxleToWheelPort'[port_def]))
-        (part_def 'Engine'
-          (port_usage composite 'fuelCmdPort' : '2a-Parts Interconnection::Definitions::FuelCmdPort'[port_def])
-          (port_usage composite 'drivePwrPort' : '2a-Parts Interconnection::Definitions::DrivePwrPort'[port_def]))
-        (part_def 'Transmission'
-          (port_usage composite 'clutchPort' : '2a-Parts Interconnection::Definitions::ClutchPort'[port_def])
-          (port_usage composite 'shaftPort_a' : '2a-Parts Interconnection::Definitions::ShaftPort_a'[port_def]))
-        (part_def 'Driveshaft'
-          (port_usage composite 'shaftPort_b' : '2a-Parts Interconnection::Definitions::ShaftPort_b'[port_def])
-          (port_usage composite 'shaftPort_c' : '2a-Parts Interconnection::Definitions::ShaftPort_c'[port_def]))
-        (part_def 'Differential')
-        (part_def 'Wheel')
-        (interface_def 'EngineToTransmissionInterface'
-          (port_usage end 'drivePwrPort' : '2a-Parts Interconnection::Definitions::DrivePwrPort'[port_def])
-          (port_usage end 'clutchPort' : '2a-Parts Interconnection::Definitions::ClutchPort'[port_def]))
-        (interface_def 'DriveshaftInterface'
-          (port_usage end 'shaftPort_a' : '2a-Parts Interconnection::Definitions::ShaftPort_a'[port_def])
-          (port_usage end 'shaftPort_d' : '2a-Parts Interconnection::Definitions::ShaftPort_d'[port_def])
-          (reference_usage reference 'driveshaft' : '2a-Parts Interconnection::Definitions::Driveshaft'[part_def])
-          (connection_usage composite
-            (connector_end 'shaftPort_a')
-            (connector_end 'driveshaft.shaftPort_b'))
-          (connection_usage composite
-            (connector_end 'driveshaft.shaftPort_c')
-            (connector_end 'shaftPort_d'))))
-      (package 'Usages'
-        (part_usage 'vehicle1_c1' : '2a-Parts Interconnection::Definitions::VehicleA'[part_def]
-          (binding_connector_def
-            (connector_end 'fuelCmdPort')
-            (connector_end 'engine.fuelCmdPort'))
-          (part_usage composite 'engine' : '2a-Parts Interconnection::Definitions::Engine'[part_def])
-          (interface_usage composite : '2a-Parts Interconnection::Definitions::EngineToTransmissionInterface'[interface_def]
-            (connector_end 'engine.drivePwrPort')
-            (connector_end 'transmission.clutchPort'))
-          (part_usage composite 'transmission' : '2a-Parts Interconnection::Definitions::Transmission'[part_def])
-          (part_usage composite 'driveshaft' : '2a-Parts Interconnection::Definitions::Driveshaft'[part_def])
-          (interface_usage composite : '2a-Parts Interconnection::Definitions::DriveshaftInterface'[interface_def]
-            (connector_end 'transmission.shaftPort_a')
-            (connector_end 'rearAxleAssembly.shaftPort_d')
-            (reference_usage reference :>> '2a-Parts Interconnection::Definitions::DriveshaftInterface::driveshaft'[reference_usage]
-              (feature_value (=))))
-          (part_usage composite 'rearAxleAssembly' : '2a-Parts Interconnection::Definitions::RearAxleAssembly'[part_def]
-            (binding_connector_def
-              (connector_end 'shaftPort_d')
-              (connector_end 'differential.shaftPort_d'))
-            (part_usage composite 'differential' : '2a-Parts Interconnection::Definitions::Differential'[part_def]
-              (port_usage composite 'shaftPort_d' : '2a-Parts Interconnection::Definitions::ShaftPort_d'[port_def])
-              (port_usage composite 'leftDiffPort' : '2a-Parts Interconnection::Definitions::DiffPort'[port_def])
-              (port_usage composite 'rightDiffPort' : '2a-Parts Interconnection::Definitions::DiffPort'[port_def]))
-            (not_implemented 'malformed')
-            (not_implemented 'malformed')
-            (part_usage composite 'rearAxle' : '2a-Parts Interconnection::Definitions::RearAxle'[part_def]
-              (part_usage composite 'leftHalfAxle' : '2a-Parts Interconnection::Definitions::HalfAxle'[part_def])
-              (part_usage composite 'rightHalfAxle' : '2a-Parts Interconnection::Definitions::HalfAxle'[part_def]))
-            (connection_usage composite
-              (connector_end 'rearAxle.leftHalfAxle.axleToWheelPort')
-              (connector_end 'leftWheel.wheelToAxlePort'))
-            (connection_usage composite
-              (connector_end 'rearAxle.rightHalfAxle.axleToWheelPort')
-              (connector_end 'rightWheel.wheelToAxlePort'))
-            (part_usage composite ordered 'rearWheel' : '2a-Parts Interconnection::Definitions::Wheel'[part_def]
-              (multiplicity_range [2]))
-            (part_usage composite 'leftWheel' :> '2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearWheel'[part_usage]
-              (feature_value (=))
-              (port_usage composite 'wheelToAxlePort' : '2a-Parts Interconnection::Definitions::WheelToAxlePort'[port_def])
-              (port_usage composite 'wheelToRoadPort' : '2a-Parts Interconnection::Definitions::WheelToRoadPort'[port_def]))
-            (part_usage composite 'rightWheel' :> '2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearWheel'[part_usage]
-              (feature_value (=))
-              (port_usage composite 'wheelToAxlePort' : '2a-Parts Interconnection::Definitions::WheelToAxlePort'[port_def])
-              (port_usage composite 'wheelToRoadPort' : '2a-Parts Interconnection::Definitions::WheelToRoadPort'[port_def])))
-          (binding_connector_def
-            (connector_end 'rearAxleAssembly.leftWheel.wheelToRoadPort')
-            (connector_end 'vehicleToRoadPort.leftWheelToRoadPort'))
-          (binding_connector_def
-            (connector_end 'rearAxleAssembly.rightWheel.wheelToRoadPort')
-            (connector_end 'vehicleToRoadPort.rightWheelToRoadPort'))
-          (port_usage composite 'vehicleToRoadPort' :>> '2a-Parts Interconnection::Definitions::VehicleA::vehicleToRoadPort'[port_usage]
-            (port_usage composite 'leftWheelToRoadPort' :> '2a-Parts Interconnection::Definitions::VehicleToRoadPort::wheelToRoadPort'[port_usage]
-              (feature_value (=)))
-            (port_usage composite 'rightWheelToRoadPort' :> '2a-Parts Interconnection::Definitions::VehicleToRoadPort::wheelToRoadPort'[port_usage]
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "2a-Parts Interconnection"))) (name "2a-Parts Interconnection") (declared-name "2a-Parts Interconnection")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Axle"))) (name "Axle") (declared-name "Axle") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleAssembly"))) (name "AxleAssembly") (declared-name "AxleAssembly") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxlePort"))) (name "AxlePort") (declared-name "AxlePort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxlePort::~AxlePort"))) (name "~AxlePort") (declared-name "~AxlePort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxlePort")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleToWheelPort"))) (name "AxleToWheelPort") (declared-name "AxleToWheelPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleToWheelPort::~AxleToWheelPort"))) (name "~AxleToWheelPort") (declared-name "~AxleToWheelPort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleToWheelPort")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort"))) (name "ClutchPort") (declared-name "ClutchPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort::~ClutchPort"))) (name "~ClutchPort") (declared-name "~ClutchPort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DiffPort"))) (name "DiffPort") (declared-name "DiffPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DiffPort::~DiffPort"))) (name "~DiffPort") (declared-name "~DiffPort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DiffPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Differential"))) (name "Differential") (declared-name "Differential") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort"))) (name "DrivePwrPort") (declared-name "DrivePwrPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort::~DrivePwrPort"))) (name "~DrivePwrPort") (declared-name "~DrivePwrPort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft"))) (name "Driveshaft") (declared-name "Driveshaft") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft::shaftPort_b"))) (name "shaftPort_b") (declared-name "shaftPort_b") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft::shaftPort_c"))) (name "shaftPort_c") (declared-name "shaftPort_c") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft")))))
+              )
+            )
+            (element (kind "interface def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface"))) (name "DriveshaftInterface") (declared-name "DriveshaftInterface")
+              (contains
+                (element (kind "ref") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::driveshaft"))) (name "driveshaft") (declared-name "driveshaft") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface")))))
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::shaftPort_a"))) (name "shaftPort_a") (declared-name "shaftPort_a") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface")))))
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine")))))
+              )
+            )
+            (element (kind "interface def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::EngineToTransmissionInterface"))) (name "EngineToTransmissionInterface") (declared-name "EngineToTransmissionInterface")
+              (contains
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::EngineToTransmissionInterface::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::EngineToTransmissionInterface")))))
+                (element (kind "interface end") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::EngineToTransmissionInterface::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::EngineToTransmissionInterface")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::FuelCmdPort"))) (name "FuelCmdPort") (declared-name "FuelCmdPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::FuelCmdPort::~FuelCmdPort"))) (name "~FuelCmdPort") (declared-name "~FuelCmdPort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::FuelCmdPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle"))) (name "HalfAxle") (declared-name "HalfAxle") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToDiffPort"))) (name "axleToDiffPort") (declared-name "axleToDiffPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToWheelPort"))) (name "axleToWheelPort") (declared-name "axleToWheelPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxle"))) (name "RearAxle") (declared-name "RearAxle") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly"))) (name "RearAxleAssembly") (declared-name "RearAxleAssembly") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a"))) (name "ShaftPort_a") (declared-name "ShaftPort_a")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a::~ShaftPort_a"))) (name "~ShaftPort_a") (declared-name "~ShaftPort_a") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_b"))) (name "ShaftPort_b") (declared-name "ShaftPort_b")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_b::~ShaftPort_b"))) (name "~ShaftPort_b") (declared-name "~ShaftPort_b") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_b")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_c"))) (name "ShaftPort_c") (declared-name "ShaftPort_c")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_c::~ShaftPort_c"))) (name "~ShaftPort_c") (declared-name "~ShaftPort_c") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_c")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d"))) (name "ShaftPort_d") (declared-name "ShaftPort_d")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d::~ShaftPort_d"))) (name "~ShaftPort_d") (declared-name "~ShaftPort_d") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission::shaftPort_a"))) (name "shaftPort_a") (declared-name "shaftPort_a") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA"))) (name "VehicleA") (declared-name "VehicleA") (declared)
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::vehicleToRoadPort"))) (name "vehicleToRoadPort") (declared-name "vehicleToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort"))) (name "VehicleToRoadPort") (declared-name "VehicleToRoadPort")
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort::wheelToRoadPort"))) (name "wheelToRoadPort") (declared-name "wheelToRoadPort") (declared (properties (composite true) (reference false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort")))))
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort::~VehicleToRoadPort"))) (name "~VehicleToRoadPort") (declared-name "~VehicleToRoadPort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort"))) (name "WheelToAxlePort") (declared-name "WheelToAxlePort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort::~WheelToAxlePort"))) (name "~WheelToAxlePort") (declared-name "~WheelToAxlePort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort"))) (name "WheelToRoadPort") (declared-name "WheelToRoadPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort::~WheelToRoadPort"))) (name "~WheelToRoadPort") (declared-name "~WheelToRoadPort") (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::driveshaft"))) (name "driveshaft") (declared-name "driveshaft") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential"))) (name "differential") (declared-name "differential") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly"))))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::leftDiffPort"))) (name "leftDiffPort") (declared-name "leftDiffPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Differential")))))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::rightDiffPort"))) (name "rightDiffPort") (declared-name "rightDiffPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Differential")))))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Differential")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel"))) (name "leftWheel") (declared-name "leftWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly"))))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel::wheelToAxlePort"))) (name "wheelToAxlePort") (declared-name "wheelToAxlePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly")))))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel::wheelToRoadPort"))) (name "wheelToRoadPort") (declared-name "wheelToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly"))))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearAxle::leftHalfAxle"))) (name "leftHalfAxle") (declared-name "leftHalfAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxle")))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearAxle::rightHalfAxle"))) (name "rightHalfAxle") (declared-name "rightHalfAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxle")))))
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))) (name "rearWheel") (declared-name "rearWheel") (declared (properties (composite true) (reference false) (ordered true)) (multiplicity (lower 2) (upper 2) (ordered true) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel"))) (name "rightWheel") (declared-name "rightWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly"))))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToAxlePort"))) (name "wheelToAxlePort") (declared-name "wheelToAxlePort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly")))))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToRoadPort"))) (name "wheelToRoadPort") (declared-name "wheelToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly")))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort"))) (name "vehicleToRoadPort") (declared-name "vehicleToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA"))))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::leftWheelToRoadPort"))) (name "leftWheelToRoadPort") (declared-name "leftWheelToRoadPort") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::rightWheelToRoadPort"))) (name "rightWheelToRoadPort") (declared-name "rightWheelToRoadPort") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (bind (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly::shaftPort_d"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::shaftPort_d"))) (connect (source-expression "shaftPort_d") (target-expression "differential::shaftPort_d") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::fuelCmdPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine::fuelCmdPort"))) (connect (source-expression "fuelCmdPort") (target-expression "engine::fuelCmdPort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::leftWheelToRoadPort"))) (connect (source-expression "rearAxleAssembly::leftWheel::wheelToRoadPort") (target-expression "vehicleToRoadPort::leftWheelToRoadPort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::rightWheelToRoadPort"))) (connect (source-expression "rearAxleAssembly::rightWheel::wheelToRoadPort") (target-expression "vehicleToRoadPort::rightWheelToRoadPort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft::shaftPort_c"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::shaftPort_d"))) (connect (source-expression "driveshaft::shaftPort_c") (target-expression "shaftPort_d") (container-prefix "2a-Parts Interconnection::Definitions::DriveshaftInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::shaftPort_a"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft::shaftPort_b"))) (connect (source-expression "shaftPort_a") (target-expression "driveshaft::shaftPort_b") (container-prefix "2a-Parts Interconnection::Definitions::DriveshaftInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine::drivePwrPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission::clutchPort"))) (connect (source-expression "engine::drivePwrPort") (target-expression "transmission::clutchPort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1") (interface-usage true) (interface-type "EngineToTransmissionInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToWheelPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel::wheelToAxlePort"))) (connect (source-expression "rearAxle::leftHalfAxle::axleToWheelPort") (target-expression "leftWheel::wheelToAxlePort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToWheelPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToAxlePort"))) (connect (source-expression "rearAxle::rightHalfAxle::axleToWheelPort") (target-expression "rightWheel::wheelToAxlePort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission::shaftPort_a"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly::shaftPort_d"))) (connect (source-expression "transmission::shaftPort_a") (target-expression "rearAxleAssembly::shaftPort_d") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1") (interface-usage true) (interface-type "DriveshaftInterface")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::leftDiffPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToDiffPort"))) (connect (source-expression "differential::leftDiffPort") (target-expression "rearAxle::leftHalfAxle::axleToDiffPort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly") (interface-usage true)))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::rightDiffPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToDiffPort"))) (connect (source-expression "differential::rightDiffPort") (target-expression "rearAxle::rightHalfAxle::axleToDiffPort") (container-prefix "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly") (interface-usage true)))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxlePort::~AxlePort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxlePort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleToWheelPort::~AxleToWheelPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleToWheelPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort::~ClutchPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DiffPort::~DiffPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DiffPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort::~DrivePwrPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::FuelCmdPort::~FuelCmdPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::FuelCmdPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a::~ShaftPort_a"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_b::~ShaftPort_b"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_b"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_c::~ShaftPort_c"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_c"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d::~ShaftPort_d"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort::~VehicleToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort::~WheelToAxlePort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort::~WheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::vehicleToRoadPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxle"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Axle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleAssembly"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::leftWheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort::wheelToRoadPort"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::vehicleToRoadPort::rightWheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort::wheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft::shaftPort_b"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_b"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft::shaftPort_c"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_c"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::driveshaft"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::shaftPort_a"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DriveshaftInterface::shaftPort_d"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine::drivePwrPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine::fuelCmdPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::FuelCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::EngineToTransmissionInterface::clutchPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::EngineToTransmissionInterface::drivePwrPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DrivePwrPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToDiffPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxlePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle::axleToWheelPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::AxleToWheelPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly::shaftPort_d"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission::clutchPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission::shaftPort_a"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_a"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::fuelCmdPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::FuelCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA::vehicleToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleToRoadPort::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::VehicleA"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::driveshaft"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Driveshaft"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::engine"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Differential"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::leftDiffPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DiffPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::rightDiffPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::DiffPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::differential::shaftPort_d"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::ShaftPort_d"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel::wheelToAxlePort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::leftWheel::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearAxle"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::RearAxle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearAxle::leftHalfAxle"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearAxle::rightHalfAxle"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::HalfAxle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToAxlePort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToAxlePort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::rearAxleAssembly::rightWheel::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "2a-Parts Interconnection::Usages::vehicle1_c1::transmission"))) (to (node (document "d0") (qualified-name "2a-Parts Interconnection::Definitions::Transmission"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -74,20 +74,19 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (class_def 'C'
-        (feature_def 'x')
-        (feature_def 'y')
-        (feature_def 'startShot')
-        (feature_def 'endShot')
-        (feature_def 'baseEdges')
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'x')
-          (connector_end 'y'))
-        (binding_connector_def 'b'
-          (connector_end 'lhs')
-          (connector_end 'rhs'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "P::C"))) (name "C") (declared-name "C"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

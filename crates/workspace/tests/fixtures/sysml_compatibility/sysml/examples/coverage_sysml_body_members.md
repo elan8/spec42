@@ -152,34 +152,15 @@ part def Outer {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (part_def 'Outer'
-      (attribute_def 'InnerAttr')
-      (enum_def 'InnerEnum'
-        (enum_usage composite 'a')
-        (enum_usage composite 'b'))
-      (occurrence_def 'InnerOccurrence')
-      (occurrence_def individual 'InnerIndividual')
-      (item_def 'InnerItem')
-      (part_def 'InnerPart')
-      (port_def 'InnerPort')
-      (attribute_usage composite 'x' : 'Integer'[unresolved])
-      (enum_usage composite 'e' : 'Outer::InnerEnum'[enum_def])
-      (occurrence_usage composite 'o1')
-      (occurrence_usage individual composite 'ind1' : 'Outer::InnerIndividual'[occurrence_def])
-      (item_usage composite 'it1' : 'Outer::InnerItem'[item_def])
-      (part_usage composite 'p1' : 'Outer::InnerPart'[part_def])
-      (port_usage composite 'pt1' : 'Outer::InnerPort'[port_def])
-      (event_occurrence_usage 'ev1')
-      (reference_usage reference 'r1' : 'Outer::InnerPart'[part_def])
-      (occurrence_usage composite 'snap1')
-      (occurrence_usage composite 'ts1')
-      (attribute_usage in 'inAttr' : 'Integer'[unresolved])
-      (attribute_usage out 'outAttr' : 'Integer'[unresolved])
-      (attribute_usage inout 'inoutAttr' : 'Integer'[unresolved])
-      (attribute_usage derived composite 'derivedAttr' : 'Integer'[unresolved])
-      (attribute_usage composite 'constAttr' : 'Integer'[unresolved]
-        (feature_value (=)))
-      (port_usage end 'endFeat'))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

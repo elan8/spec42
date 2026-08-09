@@ -115,29 +115,36 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Time Slice and Snapshot Example'
-      (attribute_def 'Date')
-      (item_def 'Person')
-      (part_def 'Vehicle'
-        (occurrence_usage composite 'assembly')
-        (succession_def
-          (connector_end 'assembly')
-          (connector_end 'delivery'))
-        (occurrence_usage composite 'delivery'
-          (attribute_usage composite 'deliveryDate' : 'Time Slice and Snapshot Example::Date'[attribute_def]))
-        (source_succession
-          (occurrence_usage ordered 'ownership'
-            (multiplicity_range [0..*])
-            (occurrence_usage composite 'sale'
-              (feature_value (=)))
-            (item_usage reference 'owner' : 'Time Slice and Snapshot Example::Person'[item_def]
-              (multiplicity_range [1]))
-            (occurrence_usage composite 'driven'
-              (multiplicity_range [0..*])
-              (item_usage reference 'driver' : 'Time Slice and Snapshot Example::Person'[item_def]
-                (multiplicity_range [1])))))
-        (occurrence_usage composite 'junked'
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example"))) (name "Time Slice and Snapshot Example") (declared-name "Time Slice and Snapshot Example")
+      (contains
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))) (name "Date") (declared-name "Date") (declared (properties (ordered false) (unique true))))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Person"))) (name "Person") (declared-name "Person"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::assembly"))) (name "assembly") (declared-name "assembly") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle")))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery"))) (name "delivery") (declared-name "delivery") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (name "deliveryDate") (declared-name "deliveryDate") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle")))))
+              )
+            )
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership"))) (name "ownership") (declared-name "ownership") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven"))) (name "driven") (declared-name "driven") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (to (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

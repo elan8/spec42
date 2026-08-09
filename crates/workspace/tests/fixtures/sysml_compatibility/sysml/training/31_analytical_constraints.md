@@ -212,47 +212,33 @@ semantic.unresolved_name 'AccelerationValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Analytical Constraints'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'Calculation Definitions'[unresolved])
-      (constraint_def 'StraightLineDynamicsEquations'
-        (reference_usage in reference 'p' : 'PowerValue'[unresolved])
-        (reference_usage in reference 'm' : 'MassValue'[unresolved])
-        (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'x_i' : 'LengthValue'[unresolved])
-        (reference_usage in reference 'v_i' : 'SpeedValue'[unresolved])
-        (reference_usage in reference 'x_f' : 'LengthValue'[unresolved])
-        (reference_usage in reference 'v_f' : 'SpeedValue'[unresolved])
-        (reference_usage in reference 'a' : 'AccelerationValue'[unresolved])
-        (attribute_usage composite 'v_avg' : 'SpeedValue'[unresolved]
-          (feature_value (=)))
-        (result_expr_membership))
-      (action_def 'StraightLineDynamics'
-        (reference_usage in reference 'power' : 'PowerValue'[unresolved])
-        (reference_usage in reference 'mass' : 'MassValue'[unresolved])
-        (reference_usage in reference 'delta_t' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'x_in' : 'LengthValue'[unresolved])
-        (reference_usage in reference 'v_in' : 'SpeedValue'[unresolved])
-        (reference_usage out reference 'x_out' : 'LengthValue'[unresolved])
-        (reference_usage out reference 'v_out' : 'SpeedValue'[unresolved])
-        (reference_usage out reference 'a_out' : 'AccelerationValue'[unresolved])
-        (assert_constraint_usage 'dynamics' : 'Analytical Constraints::StraightLineDynamicsEquations'[constraint_def]
-          (reference_usage in reference 'p'
-            (feature_value (=)))
-          (reference_usage in reference 'm'
-            (feature_value (=)))
-          (reference_usage in reference 'dt'
-            (feature_value (=)))
-          (reference_usage in reference 'x_i'
-            (feature_value (=)))
-          (reference_usage in reference 'v_i'
-            (feature_value (=)))
-          (reference_usage in reference 'x_f'
-            (feature_value (=)))
-          (reference_usage in reference 'v_f'
-            (feature_value (=)))
-          (reference_usage in reference 'a'
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Analytical Constraints"))) (name "Analytical Constraints") (declared-name "Analytical Constraints")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analytical Constraints::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analytical Constraints::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics"))) (name "StraightLineDynamics") (declared-name "StraightLineDynamics")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::a_out"))) (name "a_out") (declared-name "a_out") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::delta_t"))) (name "delta_t") (declared-name "delta_t") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::v_out"))) (name "v_out") (declared-name "v_out") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics::x_out"))) (name "x_out") (declared-name "x_out") (effective (featuring-type (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics")))))
+          )
+        )
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations"))) (name "StraightLineDynamicsEquations") (declared-name "StraightLineDynamicsEquations"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

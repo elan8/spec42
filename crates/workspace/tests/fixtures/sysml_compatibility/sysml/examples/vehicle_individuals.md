@@ -395,55 +395,123 @@ semantic.unresolved_name 'rightFrontWheel'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleIndividuals'
-      (namespace_import private -> 'VehicleUsages'[unresolved])
-      (membership_import private -> 'Time::DateTime'[unresolved])
-      (membership_import private -> 'SI::kg'[unresolved])
-      (package 'IndividualDefinitions'
-        (part_def individual 'Vehicle1' :> 'Vehicle'[unresolved]
-          (documentation)
-          (attribute_usage composite :>> 'mass'[unresolved]
-            (feature_value (=))))
-        (part_def individual 'Vehicle2' :> 'Vehicle'[unresolved]
-          (documentation)
-          (attribute_usage composite :>> 'mass'[unresolved]
-            (feature_value (=))))
-        (part_def individual 'AxleAssembly1' :> 'AxleAssembly'[unresolved])
-        (part_def individual 'Wheel1' :> 'Wheel'[unresolved])
-        (part_def individual 'Wheel2' :> 'Wheel'[unresolved]))
-      (package 'IndividualSnapshots'
-        (namespace_import public -> 'VehicleIndividuals::IndividualDefinitions'[package])
-        (membership_import private -> 'Occurrences::HappensJustBefore'[unresolved])
-        (attribute_usage 't0' : 'DateTime'[unresolved])
-        (attribute_usage 't1' : 'DateTime'[unresolved])
-        (part_usage individual 'vehicle1' : 'VehicleIndividuals::IndividualDefinitions::Vehicle1'[part_def]
-          (occurrence_usage composite 'vehicle1_t0'
-            (documentation)
-            (attribute_usage composite :>> 'localClock::currentTime'[unresolved]
-              (feature_value (=))))
-          (succession_def : 'HappensJustBefore'[unresolved]
-            (connector_end 'vehicle1_t0')
-            (connector_end 'vehicle1_t0_t1'))
-          (occurrence_usage composite 'vehicle1_t0_t1'
-            (documentation)
-            (occurrence_usage composite :>> 'done'[unresolved]
-              (attribute_usage composite :>> 'localClock::currentTime'[unresolved]
-                (feature_value (=)))))))
-      (package 'IndividualConfigurations'
-        (namespace_import public -> 'VehicleIndividuals::IndividualSnapshots'[package])
-        (part_usage individual 'vehicle1_C2' : 'VehicleIndividuals::IndividualDefinitions::Vehicle1'[part_def] :> 'vehicle_C2'[unresolved] :> 'VehicleIndividuals::IndividualSnapshots::vehicle1'[part_usage]
-          (documentation)
-          (occurrence_usage composite 'vehicle1_C2_t0' :> 'VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0'[occurrence_usage]
-            (documentation)
-            (occurrence_usage individual composite 'axleAssembly1_t0' : 'VehicleIndividuals::IndividualDefinitions::AxleAssembly1'[part_def] :>> 'frontAxleAssembly'[unresolved]
-              (documentation)
-              (occurrence_usage individual composite 'leftFrontWheel_t0' : 'VehicleIndividuals::IndividualDefinitions::Wheel1'[part_def] :>> 'leftFrontWheel'[unresolved]
-                (documentation))))
-          (occurrence_usage composite 'vehicle1_C2_t1' :> 'vehicle1_t0_t1::done'[unresolved]
-            (documentation)
-            (occurrence_usage individual composite 'axleAssembly1_t1' : 'VehicleIndividuals::IndividualDefinitions::AxleAssembly1'[part_def] :>> 'frontAxleAssembly'[unresolved]
-              (occurrence_usage individual composite 'rightFrontWheel_t1' : 'VehicleIndividuals::IndividualDefinitions::Wheel1'[part_def] :>> 'rightFrontWheel'[unresolved]
-                (documentation)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals"))) (name "VehicleIndividuals") (declared-name "VehicleIndividuals")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::DateTime"))) (name "DateTime") (declared-name "DateTime"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations"))) (name "IndividualConfigurations") (declared-name "IndividualConfigurations")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (name "vehicle1_C2") (declared-name "vehicle1_C2") (declared (properties (individual true) (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))) (name "vehicle1_C2_t0") (declared-name "vehicle1_C2_t0") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (name "axleAssembly1_t0") (declared-name "axleAssembly1_t0") (declared (properties (individual true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+                      (contains
+                        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1")))))
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (name "leftFrontWheel_t0") (declared-name "leftFrontWheel_t0") (declared (properties (individual true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))))
+                          (contains
+                            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1")))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))) (name "vehicle1_C2_t1") (declared-name "vehicle1_C2_t1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (name "axleAssembly1_t1") (declared-name "axleAssembly1_t1") (declared (properties (individual true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+                      (contains
+                        (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (name "rightFrontWheel_t1") (declared-name "rightFrontWheel_t1") (declared (properties (individual true) (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))))
+                          (contains
+                            (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1")))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions"))) (name "IndividualDefinitions") (declared-name "IndividualDefinitions")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))) (name "AxleAssembly1") (declared-name "AxleAssembly1") (declared (properties (individual true))))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (name "Vehicle1") (declared-name "Vehicle1") (declared (properties (individual true)))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1800)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::mass"))) (role feature-value))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (name "Vehicle2") (declared-name "Vehicle2") (declared (properties (individual true)))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1700)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::mass"))) (role feature-value))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))) (name "Wheel1") (declared-name "Wheel1") (declared (properties (individual true))))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel2"))) (name "Wheel2") (declared-name "Wheel2") (declared (properties (individual true))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots"))) (name "IndividualSnapshots") (declared-name "IndividualSnapshots")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::HappensJustBefore"))) (name "HappensJustBefore") (declared-name "HappensJustBefore"))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0"))) (name "t0") (declared-name "t0") (declared (properties (ordered false) (unique true))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1"))) (name "t1") (declared-name "t1") (declared (properties (ordered false) (unique true))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (individual true) (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))) (name "vehicle1_t0") (declared-name "vehicle1_t0") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::currentTime"))) (name "currentTime") (declared-name "currentTime") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))) (name "vehicle1_t0_t1") (declared-name "vehicle1_t0_t1") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+                  (contains
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::"))) (name "") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+                      (contains
+                        (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::::currentTime"))) (name "currentTime") (declared-name "currentTime") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                      )
+                    )
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleIndividuals::kg"))) (name "kg") (declared-name "kg"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle2"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1::_documentation"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1::vehicle1_t0_t1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t0::axleAssembly1_t0::leftFrontWheel_t0"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::AxleAssembly1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualConfigurations::vehicle1_C2::vehicle1_C2_t1::axleAssembly1_t1::rightFrontWheel_t1"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Wheel1"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleIndividuals::IndividualSnapshots::vehicle1"))) (to (node (document "d0") (qualified-name "VehicleIndividuals::IndividualDefinitions::Vehicle1"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

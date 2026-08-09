@@ -37,8 +37,19 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Outer'
-      (package 'Inner'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Outer"))) (name "Outer") (declared-name "Outer")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "Outer::Inner"))) (name "Inner") (declared-name "Inner"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

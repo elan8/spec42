@@ -180,42 +180,66 @@ semantic.unresolved_name 'String'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ServerSequenceModel'
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (namespace_import public -> 'ServerSequenceModel::SignalDefinitions'[package])
-      (package 'SignalDefinitions'
-        (item_def 'Subscribe'
-          (attribute_usage composite 'topic' : 'String'[unresolved])
-          (part_usage reference 'subscriber'))
-        (item_def 'Publish'
-          (attribute_usage composite 'topic' : 'String'[unresolved])
-          (reference_usage reference 'publication'))
-        (item_def 'Deliver'
-          (reference_usage reference 'publication')))
-      (part_def 'PubSubSequence'
-        (part_usage composite 'producer'
-          (multiplicity_range [1])
-          (event_occurrence_usage 'publish_source_event'))
-        (flow_usage composite 'publish_message'
-          (connector_end 'producer.publish_source_event')
-          (connector_end 'server.publish_target_event'))
-        (part_usage composite 'server'
-          (multiplicity_range [1])
-          (event_occurrence_usage 'subscribe_target_event')
-          (source_succession
-            (event_occurrence_usage 'publish_target_event'))
-          (source_succession
-            (event_occurrence_usage 'deliver_source_event')))
-        (flow_usage composite 'subscribe_message'
-          (connector_end 'consumer.subscribe_source_event')
-          (connector_end 'server.subscribe_target_event'))
-        (flow_usage composite 'deliver_message'
-          (connector_end 'server.deliver_source_event')
-          (connector_end 'consumer.deliver_target_event'))
-        (part_usage composite 'consumer'
-          (event_occurrence_usage 'subscribe_source_event')
-          (source_succession
-            (event_occurrence_usage 'deliver_target_event')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceModel"))) (name "ServerSequenceModel") (declared-name "ServerSequenceModel")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceModel::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence"))) (name "PubSubSequence") (declared-name "PubSubSequence") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::consumer"))) (name "consumer") (declared-name "consumer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::consumer::deliver_target_event"))) (name "deliver_target_event") (declared-name "deliver_target_event") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::consumer::subscribe_source_event"))) (name "subscribe_source_event") (declared-name "subscribe_source_event") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::deliver_message"))) (name "deliver_message") (declared-name "deliver_message") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::producer"))) (name "producer") (declared-name "producer") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::producer::publish_source_event"))) (name "publish_source_event") (declared-name "publish_source_event") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::publish_message"))) (name "publish_message") (declared-name "publish_message") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server"))) (name "server") (declared-name "server") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server::deliver_source_event"))) (name "deliver_source_event") (declared-name "deliver_source_event") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server::publish_target_event"))) (name "publish_target_event") (declared-name "publish_target_event") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server::subscribe_target_event"))) (name "subscribe_target_event") (declared-name "subscribe_target_event") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::subscribe_message"))) (name "subscribe_message") (declared-name "subscribe_message") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence")))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions"))) (name "SignalDefinitions") (declared-name "SignalDefinitions")
+          (contains
+            (element (kind "item def") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Deliver"))) (name "Deliver") (declared-name "Deliver")
+              (contains
+                (element (kind "ref") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Deliver::publication"))) (name "publication") (declared-name "publication") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Deliver")))))
+              )
+            )
+            (element (kind "item def") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish"))) (name "Publish") (declared-name "Publish")
+              (contains
+                (element (kind "ref") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish::publication"))) (name "publication") (declared-name "publication") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish::topic"))) (name "topic") (declared-name "topic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish")))))
+              )
+            )
+            (element (kind "item def") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe"))) (name "Subscribe") (declared-name "Subscribe")
+              (contains
+                (element (kind "ref") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::subscriber"))) (name "subscriber") (declared-name "subscriber") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::topic"))) (name "topic") (declared-name "topic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceModel::String"))) (name "String") (declared-name "String"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -30,7 +30,15 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MyPkg')))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MyPkg"))) (name "MyPkg") (declared-name "MyPkg"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

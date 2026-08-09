@@ -291,42 +291,83 @@ standard library package CauseAndEffect {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'CauseAndEffect'
-      (documentation)
-      (namespace_import public -> 'CausationConnections'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'Metaobjects::SemanticMetadata'[unresolved])
-      (metadata_def 'CauseMetadata' :> 'SemanticMetadata'[unresolved]
-        (documentation)
-        (reference_usage reference :>> 'annotatedElement'[unresolved] : 'SysML::Usage'[unresolved])
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'EffectMetadata' :> 'SemanticMetadata'[unresolved]
-        (documentation)
-        (reference_usage reference :>> 'annotatedElement'[unresolved] : 'SysML::Usage'[unresolved])
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'CausationMetadata'
-        (documentation)
-        (reference_usage reference :> 'annotatedElement'[unresolved] : 'SysML::ConnectionDefinition'[unresolved])
-        (reference_usage reference :> 'annotatedElement'[unresolved] : 'SysML::ConnectionUsage'[unresolved])
-        (attribute_usage composite 'isNecessary' : 'Boolean'[unresolved]
-          (feature_value (default =))
-          (documentation))
-        (attribute_usage composite 'isSufficient' : 'Boolean'[unresolved]
-          (feature_value (default =))
-          (documentation))
-        (attribute_usage composite 'probability' : 'Real'[unresolved]
-          (multiplicity_range [0..1])
-          (documentation)))
-      (metadata_def 'MulticausationSemanticMetadata' :> 'CauseAndEffect::CausationMetadata'[metadata_def] :> 'SemanticMetadata'[unresolved]
-        (documentation)
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'CausationSemanticMetadadata' :> 'CauseAndEffect::CausationMetadata'[metadata_def] :> 'SemanticMetadata'[unresolved]
-        (documentation)
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CauseAndEffect"))) (name "CauseAndEffect") (declared-name "CauseAndEffect")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "CauseAndEffect::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CauseAndEffect::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata"))) (name "CausationMetadata") (declared-name "CausationMetadata")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::annotatedElement#attribute"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isNecessary"))) (name "isNecessary") (declared-name "isNecessary") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isNecessary::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isSufficient"))) (name "isSufficient") (declared-name "isSufficient") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isSufficient::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::probability"))) (name "probability") (declared-name "probability") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::probability::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata")))))
+              )
+            )
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata"))) (name "CausationSemanticMetadadata") (declared-name "CausationSemanticMetadadata")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata"))) (name "CauseMetadata") (declared-name "CauseMetadata")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata"))) (name "EffectMetadata") (declared-name "EffectMetadata")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata"))) (name "MulticausationSemanticMetadata") (declared-name "MulticausationSemanticMetadata")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "CauseAndEffect::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "CauseAndEffect::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isNecessary::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isNecessary"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isSufficient::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::isSufficient"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::probability::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::probability"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CauseMetadata"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::EffectMetadata"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::_documentation"))) (to (node (document "d0") (qualified-name "CauseAndEffect"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationSemanticMetadadata"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::MulticausationSemanticMetadata"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::annotatedElement"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::annotatedElement#attribute"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::annotatedElement#attribute"))) (to (node (document "d0") (qualified-name "CauseAndEffect::CausationMetadata::annotatedElement"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

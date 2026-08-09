@@ -72,15 +72,30 @@ semantic.unresolved_name 'VehicleController'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'State Exhibition Example'
-      (namespace_import private -> 'Transition Actions'[unresolved])
-      (part_usage 'vehicle' : 'Vehicle'[unresolved]
-        (part_usage composite 'vehicleController' : 'VehicleController'[unresolved])
-        (state_usage composite 'vehicleStates'
-          (reference_usage in reference 'operatingVehicle'
-            (feature_value (=)))
-          (reference_usage in reference 'controller'
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "State Exhibition Example"))) (name "State Exhibition Example") (declared-name "State Exhibition Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "State Exhibition Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleController"))) (name "vehicleController") (declared-name "vehicleController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared (properties (composite true) (reference false)))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::controller"))) (name "controller") (declared-name "controller"))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::operatingVehicle"))) (name "operatingVehicle") (declared-name "operatingVehicle"))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

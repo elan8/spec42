@@ -442,100 +442,92 @@ semantic.unresolved_name 'LengthValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Dynamics'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (calculation_def 'Power'
-        (reference_usage in reference 'whlpwr' : 'PowerValue'[unresolved])
-        (reference_usage in reference 'Cd' : 'Real'[unresolved])
-        (reference_usage in reference 'Cf' : 'Real'[unresolved])
-        (reference_usage in reference 'tm' : 'MassValue'[unresolved])
-        (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'tp' : 'PowerValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'Acceleration'
-        (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'tm' : 'MassValue'[unresolved])
-        (reference_usage in reference 'tp' : 'PowerValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'a' : 'AccelerationValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'Velocity'
-        (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'v0' : 'SpeedValue'[unresolved])
-        (reference_usage in reference 'a' : 'AccelerationValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'v' : 'SpeedValue'[unresolved]
-            (feature_value (=)))))
-      (calculation_def 'Position'
-        (reference_usage in reference 'dt' : 'TimeValue'[unresolved])
-        (reference_usage in reference 'x0' : 'LengthValue'[unresolved])
-        (reference_usage in reference 'v' : 'SpeedValue'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'x' : 'LengthValue'[unresolved]
-            (feature_value (=)))))
-      (action_def 'StraightLineVehicleDynamics'
-        (attribute_usage in 'dt' : 'TimeValue'[unresolved])
-        (attribute_usage in 'whlpwr' : 'PowerValue'[unresolved])
-        (attribute_usage in 'Cd' : 'Real'[unresolved])
-        (attribute_usage in 'Cf' : 'Real'[unresolved])
-        (attribute_usage in 'tm' : 'MassValue'[unresolved])
-        (attribute_usage in 'v_in' : 'SpeedValue'[unresolved])
-        (attribute_usage in 'x_in' : 'LengthValue'[unresolved])
-        (attribute_usage out 'a_out' : 'AccelerationValue'[unresolved])
-        (attribute_usage out 'v_out' : 'SpeedValue'[unresolved])
-        (attribute_usage out 'x_out' : 'LengthValue'[unresolved])
-        (assert_constraint_usage
-          (attribute_usage 'tp' : 'PowerValue'[unresolved])
-          (result_expr_membership)))
-      (action_usage 'dyn1' : 'Dynamics::StraightLineVehicleDynamics'[action_def]
-        (attribute_usage in 'dt' : 'TimeValue'[unresolved])
-        (attribute_usage in 'whlpwr' : 'PowerValue'[unresolved])
-        (attribute_usage in 'Cd' : 'Real'[unresolved])
-        (attribute_usage in 'Cf' : 'Real'[unresolved])
-        (attribute_usage in 'tm' : 'MassValue'[unresolved])
-        (attribute_usage in 'v_in' : 'SpeedValue'[unresolved])
-        (attribute_usage in 'x_in' : 'LengthValue'[unresolved])
-        (attribute_usage composite 'tp' : 'PowerValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage out :>> 'Dynamics::StraightLineVehicleDynamics::a_out'[attribute_usage] : 'AccelerationValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage out :>> 'Dynamics::StraightLineVehicleDynamics::v_out'[attribute_usage] : 'SpeedValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage out :>> 'Dynamics::StraightLineVehicleDynamics::x_out'[attribute_usage] : 'LengthValue'[unresolved]
-          (feature_value (=))))
-      (action_usage 'dyn2' : 'Dynamics::StraightLineVehicleDynamics'[action_def]
-        (calculation_usage composite 'acc' : 'Dynamics::Acceleration'[calculation_def]
-          (reference_usage in reference 'dt'
-            (feature_value (=)))
-          (reference_usage in reference 'tm'
-            (feature_value (=)))
-          (reference_usage in reference 'tp'
-            (feature_value (=))))
-        (binding_connector_def
-          (connector_end 'a_out')
-          (connector_end 'acc.a'))
-        (calculation_usage composite 'vel' : 'Dynamics::Velocity'[calculation_def]
-          (reference_usage in reference 'dt'
-            (feature_value (=)))
-          (reference_usage in reference 'v0'
-            (feature_value (=)))
-          (reference_usage in reference 'a'
-            (feature_value (=))))
-        (binding_connector_def
-          (connector_end 'v_out')
-          (connector_end 'vel.v'))
-        (calculation_usage composite 'pos' : 'Dynamics::Position'[calculation_def]
-          (reference_usage in reference 'dt'
-            (feature_value (=)))
-          (reference_usage in reference 'x0'
-            (feature_value (=)))
-          (reference_usage in reference 'v0'
-            (feature_value (=))))
-        (binding_connector_def
-          (connector_end 'x_out')
-          (connector_end 'pos.x'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Dynamics"))) (name "Dynamics") (declared-name "Dynamics")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Dynamics::*"))) (name "*") (declared-name "*"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (name "Acceleration") (declared-name "Acceleration")
+          (contains
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::tm"))) (name "tm") (declared-name "tm") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Acceleration::tp"))) (name "tp") (declared-name "tp") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Acceleration")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Position"))) (name "Position") (declared-name "Position")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Position::x0"))) (name "x0") (declared-name "x0") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Position")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Power"))) (name "Power") (declared-name "Power")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::Cd"))) (name "Cd") (declared-name "Cd") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::Cf"))) (name "Cf") (declared-name "Cf") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::tm"))) (name "tm") (declared-name "tm") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::tp"))) (name "tp") (declared-name "tp") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Power::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Power")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Dynamics::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (name "StraightLineVehicleDynamics") (declared-name "StraightLineVehicleDynamics")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cd"))) (name "Cd") (declared-name "Cd") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::Cf"))) (name "Cf") (declared-name "Cf") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::a_out"))) (name "a_out") (declared-name "a_out") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::tm"))) (name "tm") (declared-name "tm") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::v_out"))) (name "v_out") (declared-name "v_out") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics::x_out"))) (name "x_out") (declared-name "x_out") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Dynamics::Velocity"))) (name "Velocity") (declared-name "Velocity")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
+            (element (kind "return parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::v0"))) (name "v0") (declared-name "v0") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn1"))) (name "dyn1") (declared-name "dyn1") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cd"))) (name "Cd") (declared-name "Cd") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cf"))) (name "Cf") (declared-name "Cf") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::dt"))) (name "dt") (declared-name "dt") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::tm"))) (name "tm") (declared-name "tm") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn1::tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)"))) (name "tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)") (declared-name "tp : PowerValue = Power(whlpwr, Cd, Cf, tm, v_in)") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::v_in"))) (name "v_in") (declared-name "v_in") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::whlpwr"))) (name "whlpwr") (declared-name "whlpwr") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn2"))) (name "dyn2") (declared-name "dyn2") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::acc : Acceleration"))) (name "acc : Acceleration") (declared-name "acc : Acceleration") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::pos : Position"))) (name "pos : Position") (declared-name "pos : Position") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+            (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::vel : Velocity"))) (name "vel : Velocity") (declared-name "vel : Velocity") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn1"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn2"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "a_out") (target-expression "acc::a") (container-prefix "Dynamics::dyn2"))
+    (bind (status pending-expression) (document "d0") (source-expression "v_out") (target-expression "vel::v") (container-prefix "Dynamics::dyn2"))
+    (bind (status pending-expression) (document "d0") (source-expression "x_out") (target-expression "pos::x") (container-prefix "Dynamics::dyn2"))
+  )
+)
 ~~~

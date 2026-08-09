@@ -141,26 +141,59 @@ semantic.unresolved_name 'TorqueGeneration'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Requirement Groups'
-      (namespace_import private -> 'Requirement Definitions'[unresolved])
-      (namespace_import private -> 'Requirement Usages'[unresolved])
-      (part_def 'Engine'
-        (port_usage composite 'clutchPort' : 'ClutchPort'[unresolved])
-        (perform_action_usage 'generateTorque' : 'GenerateTorque'[unresolved]))
-      (requirement_usage 'vehicleSpecification'
-        (documentation)
-        (subject_membership in 'vehicle' : 'Vehicle'[unresolved])
-        (require_constraint_usage composite 'fullVehicleMassLimit')
-        (require_constraint_usage composite 'emptyVehicleMassLimit'))
-      (requirement_usage 'engineSpecification'
-        (documentation)
-        (subject_membership in 'engine' : 'Requirement Groups::Engine'[part_def])
-        (requirement_usage composite 'drivePowerInterface' : 'DrivePowerInterface'[unresolved]
-          (subject_membership in
-            (feature_value (=))))
-        (requirement_usage composite 'torqueGeneration' : 'TorqueGeneration'[unresolved]
-          (subject_membership in
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Requirement Groups"))) (name "Requirement Groups") (declared-name "Requirement Groups")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Groups::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Groups::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Requirement Groups::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+          (contains
+            (element (kind "port") (id (node (document "d0") (qualified-name "Requirement Groups::Engine::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Groups::Engine")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Groups::Engine::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Groups::Engine")))))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Groups::engineSpecification"))) (name "engineSpecification") (declared-name "engineSpecification")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::_documentation"))) (name ""))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::drivePowerInterface"))) (name "drivePowerInterface") (declared-name "drivePowerInterface")
+              (contains
+                (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::drivePowerInterface::"))) (name ""))
+              )
+            )
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::engine"))) (name "engine") (declared-name "engine"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::torqueGeneration"))) (name "torqueGeneration") (declared-name "torqueGeneration")
+              (contains
+                (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::torqueGeneration::"))) (name ""))
+              )
+            )
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification"))) (name "vehicleSpecification") (declared-name "vehicleSpecification")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification::_documentation"))) (name ""))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0"))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification::_requireConstraint_1"))) (name "_requireConstraint_1") (declared-name "_requireConstraint_1"))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Groups::engineSpecification"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::Engine"))) (to (node (document "d0") (qualified-name "Requirement Groups::Engine::generateTorque"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::engineSpecification"))) (to (node (document "d0") (qualified-name "Requirement Groups::Engine"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::engineSpecification"))) (to (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::engine"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::drivePowerInterface"))) (to (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::drivePowerInterface::"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::torqueGeneration"))) (to (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::torqueGeneration::"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification"))) (to (node (document "d0") (qualified-name "Requirement Groups::vehicleSpecification::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Requirement Groups::engineSpecification::engine"))) (to (node (document "d0") (qualified-name "Requirement Groups::Engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -585,93 +585,29 @@ standard library package Triggers {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Triggers'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::NumericalValue'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (namespace_import public -> 'Clocks'[unresolved])
-      (namespace_import public -> 'Observation'[unresolved])
-      (structure_def 'TimeSignal' :> 'ChangeSignal'[unresolved]
-        (documentation)
-        (feature_def 'signalTime' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def 'signalClock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (boolean_expr_def :>> 'signalCondition'[unresolved]
-          (documentation)
-          (result_expr_membership)))
-      (function_def 'TriggerWhen'
-        (documentation)
-        (boolean_expr_usage in 'condition'
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def in 'receiver' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def in 'monitor' : 'ChangeMonitor'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (return_parameter_membership
-          (feature_def out 'changeSignal' : 'ChangeSignal'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=))
-            (documentation)))
-        (step_def :> 'monitor::startObservation'[unresolved]
-          (feature_def in 'observer'
-            (feature_value (=)))
-          (feature_def in 'signal'
-            (feature_value (=)))))
-      (function_def 'TriggerAt'
-        (documentation)
-        (feature_def in 'timeInstant' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def in 'receiver' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def in 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (feature_def in 'monitor' : 'ChangeMonitor'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (return_parameter_membership
-          (feature_def out 'timeSignal' : 'Triggers::TimeSignal'[structure_def]
-            (multiplicity_range [1])
-            (feature_value (=))
-            (documentation)))
-        (step_def :> 'monitor::startObservation'[unresolved]
-          (feature_def in 'observer'
-            (feature_value (=)))
-          (feature_def in 'signal'
-            (feature_value (=)))))
-      (function_def 'TriggerAfter'
-        (documentation)
-        (feature_def in 'delay' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def in 'receiver' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def in 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (feature_def in 'monitor' : 'ChangeMonitor'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (return_parameter_membership
-          (feature_def out 'signal' : 'Triggers::TimeSignal'[structure_def]
-            (multiplicity_range [1])
-            (feature_value (=))
-            (documentation)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Triggers"))) (name "Triggers") (declared-name "Triggers")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Triggers::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Triggers::TimeSignal"))) (name "TimeSignal") (declared-name "TimeSignal"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Triggers::TriggerAfter"))) (name "TriggerAfter") (declared-name "TriggerAfter"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Triggers::TriggerAt"))) (name "TriggerAt") (declared-name "TriggerAt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Triggers::TriggerWhen"))) (name "TriggerWhen") (declared-name "TriggerWhen"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Triggers::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Triggers::_documentation"))) (to (node (document "d0") (qualified-name "Triggers"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

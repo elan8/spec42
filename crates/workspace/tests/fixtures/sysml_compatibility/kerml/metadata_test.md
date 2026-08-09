@@ -224,47 +224,34 @@ semantic.unresolved_name 'cc'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MetadataTest'
-      (namespace_import private -> 'MetadataTest::User Defined Extensions'[library_package])
-      (library_package 'User Defined Extensions'
-        (datatype_def 'ClassificationLevel' :> 'ScalarValues::Natural'[unresolved])
-        (feature_def 'uncl' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[datatype_def]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (feature_def 'conf' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[datatype_def]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (feature_def 'secret' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[datatype_def]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (metaclass_def 'Classified'
-          (feature_def :>> 'annotatedElement'[unresolved] : 'KerML::Feature'[unresolved])
-          (feature_def 'classificationLevel' : 'MetadataTest::User Defined Extensions::ClassificationLevel'[datatype_def]))
-        (metaclass_def 'Security'))
-      (feature_def 'x'
-        (metadata_usage :> 'MetadataTest::User Defined Extensions::Classified'[metaclass_def]
-          (feature_def 'classificationLevel' :>> 'MetadataTest::User Defined Extensions::Classified::classificationLevel'[feature_def][implied]
-            (feature_value (=)))))
-      (feature_def 'y'
-        (metadata_usage :> 'MetadataTest::User Defined Extensions::Classified'[metaclass_def]
-          (feature_def 'classificationLevel' :>> 'MetadataTest::User Defined Extensions::Classified::classificationLevel'[feature_def][implied]
-            (feature_value (=))))
-        (metadata_usage :> 'MetadataTest::User Defined Extensions::Security'[metaclass_def]))
-      (feature_def 'z1')
-      (reference_usage abstract 'z2')
-      (feature_def 'z'
-        (metadata_usage :> 'MetadataTest::User Defined Extensions::Classified'[metaclass_def]
-          (feature_def 'classificationLevel' :>> 'MetadataTest::User Defined Extensions::Classified::classificationLevel'[feature_def][implied]
-            (feature_value (=)))))
-      (class_def 'CC')
-      (structure_def 'SS'
-        (feature_def 'cc' : 'MetadataTest::CC'[class_def]))
-      (metaclass_def 'M' :> 'Metaobjects::SemanticMetadata'[unresolved]
-        (feature_def :>> 'annotatedElement'[unresolved] : 'KerML::Class'[unresolved])
-        (feature_def :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (structure_def 'T'
-        (feature_def :>> 'cc'[unresolved])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MetadataTest"))) (name "MetadataTest") (declared-name "MetadataTest")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MetadataTest::*"))) (name "*") (declared-name "*"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "MetadataTest::T"))) (name "T") (declared-name "T"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))) (name "User Defined Extensions") (declared-name "User Defined Extensions")
+          (contains
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (name "ClassificationLevel") (declared-name "ClassificationLevel"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (name "Classified") (declared-name "Classified"))
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (name "Security") (declared-name "Security"))
+            (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::conf1"))) (name "conf1") (declared-name "conf1"))
+            (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::secret1"))) (name "secret1") (declared-name "secret1"))
+            (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::uncl1"))) (name "uncl1") (declared-name "uncl1"))
+          )
+        )
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "MetadataTest::_M"))) (name "M") (declared-name "M"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::x"))) (name "x") (declared-name "x"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "MetadataTest::y"))) (name "y") (declared-name "y"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::_M"))) (to (node (document "d0") (qualified-name "MetadataTest"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

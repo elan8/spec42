@@ -169,26 +169,30 @@ semantic.unresolved_name 'ScalarValues::Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleDefinitions'
-      (documentation)
-      (class_def 'Vehicle')
-      (class_def 'Transmission')
-      (class_def 'AxleAssembly')
-      (class_def 'Axle')
-      (class_def 'Wheel')
-      (class_def 'Lugbolt'
-        (feature_def 'tighteningTorque' : 'ScalarValues::Real'[unresolved]
-          (multiplicity_range [1])))
-      (class_def 'DriveIF'
-        (feature_def in 'driveTorque' : 'ScalarValues::Real'[unresolved]))
-      (class_def 'AxleMountIF'
-        (feature_def out 'transferredTorque' : 'ScalarValues::Real'[unresolved]))
-      (class_def 'WheelHubIF'
-        (feature_def in 'appliedTorque' : 'ScalarValues::Real'[unresolved]))
-      (association_def 'Mounting'
-        (documentation)
-        (feature_def end 'axleMount' : 'VehicleDefinitions::AxleMountIF'[class_def])
-        (feature_def end 'hub' : 'VehicleDefinitions::WheelHubIF'[class_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleDefinitions"))) (name "VehicleDefinitions") (declared-name "VehicleDefinitions")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::Axle"))) (name "Axle") (declared-name "Axle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleAssembly"))) (name "AxleAssembly") (declared-name "AxleAssembly"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::AxleMountIF"))) (name "AxleMountIF") (declared-name "AxleMountIF"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::DriveIF"))) (name "DriveIF") (declared-name "DriveIF"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::Lugbolt"))) (name "Lugbolt") (declared-name "Lugbolt"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VehicleDefinitions::Mounting"))) (name "Mounting") (declared-name "Mounting"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::Transmission"))) (name "Transmission") (declared-name "Transmission"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::Wheel"))) (name "Wheel") (declared-name "Wheel"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "VehicleDefinitions::WheelHubIF"))) (name "WheelHubIF") (declared-name "WheelHubIF"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "VehicleDefinitions::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::_documentation"))) (to (node (document "d0") (qualified-name "VehicleDefinitions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -115,8 +115,19 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '15_06-System of Quantities'
-      (namespace_import private -> 'ISQ'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "15_06-System of Quantities"))) (name "15_06-System of Quantities") (declared-name "15_06-System of Quantities")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (name "*") (declared-name "*"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

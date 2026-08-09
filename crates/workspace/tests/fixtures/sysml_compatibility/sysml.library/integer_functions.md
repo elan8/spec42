@@ -372,167 +372,42 @@ standard library package IntegerFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'IntegerFunctions'
-      (documentation)
-      (namespace_import public -> 'ScalarValues'[unresolved])
-      (function_def 'abs' :> 'RationalFunctions::abs'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '+' :> 'RationalFunctions::+'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '-' :> 'RationalFunctions::-'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '*' :> 'RationalFunctions::*'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '/' :> 'RationalFunctions::/'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Rational'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '**' :> 'RationalFunctions::**'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '^' :> 'RationalFunctions::^'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Natural'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '%' :> 'NumericalFunctions::%'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<' :> 'RationalFunctions::<'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>' :> 'RationalFunctions::>'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '<=' :> 'RationalFunctions::<='[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '>=' :> 'RationalFunctions::>='[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'max' :> 'RationalFunctions::max'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'min' :> 'RationalFunctions::min'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '==' :> 'DataFunctions::=='[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Integer'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '..' :> 'ScalarFunctions::..'[unresolved]
-        (feature_def in 'lower' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'upper' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def 'ToString' :> 'RationalFunctions::ToString'[unresolved]
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToNatural'
-        (feature_def in 'x' : 'Integer'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Natural'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'ToInteger'
-        (feature_def in 'x' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'sum' :> 'RationalFunctions::sum'[unresolved]
-        (feature_def in 'collection' : 'Integer'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (default =)))))
-      (function_def 'product' :> 'RationalFunctions::product'[unresolved]
-        (feature_def in 'collection' : 'Integer'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (default =))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "IntegerFunctions"))) (name "IntegerFunctions") (declared-name "IntegerFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "IntegerFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::ToInteger"))) (name "ToInteger") (declared-name "ToInteger"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::ToNatural"))) (name "ToNatural") (declared-name "ToNatural"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::abs"))) (name "abs") (declared-name "abs"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl10"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl11"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl12"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl4"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl5"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl6"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl7"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl8"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::function#kermlDecl9"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::min"))) (name "min") (declared-name "min"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::product"))) (name "product") (declared-name "product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "IntegerFunctions::sum"))) (name "sum") (declared-name "sum"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (to (node (document "d0") (qualified-name "IntegerFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -4119,533 +4119,646 @@ standard library package ISQCondensedMatter {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQCondensedMatter'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (membership_import private -> 'ISQElectromagnetism::ElectricPotentialDifferenceValue'[unresolved])
-      (membership_import private -> 'ISQElectromagnetism::MagneticFluxDensityValue'[unresolved])
-      (membership_import private -> 'ISQElectromagnetism::ResistivityValue'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::CartesianSpatial3dCoordinateFrame'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::AngularFrequencyValue'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::AngularMeasureValue'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::RepetencyValue'[unresolved])
-      (membership_import private -> 'ISQThermodynamics::EnergyValue'[unresolved])
-      (attribute_def 'CartesianLattice3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'CartesianSpatial3dCoordinateFrame'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianLattice3dVector' : 'ISQCondensedMatter::CartesianLattice3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianFundamentalLattice3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'CartesianSpatial3dCoordinateFrame'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianFundamentalLattice3dVector' : 'ISQCondensedMatter::CartesianFundamentalLattice3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'AngularReciprocalLatticeVectorMagnitudeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'angularReciprocalLatticeVectorMagnitude' : 'ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AngularReciprocalLatticeVectorMagnitudeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianAngularReciprocalLattice3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianAngularReciprocalLattice3dVector' : 'ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianAngularReciprocalLattice3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'FundamentalReciprocalLatticeVectorMagnitudeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'fundamentalReciprocalLatticeVectorMagnitude' : 'ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'FundamentalReciprocalLatticeVectorMagnitudeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianFundamentalReciprocalLattice3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianFundamentalReciprocalLattice3dVector' : 'ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianFundamentalReciprocalLattice3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_usage 'latticePlaneSpacing' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'braggAngle' : 'AngularMeasureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ShortRangeOrderParameterValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'shortRangeOrderParameter' : 'ISQCondensedMatter::ShortRangeOrderParameterValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LongRangeOrderParameterValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'longRangeOrderParameter' : 'ISQCondensedMatter::LongRangeOrderParameterValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'AtomicScatteringFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'atomicScatteringFactor' : 'ISQCondensedMatter::AtomicScatteringFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'StructureFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'structureFactor' : 'ISQCondensedMatter::StructureFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'CartesianBurgers3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'CartesianSpatial3dCoordinateFrame'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianBurgers3dVector' : 'ISQCondensedMatter::CartesianBurgers3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianParticlePosition3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'CartesianSpatial3dCoordinateFrame'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianParticlePosition3dVector' : 'ISQCondensedMatter::CartesianParticlePosition3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianEquilibriumPosition3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'CartesianSpatial3dCoordinateFrame'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianEquilibriumPosition3dVector' : 'ISQCondensedMatter::CartesianEquilibriumPosition3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianDisplacement3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'CartesianSpatial3dCoordinateFrame'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianDisplacement3dVector' : 'ISQCondensedMatter::CartesianDisplacement3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'DebyeWallerFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'debyeWallerFactor' : 'ISQCondensedMatter::DebyeWallerFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'angularWavenumber' : 'RepetencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'angularRepetency' -> 'ISQCondensedMatter::angularWavenumber'[attribute_usage])
-      (attribute_usage 'fermiAngularWavenumber' : 'RepetencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'fermiAngularRepetency' -> 'ISQCondensedMatter::fermiAngularWavenumber'[attribute_usage])
-      (attribute_usage 'debyeAngularWavenumber' : 'RepetencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'debyeAngularRepetency' -> 'ISQCondensedMatter::debyeAngularWavenumber'[attribute_usage])
-      (attribute_usage 'debyeAngularFrequency' : 'AngularFrequencyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'debyeTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'DensityOfVibrationalStatesValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::DensityOfVibrationalStatesUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'densityOfVibrationalStates' : 'ISQCondensedMatter::DensityOfVibrationalStatesValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DensityOfVibrationalStatesUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ThermodynamicGrüneisenParameterValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'thermodynamicGrüneisenParameter' : 'ISQCondensedMatter::ThermodynamicGrüneisenParameterValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'GrüneisenParameterValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'grüneisenParameter' : 'ISQCondensedMatter::GrüneisenParameterValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'meanFreePathOfPhonons' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'meanFreePathOfElectrons' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'EnergyDensityOfStatesValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::EnergyDensityOfStatesUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'energyDensityOfStates' : 'ISQCondensedMatter::EnergyDensityOfStatesValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'EnergyDensityOfStatesUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'residualResistivity' : 'ResistivityValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'LorenzCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::LorenzCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'lorenzCoefficient' : 'ISQCondensedMatter::LorenzCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LorenzCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'HallCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::HallCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'hallCoefficient' : 'ISQCondensedMatter::HallCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'HallCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'thermoelectricVoltageBetweenSubstancesAAndB' : 'ElectricPotentialDifferenceValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'SeebeckCoefficientForSubstancesAAndBValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'seebeckCoefficientForSubstancesAAndB' : 'ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SeebeckCoefficientForSubstancesAAndBUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'peltierCoefficientForSubstancesAAndB' : 'ElectricPotentialDifferenceValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ThomsonCoefficientValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::ThomsonCoefficientUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thomsonCoefficient' : 'ISQCondensedMatter::ThomsonCoefficientValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThomsonCoefficientUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'workFunction' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'ionizationEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'electronAffinity' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'RichardsonConstantValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::RichardsonConstantUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'richardsonConstant' : 'ISQCondensedMatter::RichardsonConstantValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'RichardsonConstantUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'fermiEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'gapEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'fermiTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ElectronDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::ElectronDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electronDensity' : 'ISQCondensedMatter::ElectronDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectronDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'HoleDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::HoleDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'holeDensity' : 'ISQCondensedMatter::HoleDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'HoleDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'IntrinsicCarrierDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::IntrinsicCarrierDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'intrinsicCarrierDensity' : 'ISQCondensedMatter::IntrinsicCarrierDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'IntrinsicCarrierDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'DonorDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::DonorDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'donorDensity' : 'ISQCondensedMatter::DonorDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DonorDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'AcceptorDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQCondensedMatter::AcceptorDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'acceptorDensity' : 'ISQCondensedMatter::AcceptorDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AcceptorDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'effectiveMass' : 'MassValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'MobilityRatioValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'mobilityRatio' : 'ISQCondensedMatter::MobilityRatioValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'relaxationTime' : 'DurationValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'carrierLifetime' : 'DurationValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'diffusionLengthForCondensedMatterPhysics' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'exchangeIntegral' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'curieTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'néelTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'superconductionTransitionTemperature' : 'ThermodynamicTemperatureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'thermodynamicCriticalMagneticFluxDensity' : 'MagneticFluxDensityValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'lowerCriticalMagneticFluxDensity' : 'MagneticFluxDensityValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'upperCriticalMagneticFluxDensity' : 'MagneticFluxDensityValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'superconductorEnergyGap' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'londonPenetrationDepth' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'coherenceLength' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQCondensedMatter"))) (name "ISQCondensedMatter") (declared-name "ISQCondensedMatter")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))) (name "AcceptorDensityUnit") (declared-name "AcceptorDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))) (name "AcceptorDensityValue") (declared-name "AcceptorDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularFrequencyValue"))) (name "AngularFrequencyValue") (declared-name "AngularFrequencyValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularMeasureValue"))) (name "AngularMeasureValue") (declared-name "AngularMeasureValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))) (name "AngularReciprocalLatticeVectorMagnitudeUnit") (declared-name "AngularReciprocalLatticeVectorMagnitudeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))) (name "AngularReciprocalLatticeVectorMagnitudeValue") (declared-name "AngularReciprocalLatticeVectorMagnitudeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))) (name "AtomicScatteringFactorValue") (declared-name "AtomicScatteringFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))) (name "CartesianAngularReciprocalLattice3dCoordinateFrame") (declared-name "CartesianAngularReciprocalLattice3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))) (name "CartesianAngularReciprocalLattice3dVector") (declared-name "CartesianAngularReciprocalLattice3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))) (name "CartesianBurgers3dVector") (declared-name "CartesianBurgers3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))) (name "CartesianDisplacement3dVector") (declared-name "CartesianDisplacement3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))) (name "CartesianEquilibriumPosition3dVector") (declared-name "CartesianEquilibriumPosition3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))) (name "CartesianFundamentalLattice3dVector") (declared-name "CartesianFundamentalLattice3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))) (name "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (declared-name "CartesianFundamentalReciprocalLattice3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))) (name "CartesianFundamentalReciprocalLattice3dVector") (declared-name "CartesianFundamentalReciprocalLattice3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))) (name "CartesianLattice3dVector") (declared-name "CartesianLattice3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))) (name "CartesianParticlePosition3dVector") (declared-name "CartesianParticlePosition3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianSpatial3dCoordinateFrame"))) (name "CartesianSpatial3dCoordinateFrame") (declared-name "CartesianSpatial3dCoordinateFrame"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))) (name "DebyeWallerFactorValue") (declared-name "DebyeWallerFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))) (name "DensityOfVibrationalStatesUnit") (declared-name "DensityOfVibrationalStatesUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))) (name "DensityOfVibrationalStatesValue") (declared-name "DensityOfVibrationalStatesValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))) (name "DonorDensityUnit") (declared-name "DonorDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))) (name "DonorDensityValue") (declared-name "DonorDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectricPotentialDifferenceValue"))) (name "ElectricPotentialDifferenceValue") (declared-name "ElectricPotentialDifferenceValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))) (name "ElectronDensityUnit") (declared-name "ElectronDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))) (name "ElectronDensityValue") (declared-name "ElectronDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))) (name "EnergyDensityOfStatesUnit") (declared-name "EnergyDensityOfStatesUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))) (name "EnergyDensityOfStatesValue") (declared-name "EnergyDensityOfStatesValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))) (name "FundamentalReciprocalLatticeVectorMagnitudeUnit") (declared-name "FundamentalReciprocalLatticeVectorMagnitudeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))) (name "FundamentalReciprocalLatticeVectorMagnitudeValue") (declared-name "FundamentalReciprocalLatticeVectorMagnitudeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))) (name "GrüneisenParameterValue") (declared-name "GrüneisenParameterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))) (name "HallCoefficientUnit") (declared-name "HallCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))) (name "HallCoefficientValue") (declared-name "HallCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))) (name "HoleDensityUnit") (declared-name "HoleDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))) (name "HoleDensityValue") (declared-name "HoleDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))) (name "IntrinsicCarrierDensityUnit") (declared-name "IntrinsicCarrierDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))) (name "IntrinsicCarrierDensityValue") (declared-name "IntrinsicCarrierDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))) (name "LongRangeOrderParameterValue") (declared-name "LongRangeOrderParameterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))) (name "LorenzCoefficientUnit") (declared-name "LorenzCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))) (name "LorenzCoefficientValue") (declared-name "LorenzCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::MagneticFluxDensityValue"))) (name "MagneticFluxDensityValue") (declared-name "MagneticFluxDensityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))) (name "MobilityRatioValue") (declared-name "MobilityRatioValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RepetencyValue"))) (name "RepetencyValue") (declared-name "RepetencyValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ResistivityValue"))) (name "ResistivityValue") (declared-name "ResistivityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))) (name "RichardsonConstantUnit") (declared-name "RichardsonConstantUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))) (name "RichardsonConstantValue") (declared-name "RichardsonConstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))) (name "SeebeckCoefficientForSubstancesAAndBUnit") (declared-name "SeebeckCoefficientForSubstancesAAndBUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))) (name "SeebeckCoefficientForSubstancesAAndBValue") (declared-name "SeebeckCoefficientForSubstancesAAndBValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))) (name "ShortRangeOrderParameterValue") (declared-name "ShortRangeOrderParameterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))) (name "StructureFactorValue") (declared-name "StructureFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))) (name "ThermodynamicGrüneisenParameterValue") (declared-name "ThermodynamicGrüneisenParameterValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))) (name "ThomsonCoefficientUnit") (declared-name "ThomsonCoefficientUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))) (name "ThomsonCoefficientValue") (declared-name "ThomsonCoefficientValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (name "acceptorDensity") (declared-name "acceptorDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (name "angularReciprocalLatticeVectorMagnitude") (declared-name "angularReciprocalLatticeVectorMagnitude") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularRepetency"))) (name "angularRepetency") (declared-name "angularRepetency"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))) (name "angularWavenumber") (declared-name "angularWavenumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (name "atomicScatteringFactor") (declared-name "atomicScatteringFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))) (name "braggAngle") (declared-name "braggAngle") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))) (name "carrierLifetime") (declared-name "carrierLifetime") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (name "cartesianAngularReciprocalLattice3dVector") (declared-name "cartesianAngularReciprocalLattice3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (name "cartesianBurgers3dVector") (declared-name "cartesianBurgers3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (name "cartesianDisplacement3dVector") (declared-name "cartesianDisplacement3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (name "cartesianEquilibriumPosition3dVector") (declared-name "cartesianEquilibriumPosition3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (name "cartesianFundamentalLattice3dVector") (declared-name "cartesianFundamentalLattice3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (name "cartesianFundamentalReciprocalLattice3dVector") (declared-name "cartesianFundamentalReciprocalLattice3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (name "cartesianLattice3dVector") (declared-name "cartesianLattice3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (name "cartesianParticlePosition3dVector") (declared-name "cartesianParticlePosition3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))) (name "coherenceLength") (declared-name "coherenceLength") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))) (name "curieTemperature") (declared-name "curieTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))) (name "debyeAngularFrequency") (declared-name "debyeAngularFrequency") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularRepetency"))) (name "debyeAngularRepetency") (declared-name "debyeAngularRepetency"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))) (name "debyeAngularWavenumber") (declared-name "debyeAngularWavenumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))) (name "debyeTemperature") (declared-name "debyeTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (name "debyeWallerFactor") (declared-name "debyeWallerFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (name "densityOfVibrationalStates") (declared-name "densityOfVibrationalStates") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))) (name "diffusionLengthForCondensedMatterPhysics") (declared-name "diffusionLengthForCondensedMatterPhysics") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (name "donorDensity") (declared-name "donorDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))) (name "effectiveMass") (declared-name "effectiveMass") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))) (name "electronAffinity") (declared-name "electronAffinity") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (name "electronDensity") (declared-name "electronDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (name "energyDensityOfStates") (declared-name "energyDensityOfStates") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))) (name "exchangeIntegral") (declared-name "exchangeIntegral") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularRepetency"))) (name "fermiAngularRepetency") (declared-name "fermiAngularRepetency"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))) (name "fermiAngularWavenumber") (declared-name "fermiAngularWavenumber") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))) (name "fermiEnergy") (declared-name "fermiEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))) (name "fermiTemperature") (declared-name "fermiTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (name "fundamentalReciprocalLatticeVectorMagnitude") (declared-name "fundamentalReciprocalLatticeVectorMagnitude") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))) (name "gapEnergy") (declared-name "gapEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (name "grüneisenParameter") (declared-name "grüneisenParameter") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (name "hallCoefficient") (declared-name "hallCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (name "holeDensity") (declared-name "holeDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (name "intrinsicCarrierDensity") (declared-name "intrinsicCarrierDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))) (name "ionizationEnergy") (declared-name "ionizationEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))) (name "latticePlaneSpacing") (declared-name "latticePlaneSpacing") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))) (name "londonPenetrationDepth") (declared-name "londonPenetrationDepth") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (name "longRangeOrderParameter") (declared-name "longRangeOrderParameter") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (name "lorenzCoefficient") (declared-name "lorenzCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))) (name "lowerCriticalMagneticFluxDensity") (declared-name "lowerCriticalMagneticFluxDensity") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))) (name "meanFreePathOfElectrons") (declared-name "meanFreePathOfElectrons") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))) (name "meanFreePathOfPhonons") (declared-name "meanFreePathOfPhonons") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (name "mobilityRatio") (declared-name "mobilityRatio") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))) (name "néelTemperature") (declared-name "néelTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))) (name "peltierCoefficientForSubstancesAAndB") (declared-name "peltierCoefficientForSubstancesAAndB") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))) (name "relaxationTime") (declared-name "relaxationTime") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))) (name "residualResistivity") (declared-name "residualResistivity") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (name "richardsonConstant") (declared-name "richardsonConstant") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (name "seebeckCoefficientForSubstancesAAndB") (declared-name "seebeckCoefficientForSubstancesAAndB") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (name "shortRangeOrderParameter") (declared-name "shortRangeOrderParameter") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (name "structureFactor") (declared-name "structureFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))) (name "superconductionTransitionTemperature") (declared-name "superconductionTransitionTemperature") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))) (name "superconductorEnergyGap") (declared-name "superconductorEnergyGap") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))) (name "thermodynamicCriticalMagneticFluxDensity") (declared-name "thermodynamicCriticalMagneticFluxDensity") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (name "thermodynamicGrüneisenParameter") (declared-name "thermodynamicGrüneisenParameter") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))) (name "thermoelectricVoltageBetweenSubstancesAAndB") (declared-name "thermoelectricVoltageBetweenSubstancesAAndB") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (name "thomsonCoefficient") (declared-name "thomsonCoefficient") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))) (name "upperCriticalMagneticFluxDensity") (declared-name "upperCriticalMagneticFluxDensity") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))) (name "workFunction") (declared-name "workFunction") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::angularWavenumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::braggAngle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::carrierLifetime"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::coherenceLength"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::curieTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularFrequency"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::debyeAngularWavenumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::debyeTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::diffusionLengthForCondensedMatterPhysics"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::effectiveMass"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::electronAffinity"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::exchangeIntegral"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::fermiAngularWavenumber"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::fermiEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::fermiTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::gapEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ionizationEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::latticePlaneSpacing"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::londonPenetrationDepth"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::lowerCriticalMagneticFluxDensity"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfElectrons"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::meanFreePathOfPhonons"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::néelTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::peltierCoefficientForSubstancesAAndB"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::relaxationTime"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::residualResistivity"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::superconductionTransitionTemperature"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::superconductorEnergyGap"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicCriticalMagneticFluxDensity"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::thermoelectricVoltageBetweenSubstancesAAndB"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::upperCriticalMagneticFluxDensity"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction::_documentation"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::workFunction"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue::mRef"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::acceptorDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AcceptorDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::angularReciprocalLatticeVectorMagnitude"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AngularReciprocalLatticeVectorMagnitudeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::atomicScatteringFactor"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::AtomicScatteringFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianAngularReciprocalLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianAngularReciprocalLattice3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianBurgers3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianBurgers3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianDisplacement3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianDisplacement3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianEquilibriumPosition3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianEquilibriumPosition3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalLattice3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianFundamentalReciprocalLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianFundamentalReciprocalLattice3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianLattice3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianLattice3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::cartesianParticlePosition3dVector"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::CartesianParticlePosition3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::debyeWallerFactor"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DebyeWallerFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::densityOfVibrationalStates"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DensityOfVibrationalStatesValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::donorDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::DonorDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::electronDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ElectronDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::energyDensityOfStates"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::EnergyDensityOfStatesValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::fundamentalReciprocalLatticeVectorMagnitude"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::FundamentalReciprocalLatticeVectorMagnitudeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::grüneisenParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::GrüneisenParameterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::hallCoefficient"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HallCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::holeDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::HoleDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::intrinsicCarrierDensity"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::IntrinsicCarrierDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::longRangeOrderParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LongRangeOrderParameterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::lorenzCoefficient"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::LorenzCoefficientValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::mobilityRatio"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::MobilityRatioValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::richardsonConstant"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::RichardsonConstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::seebeckCoefficientForSubstancesAAndB"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::SeebeckCoefficientForSubstancesAAndBValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::shortRangeOrderParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ShortRangeOrderParameterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::structureFactor"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::StructureFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thermodynamicGrüneisenParameter"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThermodynamicGrüneisenParameterValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQCondensedMatter::thomsonCoefficient"))) (to (node (document "d0") (qualified-name "ISQCondensedMatter::ThomsonCoefficientValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

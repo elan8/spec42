@@ -89,12 +89,24 @@ standard library package Attributes {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Attributes'
-      (documentation)
-      (membership_import private -> 'Base::DataValue'[unresolved])
-      (membership_import private -> 'Base::dataValues'[unresolved])
-      (alias_member 'AttributeValue' -> 'DataValue'[unresolved])
-      (alias_member 'attributeValues' -> 'dataValues'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Attributes"))) (name "Attributes") (declared-name "Attributes")
+      (contains
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Attributes::AttributeValue"))) (name "AttributeValue") (declared-name "AttributeValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Attributes::DataValue"))) (name "DataValue") (declared-name "DataValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Attributes::_documentation"))) (name ""))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Attributes::attributeValues"))) (name "attributeValues") (declared-name "attributeValues"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Attributes::dataValues"))) (name "dataValues") (declared-name "dataValues"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Attributes::_documentation"))) (to (node (document "d0") (qualified-name "Attributes"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -160,17 +160,20 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Comments'
-      (comment_annotating)
-      (comment_annotating 'cmt')
-      (comment_annotating 'cmt_cmt')
-      (class_def 'C'
-        (documentation)
-        (comment_annotating)
-        (comment_annotating))
-      (class_def 'A'
-        (documentation)
-        (comment_annotating)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Comments"))) (name "Comments") (declared-name "Comments")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Comments::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Comments::C"))) (name "C") (declared-name "C"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -69,13 +69,31 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AliasImport'
-      (package 'Definitions'
-        (part_def 'Vehicle')
-        (alias_member 'Car' -> 'AliasImport::Definitions::Vehicle'[part_def]))
-      (package 'Usages'
-        (membership_import private -> 'AliasImport::Definitions::Car'[alias_member])
-        (part_usage 'vehicle' : 'AliasImport::Definitions::Car'[alias_member])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AliasImport"))) (name "AliasImport") (declared-name "AliasImport")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "AliasImport::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "alias") (id (node (document "d0") (qualified-name "AliasImport::Definitions::Car"))) (name "Car") (declared-name "Car"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "AliasImport::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "AliasImport::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "AliasImport::Usages::Car"))) (name "Car") (declared-name "Car"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "AliasImport::Usages::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasImport::Usages::vehicle"))) (to (node (document "d0") (qualified-name "AliasImport::Definitions::Car"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

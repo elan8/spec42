@@ -296,44 +296,85 @@ standard library package Parts {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Parts'
-      (documentation)
-      (membership_import private -> 'Objects::Object'[unresolved])
-      (membership_import private -> 'Objects::objects'[unresolved])
-      (membership_import private -> 'Items::Item'[unresolved])
-      (membership_import private -> 'Items::items'[unresolved])
-      (membership_import private -> 'Ports::Port'[unresolved])
-      (membership_import private -> 'Ports::ports'[unresolved])
-      (membership_import private -> 'Actions::Action'[unresolved])
-      (membership_import private -> 'Actions::actions'[unresolved])
-      (membership_import private -> 'States::StateAction'[unresolved])
-      (membership_import private -> 'States::stateActions'[unresolved])
-      (part_def abstract 'Part' :> 'Item'[unresolved]
-        (documentation)
-        (reference_usage reference 'self' : 'Parts::Part'[part_def] :>> 'Item::self'[unresolved])
-        (part_usage composite 'start' : 'Parts::Part'[part_def] :>> 'Item::start'[unresolved] :> 'Parts::parts'[part_usage][implied])
-        (part_usage composite 'done' : 'Parts::Part'[part_def] :>> 'Item::done'[unresolved] :> 'Parts::parts'[part_usage][implied])
-        (port_usage abstract composite 'ownedPorts' : 'Port'[unresolved] :> 'ports'[unresolved] :> 'timeEnclosedOccurrences'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract reference 'performedActions' : 'Action'[unresolved] :> 'actions'[unresolved] :> 'enactedPerformances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (action_usage abstract composite 'ownedActions' : 'Action'[unresolved] :> 'actions'[unresolved] :> 'ownedPerformances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)
-          (part_usage reference 'this' : 'Parts::Part'[part_def] :>> 'Action::this'[unresolved] :>> 'ownedPerformances::this'[unresolved] :> 'Parts::parts'[part_usage][implied]
-            (feature_value (=))
-            (documentation)))
-        (state_usage abstract reference 'exhibitedStates' : 'StateAction'[unresolved] :> 'stateActions'[unresolved] :> 'Parts::Part::performedActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (state_usage abstract composite 'ownedStates' : 'StateAction'[unresolved] :> 'stateActions'[unresolved] :> 'Parts::Part::ownedActions'[action_usage]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (part_usage abstract 'parts' : 'Parts::Part'[part_def] :> 'items'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Parts"))) (name "Parts") (declared-name "Parts")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::Action"))) (name "Action") (declared-name "Action"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::Item"))) (name "Item") (declared-name "Item"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::Object"))) (name "Object") (declared-name "Object"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Parts::Part"))) (name "Part") (declared-name "Part") (declared (properties (abstract true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts::Part::done"))) (name "done") (declared-name "done") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Parts::Part::exhibitedStates"))) (name "exhibitedStates") (declared-name "exhibitedStates") (declared (properties (abstract true) (composite false) (reference true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::exhibitedStates::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions"))) (name "ownedActions") (declared-name "ownedActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+                (element (kind "ref") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions::part"))) (name "part") (declared-name "part") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions::part::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+                  )
+                )
+              )
+            )
+            (element (kind "port") (id (node (document "d0") (qualified-name "Parts::Part::ownedPorts"))) (name "ownedPorts") (declared-name "ownedPorts") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::ownedPorts::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+              )
+            )
+            (element (kind "state") (id (node (document "d0") (qualified-name "Parts::Part::ownedStates"))) (name "ownedStates") (declared-name "ownedStates") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::ownedStates::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "Parts::Part::performedActions"))) (name "performedActions") (declared-name "performedActions") (declared (properties (abstract true) (composite false) (reference true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::performedActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+              )
+            )
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Parts::Part::self"))) (name "self") (declared-name "self") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts::Part::start"))) (name "start") (declared-name "start") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::Port"))) (name "Port") (declared-name "Port"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::StateAction"))) (name "StateAction") (declared-name "StateAction"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::actions"))) (name "actions") (declared-name "actions"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::items"))) (name "items") (declared-name "items"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::objects"))) (name "objects") (declared-name "objects"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Parts::parts"))) (name "parts") (declared-name "parts") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::parts::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::ports"))) (name "ports") (declared-name "ports"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Parts::stateActions"))) (name "stateActions") (declared-name "stateActions"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::exhibitedStates::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part::exhibitedStates"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::ownedActions::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part::ownedActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::ownedActions::part::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part::ownedActions::part"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::ownedPorts::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part::ownedPorts"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::ownedStates::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part::ownedStates"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::performedActions::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part::performedActions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::_documentation"))) (to (node (document "d0") (qualified-name "Parts"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::parts::_documentation"))) (to (node (document "d0") (qualified-name "Parts::parts"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Parts::parts"))) (to (node (document "d0") (qualified-name "Parts::items"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::done"))) (to (node (document "d0") (qualified-name "Parts::Part"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::start"))) (to (node (document "d0") (qualified-name "Parts::Part"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts::parts"))) (to (node (document "d0") (qualified-name "Parts::Part"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

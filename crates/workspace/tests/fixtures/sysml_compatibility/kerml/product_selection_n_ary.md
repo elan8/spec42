@@ -518,117 +518,30 @@ semantic.unresolved_name 'Cart_Product'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ProductSelection_N_ary'
-      (class_def 'ShoppingCart')
-      (class_def 'Product')
-      (class_def 'Account')
-      (association_def 'ProductSelection'
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def]
-          (multiplicity_range [1]))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def]
-          (multiplicity_range [1])))
-      (association_def 'ProductSelection1'
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def]
-          (multiplicity_range [1]))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def]
-          (multiplicity_range [1])))
-      (association_def 'ProductSelection2'
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def]
-          (multiplicity_range [1])
-          (feature_def 'inCart'
-            (multiplicity_range [0..1])))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def]
-          (multiplicity_range [1])
-          (feature_def 'selectedProducts'
-            (multiplicity_range [0..*])))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def]
-          (multiplicity_range [1])
-          (feature_def 'withAccount'
-            (multiplicity_range [1..1]))))
-      (association_def 'ProductSelection3' :> 'Links::Link'[unresolved]
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def] :> 'cart::product_account::inCart'[unresolved]
-          (multiplicity_range [1])
-          (feature_def 'inCart' : 'ProductSelection_N_ary::ShoppingCart'[class_def]
-            (multiplicity_range [0..1])
-            (feature_def 'Product_Account' : 'ProductSelection_N_ary::Account'[class_def]))
-          (feature_def 'product_account' : 'ProductSelection_N_ary::ProductSelection3::cart::inCart::Product_Account'[feature_def]
-            (membership_import public -> 'ProductSelection_N_ary::ProductSelection3::cart::inCart'[feature_def])))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def] :> 'selectedProduct::cart_account::selectedProducts'[unresolved]
-          (multiplicity_range [1])
-          (feature_def 'selectedProducts' : 'ProductSelection_N_ary::Product'[class_def]
-            (multiplicity_range [0..*])
-            (feature_def 'Cart_Account' : 'ProductSelection_N_ary::Account'[class_def]))
-          (feature_def 'cart_account' : 'ProductSelection_N_ary::ProductSelection3::selectedProduct::selectedProducts::Cart_Account'[feature_def]
-            (membership_import public -> 'ProductSelection_N_ary::ProductSelection3::selectedProduct::selectedProducts'[feature_def])))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def] :> 'account::cart_product::withAccount'[unresolved]
-          (multiplicity_range [1])
-          (feature_def 'withAccount' : 'ProductSelection_N_ary::Account'[class_def]
-            (multiplicity_range [1..1])
-            (feature_def 'Cart_Product' : 'ProductSelection_N_ary::Product'[class_def]))
-          (feature_def 'cart_product' : 'ProductSelection_N_ary::ProductSelection3::account::withAccount::Cart_Product'[feature_def]
-            (membership_import public -> 'ProductSelection_N_ary::ProductSelection3::account::withAccount'[feature_def]))))
-      (association_def 'SingleProductSelection' :> 'ProductSelection_N_ary::ProductSelection'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def] :>> 'ProductSelection_N_ary::ProductSelection::cart'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def] :>> 'ProductSelection_N_ary::ProductSelection::selectedProduct'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def] :>> 'ProductSelection_N_ary::ProductSelection::account'[feature_def][implied]
-          (multiplicity_range [1])))
-      (association_def 'SingleProductSelection1' :> 'ProductSelection_N_ary::ProductSelection1'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def] :>> 'ProductSelection_N_ary::ProductSelection1::cart'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def] :>> 'ProductSelection_N_ary::ProductSelection1::selectedProduct'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def] :>> 'ProductSelection_N_ary::ProductSelection1::account'[feature_def][implied]
-          (multiplicity_range [1])))
-      (association_def 'SingleProductSelection2' :> 'ProductSelection_N_ary::ProductSelection2'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def] :>> 'ProductSelection_N_ary::ProductSelection2::cart'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_def 'inCart1'
-            (multiplicity_range [0..1])))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def] :>> 'ProductSelection_N_ary::ProductSelection2::selectedProduct'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_def 'selectedProducts1'
-            (multiplicity_range [0..*])))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def] :>> 'ProductSelection_N_ary::ProductSelection2::account'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_def 'withAccount1'
-            (multiplicity_range [0..*]))))
-      (association_def 'SingleProductSelection3' :> 'ProductSelection_N_ary::ProductSelection3'[association_def]
-        (feature_def end 'cart' : 'ProductSelection_N_ary::ShoppingCart'[class_def] :>> 'ProductSelection_N_ary::ProductSelection3::cart'[feature_def] :> 'cart::product_account1::inCart1'[unresolved]
-          (multiplicity_range [1])
-          (feature_def 'inCart1' : 'ProductSelection_N_ary::ShoppingCart'[class_def]
-            (multiplicity_range [0..1])
-            (feature_def 'Product_Account1' :> 'Product_Account'[unresolved] : 'ProductSelection_N_ary::Account'[class_def]))
-          (feature_def 'product_account1' : 'ProductSelection_N_ary::SingleProductSelection3::cart::inCart1::Product_Account1'[feature_def]
-            (membership_import public -> 'ProductSelection_N_ary::SingleProductSelection3::cart::inCart1'[feature_def])))
-        (feature_def end 'selectedProduct' : 'ProductSelection_N_ary::Product'[class_def] :>> 'ProductSelection_N_ary::ProductSelection3::selectedProduct'[feature_def] :> 'selectedProduct::cart_account1::selectedProduct1'[unresolved]
-          (multiplicity_range [1])
-          (feature_def 'selectedProduct1' : 'ProductSelection_N_ary::Product'[class_def]
-            (multiplicity_range [1..1])
-            (feature_def 'Cart_Account1' :> 'Cart_Account'[unresolved] : 'ProductSelection_N_ary::Account'[class_def]))
-          (feature_def 'cart_account1' : 'ProductSelection_N_ary::SingleProductSelection3::selectedProduct::selectedProduct1::Cart_Account1'[feature_def]
-            (membership_import public -> 'ProductSelection_N_ary::SingleProductSelection3::selectedProduct::selectedProduct1'[feature_def])))
-        (feature_def end 'account' : 'ProductSelection_N_ary::Account'[class_def] :> 'account::cart_product1::withAccount1'[unresolved] :>> 'ProductSelection_N_ary::ProductSelection3::account'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_def 'withAccount1' : 'ProductSelection_N_ary::Account'[class_def]
-            (multiplicity_range [1..1])
-            (feature_def 'Cart_Product1' :> 'Cart_Product'[unresolved] : 'ProductSelection_N_ary::Product'[class_def]))
-          (feature_def 'cart_product1' : 'ProductSelection_N_ary::SingleProductSelection3::account::withAccount1::Cart_Product1'[feature_def]
-            (membership_import public -> 'ProductSelection_N_ary::SingleProductSelection3::account::withAccount1'[feature_def]))))
-      (class_def 'OnlineCustomer'
-        (feature_def 'myCart' : 'ProductSelection_N_ary::ShoppingCart'[class_def]
-          (multiplicity_range [1]))
-        (feature_def 'products' : 'ProductSelection_N_ary::Product'[class_def]
-          (multiplicity_range [0..*]))
-        (feature_def 'myAccount' : 'ProductSelection_N_ary::Account'[class_def]
-          (multiplicity_range [1]))
-        (not_implemented 'malformed')
-        (not_implemented 'malformed')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ProductSelection_N_ary"))) (name "ProductSelection_N_ary") (declared-name "ProductSelection_N_ary")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Account"))) (name "Account") (declared-name "Account"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::OnlineCustomer"))) (name "OnlineCustomer") (declared-name "OnlineCustomer"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::Product"))) (name "Product") (declared-name "Product"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection"))) (name "ProductSelection") (declared-name "ProductSelection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection1"))) (name "ProductSelection1") (declared-name "ProductSelection1"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection2"))) (name "ProductSelection2") (declared-name "ProductSelection2"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ProductSelection3"))) (name "ProductSelection3") (declared-name "ProductSelection3"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::ShoppingCart"))) (name "ShoppingCart") (declared-name "ShoppingCart"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection"))) (name "SingleProductSelection") (declared-name "SingleProductSelection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection1"))) (name "SingleProductSelection1") (declared-name "SingleProductSelection1"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection2"))) (name "SingleProductSelection2") (declared-name "SingleProductSelection2"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ProductSelection_N_ary::SingleProductSelection3"))) (name "SingleProductSelection3") (declared-name "SingleProductSelection3"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

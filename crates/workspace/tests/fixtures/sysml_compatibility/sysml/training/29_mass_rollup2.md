@@ -97,21 +97,40 @@ semantic.unresolved_name 'ISQ::mass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MassRollup2'
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (part_def 'MassedThing'
-        (attribute_usage composite 'simpleMass' :> 'ISQ::mass'[unresolved])
-        (attribute_usage composite 'totalMass' :> 'ISQ::mass'[unresolved]
-          (feature_value (default =))))
-      (part_usage 'compositeThing' : 'MassRollup2::MassedThing'[part_def]
-        (part_usage composite 'subcomponents' : 'MassRollup2::MassedThing'[part_def]
-          (multiplicity_range [*]))
-        (attribute_usage composite :>> 'MassRollup2::MassedThing::totalMass'[attribute_usage]
-          (feature_value (default =))))
-      (part_usage 'filteredMassThing' :> 'MassRollup2::compositeThing'[part_usage]
-        (attribute_usage composite 'minMass' :> 'ISQ::mass'[unresolved])
-        (attribute_usage composite :>> ''[attribute_usage]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MassRollup2"))) (name "MassRollup2") (declared-name "MassRollup2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassRollup2::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassRollup2::MassedThing"))) (name "MassedThing") (declared-name "MassedThing") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (name "simpleMass") (declared-name "simpleMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassRollup2::MassedThing")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassRollup2::MassedThing::totalMass"))) (name "totalMass") (declared-name "totalMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "featureReference") (reference "simpleMass")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassRollup2::MassedThing")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "MassRollup2::compositeThing"))) (name "compositeThing") (declared-name "compositeThing") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "MassRollup2::compositeThing::subcomponents"))) (name "subcomponents") (declared-name "subcomponents") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "MassRollup2::MassedThing")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassRollup2::compositeThing::totalMass"))) (name "totalMass") (declared-name "totalMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "simpleMass")) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "memberAccess") (reference "totalMass") (children (expression (kind "featureReference") (reference "subcomponents"))))))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassRollup2::MassedThing")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "MassRollup2::filteredMassThing"))) (name "filteredMassThing") (declared-name "filteredMassThing") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassRollup2::filteredMassThing::minMass"))) (name "minMass") (declared-name "minMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassRollup2::compositeThing::totalMass"))) (to (node (document "d0") (qualified-name "MassRollup2::MassedThing::totalMass"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "MassRollup2::filteredMassThing"))) (to (node (document "d0") (qualified-name "MassRollup2::compositeThing"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup2::compositeThing"))) (to (node (document "d0") (qualified-name "MassRollup2::MassedThing"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup2::compositeThing::subcomponents"))) (to (node (document "d0") (qualified-name "MassRollup2::MassedThing"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

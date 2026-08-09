@@ -83,26 +83,26 @@ package FeatureSubDeclCoverage {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'FeatureSubDeclCoverage'
-      (feature_def 'a'
-        (multiplicity_range [1]))
-      (feature_def 'b'
-        (multiplicity_range [0..*]))
-      (feature_def 'c'
-        (feature_value (=)))
-      (feature_def 'd'
-        (feature_value (:=)))
-      (feature_def 'e'
-        (feature_value (default =)))
-      (feature_def 'f'
-        (feature_value (default :=)))
-      (feature_def 'g')
-      (feature_def 'h'
-        (feature_inverting_decl :> 'FeatureSubDeclCoverage::g'[feature_def]))
-      (feature_inverting_decl)
-      (feature_inverting_decl 'myInv')
-      (type_featuring_decl)
-      (type_featuring_decl 'myFeat'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage"))) (name "FeatureSubDeclCoverage") (declared-name "FeatureSubDeclCoverage")
+      (contains
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::a"))) (name "a") (declared-name "a"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::b"))) (name "b") (declared-name "b"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::c"))) (name "c") (declared-name "c"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::d"))) (name "d") (declared-name "d"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::e"))) (name "e") (declared-name "e"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::f"))) (name "f") (declared-name "f"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::g"))) (name "g") (declared-name "g"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureSubDeclCoverage::h"))) (name "h") (declared-name "h"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

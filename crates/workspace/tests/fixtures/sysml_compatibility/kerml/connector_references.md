@@ -67,15 +67,15 @@ class A {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (class_def 'A'
-      (feature_def 'self' : 'A'[class_def])
-      (feature_def 'this' : 'A'[class_def])
-      (connector_def : 'HappensDuring'[unresolved]
-        (connector_end 'self' :> 'A::self'[feature_def])
-        (connector_end 'this' :> 'A::this'[feature_def]))
-      (connector_def : 'InsideOf'[unresolved]
-        (connector_end 'smallerOccurrence' :> 'elements'[unresolved])
-        (connector_end 'largerOccurrence' :> 'union'[unresolved])))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

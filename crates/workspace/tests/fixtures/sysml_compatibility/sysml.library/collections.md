@@ -437,64 +437,36 @@ standard library package Collections {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Collections'
-      (documentation)
-      (namespace_import private -> 'Base'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (namespace_import private -> 'IntegerFunctions'[unresolved])
-      (namespace_import private -> 'ControlFunctions'[unresolved])
-      (datatype_def abstract 'Collection'
-        (documentation)
-        (feature_def 'elements'
-          (multiplicity_range [0..*])))
-      (datatype_def abstract 'OrderedCollection' :> 'Collections::Collection'[datatype_def]
-        (documentation)
-        (feature_def ordered 'elements' :>> 'Collections::Collection::elements'[feature_def]
-          (multiplicity_range [0..*])))
-      (datatype_def abstract 'UniqueCollection' :> 'Collections::Collection'[datatype_def]
-        (documentation)
-        (feature_def 'elements' :>> 'Collections::Collection::elements'[feature_def]
-          (multiplicity_range [0..*])))
-      (datatype_def 'Array' :> 'Collections::OrderedCollection'[datatype_def]
-        (documentation)
-        (feature_def ordered 'dimensions' : 'Positive'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (feature_def 'rank' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (feature_def 'flattenedSize' : 'Positive'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (invariant_def
-          (result_expr_membership)))
-      (datatype_def 'Bag' :> 'Collections::Collection'[datatype_def]
-        (documentation))
-      (datatype_def 'Set' :> 'Collections::UniqueCollection'[datatype_def]
-        (documentation))
-      (datatype_def 'OrderedSet' :> 'Collections::OrderedCollection'[datatype_def] :> 'Collections::UniqueCollection'[datatype_def]
-        (intersecting)
-        (intersecting)
-        (documentation)
-        (feature_def ordered 'elements' :>> 'Collections::OrderedCollection::elements'[feature_def] :>> 'Collections::UniqueCollection::elements'[feature_def]
-          (multiplicity_range [0..*])))
-      (datatype_def 'List' :> 'Collections::OrderedCollection'[datatype_def]
-        (documentation))
-      (datatype_def 'KeyValuePair'
-        (documentation)
-        (feature_def ordered 'key' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def ordered 'val' : 'Anything'[unresolved]
-          (multiplicity_range [0..*])))
-      (datatype_def 'Map' :> 'Collections::Collection'[datatype_def]
-        (documentation)
-        (feature_def 'elements' : 'Collections::KeyValuePair'[datatype_def] :>> 'Collections::Collection::elements'[feature_def]
-          (multiplicity_range [0..*])))
-      (datatype_def 'OrderedMap' :> 'Collections::Map'[datatype_def]
-        (documentation)
-        (feature_def ordered 'elements' : 'Collections::KeyValuePair'[datatype_def] :>> 'Collections::Map::elements'[feature_def]
-          (multiplicity_range [0..*]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Collections"))) (name "Collections") (declared-name "Collections")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Array"))) (name "Array") (declared-name "Array"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Bag"))) (name "Bag") (declared-name "Bag"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Collection"))) (name "Collection") (declared-name "Collection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::KeyValuePair"))) (name "KeyValuePair") (declared-name "KeyValuePair"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::List"))) (name "List") (declared-name "List"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Map"))) (name "Map") (declared-name "Map"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::OrderedCollection"))) (name "OrderedCollection") (declared-name "OrderedCollection"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::OrderedMap"))) (name "OrderedMap") (declared-name "OrderedMap"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::OrderedSet"))) (name "OrderedSet") (declared-name "OrderedSet"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::Set"))) (name "Set") (declared-name "Set"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Collections::UniqueCollection"))) (name "UniqueCollection") (declared-name "UniqueCollection"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Collections::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Collections::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Collections::_documentation"))) (to (node (document "d0") (qualified-name "Collections"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

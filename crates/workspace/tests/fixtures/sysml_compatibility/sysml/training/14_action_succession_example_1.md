@@ -137,37 +137,64 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Action Succession Example-1'
-      (item_def 'Scene')
-      (item_def 'Image')
-      (item_def 'Picture')
-      (action_def 'Focus'
-        (reference_usage in reference 'scene' : 'Action Succession Example-1::Scene'[item_def])
-        (reference_usage out reference 'image' : 'Action Succession Example-1::Image'[item_def]))
-      (action_def 'Shoot'
-        (reference_usage in reference 'image' : 'Action Succession Example-1::Image'[item_def])
-        (reference_usage out reference 'picture' : 'Action Succession Example-1::Picture'[item_def]))
-      (action_def 'TakePicture'
-        (item_usage in 'scene' : 'Action Succession Example-1::Scene'[item_def])
-        (item_usage out 'picture' : 'Action Succession Example-1::Picture'[item_def])
-        (binding_connector_def
-          (connector_end 'focus.scene')
-          (connector_end 'scene'))
-        (action_usage composite 'focus' : 'Action Succession Example-1::Focus'[action_def]
-          (reference_usage in reference 'scene')
-          (reference_usage out reference 'image'))
-        (flow_usage composite
-          (connector_end 'focus.image')
-          (connector_end 'shoot.image'))
-        (succession_def
-          (connector_end 'focus')
-          (connector_end 'shoot'))
-        (action_usage composite 'shoot' : 'Action Succession Example-1::Shoot'[action_def]
-          (reference_usage in reference 'image')
-          (reference_usage out reference 'picture'))
-        (binding_connector_def
-          (connector_end 'shoot.picture')
-          (connector_end 'picture'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Action Succession Example-1"))) (name "Action Succession Example-1") (declared-name "Action Succession Example-1")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus"))) (name "Focus") (declared-name "Focus")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Image"))) (name "Image") (declared-name "Image"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Picture"))) (name "Picture") (declared-name "Picture"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Scene"))) (name "Scene") (declared-name "Scene"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot"))) (name "Shoot") (declared-name "Shoot")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus"))) (name "focus") (declared-name "focus") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (bind (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus::scene"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::scene"))) (connect (source-expression "focus::scene") (target-expression "scene") (container-prefix "Action Succession Example-1::TakePicture")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot::picture"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::picture"))) (connect (source-expression "shoot::picture") (target-expression "picture") (container-prefix "Action Succession Example-1::TakePicture")))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::Focus::image"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::Focus::scene"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::image"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::picture"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Focus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::picture"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::scene"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot"))) (to (node (document "d0") (qualified-name "Action Succession Example-1::Shoot"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

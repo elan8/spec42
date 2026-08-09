@@ -464,79 +464,183 @@ semantic.unresolved_name 'baseType'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'AHFProfileLib'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (port_def 'SD'
-        (documentation)
-        (attribute_usage composite 'serviceDefinition' : 'String'[unresolved])
-        (attribute_usage composite 'serviceURL' : 'String'[unresolved])
-        (attribute_usage composite 'intrfce_protocol' : 'String'[unresolved]))
-      (part_def 'SysLocalCloudsDesign'
-        (documentation)
-        (part_usage composite 'locclouds' : 'AHFProfileLib::LocalCloudDesign'[part_def]
-          (multiplicity_range [1..*])))
-      (part_usage 'system_of_systems' : 'AHFProfileLib::SysLocalCloudsDD'[part_def])
-      (part_def 'LocalCloudDesign'
-        (documentation)
-        (part_usage composite 'systems' : 'AHFProfileLib::SysD'[part_def]
-          (multiplicity_range [1..*])))
-      (part_def 'SysD'
-        (documentation)
-        (port_usage composite 'services' : 'AHFProfileLib::SD'[port_def]
-          (multiplicity_range [1..*]))
-        (attribute_usage composite 'systemname' : 'String'[unresolved])
-        (attribute_usage composite 'address' : 'String'[unresolved])
-        (attribute_usage composite 'portno' : 'Integer'[unresolved]))
-      (port_def 'IDD' :> 'AHFProfileLib::SD'[port_def]
-        (documentation)
-        (attribute_usage composite 'encoding_kind' : 'String'[unresolved]))
-      (port_def 'SDDD' :> 'AHFProfileLib::SD'[port_def]
-        (documentation)
-        (port_usage composite 'idds' : 'AHFProfileLib::IDD'[port_def]
-          (multiplicity_range [*])))
-      (part_def 'SysLocalCloudsDD' :> 'AHFProfileLib::SysLocalCloudsDesign'[part_def]
-        (documentation)
-        (part_usage composite :>> 'AHFProfileLib::SysLocalCloudsDesign::locclouds'[part_usage] : 'AHFProfileLib::LocalCloudDD'[part_def]
-          (multiplicity_range [1..*])))
-      (part_def 'LocalCloudDD' :> 'AHFProfileLib::LocalCloudDesign'[part_def]
-        (part_usage composite :>> 'AHFProfileLib::LocalCloudDesign::systems'[part_usage] : 'AHFProfileLib::SysDD'[part_def]
-          (multiplicity_range [1..*])))
-      (part_def 'SysDD' :> 'AHFProfileLib::SysD'[part_def]
-        (documentation)
-        (port_usage composite :>> 'AHFProfileLib::SysD::services'[port_usage] : 'AHFProfileLib::SDDD'[port_def])
-        (action_usage composite 'ServiceMethod'
-          (multiplicity_range [1..*]))))
-    (library_package 'AHFProfileMetadata'
-      (membership_import private -> 'Metaobjects::SemanticMetadata'[unresolved])
-      (namespace_import private -> 'AHFProfileLib'[library_package])
-      (port_usage 'global_sd' : 'AHFProfileLib::SD'[port_def])
-      (metadata_def 'SDMetadata' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (default =))))
-      (metadata_def 'SysLocalCloudsMetadata' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'LocalCloudsMetadata' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (default =))))
-      (metadata_def 'SysDMetadata' :> 'SemanticMetadata'[unresolved]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (default =))))
-      (metadata_def 'IDDMetadata' :> 'AHFProfileMetadata::SDMetadata'[metadata_def]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (port_usage 'global_sddd' : 'AHFProfileLib::SDDD'[port_def])
-      (metadata_def 'SDDDMetadata' :> 'AHFProfileMetadata::SDMetadata'[metadata_def]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (metadata_def 'LocalCloudsDDMetadata' :> 'AHFProfileMetadata::LocalCloudsMetadata'[metadata_def]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=))))
-      (part_usage 'global_clouddd' : 'AHFProfileLib::LocalCloudDD'[part_def])
-      (part_usage 'global_systemsdd' : 'AHFProfileLib::SysDD'[part_def])
-      (metadata_def 'SysDDMetadata' :> 'AHFProfileMetadata::SysDMetadata'[metadata_def]
-        (reference_usage reference :>> 'baseType'[unresolved]
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AHFProfileLib"))) (name "AHFProfileLib") (declared-name "AHFProfileLib")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFProfileLib::*"))) (name "*") (declared-name "*"))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFProfileLib::IDD"))) (name "IDD") (declared-name "IDD")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::IDD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::IDD")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileLib::IDD::encoding_kind"))) (name "encoding_kind") (declared-name "encoding_kind") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::IDD")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFProfileLib::IDD::~IDD"))) (name "~IDD") (declared-name "~IDD") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::IDD")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD"))) (name "LocalCloudDD") (declared-name "LocalCloudDD") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD::systems"))) (name "systems") (declared-name "systems") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign"))) (name "LocalCloudDesign") (declared-name "LocalCloudDesign") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign::systems"))) (name "systems") (declared-name "systems") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFProfileLib::SD"))) (name "SD") (declared-name "SD")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::SD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SD")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileLib::SD::intrfce_protocol"))) (name "intrfce_protocol") (declared-name "intrfce_protocol") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SD")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileLib::SD::serviceDefinition"))) (name "serviceDefinition") (declared-name "serviceDefinition") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SD")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileLib::SD::serviceURL"))) (name "serviceURL") (declared-name "serviceURL") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SD")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFProfileLib::SD::~SD"))) (name "~SD") (declared-name "~SD") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SD")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFProfileLib::SDDD"))) (name "SDDD") (declared-name "SDDD")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::SDDD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SDDD")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "AHFProfileLib::SDDD::idds"))) (name "idds") (declared-name "idds") (declared (properties (composite true) (reference false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SDDD")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFProfileLib::SDDD::~SDDD"))) (name "~SDDD") (declared-name "~SDDD") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SDDD")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AHFProfileLib::SysD"))) (name "SysD") (declared-name "SysD") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::SysD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysD")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileLib::SysD::address"))) (name "address") (declared-name "address") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysD")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileLib::SysD::portno"))) (name "portno") (declared-name "portno") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysD")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "AHFProfileLib::SysD::services"))) (name "services") (declared-name "services") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysD")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileLib::SysD::systemname"))) (name "systemname") (declared-name "systemname") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysD")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AHFProfileLib::SysDD"))) (name "SysDD") (declared-name "SysDD") (declared)
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "AHFProfileLib::SysDD::ServiceMethod"))) (name "ServiceMethod") (declared-name "ServiceMethod") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysDD")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::SysDD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysDD")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "AHFProfileLib::SysDD::services"))) (name "services") (declared-name "services") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysDD")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD"))) (name "SysLocalCloudsDD") (declared-name "SysLocalCloudsDD") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD::locclouds"))) (name "locclouds") (declared-name "locclouds") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign"))) (name "SysLocalCloudsDesign") (declared-name "SysLocalCloudsDesign") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign::locclouds"))) (name "locclouds") (declared-name "locclouds") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "AHFProfileLib::system_of_systems"))) (name "system_of_systems") (declared-name "system_of_systems") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+    (element (kind "package") (id (node (document "d0") (qualified-name "AHFProfileMetadata"))) (name "AHFProfileMetadata") (declared-name "AHFProfileMetadata")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFProfileMetadata::*"))) (name "*") (declared-name "*"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata"))) (name "IDDMetadata") (declared-name "IDDMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata"))) (name "LocalCloudsDDMetadata") (declared-name "LocalCloudsDDMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata"))) (name "LocalCloudsMetadata") (declared-name "LocalCloudsMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata"))) (name "SDDDMetadata") (declared-name "SDDDMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata"))) (name "SDMetadata") (declared-name "SDMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata"))) (name "SysDDMetadata") (declared-name "SysDDMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata"))) (name "SysDMetadata") (declared-name "SysDMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata")))))
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysLocalCloudsMetadata"))) (name "SysLocalCloudsMetadata") (declared-name "SysLocalCloudsMetadata")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysLocalCloudsMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SysLocalCloudsMetadata")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "AHFProfileMetadata::global_clouddd"))) (name "global_clouddd") (declared-name "global_clouddd") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::global_sd"))) (name "global_sd") (declared-name "global_sd")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFProfileMetadata::global_sd::~global_sd"))) (name "~global_sd") (declared-name "~global_sd") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::global_sd")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::global_sddd"))) (name "global_sddd") (declared-name "global_sddd")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFProfileMetadata::global_sddd::~global_sddd"))) (name "~global_sddd") (declared-name "~global_sddd") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::global_sddd")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "AHFProfileMetadata::global_systemsdd"))) (name "global_systemsdd") (declared-name "global_systemsdd") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::IDD::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::IDD"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SD::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SD"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SDDD::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SDDD"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysD::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysD"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysDD::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysDD"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign::_documentation"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::IDD::~IDD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::IDD"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SD::~SD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SD"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SDDD::~SDDD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SDDD"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_sd::~global_sd"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::global_sd"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_sddd::~global_sddd"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::global_sddd"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysDD::services"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysD::services"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata::baseType"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata::baseType"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata::baseType"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata::baseType"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::IDD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SD"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SDDD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SD"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysDD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysD"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_sd"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SD"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_sddd"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SDDD"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata::baseType"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata::baseType"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata::baseType"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata::baseType"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD::systems"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysDD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign::systems"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SDDD::idds"))) (to (node (document "d0") (qualified-name "AHFProfileLib::IDD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysD::services"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysDD::services"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SDDD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD::locclouds"))) (to (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDesign::locclouds"))) (to (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::system_of_systems"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysLocalCloudsDD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_clouddd"))) (to (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_systemsdd"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysDD"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

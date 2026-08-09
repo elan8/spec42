@@ -288,46 +288,72 @@ semantic.unresolved_name 'MassValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '10a-Analysis'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (package 'VehicleDesignModel'
-        (part_def 'Vehicle'
-          (reference_usage reference 'mass' : 'MassValue'[unresolved]))
-        (part_usage 'vehicle'
-          (reference_usage reference :>> 'mass'[unresolved] : 'MassValue'[unresolved]
-            (feature_value (=)))
-          (part_usage composite 'engine'
-            (reference_usage reference 'mass' : 'MassValue'[unresolved]))
-          (part_usage composite 'transmission'
-            (reference_usage reference 'mass' : 'MassValue'[unresolved]))
-          (part_usage composite 'frontAxleAssembly'
-            (reference_usage reference 'mass' : 'MassValue'[unresolved]))
-          (part_usage composite 'rearAxleAssembly'
-            (reference_usage reference 'mass' : 'MassValue'[unresolved]))))
-      (package 'VehicleAnalysisModel'
-        (membership_import private -> '10a-Analysis::VehicleDesignModel::Vehicle'[part_def])
-        (requirement_def 'MassAnalysisObjective'
-          (subject_membership in 'mass' : 'MassValue'[unresolved])
-          (documentation))
-        (analysis_case_def 'MassAnalysisCase'
-          (subject_membership in 'vehicle' : '10a-Analysis::VehicleDesignModel::Vehicle'[part_def])
-          (objective_membership composite : '10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective'[requirement_def]
-            (subject_membership in
-              (feature_value (=))))
-          (result_expr_membership))
-        (analysis_case_def 'AnalysisPlan'
-          (subject_membership in 'vehicle' : '10a-Analysis::VehicleDesignModel::Vehicle'[part_def])
-          (objective_membership composite
-            (documentation))
-          (analysis_case_usage composite 'massAnalysisCase' : '10a-Analysis::VehicleAnalysisModel::MassAnalysisCase'[analysis_case_def]
-            (return_parameter_membership
-              (feature_def out 'mass'))))
-        (part_usage 'massAnalysisContext'
-          (analysis_case_usage composite 'analysisPlan' : '10a-Analysis::VehicleAnalysisModel::AnalysisPlan'[analysis_case_def]
-            (subject_membership in 'vehicle'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "10a-Analysis"))) (name "10a-Analysis") (declared-name "10a-Analysis")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "10a-Analysis::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10a-Analysis::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10a-Analysis::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel"))) (name "VehicleAnalysisModel") (declared-name "VehicleAnalysisModel")
+          (contains
+            (element (kind "analysis def") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan"))) (name "AnalysisPlan") (declared-name "AnalysisPlan")
+              (contains
+                (element (kind "analysis") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::massAnalysisCase"))) (name "massAnalysisCase") (declared-name "massAnalysisCase") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan"))))
+                  (contains
+                    (element (kind "analysis result") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::massAnalysisCase::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase")))))
+                  )
+                )
+                (element (kind "objective") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan")))))
+              )
+            )
+            (element (kind "analysis def") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (name "MassAnalysisCase") (declared-name "MassAnalysisCase")
+              (contains
+                (element (kind "objective") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase")))))
+              )
+            )
+            (element (kind "requirement def") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective"))) (name "MassAnalysisObjective") (declared-name "MassAnalysisObjective")
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective::mass"))) (name "mass") (declared-name "mass") (effective (featuring-type (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective")))))
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::massAnalysisContext"))) (name "massAnalysisContext") (declared-name "massAnalysisContext") (declared (properties (composite true) (reference false) (ordered false))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel"))) (name "VehicleDesignModel") (declared-name "VehicleDesignModel")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+            (element (kind "part") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "tuple") (children (expression (kind "memberAccess") (reference "mass") (children (expression (kind "memberAccess") (reference "engine") (children (expression (kind "featureReference") (reference "vehicle")))))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "memberAccess") (reference "transmission") (children (expression (kind "featureReference") (reference "vehicle")))))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "memberAccess") (reference "frontAxleAssembly") (children (expression (kind "featureReference") (reference "vehicle")))))) (expression (kind "memberAccess") (reference "mass") (children (expression (kind "memberAccess") (reference "rearAxleAssembly") (children (expression (kind "featureReference") (reference "vehicle"))))))))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::mass"))) (role feature-value))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective::_documentation"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective::mass"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::massAnalysisCase"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::AnalysisPlan::vehicle"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::objective"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisObjective"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase::vehicle"))) (to (node (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

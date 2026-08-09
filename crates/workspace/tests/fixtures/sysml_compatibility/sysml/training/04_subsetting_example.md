@@ -77,18 +77,40 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Subsetting Example'
-      (part_def 'Vehicle'
-        (part_usage composite 'parts' : 'Subsetting Example::VehiclePart'[part_def]
-          (multiplicity_range [*]))
-        (part_usage composite 'eng' : 'Subsetting Example::Engine'[part_def] :> 'Subsetting Example::Vehicle::parts'[part_usage])
-        (part_usage composite 'trans' : 'Subsetting Example::Transmission'[part_def] :> 'Subsetting Example::Vehicle::parts'[part_usage])
-        (part_usage composite 'wheels' : 'Subsetting Example::Wheel'[part_def] :> 'Subsetting Example::Vehicle::parts'[part_usage]
-          (multiplicity_range [4])))
-      (part_def abstract 'VehiclePart')
-      (part_def 'Engine' :> 'Subsetting Example::VehiclePart'[part_def])
-      (part_def 'Transmission' :> 'Subsetting Example::VehiclePart'[part_def])
-      (part_def 'Wheel' :> 'Subsetting Example::VehiclePart'[part_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Subsetting Example"))) (name "Subsetting Example") (declared-name "Subsetting Example")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Subsetting Example::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Subsetting Example::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Subsetting Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Subsetting Example::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Subsetting Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Subsetting Example::Vehicle::parts"))) (name "parts") (declared-name "parts") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Subsetting Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Subsetting Example::Vehicle::trans"))) (name "trans") (declared-name "trans") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Subsetting Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Subsetting Example::Vehicle::wheels"))) (name "wheels") (declared-name "wheels") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Subsetting Example::Vehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Subsetting Example::VehiclePart"))) (name "VehiclePart") (declared-name "VehiclePart") (declared (properties (abstract true))))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Subsetting Example::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
+      )
+    )
+  )
+  (relationships
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Engine"))) (to (node (document "d0") (qualified-name "Subsetting Example::VehiclePart"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Transmission"))) (to (node (document "d0") (qualified-name "Subsetting Example::VehiclePart"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Wheel"))) (to (node (document "d0") (qualified-name "Subsetting Example::VehiclePart"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Subsetting Example::Vehicle::parts"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Vehicle::trans"))) (to (node (document "d0") (qualified-name "Subsetting Example::Vehicle::parts"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Vehicle::wheels"))) (to (node (document "d0") (qualified-name "Subsetting Example::Vehicle::parts"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Subsetting Example::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Vehicle::parts"))) (to (node (document "d0") (qualified-name "Subsetting Example::VehiclePart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Vehicle::trans"))) (to (node (document "d0") (qualified-name "Subsetting Example::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Subsetting Example::Vehicle::wheels"))) (to (node (document "d0") (qualified-name "Subsetting Example::Wheel"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

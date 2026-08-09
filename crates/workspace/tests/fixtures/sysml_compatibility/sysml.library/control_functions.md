@@ -569,215 +569,42 @@ standard library package ControlFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ControlFunctions'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'ScalarValues::ScalarValue'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarFunctions::min'[unresolved])
-      (membership_import private -> 'ScalarFunctions::max'[unresolved])
-      (function_def abstract '.'
-        (feature_def in 'source' : 'Anything'[unresolved]
-          (multiplicity_range [0..*])
-          (feature_def abstract 'target' : 'Anything'[unresolved]
-            (multiplicity_range [0..*])))
-        (feature_def 'chain' :> 'ControlFunctions::.::source'[feature_def] :> 'ControlFunctions::.::source::target'[feature_def])
-        (result_expr_membership))
-      (function_def abstract 'if'
-        (feature_def in 'test' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (expression_usage in 'thenValue'
-          (multiplicity_range [0..1])
-          (return_parameter_membership
-            (feature_def out ordered : 'Anything'[unresolved]
-              (multiplicity_range [0..*]))))
-        (expression_usage in 'elseValue'
-          (multiplicity_range [0..1])
-          (return_parameter_membership
-            (feature_def out ordered : 'Anything'[unresolved]
-              (multiplicity_range [0..*]))))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract '??'
-        (feature_def in ordered 'firstValue' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'secondValue'
-          (multiplicity_range [0..1])
-          (return_parameter_membership
-            (feature_def out ordered : 'Anything'[unresolved]
-              (multiplicity_range [0..*]))))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def 'and'
-        (feature_def in 'firstValue' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (expression_usage in 'secondValue'
-          (multiplicity_range [0..1])
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'or'
-        (feature_def in 'firstValue' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (expression_usage in 'secondValue'
-          (multiplicity_range [0..1])
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'implies'
-        (feature_def in 'firstValue' : 'Boolean'[unresolved]
-          (multiplicity_range [1]))
-        (expression_usage in 'secondValue'
-          (multiplicity_range [0..1])
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'collect'
-        (feature_def in ordered 'collection' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'mapper'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out ordered : 'Anything'[unresolved]
-              (multiplicity_range [0..*]))))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract 'select'
-        (feature_def in ordered 'collection' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'selector'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def 'selectOne'
-        (feature_def in ordered 'collection' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'selector1'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1])
-            (feature_value (=)))))
-      (function_def abstract 'reject'
-        (feature_def in ordered 'collection' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'rejector'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract 'reduce'
-        (feature_def in ordered 'collection' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'reducer'
-          (multiplicity_range [0..*])
-          (feature_def in 'firstArg' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (feature_def in 'secondArg' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'Anything'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract 'forAll'
-        (feature_def in ordered 'collection' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'test'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'exists'
-        (feature_def in ordered 'collection' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (expression_usage in 'test'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'Anything'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'Boolean'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def 'allTrue'
-        (feature_def in 'collection' : 'Boolean'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'anyTrue'
-        (feature_def in 'collection' : 'Boolean'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'minimize'
-        (feature_def in 'collection' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1..*]))
-        (expression_usage in 'fn'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'ScalarValue'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'maximize'
-        (feature_def in 'collection' : 'ScalarValue'[unresolved]
-          (multiplicity_range [1..*]))
-        (expression_usage in 'fn'
-          (multiplicity_range [0..*])
-          (feature_def in 'argument' : 'ScalarValue'[unresolved]
-            (multiplicity_range [1]))
-          (return_parameter_membership
-            (feature_def out : 'ScalarValue'[unresolved]
-              (multiplicity_range [1]))))
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ControlFunctions"))) (name "ControlFunctions") (declared-name "ControlFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::ScalarValue"))) (name "ScalarValue") (declared-name "ScalarValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ControlFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::allTrue"))) (name "allTrue") (declared-name "allTrue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::anyTrue"))) (name "anyTrue") (declared-name "anyTrue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::collect"))) (name "collect") (declared-name "collect"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::exists"))) (name "exists") (declared-name "exists"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl2"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::function#kermlDecl3"))) (name "function") (declared-name "function"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::in"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::in#kermlDecl"))) (name "in") (declared-name "in"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::max"))) (name "max") (declared-name "max"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::maximize"))) (name "maximize") (declared-name "maximize"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ControlFunctions::min"))) (name "min") (declared-name "min"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::minimize"))) (name "minimize") (declared-name "minimize"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::reduce"))) (name "reduce") (declared-name "reduce"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::reject"))) (name "reject") (declared-name "reject"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::select"))) (name "select") (declared-name "select"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "ControlFunctions::selectOne"))) (name "selectOne") (declared-name "selectOne"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ControlFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -157,27 +157,40 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Packets'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'Time::DateTime'[unresolved])
-      (attribute_usage 'packet header')
-      (attribute_usage 'packet data field'
-        (attribute_usage composite 'packet secondary header' :>> 'Packets::packet header'[attribute_usage])
-        (attribute_usage composite 'user data field'))
-      (part_def 'Data Packet'
-        (attribute_usage composite 'packet primary header' :>> 'Packets::packet header'[attribute_usage]
-          (attribute_usage composite 'packet version number' : 'Integer'[unresolved])
-          (attribute_usage composite 'packet identification' : 'String'[unresolved])
-          (attribute_usage composite 'packet data length' : 'Integer'[unresolved]))
-        (attribute_usage composite :>> 'Packets::packet data field'[attribute_usage]))
-      (part_def 'Thermal Data Packet' :> 'Packets::Data Packet'[part_def]
-        (attribute_usage composite 'packet data field' :>> 'Packets::packet data field'[attribute_usage]
-          (attribute_usage composite 'packet secondary header' :>> 'Packets::packet header'[attribute_usage]
-            (attribute_usage composite 'packet timestamp' : 'DateTime'[unresolved])
-            (attribute_usage composite 'telemetry packet type' : 'String'[unresolved]))
-          (attribute_usage composite 'user data field' :>> 'Packets::packet data field::user data field'[attribute_usage]
-            (attribute_usage composite 'timestamp' : 'DateTime'[unresolved])
-            (attribute_usage composite 'temperature' : 'Real'[unresolved])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Packets"))) (name "Packets") (declared-name "Packets")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Packets::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Packets::Data Packet"))) (name "Data Packet") (declared-name "Data Packet") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (name "packet data field") (declared-name "packet data field") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Packets::Data Packet")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (name "packet primary header") (declared-name "packet primary header") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Packets::Data Packet")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Packets::DateTime"))) (name "DateTime") (declared-name "DateTime"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (name "Thermal Data Packet") (declared-name "Thermal Data Packet") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (name "packet data field") (declared-name "packet data field") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Packets::Thermal Data Packet")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Packets::packet data field"))) (name "packet data field") (declared-name "packet data field") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (name "packet secondary header") (declared-name "packet secondary header") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Packets::packet data field")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packets::packet data field::user data field"))) (name "user data field") (declared-name "user data field") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Packets::packet data field")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Packets::packet header"))) (name "packet header") (declared-name "packet header") (declared (properties (ordered false) (unique true))))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (to (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (to (node (document "d0") (qualified-name "Packets::Data Packet"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

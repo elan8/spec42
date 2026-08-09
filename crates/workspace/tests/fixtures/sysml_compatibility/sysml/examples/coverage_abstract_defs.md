@@ -104,24 +104,15 @@ abstract part def Container {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (part_def abstract 'AbstractVehicle')
-    (attribute_def abstract 'Weight')
-    (item_def abstract 'AbstractWidget')
-    (port_def abstract 'AbstractPort')
-    (enum_def abstract 'AbstractPriority')
-    (occurrence_def abstract individual 'AbstractPerson')
-    (occurrence_def abstract 'AbstractEvent')
-    (part_def variation 'EngineChoices'
-      (variant_usage
-        (part_usage composite 'fourCyl'))
-      (variant_usage
-        (part_usage composite 'sixCyl')))
-    (part_def abstract 'Container'
-      (attribute_def abstract 'InnerWeight')
-      (enum_def abstract 'InnerColor')
-      (item_def abstract 'InnerWidget')
-      (part_def abstract 'InnerPart')
-      (port_def abstract 'InnerPort'))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

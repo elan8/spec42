@@ -104,17 +104,28 @@ semantic.unresolved_name 'ISQ::mass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MassRollup2'
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (part_def 'MassedThing'
-        (attribute_usage composite 'simpleMass' :> 'ISQ::mass'[unresolved])
-        (attribute_usage composite 'totalMass' :> 'ISQ::mass'[unresolved]
-          (feature_value (default =))))
-      (part_usage 'composicomackagteThing' : 'MassRollup2::MassedThing'[part_def]
-        (not_implemented 'malformed')
-        (reference_usage reference 'arValuete' :>> 'MassRollup2::MassedThing::totalMass'[attribute_usage]
-          (feature_value (default =))))
-      (not_implemented 'malformed'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MassRollup2"))) (name "MassRollup2") (declared-name "MassRollup2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MassRollup2::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "MassRollup2::MassedThing"))) (name "MassedThing") (declared-name "MassedThing") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (name "simpleMass") (declared-name "simpleMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassRollup2::MassedThing")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MassRollup2::MassedThing::totalMass"))) (name "totalMass") (declared-name "totalMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "featureReference") (reference "sLmpleMass")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MassRollup2::MassedThing")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "MassRollup2::composicomackagteThing"))) (name "composicomackagteThing") (declared-name "composicomackagteThing") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "MassRollup2::filter"))) (name "filter") (declared-name "filter"))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup2::composicomackagteThing"))) (to (node (document "d0") (qualified-name "MassRollup2::MassedThing"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

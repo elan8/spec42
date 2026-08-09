@@ -133,25 +133,48 @@ semantic.unresolved_name 'SysML::PartUsage'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Metadata Example-1'
-      (metadata_def 'SafetyFeature')
-      (metadata_def 'SecurityFeature'
-        (reference_usage reference :> 'annotatedElement'[unresolved] : 'SysML::PartDefinition'[unresolved])
-        (reference_usage reference :> 'annotatedElement'[unresolved] : 'SysML::PartUsage'[unresolved]))
-      (metadata_usage :> 'Metadata Example-1::SafetyFeature'[metadata_def] annotated 'Metadata Example-1::vehicle::interior::seatBelt'[part_usage] annotated 'Metadata Example-1::vehicle::interior::driverAirBag'[part_usage] annotated 'Metadata Example-1::vehicle::bodyAssy::bumper'[part_usage])
-      (metadata_usage :> 'Metadata Example-1::SecurityFeature'[metadata_def] annotated 'Metadata Example-1::vehicle::interior::alarm'[part_usage] annotated 'Metadata Example-1::vehicle::bodyAssy::keylessEntry'[part_usage])
-      (part_usage 'vehicle'
-        (part_usage composite 'interior'
-          (part_usage composite 'alarm')
-          (part_usage composite 'seatBelt'
-            (multiplicity_range [2]))
-          (part_usage composite 'frontSeat'
-            (multiplicity_range [2]))
-          (part_usage composite 'driverAirBag'))
-        (part_usage composite 'bodyAssy'
-          (part_usage composite 'body')
-          (part_usage composite 'bumper')
-          (part_usage composite 'keylessEntry'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Metadata Example-1"))) (name "Metadata Example-1") (declared-name "Metadata Example-1")
+      (contains
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature"))) (name "SafetyFeature") (declared-name "SafetyFeature"))
+        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature#metadata_usage"))) (name "SafetyFeature") (declared-name "SafetyFeature"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature"))) (name "SecurityFeature") (declared-name "SecurityFeature")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature")))))
+          )
+        )
+        (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature#metadata_usage"))) (name "SecurityFeature") (declared-name "SecurityFeature"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))) (name "interior") (declared-name "interior") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

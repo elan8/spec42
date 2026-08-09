@@ -168,32 +168,48 @@ semantic.invalid_membership_owning_type
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'UseCaseTest'
-      (part_def 'System')
-      (part_def 'User')
-      (use_case_def 'UseSystem'
-        (subject_membership in 'system' : 'UseCaseTest::System'[part_def])
-        (actor_membership in 'user' : 'UseCaseTest::User'[part_def])
-        (objective_membership composite)
-        (include_use_case_usage 'uc1' : 'UseCaseTest::UC1'[use_case_def])
-        (include_use_case_usage 'uc2'
-          (subject_membership in
-            (feature_value (=)))
-          (actor_membership in 'user'
-            (feature_value (=)))))
-      (use_case_def 'UC1')
-      (part_usage 'user' : 'UseCaseTest::User'[part_def])
-      (use_case_usage 'uc2'
-        (subject_membership in)
-        (actor_membership in :>> 'UseCaseTest::user'[part_usage]))
-      (use_case_usage 'u' : 'UseCaseTest::UseSystem'[use_case_def])
-      (part_usage 'system' : 'UseCaseTest::System'[part_def]
-        (include_use_case_usage 'uc2')
-        (perform_action_usage :>> 'UseCaseTest::u'[use_case_usage])
-        (use_case_usage composite 'uc1' : 'UseCaseTest::UC1'[use_case_def]))
-      (use_case_usage 'uc3'
-        (include_use_case_usage 'u')
-        (not_implemented 'malformed')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "UseCaseTest"))) (name "UseCaseTest") (declared-name "UseCaseTest")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "UseCaseTest::System"))) (name "System") (declared-name "System") (declared))
+        (element (kind "use case def") (id (node (document "d0") (qualified-name "UseCaseTest::UC1"))) (name "UC1") (declared-name "UC1"))
+        (element (kind "use case def") (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))) (name "UseSystem") (declared-name "UseSystem")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "UseCaseTest::UseSystem")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem::system"))) (name "system") (declared-name "system") (effective (featuring-type (node (document "d0") (qualified-name "UseCaseTest::UseSystem")))))
+            (element (kind "actor") (id (node (document "d0") (qualified-name "UseCaseTest::UseSystem::user"))) (name "user") (declared-name "user") (effective (featuring-type (node (document "d0") (qualified-name "UseCaseTest::UseSystem")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "UseCaseTest::User"))) (name "User") (declared-name "User") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "UseCaseTest::system"))) (name "system") (declared-name "system") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "UseCaseTest::system::u"))) (name "u") (declared-name "u") (effective (featuring-type (node (document "d0") (qualified-name "UseCaseTest::System")))))
+          )
+        )
+        (element (kind "use case") (id (node (document "d0") (qualified-name "UseCaseTest::u"))) (name "u") (declared-name "u"))
+        (element (kind "use case") (id (node (document "d0") (qualified-name "UseCaseTest::uc2"))) (name "uc2") (declared-name "uc2"))
+        (element (kind "use case") (id (node (document "d0") (qualified-name "UseCaseTest::uc3"))) (name "uc3") (declared-name "uc3")
+          (contains
+            (element (kind "include use case") (id (node (document "d0") (qualified-name "UseCaseTest::uc3::u"))) (name "u") (declared-name "u"))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "UseCaseTest::user"))) (name "user") (declared-name "user") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "UseCaseTest::system"))) (to (node (document "d0") (qualified-name "UseCaseTest::system::u"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))) (to (node (document "d0") (qualified-name "UseCaseTest::System"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCaseTest::UseSystem::system"))) (to (node (document "d0") (qualified-name "UseCaseTest::System"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCaseTest::UseSystem::user"))) (to (node (document "d0") (qualified-name "UseCaseTest::User"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCaseTest::system"))) (to (node (document "d0") (qualified-name "UseCaseTest::System"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCaseTest::u"))) (to (node (document "d0") (qualified-name "UseCaseTest::UseSystem"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCaseTest::user"))) (to (node (document "d0") (qualified-name "UseCaseTest::User"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

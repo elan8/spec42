@@ -324,50 +324,20 @@ semantic.unresolved_name 'CC1::t::t1::startShot'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TimeVaryingFeatures'
-      (class_def 'CC0'
-        (feature_def 'x')
-        (feature_def :>> 'startShot'[unresolved]
-          (feature_def :>> 'TimeVaryingFeatures::CC0::x'[feature_def]
-            (feature_value (=))))
-        (feature_def 't' :> 'timeSlices'[unresolved]
-          (feature_def 'y')
-          (feature_def :>> 'startShot'[unresolved]
-            (feature_def :>> 'TimeVaryingFeatures::CC0::x'[feature_def]
-              (feature_value (=)))
-            (feature_def :>> 'TimeVaryingFeatures::CC0::t::y'[feature_def]
-              (feature_value (=))))
-          (feature_def 't1' :> 'timeSlices'[unresolved]
-            (feature_def :>> 'startShot'[unresolved]
-              (feature_def :>> 'TimeVaryingFeatures::CC0::x'[feature_def]
-                (feature_value (=)))
-              (feature_def :>> 'TimeVaryingFeatures::CC0::t::y'[feature_def]
-                (feature_value (=)))))))
-      (class_def 'CC1'
-        (feature_def 'x'
-          (feature_def 'CC1_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))
-        (feature_def :>> 'startShot'[unresolved]
-          (feature_def :>> 'TimeVaryingFeatures::CC1::x'[feature_def]
-            (feature_value (=))
-            (feature_def 'CC1_startShot_snapshots' :>> 'TimeVaryingFeatures::CC1::x::CC1_snapshots'[feature_def])))
-        (feature_def 't' :> 'timeSlices'[unresolved]
-          (feature_def 'y'
-            (feature_def 'CC1_t_snapshots' :>> 'Occurrences::Occurrence::snapshots'[unresolved]))
-          (feature_def :>> 'startShot'[unresolved]
-            (feature_def :>> 'TimeVaryingFeatures::CC1::x'[feature_def]
-              (feature_value (=))
-              (feature_def 'CC1_t_startShot_snapshots' :>> 'TimeVaryingFeatures::CC1::x::CC1_snapshots'[feature_def]))
-            (feature_def :>> 'TimeVaryingFeatures::CC1::t::y'[feature_def]
-              (feature_value (=))
-              (feature_def 'CC1_t_startShot_snapshots' :>> 'TimeVaryingFeatures::CC1::t::y::CC1_t_snapshots'[feature_def])))
-          (feature_def 't1' :> 'timeSlices'[unresolved]
-            (feature_def :>> 'startShot'[unresolved]
-              (feature_def :>> 'TimeVaryingFeatures::CC1::x'[feature_def]
-                (feature_value (=))
-                (feature_def 'CC1_t_t1_startShot_snapshots' :>> 'TimeVaryingFeatures::CC1::x::CC1_snapshots'[feature_def]))
-              (feature_def :>> 'TimeVaryingFeatures::CC1::t::y'[feature_def]
-                (feature_value (=))
-                (feature_def 'CC1_t_t1_startShot_snapshots' :>> 'TimeVaryingFeatures::CC1::t::y::CC1_t_snapshots'[feature_def])))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingFeatures"))) (name "TimeVaryingFeatures") (declared-name "TimeVaryingFeatures")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC0"))) (name "CC0") (declared-name "CC0"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "TimeVaryingFeatures::CC1"))) (name "CC1") (declared-name "CC1"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

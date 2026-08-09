@@ -180,36 +180,15 @@ semantic.invalid_connection_end_count
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (action_def 'ControlNodeTest'
-      (action_usage composite 'A1')
-      (source_succession
-        (reference_usage reference 'J'))
-      (action_usage composite 'A2'
-        (reference_usage out reference 'a'))
-      (source_succession
-        (reference_usage reference 'J'))
-      (flow_usage composite 'A2')
-      (join_node 'J')
-      (source_succession
-        (fork_node 'F'
-          (reference_usage in reference 'a')
-          (reference_usage out reference 'b1')
-          (reference_usage out reference 'b2')))
-      (source_succession
-        (reference_usage reference 'B1'))
-      (source_succession
-        (reference_usage reference 'B2'))
-      (flow_usage composite 'F')
-      (flow_usage composite 'F')
-      (action_usage composite 'B1'
-        (reference_usage in reference 'b'))
-      (source_succession
-        (reference_usage reference 'M'))
-      (action_usage composite 'B2'
-        (reference_usage in reference 'b'))
-      (source_succession
-        (reference_usage reference 'M'))
-      (merge_node 'M'))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -164,40 +164,28 @@ package BehaviorCoverage {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'BehaviorCoverage'
-      (behavior_def 'Action1'
-        (feature_def in 'x')
-        (feature_def out 'y'))
-      (step_def 's1' : 'BehaviorCoverage::Action1'[behavior_def])
-      (function_def 'F'
-        (feature_def in 'a')
-        (return_parameter_membership
-          (feature_def out 'result' : 'Integer'[unresolved])))
-      (expression_def 'E'
-        (feature_def in 'x')
-        (result_expr_membership))
-      (predicate_def 'P'
-        (feature_def in 'x' : 'Boolean'[unresolved])
-        (result_expr_membership))
-      (boolean_expr_def 'b'
-        (result_expr_membership))
-      (invariant_def 'I'
-        (result_expr_membership))
-      (invariant_def 'NegI'
-        (result_expr_membership))
-      (interaction_def 'Inter'
-        (feature_def in 'x')
-        (feature_def out 'y'))
-      (class_def 'Container'
-        (step_def 'a1' : 'BehaviorCoverage::Action1'[behavior_def])
-        (step_def 'a2' : 'BehaviorCoverage::Action1'[behavior_def])
-        (succession_def
-          (connector_end 'a1')
-          (connector_end 'a2'))
-        (flow_usage composite 'a1')
-        (flow_usage composite 'sf'
-          (connector_end 'a1.y')
-          (connector_end 'a2.x'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "BehaviorCoverage"))) (name "BehaviorCoverage") (declared-name "BehaviorCoverage")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::Action1"))) (name "Action1") (declared-name "Action1"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "BehaviorCoverage::Container"))) (name "Container") (declared-name "Container"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::E"))) (name "E") (declared-name "E"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::F"))) (name "F") (declared-name "F"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::I"))) (name "I") (declared-name "I"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::Inter"))) (name "Inter") (declared-name "Inter"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::P"))) (name "P") (declared-name "P"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::b"))) (name "b") (declared-name "b"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::false"))) (name "false") (declared-name "false"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BehaviorCoverage::s1"))) (name "s1") (declared-name "s1"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

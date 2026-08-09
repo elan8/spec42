@@ -165,32 +165,48 @@ semantic.unresolved_name 'fuelCommand'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Message Payload Example'
-      (namespace_import private -> 'Event Occurrence Example'[unresolved])
-      (item_def 'SetSpeed')
-      (item_def 'SensedSpeed')
-      (item_def 'FuelCommand'
-        (attribute_usage composite 'fuelFlow' : 'ScalarValues::Real'[unresolved]))
-      (part_def 'EngineController')
-      (part_usage 'vehicle1' :> 'vehicle'[unresolved]
-        (part_usage composite 'engineController' : 'Message Payload Example::EngineController'[part_def]
-          (event_occurrence_usage 'fuelCommandReceived')
-          (source_succession
-            (event_occurrence_usage 'fuelCommandForwarded'))))
-      (occurrence_def 'CruiseControlInteraction'
-        (part_usage reference :>> 'driver'[unresolved])
-        (part_usage reference 'vehicle' :>> 'Message Payload Example::vehicle1'[part_usage])
-        (flow_usage composite 'setSpeedMessage' : 'Message Payload Example::SetSpeed'[item_def]
-          (connector_end 'driver.setSpeedSent')
-          (connector_end 'vehicle.cruiseController.setSpeedReceived'))
-        (source_succession
-          (flow_usage 'sensedSpeedMessage' : 'Message Payload Example::SensedSpeed'[item_def]
-            (connector_end 'vehicle.speedometer.sensedSpeedSent')
-            (connector_end 'vehicle.cruiseController.sensedSpeedReceived')))
-        (source_succession
-          (flow_usage 'fuelCommandMessage' : 'fuelCommand'[unresolved]))
-        (source_succession
-          (flow_usage 'fuelCommandForwardingMessage' : 'fuelCommand'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Message Payload Example"))) (name "Message Payload Example") (declared-name "Message Payload Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Message Payload Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))) (name "CruiseControlInteraction") (declared-name "CruiseControlInteraction") (declared)
+          (contains
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage"))) (name "setSpeedMessage") (declared-name "setSpeedMessage") (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))))
+              (contains
+                (element (kind "flow payload") (id (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (name "_payload") (declared-name "_payload") (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction")))))
+              )
+            )
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (name "EngineController") (declared-name "EngineController") (declared))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Message Payload Example::FuelCommand"))) (name "FuelCommand") (declared-name "FuelCommand")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (name "fuelFlow") (declared-name "fuelFlow") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Message Payload Example::FuelCommand")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Message Payload Example::SensedSpeed"))) (name "SensedSpeed") (declared-name "SensedSpeed"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (name "SetSpeed") (declared-name "SetSpeed"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (name "engineController") (declared-name "engineController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (name "fuelCommandForwarded") (declared-name "fuelCommandForwarded") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (name "fuelCommandReceived") (declared-name "fuelCommandReceived") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (to (node (document "d0") (qualified-name "Message Payload Example::EngineController"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

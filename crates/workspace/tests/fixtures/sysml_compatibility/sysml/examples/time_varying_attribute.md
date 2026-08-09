@@ -223,38 +223,54 @@ semantic.unresolved_name 'done'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TimeVaryingAttribute'
-      (membership_import private -> 'SI::s'[unresolved])
-      (item_def 'PwrCmd'
-        (attribute_usage composite 'pwrLevel' : 'ScalarValues::Integer'[unresolved]))
-      (part_def 'Transport2'
-        (namespace_import private -> 'Time'[unresolved])
-        (attribute_usage composite 'startTime'
-          (feature_value (=)))
-        (attribute_usage composite 'elapseTime' :> 'ISQ::duration'[unresolved])
-        (attribute_usage composite :>> 'localClock::currentTime'[unresolved]
-          (feature_value (=)))
-        (item_usage out 'pwrCmd' : 'TimeVaryingAttribute::PwrCmd'[item_def])
-        (occurrence_usage composite :>> 'portionOfLife'[unresolved]
-          (occurrence_usage composite :>> 'start'[unresolved]
-            (reference_usage reference :>> 'TimeVaryingAttribute::Transport2::elapseTime'[attribute_usage]
-              (feature_value (=)))
-            (reference_usage reference :>> 'TimeVaryingAttribute::PwrCmd::pwrLevel'[attribute_usage]
-              (feature_value (=))))
-          (occurrence_usage composite :>> 'done'[unresolved]
-            (reference_usage reference :>> 'TimeVaryingAttribute::Transport2::elapseTime'[attribute_usage]
-              (feature_value (=)))
-            (reference_usage reference :>> 'TimeVaryingAttribute::PwrCmd::pwrLevel'[attribute_usage]
-              (feature_value (=)))))
-        (occurrence_usage composite 'transportPeriod'
-          (occurrence_usage composite :>> 'start'[unresolved]
-            (reference_usage reference :>> 'TimeVaryingAttribute::Transport2::elapseTime'[attribute_usage]
-              (feature_value (=))))
-          (occurrence_usage composite :>> 'done'[unresolved]
-            (reference_usage reference :>> 'TimeVaryingAttribute::Transport2::elapseTime'[attribute_usage]
-              (feature_value (=))))
-          (reference_usage reference :>> 'TimeVaryingAttribute::PwrCmd::pwrLevel'[attribute_usage]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TimeVaryingAttribute"))) (name "TimeVaryingAttribute") (declared-name "TimeVaryingAttribute")
+      (contains
+        (element (kind "item def") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd"))) (name "PwrCmd") (declared-name "PwrCmd")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd::pwrLevel"))) (name "pwrLevel") (declared-name "pwrLevel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::PwrCmd")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (name "Transport2") (declared-name "Transport2") (declared)
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::"))) (name "") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::"))) (name "") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2")))))
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence"))) (name "") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::::#occurrence::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2")))))
+                  )
+                )
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime"))) (name "currentTime") (declared-name "currentTime") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "featureReference") (reference "startTime")) (expression (kind "featureReference") (reference "elapseTime")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::currentTime"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (name "startTime") (declared-name "startTime") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "TimeOf"))) (arguments (argument (expression (kind "featureReference") (reference "start"))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::startTime"))) (role feature-value))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod"))) (name "transportPeriod") (declared-name "transportPeriod") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::"))) (name "") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot"))) (effective (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2"))))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2::transportPeriod::::elapseTime"))) (name "elapseTime") (declared-name "elapseTime") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TimeVaryingAttribute::Transport2")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "TimeVaryingAttribute::s"))) (name "s") (declared-name "s"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -212,56 +212,91 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Vehicle Decomposition'
-      (documentation)
-      (part_def 'Vehicle'
-        (part_usage composite 'chs' : 'Vehicle Decomposition::Chassis Assembly'[part_def]
-          (multiplicity_range [1])
-          (part_usage composite 'rb' :>> 'Vehicle Decomposition::Chassis Assembly::rb'[part_usage])
-          (part_usage composite :>> 'Vehicle Decomposition::Chassis Assembly::w'[part_usage]
-            (part_usage composite :>> 'Vehicle Decomposition::Wheel::lb'[part_usage])))
-        (part_usage composite 'eng' : 'Vehicle Decomposition::Engine'[part_def]
-          (multiplicity_range [1])
-          (part_usage composite 'cyl' :>> 'Vehicle Decomposition::Engine::cyl'[part_usage]))
-        (reference_usage reference 'cylinderBR'
-          (multiplicity_range [*])
-          (feature_value (=)))
-        (reference_usage reference 'rollBarBR'
-          (multiplicity_range [*])
-          (feature_value (=)))
-        (reference_usage reference 'lugBoltBR'
-          (multiplicity_range [24..32])
-          (feature_value (=))))
-      (part_def 'Chassis Assembly'
-        (part_usage composite 'w' : 'Vehicle Decomposition::Wheel'[part_def]
-          (multiplicity_range [4]))
-        (part_usage composite 'rb' : 'Vehicle Decomposition::RollBar'[part_def]
-          (multiplicity_range [0..1])))
-      (part_def 'Wheel'
-        (part_usage composite 'lb' : 'Vehicle Decomposition::LugBolt'[part_def]
-          (multiplicity_range [6..10])))
-      (part_def 'LugBolt')
-      (part_def 'RollBar')
-      (part_def 'HeavyRollBar' :> 'Vehicle Decomposition::RollBar'[part_def])
-      (part_def 'LightRollBar' :> 'Vehicle Decomposition::RollBar'[part_def])
-      (part_def 'Engine'
-        (part_usage composite 'cyl' : 'Vehicle Decomposition::Cylinder'[part_def]
-          (multiplicity_range [4..8])))
-      (part_def 'Cylinder')
-      (part_def 'Vehicle Model 1' :> 'Vehicle Decomposition::Vehicle'[part_def]
-        (reference_usage reference :>> 'Vehicle Decomposition::Vehicle::cylinderBR'[reference_usage]
-          (multiplicity_range [4]))
-        (reference_usage reference :>> 'Vehicle Decomposition::Vehicle::rollBarBR'[reference_usage] : 'Vehicle Decomposition::LightRollBar'[part_def]
-          (multiplicity_range [*]))
-        (reference_usage reference :>> 'Vehicle Decomposition::Vehicle::lugBoltBR'[reference_usage]
-          (multiplicity_range [24])))
-      (part_def 'Vehicle Model 2' :> 'Vehicle Decomposition::Vehicle'[part_def]
-        (reference_usage reference :>> 'Vehicle Decomposition::Vehicle::cylinderBR'[reference_usage]
-          (multiplicity_range [6..8]))
-        (reference_usage reference :>> 'Vehicle Decomposition::Vehicle::rollBarBR'[reference_usage]
-          (multiplicity_range [0]))
-        (reference_usage reference :>> 'Vehicle Decomposition::Vehicle::lugBoltBR'[reference_usage]
-          (multiplicity_range [24..28]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Vehicle Decomposition"))) (name "Vehicle Decomposition") (declared-name "Vehicle Decomposition")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly"))) (name "Chassis Assembly") (declared-name "Chassis Assembly") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly::rb"))) (name "rb") (declared-name "rb") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly::w"))) (name "w") (declared-name "w") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Engine::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 8) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Engine")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::HeavyRollBar"))) (name "HeavyRollBar") (declared-name "HeavyRollBar") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::LightRollBar"))) (name "LightRollBar") (declared-name "LightRollBar") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::LugBolt"))) (name "LugBolt") (declared-name "LugBolt") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::RollBar"))) (name "RollBar") (declared-name "RollBar") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs"))) (name "chs") (declared-name "chs") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle"))))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs::rb"))) (name "rb") (declared-name "rb") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs::w"))) (name "w") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs::w::lb"))) (name "lb") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly")))))
+                  )
+                )
+              )
+            )
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::cylinderBR"))) (name "cylinderBR") (declared-name "cylinderBR") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle"))))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::eng::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Engine")))))
+              )
+            )
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::lugBoltBR"))) (name "lugBoltBR") (declared-name "lugBoltBR") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle")))))
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::rollBarBR"))) (name "rollBarBR") (declared-name "rollBarBR") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1"))) (name "Vehicle Model 1") (declared-name "Vehicle Model 1") (declared)
+          (contains
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1::redefines"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1")))))
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1::redefines#opaque_member"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1")))))
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1::redefines#opaque_member2"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2"))) (name "Vehicle Model 2") (declared-name "Vehicle Model 2") (declared)
+          (contains
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2::redefines"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2")))))
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2::redefines#opaque_member"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2")))))
+            (element (kind "opaque member") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2::redefines#opaque_member2"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Vehicle Decomposition::Wheel::lb"))) (name "lb") (declared-name "lb") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 10) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Vehicle Decomposition::Wheel")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Vehicle Decomposition::_documentation"))) (name ""))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::_documentation"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs::rb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly::rb"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs::w"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly::w"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs::w::lb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Wheel::lb"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::eng::cyl"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Engine::cyl"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::HeavyRollBar"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::RollBar"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::LightRollBar"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::RollBar"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 1"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle Model 2"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly::rb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::RollBar"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly::w"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Engine::cyl"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Cylinder"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::chs"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Chassis Assembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Vehicle Decomposition::Wheel::lb"))) (to (node (document "d0") (qualified-name "Vehicle Decomposition::LugBolt"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

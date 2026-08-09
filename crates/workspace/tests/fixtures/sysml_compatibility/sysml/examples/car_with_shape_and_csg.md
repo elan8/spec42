@@ -402,84 +402,62 @@ semantic.unresolved_name 'elements'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'CarWithShapeAndCSG'
-      (namespace_import private -> 'SpatialItems'[unresolved])
-      (namespace_import private -> 'ShapeItems'[unresolved])
-      (membership_import private -> 'Objects::Point'[unresolved])
-      (membership_import private -> 'Quantities::VectorQuantityValue'[unresolved])
-      (membership_import private -> 'MeasurementReferences::CoordinateFrame'[unresolved])
-      (membership_import private -> 'MeasurementReferences::TranslationRotationSequence'[unresolved])
-      (membership_import private -> 'MeasurementReferences::Translation'[unresolved])
-      (membership_import private -> 'MeasurementReferences::Rotation'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (part_def 'Car' :> 'SpatialItem'[unresolved]
-        (documentation)
-        (item_usage composite :>> 'shape'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'datum' :>> 'coordinateFrame'[unresolved]
-          (reference_usage reference :>> 'mRefs'[unresolved]
-            (feature_value (=))))
-        (part_usage composite 'powerSource' : 'CarWithShapeAndCSG::Engine'[part_def] :> 'componentParts'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'CarWithShapeAndCSG::Engine::engineCoordinateFrame'[attribute_usage]
-            (reference_usage reference :>> 'mRefs'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'source'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=)))))))
-      (part_def 'Engine' :> 'SpatialItem'[unresolved]
-        (documentation)
-        (item_usage composite :>> 'shape'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'engineCoordinateFrame' :>> 'coordinateFrame'[unresolved])
-        (part_usage composite 'rawEngineBlock' :> 'subSpatialParts'[unresolved]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'shape'[unresolved] : 'Box'[unresolved]
-            (multiplicity_range [1])
-            (reference_usage reference :>> 'length'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'width'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'height'[unresolved]
-              (feature_value (=)))))
-        (attribute_usage composite 'rearCylinderSpacing'
-          (feature_value (=)))
-        (item_usage composite 'cylinder1' :> 'subSpatialParts'[unresolved]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'shape'[unresolved] : 'Cylinder'[unresolved]
-            (multiplicity_range [1])
-            (reference_usage reference :>> 'radius'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'height'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'source'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (attribute_usage composite 'cylinderSpacing'
-          (feature_value (=)))
-        (item_usage composite 'cylinder2' :> 'subSpatialParts'[unresolved]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'shape'[unresolved] : 'Cylinder'[unresolved]
-            (multiplicity_range [1])
-            (reference_usage reference :>> 'radius'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'height'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'source'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (attribute_usage composite :> 'differencesOf'[unresolved]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'elements'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG"))) (name "CarWithShapeAndCSG") (declared-name "CarWithShapeAndCSG")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car"))) (name "Car") (declared-name "Car") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::datum"))) (name "datum") (declared-name "datum") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::powerSource"))) (name "powerSource") (declared-name "powerSource") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::powerSource::ecf"))) (name "ecf") (declared-name "ecf") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine")))))
+              )
+            )
+            (element (kind "item") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::shape"))) (name "shape") (declared (properties (composite true) (reference false)) (feature-value (kind bound) (expression (kind "constructor") (reference "Cuboid") (arguments (argument (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 4800)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm"))))))) (argument (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1840)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm"))))))) (argument (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1350)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm"))))))))))) (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::shape"))) (role feature-value))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::CoordinateFrame"))) (name "CoordinateFrame") (declared-name "CoordinateFrame"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder1"))) (name "cylinder1") (declared-name "cylinder1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder1::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine")))))
+              )
+            )
+            (element (kind "item") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder2"))) (name "cylinder2") (declared-name "cylinder2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder2::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinderSpacing"))) (name "cylinderSpacing") (declared-name "cylinderSpacing") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "+") (children (expression (kind "binary") (operator "*") (children (expression (kind "integerLiteral") (literal 2)) (expression (kind "memberAccess") (reference "radius") (children (expression (kind "memberAccess") (reference "shape") (children (expression (kind "featureReference") (reference "cylinder1")))))))) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 20)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinderSpacing"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::engineCoordinateFrame"))) (name "engineCoordinateFrame") (declared-name "engineCoordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::rawEngineBlock"))) (name "rawEngineBlock") (declared-name "rawEngineBlock") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::rearCylinderSpacing"))) (name "rearCylinderSpacing") (declared-name "rearCylinderSpacing") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 90)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::rearCylinderSpacing"))) (role feature-value))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::shape"))) (name "shape") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Point"))) (name "Point") (declared-name "Point"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Rotation"))) (name "Rotation") (declared-name "Rotation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::Translation"))) (name "Translation") (declared-name "Translation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::TranslationRotationSequence"))) (name "TranslationRotationSequence") (declared-name "TranslationRotationSequence"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "CarWithShapeAndCSG::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::_documentation"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::_documentation"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::powerSource"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

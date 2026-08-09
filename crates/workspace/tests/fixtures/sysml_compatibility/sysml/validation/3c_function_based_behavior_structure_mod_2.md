@@ -189,36 +189,63 @@ parse.expected_usage_declaration
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '3c-Function-based Behavior-structure mod-2'
-      (part_def 'Vehicle')
-      (part_def 'VehicleFrame')
-      (part_def 'HitchBall')
-      (part_def 'TrailerCoupler')
-      (part_def 'Trailer')
-      (part_def 'TrailerFrame')
-      (connection_def 'TrailerHitch'
-        (port_usage end 'hitch' : '3c-Function-based Behavior-structure mod-2::HitchBall'[part_def])
-        (port_usage end 'coupler' : '3c-Function-based Behavior-structure mod-2::TrailerCoupler'[part_def]))
-      (part_usage 'vehicle-trailer system'
-        (part_usage composite 'vehicle' : '3c-Function-based Behavior-structure mod-2::Vehicle'[part_def]
-          (part_usage composite 'vehicleFrame' : '3c-Function-based Behavior-structure mod-2::VehicleFrame'[part_def]
-            (part_usage composite 'hitch' : '3c-Function-based Behavior-structure mod-2::HitchBall'[part_def])))
-        (connection_usage composite 'trailerHitch' : '3c-Function-based Behavior-structure mod-2::TrailerHitch'[connection_def]
-          (multiplicity_range [0..1])
-          (connector_end 'vehicle.vehicleFrame.hitch')
-          (connector_end 'trailer.trailerFrame.coupler'))
-        (part_usage composite 'trailer' : '3c-Function-based Behavior-structure mod-2::Trailer'[part_def]
-          (part_usage composite 'trailerFrame' : '3c-Function-based Behavior-structure mod-2::TrailerFrame'[part_def]
-            (part_usage composite 'coupler' : '3c-Function-based Behavior-structure mod-2::TrailerCoupler'[part_def])))
-        (not_implemented 'malformed')
-        (action_usage composite
-          (action_usage composite 'connect trailer to vehicle'
-            (reference_usage abstract reference :>> '3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailerHitch'[connection_usage]
-              (multiplicity_range [1])))
-          (source_succession
-            (action_usage 'disconnect trailer from vehicle'
-              (reference_usage abstract reference :>> '3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailerHitch'[connection_usage]
-                (multiplicity_range [0])))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2"))) (name "3c-Function-based Behavior-structure mod-2") (declared-name "3c-Function-based Behavior-structure mod-2")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall"))) (name "HitchBall") (declared-name "HitchBall") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::Trailer"))) (name "Trailer") (declared-name "Trailer") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerCoupler"))) (name "TrailerCoupler") (declared-name "TrailerCoupler") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerFrame"))) (name "TrailerFrame") (declared-name "TrailerFrame") (declared))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch"))) (name "TrailerHitch") (declared-name "TrailerHitch")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch::coupler"))) (name "coupler") (declared-name "coupler") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch::hitch"))) (name "hitch") (declared-name "hitch") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::VehicleFrame"))) (name "VehicleFrame") (declared-name "VehicleFrame") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system"))) (name "vehicle-trailer system") (declared-name "vehicle-trailer system") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::"))) (name ""))
+            (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer"))) (name "trailer") (declared-name "trailer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer::trailerFrame"))) (name "trailerFrame") (declared-name "trailerFrame") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::Trailer"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer::trailerFrame::coupler"))) (name "coupler") (declared-name "coupler") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerFrame")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle::vehicleFrame"))) (name "vehicleFrame") (declared-name "vehicleFrame") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle::vehicleFrame::hitch"))) (name "hitch") (declared-name "hitch") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::VehicleFrame")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (connection (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerCoupler"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch::coupler"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerCoupler"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch::hitch"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::Trailer"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer::trailerFrame"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer::trailerFrame::coupler"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerCoupler"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle::vehicleFrame"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::VehicleFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle::vehicleFrame::hitch"))) (to (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-2::HitchBall"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

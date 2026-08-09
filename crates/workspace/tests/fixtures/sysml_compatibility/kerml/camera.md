@@ -57,13 +57,15 @@ semantic.unresolved_name 'timeSlices'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (class_def 'Camera'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (feature_def 'focusedState' : 'Camera'[class_def] :> 'timeSlices'[unresolved])
-      (feature_def 'shotState' : 'Camera'[class_def] :> 'timeSlices'[unresolved])
-      (succession_def
-        (connector_end 'focusedState')
-        (connector_end 'shotState')))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -83,15 +83,38 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Generalization Example'
-      (part_def abstract 'Vehicle')
-      (part_def 'HumanDrivenVehicle' :> 'Generalization Example::Vehicle'[part_def]
-        (part_usage reference 'driver' : 'Generalization Example::Person'[part_def]))
-      (part_def 'PoweredVehicle' :> 'Generalization Example::Vehicle'[part_def]
-        (part_usage composite 'eng' : 'Generalization Example::Engine'[part_def]))
-      (part_def 'HumanDrivenPoweredVehicle' :> 'Generalization Example::HumanDrivenVehicle'[part_def] :> 'Generalization Example::PoweredVehicle'[part_def])
-      (part_def 'Engine')
-      (part_def 'Person'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Generalization Example"))) (name "Generalization Example") (declared-name "Generalization Example")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (name "HumanDrivenPoweredVehicle") (declared-name "HumanDrivenPoweredVehicle") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (name "HumanDrivenVehicle") (declared-name "HumanDrivenVehicle") (declared)
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Person"))) (name "Person") (declared-name "Person") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (name "PoweredVehicle") (declared-name "PoweredVehicle") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared (properties (abstract true))))
+      )
+    )
+  )
+  (relationships
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (to (node (document "d0") (qualified-name "Generalization Example::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (to (node (document "d0") (qualified-name "Generalization Example::Engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

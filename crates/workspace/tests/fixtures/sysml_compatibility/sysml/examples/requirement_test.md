@@ -148,29 +148,38 @@ semantic.ambiguous_member 'r1'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'RequirementTest'
-      (constraint_def 'C')
-      (constraint_usage 'c' : 'RequirementTest::C'[constraint_def])
-      (membership_import private recursive -> 'RequirementTest::q'[part_usage])
-      (requirement_def 'R'
-        (assume_constraint_usage composite 'c1' : 'RequirementTest::C'[constraint_def])
-        (require_constraint_usage composite 'c')
-        (documentation)
-        (not_implemented 'malformed')
-        (requirement_def 'A'
-          (documentation)
-          (subject_membership in 's')))
-      (requirement_def 'R1'
-        (require_constraint_usage composite 'c1' :>> 'RequirementTest::c'[constraint_usage]))
-      (part_usage 'p')
-      (part_usage 'q'
-        (requirement_usage composite 'r' : 'RequirementTest::R'[requirement_def])
-        (satisfy_requirement_usage 'r' by 'RequirementTest::p'[part_usage])
-        (satisfy_requirement_usage 'r' by 'RequirementTest::q'[part_usage]))
-      (requirement_usage 'r1' : 'RequirementTest::R1'[requirement_def])
-      (not_implemented 'malformed')
-      (satisfy_requirement_usage 'r1' by 'RequirementTest::p'[part_usage])
-      (satisfy_requirement_usage not 'r1' by 'RequirementTest::q'[part_usage]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RequirementTest"))) (name "RequirementTest") (declared-name "RequirementTest")
+      (contains
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "RequirementTest::C"))) (name "C") (declared-name "C"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "RequirementTest::R"))) (name "R") (declared-name "R")
+          (contains
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "RequirementTest::R::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "RequirementTest::R")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "RequirementTest::R1"))) (name "R1") (declared-name "R1"))
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "RequirementTest::c"))) (name "c") (declared-name "c"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RequirementTest::p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "RequirementTest::q"))) (name "q") (declared-name "q"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RequirementTest::q#part"))) (name "q") (declared-name "q") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "RequirementTest::r1"))) (name "r1") (declared-name "r1"))
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "RequirementTest::q#part::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "RequirementTest::q#part::unresolved_satisfy_source#diagnostic"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+  )
+  (relationships
+    (satisfy (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::p"))))
+    (satisfy (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::q#part"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::c"))) (to (node (document "d0") (qualified-name "RequirementTest::C"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::R1"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (satisfy (status pending-expression) (document "d0") (source-expression "r") (target-expression "p") (container-prefix "RequirementTest::q#part"))
+    (satisfy (status pending-expression) (document "d0") (source-expression "r") (target-expression "q") (container-prefix "RequirementTest::q#part"))
+  )
+)
 ~~~

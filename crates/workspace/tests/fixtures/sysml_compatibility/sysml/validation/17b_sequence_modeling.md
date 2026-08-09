@@ -192,37 +192,81 @@ semantic.unresolved_name 'String'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '17b-Sequence-Modeling'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> '17b-Sequence-Modeling::PayloadDefinitions'[package])
-      (package 'PayloadDefinitions'
-        (item_def 'Subscribe'
-          (attribute_usage composite 'topic' : 'String'[unresolved])
-          (part_usage reference 'subscriber'))
-        (item_def 'Publish'
-          (attribute_usage composite 'topic' : 'String'[unresolved])
-          (reference_usage reference 'publication'))
-        (item_def 'Deliver'
-          (reference_usage reference 'publication')))
-      (occurrence_def 'PubSubSequence'
-        (part_usage composite 'producer'
-          (multiplicity_range [1])
-          (not_implemented 'malformed'))
-        (flow_usage composite 'publish_message' : '17b-Sequence-Modeling::PayloadDefinitions::Publish'[item_def])
-        (part_usage composite 'server'
-          (multiplicity_range [1])
-          (not_implemented 'malformed')
-          (source_succession
-            (not_implemented 'malformed'))
-          (source_succession
-            (not_implemented 'malformed')))
-        (flow_usage composite 'subscribe_message' : '17b-Sequence-Modeling::PayloadDefinitions::Subscribe'[item_def])
-        (flow_usage composite 'deliver_message' : '17b-Sequence-Modeling::PayloadDefinitions::Deliver'[item_def])
-        (part_usage composite 'consumer'
-          (multiplicity_range [1])
-          (not_implemented 'malformed')
-          (source_succession
-            (not_implemented 'malformed')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling"))) (name "17b-Sequence-Modeling") (declared-name "17b-Sequence-Modeling")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions"))) (name "PayloadDefinitions") (declared-name "PayloadDefinitions")
+          (contains
+            (element (kind "item def") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Deliver"))) (name "Deliver") (declared-name "Deliver")
+              (contains
+                (element (kind "ref") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Deliver::publication"))) (name "publication") (declared-name "publication") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Deliver")))))
+              )
+            )
+            (element (kind "item def") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Publish"))) (name "Publish") (declared-name "Publish")
+              (contains
+                (element (kind "ref") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Publish::publication"))) (name "publication") (declared-name "publication") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Publish")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Publish::topic"))) (name "topic") (declared-name "topic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Publish")))))
+              )
+            )
+            (element (kind "item def") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Subscribe"))) (name "Subscribe") (declared-name "Subscribe")
+              (contains
+                (element (kind "ref") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Subscribe::subscriber"))) (name "subscriber") (declared-name "subscriber") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Subscribe")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Subscribe::topic"))) (name "topic") (declared-name "topic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Subscribe")))))
+              )
+            )
+          )
+        )
+        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))) (name "PubSubSequence") (declared-name "PubSubSequence") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::consumer"))) (name "consumer") (declared-name "consumer") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::consumer::deliver_message.targetEvent"))) (name "deliver_message.targetEvent") (declared-name "deliver_message.targetEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::consumer::subscribe_message.sourceEvent"))) (name "subscribe_message.sourceEvent") (declared-name "subscribe_message.sourceEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::deliver_message"))) (name "deliver_message") (declared-name "deliver_message") (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))))
+              (contains
+                (element (kind "flow payload") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::deliver_message::_payload"))) (name "_payload") (declared-name "_payload") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::producer"))) (name "producer") (declared-name "producer") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::producer::publish_message.sourceEvent"))) (name "publish_message.sourceEvent") (declared-name "publish_message.sourceEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::publish_message"))) (name "publish_message") (declared-name "publish_message") (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))))
+              (contains
+                (element (kind "flow payload") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::publish_message::_payload"))) (name "_payload") (declared-name "_payload") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::server"))) (name "server") (declared-name "server") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::server::deliver_message.sourceEvent"))) (name "deliver_message.sourceEvent") (declared-name "deliver_message.sourceEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::server::publish_message.targetEvent"))) (name "publish_message.targetEvent") (declared-name "publish_message.targetEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::server::subscribe_message.targetEvent"))) (name "subscribe_message.targetEvent") (declared-name "subscribe_message.targetEvent") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::subscribe_message"))) (name "subscribe_message") (declared-name "subscribe_message") (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence"))))
+              (contains
+                (element (kind "flow payload") (id (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::subscribe_message::_payload"))) (name "_payload") (declared-name "_payload") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::deliver_message::_payload"))) (to (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Deliver"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::publish_message::_payload"))) (to (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Publish"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "17b-Sequence-Modeling::PubSubSequence::subscribe_message::_payload"))) (to (node (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions::Subscribe"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

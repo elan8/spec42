@@ -74,18 +74,41 @@ semantic.invalid_connection_end_count
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'PictureTaking'
-      (part_def 'Exposure')
-      (action_def 'Focus'
-        (reference_usage out reference 'xrsl' : 'PictureTaking::Exposure'[part_def]))
-      (action_def 'Shoot'
-        (reference_usage in reference 'xsf' : 'PictureTaking::Exposure'[part_def]))
-      (action_usage 'takePicture'
-        (action_usage composite 'focus' : 'PictureTaking::Focus'[action_def]
-          (multiplicity_range [1]))
-        (flow_usage composite 'of')
-        (action_usage composite 'shoot' : 'PictureTaking::Shoot'[action_def]
-          (multiplicity_range [1]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "PictureTaking"))) (name "PictureTaking") (declared-name "PictureTaking")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (name "Exposure") (declared-name "Exposure") (declared))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "PictureTaking::Focus"))) (name "Focus") (declared-name "Focus")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (name "xrsl") (declared-name "xrsl") (effective (featuring-type (node (document "d0") (qualified-name "PictureTaking::Focus")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "PictureTaking::Shoot"))) (name "Shoot") (declared-name "Shoot")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (name "xsf") (declared-name "xsf") (effective (featuring-type (node (document "d0") (qualified-name "PictureTaking::Shoot")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (name "focus") (declared-name "focus") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (to (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (to (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (to (node (document "d0") (qualified-name "PictureTaking::Exposure"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (to (node (document "d0") (qualified-name "PictureTaking::Exposure"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (to (node (document "d0") (qualified-name "PictureTaking::Focus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (to (node (document "d0") (qualified-name "PictureTaking::Shoot"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

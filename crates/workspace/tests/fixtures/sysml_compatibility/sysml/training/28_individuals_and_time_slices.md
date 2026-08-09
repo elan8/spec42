@@ -125,22 +125,43 @@ semantic.unresolved_name 'driver'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Individuals and Time Slices'
-      (namespace_import private -> 'Individuals and Snapshots Example'[unresolved])
-      (item_def individual 'Alice' :> 'Person'[unresolved])
-      (item_def individual 'Bob' :> 'Person'[unresolved])
-      (occurrence_usage individual : 'Vehicle_1'[unresolved]
-        (occurrence_usage composite 'aliceDriving'
-          (item_usage individual reference :>> 'driver'[unresolved] : 'Individuals and Time Slices::Alice'[item_def])
-          (occurrence_usage composite :>> 'start'[unresolved]
-            (reference_usage reference :>> 'mass'[unresolved]
-              (feature_value (=))))
-          (occurrence_usage composite :>> 'done'[unresolved]
-            (reference_usage reference :>> 'mass'[unresolved]
-              (feature_value (=)))))
-        (source_succession
-          (occurrence_usage 'bobDriving'
-            (item_usage individual reference :>> 'driver'[unresolved] : 'Individuals and Time Slices::Bob'[item_def])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Individuals and Time Slices"))) (name "Individuals and Time Slices") (declared-name "Individuals and Time Slices")
+      (contains
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::"))) (name "") (declared (properties (individual true) (composite true) (reference false)))
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (name "aliceDriving") (declared-name "aliceDriving") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice")))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (name "") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (name "") (declared (properties (portion true) (composite true) (reference false) (portion-kind "snapshot")))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (name "item") (declared-name "item") (declared (properties (individual true) (composite false) (reference true))))
+              )
+            )
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving"))) (name "bobDriving") (declared-name "bobDriving") (declared (properties (portion true) (composite true) (reference false) (portion-kind "timeslice")))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))) (name "item") (declared-name "item") (declared (properties (individual true) (composite false) (reference true))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Individuals and Time Slices::*"))) (name "*") (declared-name "*"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

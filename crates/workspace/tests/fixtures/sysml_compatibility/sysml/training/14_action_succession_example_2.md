@@ -129,34 +129,64 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Action Definition Example'
-      (item_def 'Scene')
-      (item_def 'Image')
-      (item_def 'Picture')
-      (action_def 'Focus'
-        (reference_usage in reference 'scene' : 'Action Definition Example::Scene'[item_def])
-        (reference_usage out reference 'image' : 'Action Definition Example::Image'[item_def]))
-      (action_def 'Shoot'
-        (reference_usage in reference 'image' : 'Action Definition Example::Image'[item_def])
-        (reference_usage out reference 'picture' : 'Action Definition Example::Picture'[item_def]))
-      (action_def 'TakePicture'
-        (item_usage in 'scene' : 'Action Definition Example::Scene'[item_def])
-        (item_usage out 'picture' : 'Action Definition Example::Picture'[item_def])
-        (binding_connector_def
-          (connector_end 'focus.scene')
-          (connector_end 'scene'))
-        (action_usage composite 'focus' : 'Action Definition Example::Focus'[action_def]
-          (reference_usage in reference 'scene')
-          (reference_usage out reference 'image'))
-        (succession_flow_usage composite
-          (connector_end 'focus.image')
-          (connector_end 'shoot.image'))
-        (action_usage composite 'shoot' : 'Action Definition Example::Shoot'[action_def]
-          (reference_usage in reference 'image')
-          (reference_usage out reference 'picture'))
-        (binding_connector_def
-          (connector_end 'shoot.picture')
-          (connector_end 'picture'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Action Definition Example"))) (name "Action Definition Example") (declared-name "Action Definition Example")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Definition Example::Focus"))) (name "Focus") (declared-name "Focus")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Definition Example::Image"))) (name "Image") (declared-name "Image"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Definition Example::Picture"))) (name "Picture") (declared-name "Picture"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Action Definition Example::Scene"))) (name "Scene") (declared-name "Scene"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Definition Example::Shoot"))) (name "Shoot") (declared-name "Shoot")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (name "focus") (declared-name "focus") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Focus")))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Definition Example::Shoot")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (bind (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus::scene"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (connect (source-expression "focus::scene") (target-expression "scene") (container-prefix "Action Definition Example::TakePicture")))
+    (bind (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot::picture"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (connect (source-expression "shoot::picture") (target-expression "picture") (container-prefix "Action Definition Example::TakePicture")))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture"))) (to (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Focus::image"))) (to (node (document "d0") (qualified-name "Action Definition Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Focus::scene"))) (to (node (document "d0") (qualified-name "Action Definition Example::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Shoot::image"))) (to (node (document "d0") (qualified-name "Action Definition Example::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::Shoot::picture"))) (to (node (document "d0") (qualified-name "Action Definition Example::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::focus"))) (to (node (document "d0") (qualified-name "Action Definition Example::Focus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::picture"))) (to (node (document "d0") (qualified-name "Action Definition Example::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::scene"))) (to (node (document "d0") (qualified-name "Action Definition Example::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Definition Example::TakePicture::shoot"))) (to (node (document "d0") (qualified-name "Action Definition Example::Shoot"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

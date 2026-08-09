@@ -255,51 +255,25 @@ semantic.unresolved_name 'ExtendedOccurrence::self'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ExtendedOccurrences'
-      (class_def 'Interval')
-      (class_def 'Moment' :> 'ExtendedOccurrences::Interval'[class_def])
-      (class_def 'Timeslice'
-        (feature_def 'interval' : 'ExtendedOccurrences::Interval'[class_def])
-        (feature_def :>> 'self'[unresolved] : 'ExtendedOccurrences::Timeslice'[class_def]))
-      (class_def 'Snapshot' :> 'ExtendedOccurrences::Timeslice'[class_def]
-        (feature_def 'moment' :>> 'ExtendedOccurrences::Timeslice::interval'[feature_def] : 'ExtendedOccurrences::Moment'[class_def])
-        (feature_def :>> 'self'[unresolved] : 'ExtendedOccurrences::Snapshot'[class_def]))
-      (class_def 'Life' :> 'ExtendedOccurrences::Timeslice'[class_def])
-      (class_def 'ExtendedOccurrence' :> 'ExtendedOccurrences::Life'[class_def]
-        (feature_def :>> 'timeSlices'[unresolved] : 'ExtendedOccurrences::Timeslice'[class_def]
-          (multiplicity_range [1..*]))
-        (feature_def :>> 'snapshots'[unresolved] :> 'timeSlices'[unresolved] : 'ExtendedOccurrences::Snapshot'[class_def]
-          (multiplicity_range [1..*]))
-        (expression_def 'at'
-          (feature_def :>> 'that'[unresolved] : 'ExtendedOccurrences::Timeslice'[class_def])
-          (feature_def in 'interval' : 'ExtendedOccurrences::Interval'[class_def])
-          (return_parameter_membership
-            (feature_def out 'result' : 'ExtendedOccurrences::Timeslice'[class_def]))
-          (binding_connector_def
-            (connector_end 'result.portionOf')
-            (connector_end 'that'))
-          (binding_connector_def
-            (connector_end 'result.interval')
-            (connector_end 'interval')))
-        (expression_def 'while'
-          (occurrence_usage in : 'ExtendedOccurrences::Timeslice'[class_def])
-          (return_parameter_membership
-            (feature_def out 'result' : 'ExtendedOccurrences::Timeslice'[class_def]
-              (feature_value (=)))))
-        (feature_def 'activeOccurrences' :> 'Occurrences::occurrences'[unresolved]
-          (connector_def : 'Occurrences::HappensDuring'[unresolved]
-            (connector_end 'that')
-            (connector_end 'self')))
-        (feature_def 'activeSuboccurrences' :> 'Occurrences::occurrences'[unresolved]
-          (connector_def : 'Occurrences::HappensDuring'[unresolved]
-            (connector_end 'that')
-            (connector_end 'self')))
-        (feature_def 'activePerformances' :> 'Performances::performances'[unresolved]
-          (connector_def : 'Occurrences::HappensDuring'[unresolved]
-            (connector_end 'that')
-            (connector_end 'self'))))
-      (structure_def 'ExtendedObject' :> 'ExtendedOccurrences::ExtendedOccurrence'[class_def]
-        (feature_def 'self' : 'ExtendedOccurrences::ExtendedObject'[structure_def] :>> 'Objects::Object::self'[unresolved] :>> 'ExtendedOccurrence::self'[unresolved])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ExtendedOccurrences"))) (name "ExtendedOccurrences") (declared-name "ExtendedOccurrences")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (name "ExtendedObject") (declared-name "ExtendedObject"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedOccurrence"))) (name "ExtendedOccurrence") (declared-name "ExtendedOccurrence"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Interval"))) (name "Interval") (declared-name "Interval"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Life"))) (name "Life") (declared-name "Life"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Moment"))) (name "Moment") (declared-name "Moment"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Snapshot"))) (name "Snapshot") (declared-name "Snapshot"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExtendedOccurrences::Timeslice"))) (name "Timeslice") (declared-name "Timeslice"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

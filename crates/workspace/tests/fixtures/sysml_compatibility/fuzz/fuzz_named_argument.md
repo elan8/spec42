@@ -48,13 +48,25 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (calculation_def 'F'
-        (reference_usage in reference 'p' : 'A'[unresolved]))
-      (attribute_usage 'f'
-        (feature_value (=)))
-      (attribute_usage 'b'
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "P::F"))) (name "F") (declared-name "F")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "P::F::p"))) (name "p") (declared-name "p") (effective (featuring-type (node (document "d0") (qualified-name "P::F")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "P::b"))) (name "b") (declared-name "b") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "constructor") (reference "A") (arguments (argument (name "y") (expression (kind "featureReference") (reference "a"))) (argument (name "x") (expression (kind "stringLiteral") (literal ""))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "P::b"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "P::f"))) (name "f") (declared-name "f") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "invocation") (children (expression (kind "featureReference") (reference "F"))) (arguments (argument (name "q") (expression (kind "integerLiteral") (literal 1))) (argument (name "p") (expression (kind "featureReference") (reference "a"))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "P::f"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

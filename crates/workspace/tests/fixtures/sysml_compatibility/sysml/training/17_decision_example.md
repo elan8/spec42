@@ -167,39 +167,61 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Decision Example'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (attribute_def 'BatteryCharged')
-      (part_usage 'battery')
-      (part_usage 'powerSystem')
-      (action_def 'MonitorBattery'
-        (reference_usage out reference 'charge' : 'Real'[unresolved]))
-      (action_def 'AddCharge'
-        (reference_usage in reference 'charge' : 'Real'[unresolved]))
-      (action_def 'EndCharging')
-      (action_def 'ChargeBattery'
-        (initial_node)
-        (source_succession
-          (merge_node 'continueCharging'))
-        (source_succession
-          (action_usage 'monitor' : 'Decision Example::MonitorBattery'[action_def]
-            (reference_usage out reference 'batteryCharge' : 'Real'[unresolved])))
-        (source_succession
-          (decide_node))
-        (if_action_usage)
-        (source_succession
-          (reference_usage reference 'addCharge'))
-        (if_action_usage)
-        (source_succession
-          (reference_usage reference 'endCharging'))
-        (action_usage composite 'addCharge' : 'Decision Example::AddCharge'[action_def]
-          (reference_usage in reference 'charge'
-            (feature_value (=))))
-        (source_succession
-          (reference_usage reference 'continueCharging'))
-        (action_usage composite 'endCharging' : 'Decision Example::EndCharging'[action_def])
-        (source_succession
-          (reference_usage reference 'done'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Decision Example"))) (name "Decision Example") (declared-name "Decision Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Decision Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::AddCharge"))) (name "AddCharge") (declared-name "AddCharge")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::AddCharge::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::AddCharge")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Decision Example::BatteryCharged"))) (name "BatteryCharged") (declared-name "BatteryCharged") (declared (properties (ordered false) (unique true))))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))) (name "ChargeBattery") (declared-name "ChargeBattery")
+          (contains
+            (element (kind "initial") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge"))) (name "addCharge") (declared-name "addCharge") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::AddCharge")))))
+              )
+            )
+            (element (kind "merge") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::continueCharging"))) (name "merge") (declared-name "merge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::endCharging"))) (name "endCharging") (declared-name "endCharging") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor"))) (name "monitor") (declared-name "monitor") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor::batteryCharge"))) (name "batteryCharge") (declared-name "batteryCharge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
+              )
+            )
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::EndCharging"))) (name "EndCharging") (declared-name "EndCharging"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::MonitorBattery"))) (name "MonitorBattery") (declared-name "MonitorBattery")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::MonitorBattery::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Decision Example::battery"))) (name "battery") (declared-name "battery") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Decision Example::powerSystem"))) (name "powerSystem") (declared-name "powerSystem") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Decision Example::ChargeBattery::continueCharging"))) (to (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))) (to (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))) (to (node (document "d0") (qualified-name "Decision Example::ChargeBattery::endCharging"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))) (to (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge"))) (to (node (document "d0") (qualified-name "Decision Example::AddCharge"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Decision Example::ChargeBattery::endCharging"))) (to (node (document "d0") (qualified-name "Decision Example::EndCharging"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor"))) (to (node (document "d0") (qualified-name "Decision Example::MonitorBattery"))))
+  )
+  (pending-relationships
+    (flow (status pending) (document "d0") (source-qualified "Decision Example::ChargeBattery::_initial") (target-qualified "Decision Example::ChargeBattery::start"))
+    (flow (status pending) (document "d0") (source-qualified "Decision Example::ChargeBattery::continueCharging") (target-qualified "Decision Example::ChargeBattery::done"))
+    (flow (status pending) (document "d0") (source-qualified "Decision Example::ChargeBattery::decide") (target-qualified "Decision Example::ChargeBattery::continueCharging"))
+    (flow (status pending) (document "d0") (source-qualified "Decision Example::ChargeBattery::monitor") (target-qualified "Decision Example::ChargeBattery::decide"))
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

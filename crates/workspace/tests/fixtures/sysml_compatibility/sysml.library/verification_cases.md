@@ -338,56 +338,75 @@ standard library package VerificationCases {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'VerificationCases'
-      (documentation)
-      (membership_import private -> 'Cases::Case'[unresolved])
-      (membership_import private -> 'Cases::cases'[unresolved])
-      (membership_import private -> 'Requirements::RequirementCheck'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (verification_case_def abstract 'VerificationCase' :> 'Case'[unresolved]
-        (documentation)
-        (verification_case_usage reference 'self' : 'VerificationCases::VerificationCase'[verification_case_def] :>> 'Case::self'[unresolved])
-        (subject_membership in 'subj' :>> 'Case::subj'[unresolved])
-        (return_parameter_membership
-          (feature_def out 'verdict' : 'VerificationCases::VerdictKind'[enum_def] :>> 'result'[unresolved]))
-        (objective_membership composite 'obj' :>> 'Case::obj'[unresolved]
-          (subject_membership in 'subj'
-            (feature_value (=)))
-          (requirement_usage composite 'requirementVerifications' : 'RequirementCheck'[unresolved] :> 'subrequirements'[unresolved]
-            (multiplicity_range [0..*])
-            (documentation)))
-        (requirement_usage reference 'requirementVerifications' : 'RequirementCheck'[unresolved]
-          (multiplicity_range [0..*])
-          (feature_value (=))
-          (documentation))
-        (verification_case_usage abstract composite 'subVerificationCases' : 'VerificationCases::VerificationCase'[verification_case_def] :> 'VerificationCases::verificationCases'[verification_case_usage] :> 'subcases'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (verification_case_usage abstract 'verificationCases' : 'VerificationCases::VerificationCase'[verification_case_def] :> 'cases'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (enum_def 'VerdictKind'
-        (documentation)
-        (enum_usage composite 'pass')
-        (enum_usage composite 'fail')
-        (enum_usage composite 'inconclusive')
-        (enum_usage composite 'error'))
-      (calculation_def 'PassIf'
-        (documentation)
-        (attribute_usage in 'isPassing' : 'Boolean'[unresolved])
-        (return_parameter_membership
-          (attribute_usage out 'verdict' : 'VerificationCases::VerdictKind'[enum_def]
-            (feature_value (=)))))
-      (metadata_def 'VerificationMethod'
-        (documentation)
-        (attribute_usage composite 'kind' : 'VerificationCases::VerificationMethodKind'[enum_def]
-          (multiplicity_range [1..*])))
-      (enum_def 'VerificationMethodKind'
-        (documentation)
-        (enum_usage composite 'inspect')
-        (enum_usage composite 'analyze')
-        (enum_usage composite 'demo')
-        (enum_usage composite 'test')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VerificationCases"))) (name "VerificationCases") (declared-name "VerificationCases")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationCases::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationCases::Case"))) (name "Case") (declared-name "Case"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "VerificationCases::PassIf"))) (name "PassIf") (declared-name "PassIf")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationCases::PassIf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::PassIf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VerificationCases::PassIf::isPassing"))) (name "isPassing") (declared-name "isPassing") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::PassIf")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationCases::RequirementCheck"))) (name "RequirementCheck") (declared-name "RequirementCheck"))
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "VerificationCases::VerdictKind"))) (name "VerdictKind") (declared-name "VerdictKind")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerdictKind::error"))) (name "error") (declared-name "error") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerdictKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerdictKind::fail"))) (name "fail") (declared-name "fail") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerdictKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerdictKind::inconclusive"))) (name "inconclusive") (declared-name "inconclusive") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerdictKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerdictKind::pass"))) (name "pass") (declared-name "pass") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerdictKind")))))
+          )
+        )
+        (element (kind "verification def") (id (node (document "d0") (qualified-name "VerificationCases::VerificationCase"))) (name "VerificationCase") (declared-name "VerificationCase")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationCases::VerificationCase::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationCase")))))
+            (element (kind "objective") (id (node (document "d0") (qualified-name "VerificationCases::VerificationCase::obj"))) (name "obj") (declared-name "obj") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationCase")))))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "VerificationCases::VerificationCase::requirementVerifications"))) (name "requirementVerifications") (declared-name "requirementVerifications") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationCase"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationCases::VerificationCase::requirementVerifications::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationCase")))))
+              )
+            )
+          )
+        )
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethod"))) (name "VerificationMethod") (declared-name "VerificationMethod")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethod::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationMethod")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethod::kind"))) (name "kind") (declared-name "kind") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationMethod")))))
+          )
+        )
+        (element (kind "enum def") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind"))) (name "VerificationMethodKind") (declared-name "VerificationMethodKind")
+          (contains
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind::analyze"))) (name "analyze") (declared-name "analyze") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind::demo"))) (name "demo") (declared-name "demo") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind::inspect"))) (name "inspect") (declared-name "inspect") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind")))))
+            (element (kind "enumerated value") (id (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind::test"))) (name "test") (declared-name "test") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationCases::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "VerificationCases::cases"))) (name "cases") (declared-name "cases"))
+        (element (kind "verification") (id (node (document "d0") (qualified-name "VerificationCases::verificationCases"))) (name "verificationCases") (declared-name "verificationCases")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationCases::verificationCases::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::VerificationCase")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::PassIf::_documentation"))) (to (node (document "d0") (qualified-name "VerificationCases::PassIf"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::VerificationCase::_documentation"))) (to (node (document "d0") (qualified-name "VerificationCases::VerificationCase"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::VerificationCase::requirementVerifications::_documentation"))) (to (node (document "d0") (qualified-name "VerificationCases::VerificationCase::requirementVerifications"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::VerificationMethod::_documentation"))) (to (node (document "d0") (qualified-name "VerificationCases::VerificationMethod"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::_documentation"))) (to (node (document "d0") (qualified-name "VerificationCases"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::verificationCases::_documentation"))) (to (node (document "d0") (qualified-name "VerificationCases::verificationCases"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::VerificationMethod::kind"))) (to (node (document "d0") (qualified-name "VerificationCases::VerificationMethodKind"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationCases::verificationCases"))) (to (node (document "d0") (qualified-name "VerificationCases::VerificationCase"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

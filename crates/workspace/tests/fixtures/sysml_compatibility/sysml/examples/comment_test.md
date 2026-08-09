@@ -156,17 +156,25 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'CommentTest'
-      (comment_annotating)
-      (documentation)
-      (comment_annotating 'cmt')
-      (comment_annotating 'cmt_cmt')
-      (comment_annotating)
-      (part_def 'C'
-        (documentation)
-        (comment_annotating)
-        (comment_annotating))
-      (part_def 'A'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "CommentTest"))) (name "CommentTest") (declared-name "CommentTest")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CommentTest::A"))) (name "A") (declared-name "A") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "CommentTest::C"))) (name "C") (declared-name "C") (declared)
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CommentTest::C")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (to (node (document "d0") (qualified-name "CommentTest::C"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

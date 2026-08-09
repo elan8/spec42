@@ -225,32 +225,58 @@ semantic.unresolved_name 'ServiceMethod'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'AHFCoreLib'
-      (namespace_import private -> 'AHFProfileLib'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'AHFProfileMetadata'[unresolved])
-      (port_def 'ServiceDiscovery')
-      (port_def 'ServiceDiscoveryDD' :> 'AHFCoreLib::ServiceDiscovery'[port_def])
-      (port_def 'Authorisation'
-        (attribute_usage composite 'publickey' : 'String'[unresolved]))
-      (port_def 'AuthorisationDD' :> 'AHFCoreLib::Authorisation'[port_def])
-      (reference_usage 'ArrowheadCore'
-        (reference_usage 'service_registry'
-          (reference_usage 'serviceDiscovery' : 'AHFCoreLib::ServiceDiscovery'[port_def]))
-        (reference_usage 'authorization'
-          (reference_usage 'authorisation' : 'AHFCoreLib::Authorisation'[port_def])
-          (attribute_usage composite 'protocol' : 'String'[unresolved]
-            (feature_value (=))))
-        (reference_usage 'orchestrationDesign')
-        (reference_usage 'service_registry_DD' :> 'AHFCoreLib::ArrowheadCore::service_registry'[reference_usage]
-          (reference_usage :>> 'AHFCoreLib::ArrowheadCore::service_registry::serviceDiscovery'[reference_usage] : 'AHFCoreLib::ServiceDiscoveryDD'[port_def]
-            (reference_usage 'serviceDiscovery_HTTP')
-            (reference_usage 'serviceDiscovery_MQTT')))
-        (reference_usage 'authorization_DD' :> 'AHFCoreLib::ArrowheadCore::authorization'[reference_usage]
-          (reference_usage :>> 'AHFCoreLib::ArrowheadCore::authorization::authorisation'[reference_usage]
-            (reference_usage 'authorisation_HTTP')
-            (reference_usage 'authorisation_MQTT'))
-          (action_usage composite 'Echo_behavior' :> 'ServiceMethod'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AHFCoreLib"))) (name "AHFCoreLib") (declared-name "AHFCoreLib")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFCoreLib::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFCoreLib::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AHFCoreLib::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFCoreLib::Authorisation"))) (name "Authorisation") (declared-name "Authorisation")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFCoreLib::Authorisation::publickey"))) (name "publickey") (declared-name "publickey") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::Authorisation")))))
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFCoreLib::Authorisation::~Authorisation"))) (name "~Authorisation") (declared-name "~Authorisation") (effective (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::Authorisation")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFCoreLib::AuthorisationDD"))) (name "AuthorisationDD") (declared-name "AuthorisationDD")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFCoreLib::AuthorisationDD::~AuthorisationDD"))) (name "~AuthorisationDD") (declared-name "~AuthorisationDD") (effective (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::AuthorisationDD")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscovery"))) (name "ServiceDiscovery") (declared-name "ServiceDiscovery")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscovery::~ServiceDiscovery"))) (name "~ServiceDiscovery") (declared-name "~ServiceDiscovery") (effective (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscovery")))))
+          )
+        )
+        (element (kind "port def") (id (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscoveryDD"))) (name "ServiceDiscoveryDD") (declared-name "ServiceDiscoveryDD")
+          (contains
+            (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscoveryDD::~ServiceDiscoveryDD"))) (name "~ServiceDiscoveryDD") (declared-name "~ServiceDiscoveryDD") (effective (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscoveryDD")))))
+          )
+        )
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFCoreLib::_clouddd"))) (name "clouddd") (declared-name "clouddd"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFCoreLib::_service"))) (name "service") (declared-name "service"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFCoreLib::_service#metadata_keyword"))) (name "service") (declared-name "service"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFCoreLib::_service#metadata_keyword2"))) (name "service") (declared-name "service"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "AHFCoreLib::_service#metadata_keyword3"))) (name "service") (declared-name "service"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::_clouddd"))) (to (node (document "d0") (qualified-name "AHFCoreLib"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::_service"))) (to (node (document "d0") (qualified-name "AHFCoreLib"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::_service#metadata_keyword"))) (to (node (document "d0") (qualified-name "AHFCoreLib"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::_service#metadata_keyword2"))) (to (node (document "d0") (qualified-name "AHFCoreLib"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::_service#metadata_keyword3"))) (to (node (document "d0") (qualified-name "AHFCoreLib"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::Authorisation::~Authorisation"))) (to (node (document "d0") (qualified-name "AHFCoreLib::Authorisation"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::AuthorisationDD::~AuthorisationDD"))) (to (node (document "d0") (qualified-name "AHFCoreLib::AuthorisationDD"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscovery::~ServiceDiscovery"))) (to (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscovery"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscoveryDD::~ServiceDiscoveryDD"))) (to (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscoveryDD"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::AuthorisationDD"))) (to (node (document "d0") (qualified-name "AHFCoreLib::Authorisation"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscoveryDD"))) (to (node (document "d0") (qualified-name "AHFCoreLib::ServiceDiscovery"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

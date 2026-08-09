@@ -185,28 +185,32 @@ standard library package Metaobjects {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Metaobjects'
-      (documentation)
-      (membership_import private -> 'Objects::Object'[unresolved])
-      (membership_import private -> 'Objects::objects'[unresolved])
-      (membership_import private -> 'KerML::Element'[unresolved])
-      (membership_import private -> 'KerML::Type'[unresolved])
-      (metaclass_def abstract 'Metaobject' :> 'Object'[unresolved]
-        (documentation)
-        (feature_def :>> 'self'[unresolved] : 'Metaobjects::Metaobject'[metaclass_def])
-        (feature_def abstract 'annotatedElement' : 'Element'[unresolved]
-          (multiplicity_range [1..*])
-          (documentation)))
-      (metaclass_def abstract 'SemanticMetadata' :> 'Metaobjects::Metaobject'[metaclass_def]
-        (documentation)
-        (feature_def abstract :>> 'Metaobjects::Metaobject::annotatedElement'[feature_def] : 'Type'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def 'baseType' : 'Type'[unresolved]
-          (multiplicity_range [1])
-          (documentation)))
-      (feature_def 'metaobjects' : 'Metaobjects::Metaobject'[metaclass_def] :> 'objects'[unresolved]
-        (multiplicity_range [0..*])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Metaobjects"))) (name "Metaobjects") (declared-name "Metaobjects")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::Element"))) (name "Element") (declared-name "Element"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Metaobjects::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::Object"))) (name "Object") (declared-name "Object"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata")
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::redefines"))) (name "redefines") (declared-name "redefines") (effective (featuring-type (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::Type"))) (name "Type") (declared-name "Type"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (name ""))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Metaobjects::metaobjects"))) (name "metaobjects") (declared-name "metaobjects"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Metaobjects::objects"))) (name "objects") (declared-name "objects"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (to (node (document "d0") (qualified-name "Metaobjects"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -111,20 +111,31 @@ parse.expected_usage_declaration
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'MedicalDeviceFailure'
-      (namespace_import private -> 'CauseAndEffect'[unresolved])
-      (part_usage 'medicalDevice'
-        (part_usage composite 'battery'
-          (event_occurrence_usage 'depleted')
-          (event_occurrence_usage 'cannotBeCharged'))
-        (event_occurrence_usage 'deviceFails')
-        (reference_usage reference 'patient'
-          (event_occurrence_usage 'therapyDelayed'))
-        (not_implemented 'malformed')
-        (not_implemented 'malformed')
-        (connection_usage composite
-          (connector_end 'deviceFails')
-          (connector_end 'patient.therapyDelayed'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MedicalDeviceFailure"))) (name "MedicalDeviceFailure") (declared-name "MedicalDeviceFailure")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::*"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (name "medicalDevice") (declared-name "medicalDevice") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (name "battery") (declared-name "battery") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (name "cannotBeCharged") (declared-name "cannotBeCharged") (declared (properties (composite true) (reference false))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (name "depleted") (declared-name "depleted") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (name "deviceFails") (declared-name "deviceFails") (declared (properties (composite true) (reference false))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::patient"))) (name "patient") (declared-name "patient") (declared (properties (composite false) (reference true))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

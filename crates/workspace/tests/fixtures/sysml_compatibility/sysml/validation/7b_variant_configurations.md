@@ -503,104 +503,237 @@ semantic.duplicate_name 'engineRqtChoice'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '7b-Variant Configurations'
-      (namespace_import private -> '7b-Variant Configurations::RequirementsModel'[package])
-      (namespace_import private -> '7b-Variant Configurations::DesignModel'[package])
-      (namespace_import private -> '7b-Variant Configurations::VariantDefinitions'[package])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (package 'RequirementsModel'
-        (requirement_def 'EnginePerformanceRequirement')
-        (requirement_usage 'highPerformanceRequirement' : '7b-Variant Configurations::RequirementsModel::EnginePerformanceRequirement'[requirement_def])
-        (requirement_usage 'normalPerformanceRequirement' : '7b-Variant Configurations::RequirementsModel::EnginePerformanceRequirement'[requirement_def]))
-      (package 'DesignModel'
-        (part_def 'Vehicle')
-        (part_def 'Engine')
-        (part_def 'Transmission')
-        (part_def 'Clutch')
-        (part_def 'Driveshaft')
-        (part_def 'RearAxleAssembly')
-        (part_def 'Wheel')
-        (port_def 'FuelCmdPort')
-        (port_def 'ClutchPort')
-        (port_def 'ShaftPort_b')
-        (port_def 'ShaftPort_c')
-        (port_def 'ShaftPort_d')
-        (port_def 'VehicleToRoadPort')
-        (port_def 'WheelToRoadPort')
-        (part_usage 'vehicle' : '7b-Variant Configurations::DesignModel::Vehicle'[part_def]
-          (port_usage composite 'fuelCmdPort')
-          (binding_connector_def
-            (connector_end 'fuelCmdPort')
-            (connector_end 'engine.fuelCmdPort'))
-          (part_usage composite 'engine' : '7b-Variant Configurations::DesignModel::Engine'[part_def]
-            (multiplicity_range [1])
-            (port_usage composite 'fuelCmdPort' : '7b-Variant Configurations::DesignModel::FuelCmdPort'[port_def]))
-          (part_usage composite 'transmission' : '7b-Variant Configurations::DesignModel::Transmission'[part_def]
-            (multiplicity_range [1])
-            (part_usage composite 'clutch' : '7b-Variant Configurations::DesignModel::Clutch'[part_def]
-              (multiplicity_range [1])
-              (port_usage composite 'clutchPort' : '7b-Variant Configurations::DesignModel::ClutchPort'[port_def])))
-          (part_usage composite 'driveshaft' : '7b-Variant Configurations::DesignModel::Driveshaft'[part_def]
-            (multiplicity_range [1])
-            (port_usage composite 'shaftPort_b' : '7b-Variant Configurations::DesignModel::ShaftPort_b'[port_def])
-            (port_usage composite 'shaftPort_c' : '7b-Variant Configurations::DesignModel::ShaftPort_c'[port_def]))
-          (part_usage composite 'rearAxleAssembly' : '7b-Variant Configurations::DesignModel::RearAxleAssembly'[part_def]
-            (part_usage composite 'rearWheels' : '7b-Variant Configurations::DesignModel::Wheel'[part_def]
-              (multiplicity_range [2])
-              (port_usage composite 'wheelToRoadPort' : '7b-Variant Configurations::DesignModel::WheelToRoadPort'[port_def])))
-          (port_usage composite 'vehicleToRoadPort' : '7b-Variant Configurations::DesignModel::VehicleToRoadPort'[port_def]
-            (port_usage composite 'wheelToRoadPort' : '7b-Variant Configurations::DesignModel::WheelToRoadPort'[port_def]
-              (multiplicity_range [2])))))
-      (package 'VariantDefinitions'
-        (part_def '4CylEngine' :> '7b-Variant Configurations::DesignModel::Engine'[part_def])
-        (part_def '6CylEngine' :> '7b-Variant Configurations::DesignModel::Engine'[part_def])
-        (part_def 'ManualTransmission' :> '7b-Variant Configurations::DesignModel::Transmission'[part_def])
-        (part_def 'AutomaticTransmission' :> '7b-Variant Configurations::DesignModel::Transmission'[part_def])
-        (part_def 'ManualClutch' :> '7b-Variant Configurations::DesignModel::Clutch'[part_def])
-        (part_def 'AutomaticClutch' :> '7b-Variant Configurations::DesignModel::Clutch'[part_def])
-        (port_def 'ManualClutchPort' :> '7b-Variant Configurations::DesignModel::ClutchPort'[port_def])
-        (port_def 'AutomaticClutchPort' :> '7b-Variant Configurations::DesignModel::ClutchPort'[port_def])
-        (part_def 'NarrowRimWheel' :> '7b-Variant Configurations::DesignModel::Wheel'[part_def])
-        (part_def 'WideRimWheel' :> '7b-Variant Configurations::DesignModel::Wheel'[part_def]))
-      (package 'VariabilityModel'
-        (part_usage 'anyVehicleConfig' :> '7b-Variant Configurations::DesignModel::vehicle'[part_usage]
-          (requirement_usage variation composite 'engineRqtChoice' : '7b-Variant Configurations::RequirementsModel::EnginePerformanceRequirement'[requirement_def]
-            (variant_usage
-              (reference_usage reference 'highPerformanceRequirement'))
-            (variant_usage
-              (reference_usage reference 'normalPerformanceRequirement')))
-          (part_usage variation composite 'engineChoice' :>> '7b-Variant Configurations::DesignModel::vehicle::engine'[part_usage]
-            (variant_usage
-              (part_usage composite '4cylEngine' : '7b-Variant Configurations::VariantDefinitions::4CylEngine'[part_def]))
-            (variant_usage
-              (part_usage composite '6cylEngine' : '7b-Variant Configurations::VariantDefinitions::6CylEngine'[part_def])))
-          (satisfy_requirement_usage 'engineRqtChoice' by '7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineChoice'[part_usage])
-          (assert_constraint_usage 'engine choice constraint'
-            (result_expr_membership))
-          (part_usage variation composite 'transmissionChoice' :>> '7b-Variant Configurations::DesignModel::vehicle::transmission'[part_usage]
-            (variant_usage
-              (part_usage composite 'manualTransmission' : '7b-Variant Configurations::VariantDefinitions::ManualTransmission'[part_def]
-                (part_usage composite :>> '7b-Variant Configurations::DesignModel::vehicle::transmission::clutch'[part_usage] : '7b-Variant Configurations::VariantDefinitions::ManualClutch'[part_def]
-                  (port_usage composite :>> '7b-Variant Configurations::DesignModel::vehicle::transmission::clutch::clutchPort'[port_usage] : '7b-Variant Configurations::VariantDefinitions::ManualClutchPort'[port_def]))))
-            (variant_usage
-              (part_usage composite 'automaticTransmission' : '7b-Variant Configurations::VariantDefinitions::AutomaticTransmission'[part_def]
-                (part_usage composite :>> '7b-Variant Configurations::DesignModel::vehicle::transmission::clutch'[part_usage] : '7b-Variant Configurations::VariantDefinitions::AutomaticClutch'[part_def]
-                  (port_usage composite :>> '7b-Variant Configurations::DesignModel::vehicle::transmission::clutch::clutchPort'[port_usage] : '7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort'[port_def])))))
-          (assert_constraint_usage 'engine-transmission selection constraint'
-            (result_expr_membership))
-          (part_usage composite :>> '7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly'[part_usage]
-            (part_usage variation composite 'rearWheelChoice' :>> '7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly::rearWheels'[part_usage]
-              (variant_usage
-                (part_usage composite 'narrowRimWheel' : '7b-Variant Configurations::VariantDefinitions::NarrowRimWheel'[part_def]))
-              (variant_usage
-                (part_usage composite 'wideRimWheel' : '7b-Variant Configurations::VariantDefinitions::WideRimWheel'[part_def])))
-            (assert_constraint_usage 'engine-wheel selection constraint'
-              (result_expr_membership))))
-        (part_usage variation 'vehicleChoice' :> '7b-Variant Configurations::VariabilityModel::anyVehicleConfig'[part_usage]
-          (variant_usage
-            (part_usage composite 'vehicle_c1'))
-          (variant_usage
-            (part_usage composite 'vehicle_c2')))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "7b-Variant Configurations"))) (name "7b-Variant Configurations") (declared-name "7b-Variant Configurations")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "7b-Variant Configurations::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "7b-Variant Configurations::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "7b-Variant Configurations::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel"))) (name "DesignModel") (declared-name "DesignModel")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Clutch"))) (name "Clutch") (declared-name "Clutch") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort"))) (name "ClutchPort") (declared-name "ClutchPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort::~ClutchPort"))) (name "~ClutchPort") (declared-name "~ClutchPort") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Driveshaft"))) (name "Driveshaft") (declared-name "Driveshaft") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::FuelCmdPort"))) (name "FuelCmdPort") (declared-name "FuelCmdPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::FuelCmdPort::~FuelCmdPort"))) (name "~FuelCmdPort") (declared-name "~FuelCmdPort") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::FuelCmdPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::RearAxleAssembly"))) (name "RearAxleAssembly") (declared-name "RearAxleAssembly") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_b"))) (name "ShaftPort_b") (declared-name "ShaftPort_b")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_b::~ShaftPort_b"))) (name "~ShaftPort_b") (declared-name "~ShaftPort_b") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_b")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_c"))) (name "ShaftPort_c") (declared-name "ShaftPort_c")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_c::~ShaftPort_c"))) (name "~ShaftPort_c") (declared-name "~ShaftPort_c") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_c")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_d"))) (name "ShaftPort_d") (declared-name "ShaftPort_d")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_d::~ShaftPort_d"))) (name "~ShaftPort_d") (declared-name "~ShaftPort_d") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_d")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::VehicleToRoadPort"))) (name "VehicleToRoadPort") (declared-name "VehicleToRoadPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::VehicleToRoadPort::~VehicleToRoadPort"))) (name "~VehicleToRoadPort") (declared-name "~VehicleToRoadPort") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::VehicleToRoadPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::WheelToRoadPort"))) (name "WheelToRoadPort") (declared-name "WheelToRoadPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::WheelToRoadPort::~WheelToRoadPort"))) (name "~WheelToRoadPort") (declared-name "~WheelToRoadPort") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::WheelToRoadPort")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::driveshaft"))) (name "driveshaft") (declared-name "driveshaft") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle"))))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::driveshaft::shaftPort_b"))) (name "shaftPort_b") (declared-name "shaftPort_b") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Driveshaft")))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::driveshaft::shaftPort_c"))) (name "shaftPort_c") (declared-name "shaftPort_c") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Driveshaft")))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle"))))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::engine::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Engine")))))
+                  )
+                )
+                (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly::rearWheels"))) (name "rearWheels") (declared-name "rearWheels") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::RearAxleAssembly"))))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly::rearWheels::wheelToRoadPort"))) (name "wheelToRoadPort") (declared-name "wheelToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Wheel")))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::transmission::clutch"))) (name "clutch") (declared-name "clutch") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Transmission"))))
+                      (contains
+                        (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::transmission::clutch::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Clutch")))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::vehicleToRoadPort"))) (name "vehicleToRoadPort") (declared-name "vehicleToRoadPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle"))))
+                  (contains
+                    (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::vehicleToRoadPort::wheelToRoadPort"))) (name "wheelToRoadPort") (declared-name "wheelToRoadPort") (declared (properties (composite true) (reference false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::VehicleToRoadPort")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel"))) (name "RequirementsModel") (declared-name "RequirementsModel")
+          (contains
+            (element (kind "requirement def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel::EnginePerformanceRequirement"))) (name "EnginePerformanceRequirement") (declared-name "EnginePerformanceRequirement"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel::highPerformanceRequirement"))) (name "highPerformanceRequirement") (declared-name "highPerformanceRequirement"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel::normalPerformanceRequirement"))) (name "normalPerformanceRequirement") (declared-name "normalPerformanceRequirement"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel"))) (name "VariabilityModel") (declared-name "VariabilityModel")
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig"))) (name "anyVehicleConfig") (declared-name "anyVehicleConfig") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineChoice"))) (name "engineChoice") (declared-name "engineChoice") (declared (properties (variation true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineChoice::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineChoice::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::rearAxleAssembly"))) (name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::rearAxleAssembly::rearWheelChoice"))) (name "rearWheelChoice") (declared-name "rearWheelChoice") (declared (properties (variation true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::rearAxleAssembly::rearWheelChoice::narrowRimWheel"))) (name "narrowRimWheel") (declared-name "narrowRimWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                        (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::rearAxleAssembly::rearWheelChoice::wideRimWheel"))) (name "wideRimWheel") (declared-name "wideRimWheel") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                      )
+                    )
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice"))) (name "transmissionChoice") (declared-name "transmissionChoice") (declared (properties (variation true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::automaticTransmission"))) (name "automaticTransmission") (declared-name "automaticTransmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::automaticTransmission::clutch"))) (name "clutch") (declared-name "clutch") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticTransmission"))))
+                          (contains
+                            (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::automaticTransmission::clutch::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutch")))))
+                          )
+                        )
+                      )
+                    )
+                    (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::manualTransmission"))) (name "manualTransmission") (declared-name "manualTransmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                      (contains
+                        (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::manualTransmission::clutch"))) (name "clutch") (declared-name "clutch") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualTransmission"))))
+                          (contains
+                            (element (kind "port") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::manualTransmission::clutch::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutch")))))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::vehicleChoice"))) (name "vehicleChoice") (declared-name "vehicleChoice") (declared (properties (variation true) (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::vehicleChoice::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::vehicleChoice::vehicle_c2"))) (name "vehicle_c2") (declared-name "vehicle_c2") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions"))) (name "VariantDefinitions") (declared-name "VariantDefinitions")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::4CylEngine"))) (name "4CylEngine") (declared-name "4CylEngine") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::6CylEngine"))) (name "6CylEngine") (declared-name "6CylEngine") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutch"))) (name "AutomaticClutch") (declared-name "AutomaticClutch") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort"))) (name "AutomaticClutchPort") (declared-name "AutomaticClutchPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort::~AutomaticClutchPort"))) (name "~AutomaticClutchPort") (declared-name "~AutomaticClutchPort") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticTransmission"))) (name "AutomaticTransmission") (declared-name "AutomaticTransmission") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutch"))) (name "ManualClutch") (declared-name "ManualClutch") (declared))
+            (element (kind "port def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutchPort"))) (name "ManualClutchPort") (declared-name "ManualClutchPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutchPort::~ManualClutchPort"))) (name "~ManualClutchPort") (declared-name "~ManualClutchPort") (effective (featuring-type (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutchPort")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualTransmission"))) (name "ManualTransmission") (declared-name "ManualTransmission") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::NarrowRimWheel"))) (name "NarrowRimWheel") (declared-name "NarrowRimWheel") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::WideRimWheel"))) (name "WideRimWheel") (declared-name "WideRimWheel") (declared))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "7b-Variant Configurations::forAll"))) (name "forAll") (declared-name "forAll"))
+      )
+    )
+    (element (kind "diagnostic") (id (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::unresolved_satisfy_source"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
+  )
+  (relationships
+    (bind (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::fuelCmdPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::engine::fuelCmdPort"))) (connect (source-expression "fuelCmdPort") (target-expression "engine::fuelCmdPort") (container-prefix "7b-Variant Configurations::DesignModel::vehicle")))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort::~ClutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::FuelCmdPort::~FuelCmdPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::FuelCmdPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_b::~ShaftPort_b"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_b"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_c::~ShaftPort_c"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_c"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_d::~ShaftPort_d"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_d"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::VehicleToRoadPort::~VehicleToRoadPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::VehicleToRoadPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::WheelToRoadPort::~WheelToRoadPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::WheelToRoadPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort::~AutomaticClutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutchPort::~ManualClutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutchPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::4CylEngine"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::6CylEngine"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutch"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Clutch"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticTransmission"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Transmission"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutch"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Clutch"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualTransmission"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Transmission"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::NarrowRimWheel"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Wheel"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::WideRimWheel"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Wheel"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::vehicleChoice"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::driveshaft"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Driveshaft"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::driveshaft::shaftPort_b"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_b"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::driveshaft::shaftPort_c"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ShaftPort_c"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::engine"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::engine::fuelCmdPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::FuelCmdPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::RearAxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly::rearWheels"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::rearAxleAssembly::rearWheels::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::transmission"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::transmission::clutch"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::Clutch"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::transmission::clutch::clutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::ClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::vehicleToRoadPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::VehicleToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::vehicle::vehicleToRoadPort::wheelToRoadPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::DesignModel::WheelToRoadPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel::highPerformanceRequirement"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel::EnginePerformanceRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel::normalPerformanceRequirement"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::RequirementsModel::EnginePerformanceRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineChoice::4cylEngine"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::4CylEngine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::engineChoice::6cylEngine"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::6CylEngine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::rearAxleAssembly::rearWheelChoice::narrowRimWheel"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::NarrowRimWheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::rearAxleAssembly::rearWheelChoice::wideRimWheel"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::WideRimWheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::automaticTransmission"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticTransmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::automaticTransmission::clutch"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutch"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::automaticTransmission::clutch::clutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::AutomaticClutchPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::manualTransmission"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualTransmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::manualTransmission::clutch"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutch"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "7b-Variant Configurations::VariabilityModel::anyVehicleConfig::transmissionChoice::manualTransmission::clutch::clutchPort"))) (to (node (document "d0") (qualified-name "7b-Variant Configurations::VariantDefinitions::ManualClutchPort"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (satisfy (status pending-expression) (document "d0") (source-expression "engineRqtChoice") (target-expression "engineChoice") (container-prefix "7b-Variant Configurations::VariabilityModel::anyVehicleConfig"))
+  )
+)
 ~~~

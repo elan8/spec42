@@ -130,25 +130,48 @@ semantic.unresolved_name 'SysML::PartUsage'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '14a-Language Extensions'
-      (namespace_import private -> '14a-Language Extensions::User Defined Extensions'[package])
-      (package 'User Defined Extensions'
-        (enum_def 'ClassificationLevel'
-          (enum_usage composite 'uncl')
-          (enum_usage composite 'conf')
-          (enum_usage composite 'secret'))
-        (metadata_def 'Classified'
-          (reference_usage reference :>> 'annotatedElement'[unresolved] : 'SysML::PartUsage'[unresolved])
-          (attribute_usage composite 'classificationLevel' : '14a-Language Extensions::User Defined Extensions::ClassificationLevel'[enum_def]
-            (multiplicity_range [1]))))
-      (part_usage 'part_X'
-        (metadata_usage :> '14a-Language Extensions::User Defined Extensions::Classified'[metadata_def]
-          (feature_def 'classificationLevel' :>> '14a-Language Extensions::User Defined Extensions::Classified::classificationLevel'[attribute_usage][implied]
-            (feature_value (=)))))
-      (part_usage 'part_Y'
-        (metadata_usage :> '14a-Language Extensions::User Defined Extensions::Classified'[metadata_def]
-          (feature_def 'classificationLevel' :>> '14a-Language Extensions::User Defined Extensions::Classified::classificationLevel'[attribute_usage][implied]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "14a-Language Extensions"))) (name "14a-Language Extensions") (declared-name "14a-Language Extensions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "14a-Language Extensions::*"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions"))) (name "User Defined Extensions") (declared-name "User Defined Extensions")
+          (contains
+            (element (kind "enum def") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))) (name "ClassificationLevel") (declared-name "ClassificationLevel")
+              (contains
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))) (name "conf") (declared-name "conf") (effective (featuring-type (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::secret"))) (name "secret") (declared-name "secret") (effective (featuring-type (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))))
+                (element (kind "enumerated value") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::uncl"))) (name "uncl") (declared-name "uncl") (effective (featuring-type (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel")))))
+              )
+            )
+            (element (kind "metadata def") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified"))) (name "Classified") (declared-name "Classified")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (name "classificationLevel") (declared-name "classificationLevel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified")))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_X"))) (name "part_X") (declared-name "part_X") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_Y"))) (name "part_Y") (declared-name "part_Y") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "metadata usage") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_Y::Classified"))) (name "Classified") (declared-name "Classified")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_Y::Classified::classificationLevel"))) (name "classificationLevel") (declared-name "classificationLevel") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "14a-Language Extensions::part_Y::Classified"))) (to (node (document "d0") (qualified-name "14a-Language Extensions::part_Y"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel"))) (to (node (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

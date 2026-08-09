@@ -96,12 +96,21 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Comment Example'
-      (comment_annotating 'Comment1')
-      (comment_annotating)
-      (part_def 'Automobile')
-      (alias_member 'Car' -> 'Comment Example::Automobile'[part_def])
-      (alias_member 'Torque' -> 'ISQ::TorqueValue'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Comment Example"))) (name "Comment Example") (declared-name "Comment Example")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Comment Example::Automobile"))) (name "Automobile") (declared-name "Automobile") (declared))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Comment Example::Car"))) (name "Car") (declared-name "Car"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Comment Example::Torque"))) (name "Torque") (declared-name "Torque"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -691,155 +691,42 @@ standard library package SpatialFrames {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'SpatialFrames'
-      (documentation)
-      (namespace_import private -> 'Clocks'[unresolved])
-      (membership_import private -> 'ScalarValues::NumericalValue'[unresolved])
-      (membership_import private -> 'VectorValues::ThreeVectorValue'[unresolved])
-      (membership_import private -> 'VectorValues::CartesianThreeVectorValue'[unresolved])
-      (membership_import private -> 'VectorFunctions::isZeroVector'[unresolved])
-      (membership_import private -> 'Occurrences::Life'[unresolved])
-      (membership_import private -> 'Objects::Body'[unresolved])
-      (membership_import private -> 'Objects::Point'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (membership_import private -> 'SequenceFunctions::includes'[unresolved])
-      (structure_def 'DefaultFrameLife' :> 'SpatialFrames::SpatialFrame'[structure_def] :> 'Life'[unresolved]
-        (multiplicity_range [1])
-        (documentation))
-      (feature_def 'defaultFrame' : 'SpatialFrames::DefaultFrameLife'[structure_def]
-        (multiplicity_range [1])
-        (documentation))
-      (structure_def abstract 'SpatialFrame' :> 'Body'[unresolved]
-        (documentation))
-      (function_def abstract 'PositionOf'
-        (documentation)
-        (feature_def in 'point' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'time' : 'NumericalValue'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'frame' : 'SpatialFrames::SpatialFrame'[structure_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def in 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'positionVector' : 'ThreeVectorValue'[unresolved]
-            (multiplicity_range [1])))
-        (invariant_def 'positionTimePrecondition'
-          (documentation)
-          (result_expr_membership))
-        (invariant_def 'spacePositionConstraint'
-          (documentation)
-          (result_expr_membership)))
-      (function_def abstract 'CurrentPositionOf'
-        (documentation)
-        (feature_def in 'point' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'frame' : 'SpatialFrames::SpatialFrame'[structure_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def in 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'positionVector' : 'ThreeVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def 'DisplacementOf'
-        (documentation)
-        (feature_def in 'point1' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'point2' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'time' : 'NumericalValue'[unresolved])
-        (feature_def in 'frame' : 'SpatialFrames::SpatialFrame'[structure_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def in 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'displacementVector' : 'ThreeVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=))))
-        (invariant_def 'zeroDisplacementConstraint'
-          (documentation)
-          (result_expr_membership)))
-      (function_def 'CurrentDisplacementOf'
-        (documentation)
-        (feature_def in 'point1' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'point2' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (feature_def in 'frame' : 'SpatialFrames::SpatialFrame'[structure_def]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def in 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'displacementVector' : 'ThreeVectorValue'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (structure_def abstract 'CartesianSpatialFrame' :> 'SpatialFrames::SpatialFrame'[structure_def]
-        (documentation))
-      (function_def abstract 'CartesianPositionOf' :> 'SpatialFrames::PositionOf'[function_def]
-        (documentation)
-        (feature_def in 'point' : 'Point'[unresolved] :>> 'SpatialFrames::PositionOf::point'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'time' : 'NumericalValue'[unresolved] :>> 'SpatialFrames::PositionOf::time'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'frame' : 'SpatialFrames::CartesianSpatialFrame'[structure_def] :>> 'SpatialFrames::PositionOf::frame'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clock'[unresolved] :>> 'SpatialFrames::PositionOf::clock'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'positionVector' : 'CartesianThreeVectorValue'[unresolved] :>> 'positionVector'[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def abstract 'CartesianCurrentPositionOf' :> 'SpatialFrames::CurrentPositionOf'[function_def]
-        (documentation)
-        (feature_def in 'point' : 'Point'[unresolved] :>> 'SpatialFrames::CurrentPositionOf::point'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'frame' : 'SpatialFrames::CartesianSpatialFrame'[structure_def] :>> 'SpatialFrames::CurrentPositionOf::frame'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clock'[unresolved] :>> 'SpatialFrames::CurrentPositionOf::clock'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'positionVector' : 'CartesianThreeVectorValue'[unresolved] :>> 'positionVector'[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def 'CartesianDisplacementOf' :> 'SpatialFrames::DisplacementOf'[function_def]
-        (documentation)
-        (feature_def in 'point1' : 'Point'[unresolved] :>> 'SpatialFrames::DisplacementOf::point1'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'point2' : 'Point'[unresolved] :>> 'SpatialFrames::DisplacementOf::point2'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'time' : 'NumericalValue'[unresolved] :>> 'SpatialFrames::DisplacementOf::time'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'frame' : 'SpatialFrames::CartesianSpatialFrame'[structure_def] :>> 'SpatialFrames::DisplacementOf::frame'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clock'[unresolved] :>> 'SpatialFrames::DisplacementOf::clock'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'displacementVector' : 'CartesianThreeVectorValue'[unresolved] :>> 'displacementVector'[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def 'CartesianCurrentDisplacementOf' :> 'SpatialFrames::CurrentDisplacementOf'[function_def]
-        (documentation)
-        (feature_def in 'point1' : 'Point'[unresolved] :>> 'SpatialFrames::CurrentDisplacementOf::point1'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'point2' : 'Point'[unresolved] :>> 'SpatialFrames::CurrentDisplacementOf::point2'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'frame' : 'SpatialFrames::CartesianSpatialFrame'[structure_def] :>> 'SpatialFrames::CurrentDisplacementOf::frame'[feature_def][implied]
-          (multiplicity_range [1]))
-        (feature_def in 'clock' : 'Clock'[unresolved] :>> 'SpatialFrames::CurrentDisplacementOf::clock'[feature_def][implied]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'displacementVector' : 'CartesianThreeVectorValue'[unresolved] :>> 'displacementVector'[feature_def][implied]
-            (multiplicity_range [1])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SpatialFrames"))) (name "SpatialFrames") (declared-name "SpatialFrames")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::Body"))) (name "Body") (declared-name "Body"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::CartesianCurrentDisplacementOf"))) (name "CartesianCurrentDisplacementOf") (declared-name "CartesianCurrentDisplacementOf"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::CartesianCurrentPositionOf"))) (name "CartesianCurrentPositionOf") (declared-name "CartesianCurrentPositionOf"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::CartesianDisplacementOf"))) (name "CartesianDisplacementOf") (declared-name "CartesianDisplacementOf"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::CartesianPositionOf"))) (name "CartesianPositionOf") (declared-name "CartesianPositionOf"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "SpatialFrames::CartesianSpatialFrame"))) (name "CartesianSpatialFrame") (declared-name "CartesianSpatialFrame"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::CartesianThreeVectorValue"))) (name "CartesianThreeVectorValue") (declared-name "CartesianThreeVectorValue"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::CurrentDisplacementOf"))) (name "CurrentDisplacementOf") (declared-name "CurrentDisplacementOf"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::CurrentPositionOf"))) (name "CurrentPositionOf") (declared-name "CurrentPositionOf"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "SpatialFrames::DefaultFrameLife1"))) (name "DefaultFrameLife1") (declared-name "DefaultFrameLife1"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::DisplacementOf"))) (name "DisplacementOf") (declared-name "DisplacementOf"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::Life"))) (name "Life") (declared-name "Life"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::NumericalValue"))) (name "NumericalValue") (declared-name "NumericalValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::Point"))) (name "Point") (declared-name "Point"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SpatialFrames::PositionOf"))) (name "PositionOf") (declared-name "PositionOf"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "SpatialFrames::SpatialFrame"))) (name "SpatialFrame") (declared-name "SpatialFrame"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::ThreeVectorValue"))) (name "ThreeVectorValue") (declared-name "ThreeVectorValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialFrames::_documentation"))) (name ""))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "SpatialFrames::defaultFrame"))) (name "defaultFrame") (declared-name "defaultFrame"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::includes"))) (name "includes") (declared-name "includes"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialFrames::isZeroVector"))) (name "isZeroVector") (declared-name "isZeroVector"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialFrames::_documentation"))) (to (node (document "d0") (qualified-name "SpatialFrames"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

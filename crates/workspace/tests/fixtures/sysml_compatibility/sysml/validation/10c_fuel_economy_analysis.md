@@ -590,117 +590,163 @@ semantic.unresolved_name 'actualFuelEconomy'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '10c-Fuel Economy Analysis'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'USCustomaryUnits'[unresolved])
-      (attribute_usage 'distancePerVolume' : 'ScalarQuantityValue'[unresolved]
-        (feature_value (=)))
-      (attribute_usage 'gallon' : 'MeasurementUnit'[unresolved]
-        (feature_value (=)))
-      (package 'FuelEconomyRequirementsModel'
-        (requirement_def 'FuelEconomyRequirement'
-          (attribute_usage composite 'actualFuelEconomy' :> '10c-Fuel Economy Analysis::distancePerVolume'[attribute_usage])
-          (attribute_usage composite 'requiredFuelEconomy' :> '10c-Fuel Economy Analysis::distancePerVolume'[attribute_usage])
-          (require_constraint_usage composite
-            (result_expr_membership)))
-        (requirement_usage 'cityFuelEconomyRequirement' : '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement'[requirement_def]
-          (reference_usage reference :>> '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy'[attribute_usage]
-            (feature_value (=))))
-        (requirement_usage 'highwayFuelEconomyRequirement' : '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement'[requirement_def]
-          (reference_usage reference :>> '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy'[attribute_usage]
-            (feature_value (=)))))
-      (package 'VehicleDesignModel'
-        (part_def 'Vehicle'
-          (attribute_usage composite 'fuelEconomy_city' :> '10c-Fuel Economy Analysis::distancePerVolume'[attribute_usage])
-          (attribute_usage composite 'fuelEconomy_highway' :> '10c-Fuel Economy Analysis::distancePerVolume'[attribute_usage])
-          (attribute_usage composite 'cargoWeight' : 'MassValue'[unresolved]))
-        (part_def 'Engine')
-        (part_def 'Transmission')
-        (part_usage 'vehicle1_c1' : '10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle'[part_def]
-          (part_usage composite 'engine' : '10c-Fuel Economy Analysis::VehicleDesignModel::Engine'[part_def])
-          (part_usage composite 'transmission' : '10c-Fuel Economy Analysis::VehicleDesignModel::Transmission'[part_def]
-            (state_usage composite 'transmissionState'
-              (state_subaction_membership 'entry'
-                (action_usage))
-              (source_succession
-                (reference_usage reference '1stGear'))
-              (state_usage composite '1stGear')
-              (source_succession
-                (reference_usage reference '2ndGear'))
-              (state_usage composite '2ndGear')
-              (source_succession
-                (reference_usage reference '3rdGear'))
-              (state_usage composite '3rdGear')
-              (source_succession
-                (reference_usage reference '4thGear'))
-              (state_usage composite '4thGear')))))
-      (package 'FuelEconomyAnalysisModel'
-        (namespace_import private -> '10c-Fuel Economy Analysis::VehicleDesignModel'[package])
-        (namespace_import private -> '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel'[package])
-        (attribute_def 'ScenarioState'
-          (reference_usage reference 'position' : 'LengthValue'[unresolved])
-          (reference_usage reference 'velocity' : 'SpeedValue'[unresolved])
-          (reference_usage reference 'acceleration' : 'AccelerationValue'[unresolved])
-          (reference_usage reference 'inclineAngle' : 'AngularMeasureValue'[unresolved]))
-        (calculation_def abstract 'NominalScenario'
-          (reference_usage in reference 't' : 'TimeValue'[unresolved])
-          (return_parameter_membership
-            (feature_def out : '10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState'[attribute_def])))
-        (calculation_usage 'cityScenario' : '10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario'[calculation_def])
-        (calculation_usage 'highwayScenario' : '10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario'[calculation_def])
-        (analysis_case_def 'FuelEconomyAnalysis'
-          (subject_membership in 'vehicle' : '10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle'[part_def])
-          (calculation_usage in 'scenario' : '10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario'[calculation_def])
-          (requirement_usage in 'fuelEconomyRequirement' : '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement'[requirement_def])
-          (return_parameter_membership
-            (feature_def out 'calculatedFuelEconomy' : 'ScalarQuantityValue'[unresolved]))
-          (objective_membership composite 'fuelEconomyAnalysisObjective'
-            (documentation)
-            (assume_constraint_usage composite
-              (documentation))
-            (require_constraint_usage composite 'fuelEconomyRequirement'
-              (reference_usage reference :>> 'actualFuelEconomy'[unresolved]
-                (feature_value (=)))))
-          (action_usage composite 'dynamicsAnalysis')
-          (action_usage composite 'fuelConsumptionAnalysis'))
-        (requirement_usage 'vehicleFuelEconomyRequirementsGroup'
-          (subject_membership in 'vehicle' : '10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle'[part_def])
-          (requirement_usage composite 'vehicleFuelEconomyRequirement_city' :> '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::cityFuelEconomyRequirement'[requirement_usage]
-            (documentation)
-            (reference_usage reference :>> '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::actualFuelEconomy'[attribute_usage]
-              (feature_value (=)))
-            (assume_constraint_usage composite
-              (result_expr_membership)))
-          (requirement_usage composite 'vehicleFuelEconomyRequirement_highway' :> '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement'[requirement_usage]
-            (documentation)
-            (reference_usage reference :>> '10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::actualFuelEconomy'[attribute_usage]
-              (feature_value (=)))
-            (assume_constraint_usage composite
-              (result_expr_membership))))
-        (part_usage 'analysisContext'
-          (analysis_case_usage composite 'cityFuelEconomyAnalysis' : '10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis'[analysis_case_def]
-            (subject_membership in 'vehicle'
-              (feature_value (=)))
-            (calculation_usage in 'scenario'
-              (feature_value (=)))
-            (requirement_usage in 'fuelEconomyRequirement'
-              (feature_value (=))))
-          (analysis_case_usage composite 'highwayFuelEconomyAnalysis' : '10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis'[analysis_case_def]
-            (subject_membership in 'vehicle'
-              (feature_value (=)))
-            (calculation_usage in 'scenario'
-              (feature_value (=)))
-            (requirement_usage in 'fuelEconomyRequirement'
-              (feature_value (=))))
-          (part_usage composite 'vehicle1_c1_analysized' :> '10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1'[part_usage]
-            (reference_usage reference :>> '10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle::fuelEconomy_city'[attribute_usage]
-              (feature_value (=)))
-            (reference_usage reference :>> '10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle::fuelEconomy_highway'[attribute_usage]
-              (feature_value (=))))
-          (satisfy_requirement_usage 'vehicleFuelEconomyRequirementsGroup' by '10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext::vehicle1_c1_analysized'[part_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis"))) (name "10c-Fuel Economy Analysis") (declared-name "10c-Fuel Economy Analysis")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::*#import4"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel"))) (name "FuelEconomyAnalysisModel") (declared-name "FuelEconomyAnalysisModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "analysis def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (name "FuelEconomyAnalysis") (declared-name "FuelEconomyAnalysis")
+              (contains
+                (element (kind "analysis result") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (name "calculatedFuelEconomy") (declared-name "calculatedFuelEconomy") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::dynamicsAnalysis"))) (name "dynamicsAnalysis") (declared-name "dynamicsAnalysis") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumptionAnalysis"))) (name "fuelConsumptionAnalysis") (declared-name "fuelConsumptionAnalysis") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "objective") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyAnalysisObjective"))) (name "fuelEconomyAnalysisObjective") (declared-name "fuelEconomyAnalysisObjective") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "requirement") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyRequirement"))) (name "fuelEconomyRequirement") (declared-name "fuelEconomyRequirement") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "calc") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::scenario"))) (name "scenario") (declared-name "scenario") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "subject") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario"))) (name "NominalScenario") (declared-name "NominalScenario")
+              (contains
+                (element (kind "return parameter") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario::t"))) (name "t") (declared-name "t") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState"))) (name "ScenarioState") (declared-name "ScenarioState") (declared (properties (ordered false) (unique true)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState::acceleration"))) (name "acceleration") (declared-name "acceleration") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState::inclineAngle"))) (name "inclineAngle") (declared-name "inclineAngle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState::position"))) (name "position") (declared-name "position") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState::velocity"))) (name "velocity") (declared-name "velocity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext"))) (name "analysisContext") (declared-name "analysisContext") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext::vehicle1_c1_analysized"))) (name "vehicle1_c1_analysized") (declared-name "vehicle1_c1_analysized") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext::vehicle1_c1_analysized::fuelEconomy_city"))) (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "calculatedFuelEconomy") (children (expression (kind "featureReference") (reference "cityFuelEconomyAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext::vehicle1_c1_analysized::fuelEconomy_city"))) (role feature-value))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext::vehicle1_c1_analysized::fuelEconomy_highway"))) (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "calculatedFuelEconomy") (children (expression (kind "featureReference") (reference "highwayFuelEconomyAnalysis")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext::vehicle1_c1_analysized::fuelEconomy_highway"))) (role feature-value))))
+                  )
+                )
+              )
+            )
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::cityScenario"))) (name "cityScenario") (declared-name "cityScenario"))
+            (element (kind "calc def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::highwayScenario"))) (name "highwayScenario") (declared-name "highwayScenario"))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup"))) (name "vehicleFuelEconomyRequirementsGroup") (declared-name "vehicleFuelEconomyRequirementsGroup")
+              (contains
+                (element (kind "subject") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+                (element (kind "requirement") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_city"))) (name "vehicleFuelEconomyRequirement_city") (declared-name "vehicleFuelEconomyRequirement_city")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_city::_documentation"))) (name ""))
+                    (element (kind "require constraint") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_city::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0"))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_city::actualFuelEconomy"))) (name "actualFuelEconomy") (declared-name "actualFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "requirement") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_highway"))) (name "vehicleFuelEconomyRequirement_highway") (declared-name "vehicleFuelEconomyRequirement_highway")
+                  (contains
+                    (element (kind "documentation") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_highway::_documentation"))) (name ""))
+                    (element (kind "require constraint") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_highway::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0"))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_highway::actualFuelEconomy"))) (name "actualFuelEconomy") (declared-name "actualFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel"))) (name "FuelEconomyRequirementsModel") (declared-name "FuelEconomyRequirementsModel")
+          (contains
+            (element (kind "requirement def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement"))) (name "FuelEconomyRequirement") (declared-name "FuelEconomyRequirement")
+              (contains
+                (element (kind "require constraint") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::actualFuelEconomy"))) (name "actualFuelEconomy") (declared-name "actualFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy"))) (name "requiredFuelEconomy") (declared-name "requiredFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::cityFuelEconomyRequirement"))) (name "cityFuelEconomyRequirement") (declared-name "cityFuelEconomyRequirement")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::cityFuelEconomyRequirement::requiredFuelEconomy"))) (name "requiredFuelEconomy") (declared-name "requiredFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+              )
+            )
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement"))) (name "highwayFuelEconomyRequirement") (declared-name "highwayFuelEconomyRequirement")
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement::requiredFuelEconomy"))) (name "requiredFuelEconomy") (declared-name "requiredFuelEconomy") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement")))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel"))) (name "VehicleDesignModel") (declared-name "VehicleDesignModel")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle::cargoWeight"))) (name "cargoWeight") (declared-name "cargoWeight") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle::fuelEconomy_city"))) (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle::fuelEconomy_highway"))) (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle"))))
+                  (contains
+                    (element (kind "state") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState"))) (name "transmissionState") (declared-name "transmissionState") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission"))))
+                      (contains
+                        (element (kind "state") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::1stGear"))) (name "1stGear") (declared-name "1stGear") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission")))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::2ndGear"))) (name "2ndGear") (declared-name "2ndGear") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission")))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::3rdGear"))) (name "3rdGear") (declared-name "3rdGear") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission")))))
+                        (element (kind "state") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::4thGear"))) (name "4thGear") (declared-name "4thGear") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission")))))
+                        (element (kind "action") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission")))))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::distancePerVolume"))) (name "distancePerVolume") (declared-name "distancePerVolume") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "length")) (expression (kind "featureReference") (reference "volume")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::distancePerVolume"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (name "gallon") (declared-name "gallon") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "^") (children (expression (kind "binary") (operator "*") (children (expression (kind "realLiteral") (literal "231.0")) (expression (kind "featureReference") (reference "in")))) (expression (kind "integerLiteral") (literal 3)))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::gallon"))) (role feature-value))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_city::_documentation"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_city"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_highway::_documentation"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_highway"))))
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::1stGear"))))
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::2ndGear"))))
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::3rdGear"))))
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission::transmissionState::4thGear"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::cityFuelEconomyRequirement::requiredFuelEconomy"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement::requiredFuelEconomy"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement::requiredFuelEconomy"))))
+    (satisfy (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::analysisContext::vehicle1_c1_analysized"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_city"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicleFuelEconomyRequirement_highway"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::scenario"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::NominalScenario::"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::ScenarioState"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyAnalysisModel::vehicleFuelEconomyRequirementsGroup::vehicle"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::cityFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::highwayFuelEconomyRequirement"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::FuelEconomyRequirementsModel::FuelEconomyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::engine"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::vehicle1_c1::transmission"))) (to (node (document "d0") (qualified-name "10c-Fuel Economy Analysis::VehicleDesignModel::Transmission"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

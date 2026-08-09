@@ -56,11 +56,27 @@ package P {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'P'
-      (action_def 'A'
-        (for_loop_action_usage
-          (perform_action_usage 'doStuff' : 'DoStuff'[unresolved]
-            (for_loop_action_usage)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "P::A"))) (name "A") (declared-name "A")
+          (contains
+            (element (kind "for loop") (id (node (document "d0") (qualified-name "P::A::for_x"))) (name "x") (declared-name "x") (effective (featuring-type (node (document "d0") (qualified-name "P::A"))))
+              (contains
+                (element (kind "perform") (id (node (document "d0") (qualified-name "P::A::for_x::doStuff"))) (name "doStuff") (declared-name "doStuff") (effective (featuring-type (node (document "d0") (qualified-name "P::A")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

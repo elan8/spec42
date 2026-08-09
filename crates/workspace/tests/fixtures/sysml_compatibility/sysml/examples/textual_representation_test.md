@@ -95,16 +95,31 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'TextualRepresentationTest'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (item_def 'C'
-        (attribute_usage composite 'x' : 'Real'[unresolved])
-        (assert_constraint_usage 'x_constraint'
-          (textual_rep 'inOCL')))
-      (action_def 'setX'
-        (reference_usage in reference 'c' : 'TextualRepresentationTest::C'[item_def])
-        (reference_usage in reference 'newX' : 'Real'[unresolved])
-        (textual_rep)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "TextualRepresentationTest"))) (name "TextualRepresentationTest") (declared-name "TextualRepresentationTest")
+      (contains
+        (element (kind "item def") (id (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (name "C") (declared-name "C")
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::C")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "TextualRepresentationTest::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (name "setX") (declared-name "setX")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (name "c") (declared-name "c") (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (name "newX") (declared-name "newX") (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (to (node (document "d0") (qualified-name "TextualRepresentationTest::C"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

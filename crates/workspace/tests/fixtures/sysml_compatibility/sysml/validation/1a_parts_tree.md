@@ -382,50 +382,104 @@ semantic.unresolved_name 'ScalarValues::Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '1a-Parts Tree'
-      (membership_import private -> 'SI::kg'[unresolved])
-      (package 'Definitions'
-        (part_def 'Vehicle'
-          (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]
-            (documentation)))
-        (part_def 'AxleAssembly')
-        (part_def 'Axle'
-          (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]))
-        (part_def 'FrontAxle' :> '1a-Parts Tree::Definitions::Axle'[part_def]
-          (attribute_usage composite 'steeringAngle' : 'ScalarValues::Real'[unresolved]))
-        (part_def 'Wheel'))
-      (package 'Usages'
-        (namespace_import private -> '1a-Parts Tree::Definitions'[package])
-        (part_usage 'vehicle1' : '1a-Parts Tree::Definitions::Vehicle'[part_def]
-          (attribute_usage composite 'mass' :>> '1a-Parts Tree::Definitions::Vehicle::mass'[attribute_usage]
-            (feature_value (=)))
-          (part_usage composite 'frontAxleAssembly' : '1a-Parts Tree::Definitions::AxleAssembly'[part_def]
-            (part_usage composite 'frontAxle' : '1a-Parts Tree::Definitions::Axle'[part_def])
-            (part_usage composite ordered 'frontWheel' : '1a-Parts Tree::Definitions::Wheel'[part_def]
-              (multiplicity_range [2])))
-          (part_usage composite 'rearAxleAssembly' : '1a-Parts Tree::Definitions::AxleAssembly'[part_def]
-            (part_usage composite 'rearAxle' : '1a-Parts Tree::Definitions::Axle'[part_def])
-            (part_usage composite ordered 'rearWheel' : '1a-Parts Tree::Definitions::Wheel'[part_def]
-              (multiplicity_range [2]))))
-        (part_usage 'vehicle1_c1' : '1a-Parts Tree::Definitions::Vehicle'[part_def]
-          (attribute_usage composite 'mass' :>> '1a-Parts Tree::Definitions::Vehicle::mass'[attribute_usage]
-            (feature_value (=)))
-          (part_usage composite 'frontAxleAssembly' : '1a-Parts Tree::Definitions::AxleAssembly'[part_def]
-            (part_usage composite 'frontAxle' : '1a-Parts Tree::Definitions::FrontAxle'[part_def])
-            (part_usage composite ordered 'frontWheel' : '1a-Parts Tree::Definitions::Wheel'[part_def]
-              (multiplicity_range [2]))
-            (part_usage composite 'frontWheel_1' :> '1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel'[part_usage]
-              (feature_value (=)))
-            (part_usage composite 'frontWheel_2' :> '1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel'[part_usage]
-              (feature_value (=))))
-          (part_usage composite 'rearAxleAssembly' : '1a-Parts Tree::Definitions::AxleAssembly'[part_def]
-            (part_usage composite 'rearAxle' : '1a-Parts Tree::Definitions::Axle'[part_def])
-            (part_usage composite ordered 'rearWheel' : '1a-Parts Tree::Definitions::Wheel'[part_def]
-              (multiplicity_range [2]))
-            (part_usage composite 'rearWheel_1' :> '1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel'[part_usage]
-              (feature_value (=)))
-            (part_usage composite 'rearWheel_2' :> '1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel'[part_usage]
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "1a-Parts Tree"))) (name "1a-Parts Tree") (declared-name "1a-Parts Tree")
+      (contains
+        (element (kind "package") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions"))) (name "Definitions") (declared-name "Definitions")
+          (contains
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Axle"))) (name "Axle") (declared-name "Axle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Axle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Axle")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly"))) (name "AxleAssembly") (declared-name "AxleAssembly") (declared))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::FrontAxle"))) (name "FrontAxle") (declared-name "FrontAxle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::FrontAxle::steeringAngle"))) (name "steeringAngle") (declared-name "steeringAngle") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::FrontAxle")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Wheel"))) (name "Wheel") (declared-name "Wheel") (declared))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages"))) (name "Usages") (declared-name "Usages")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::*"))) (name "*") (declared-name "*"))
+            (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly::frontAxle"))) (name "frontAxle") (declared-name "frontAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly::frontWheel"))) (name "frontWheel") (declared-name "frontWheel") (declared (properties (composite true) (reference false) (ordered true)) (multiplicity (lower 2) (upper 2) (ordered true) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1750)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (role feature-value))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::rearAxleAssembly::rearWheel"))) (name "rearWheel") (declared-name "rearWheel") (declared (properties (composite true) (reference false) (ordered true)) (multiplicity (lower 2) (upper 2) (ordered true) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1"))) (name "vehicle1_c1") (declared-name "vehicle1_c1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly"))) (name "frontAxleAssembly") (declared-name "frontAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontAxle"))) (name "frontAxle") (declared-name "frontAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel"))) (name "frontWheel") (declared-name "frontWheel") (declared (properties (composite true) (reference false) (ordered true)) (multiplicity (lower 2) (upper 2) (ordered true) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel_1"))) (name "frontWheel_1") (declared-name "frontWheel_1") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel_2"))) (name "frontWheel_2") (declared-name "frontWheel_2") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 2000)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (role feature-value))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly"))) (name "rearAxleAssembly") (declared-name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))))
+                  (contains
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared-name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))) (name "rearWheel") (declared-name "rearWheel") (declared (properties (composite true) (reference false) (ordered true)) (multiplicity (lower 2) (upper 2) (ordered true) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_1"))) (name "rearWheel_1") (declared-name "rearWheel_1") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_2"))) (name "rearWheel_2") (declared-name "rearWheel_2") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly")))))
+                  )
+                )
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "1a-Parts Tree::kg"))) (name "kg") (declared-name "kg"))
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::mass"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle::mass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::mass"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle::mass"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::FrontAxle"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Axle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel_1"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel_2"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_1"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel_2"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly::frontAxle"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Axle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::frontAxleAssembly::frontWheel"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::rearAxleAssembly::rearAxle"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Axle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1::rearAxleAssembly::rearWheel"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontAxle"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::FrontAxle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::frontAxleAssembly::frontWheel"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Wheel"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::AxleAssembly"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearAxle"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Axle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "1a-Parts Tree::Usages::vehicle1_c1::rearAxleAssembly::rearWheel"))) (to (node (document "d0") (qualified-name "1a-Parts Tree::Definitions::Wheel"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

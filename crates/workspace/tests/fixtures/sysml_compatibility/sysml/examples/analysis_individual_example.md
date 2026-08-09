@@ -391,77 +391,113 @@ semantic.unresolved_name 'PowerValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'AnalysisIndividualExample'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'USCustomaryUnits'[unresolved])
-      (package 'VehicleQuantities'
-        (namespace_import private -> 'MeasurementReferences'[unresolved])
-        (attribute_def 'DistancePerVolumeUnit' :> 'DerivedUnit'[unresolved]
-          (attribute_usage composite 'distancePF' : 'QuantityPowerFactor'[unresolved]
-            (multiplicity_range [1])
-            (reference_usage reference :>> 'quantity'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'exponent'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite 'volumePF' : 'QuantityPowerFactor'[unresolved]
-            (multiplicity_range [1])
-            (reference_usage reference :>> 'quantity'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'exponent'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite :>> 'quantityDimension'[unresolved]
-            (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-              (feature_value (=)))))
-        (attribute_def 'DistancePerVolumeValue' :> 'ScalarQuantityValue'[unresolved]
-          (reference_usage reference :>> 'num'[unresolved] : 'Real'[unresolved])
-          (reference_usage reference :>> 'mRef'[unresolved] : 'AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit'[attribute_def]))
-        (attribute_usage 'gallon' : 'VolumeUnit'[unresolved]
-          (feature_value (=)))
-        (attribute_usage 'mpg' : 'AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit'[attribute_def]
-          (feature_value (=)))
-        (attribute_usage 'hp' : 'PowerUnit'[unresolved]
-          (feature_value (=))))
-      (package 'VehicleModel'
-        (namespace_import public -> 'AnalysisIndividualExample::VehicleQuantities'[package])
-        (part_def 'Vehicle'
-          (attribute_usage composite 'power' :> 'ISQ::power'[unresolved]))
-        (part_def 'Engine'
-          (attribute_usage composite 'peakPower' :> 'ISQ::power'[unresolved])
-          (attribute_usage composite 'fuelEfficiency' : 'Real'[unresolved]))
-        (part_usage 'vehicle_c1' : 'AnalysisIndividualExample::VehicleModel::Vehicle'[part_def]
-          (attribute_usage composite :>> 'AnalysisIndividualExample::VehicleModel::Vehicle::power'[attribute_usage]
-            (feature_value (=)))
-          (part_usage composite 'engine' : 'AnalysisIndividualExample::VehicleModel::Engine'[part_def]
-            (multiplicity_range [1]))))
-      (package 'FuelEconomyAnalysisModel'
-        (namespace_import private -> 'AnalysisIndividualExample::VehicleModel'[package])
-        (membership_import private -> 'SequenceFunctions::size'[unresolved])
-        (membership_import private -> 'SampledFunctions::SampledFunction'[unresolved])
-        (membership_import private -> 'SampledFunctions::SamplePair'[unresolved])
-        (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-        (action_def 'FuelConsumption'
-          (reference_usage in reference 'power' : 'PowerValue'[unresolved]
-            (multiplicity_range [*]))
-          (reference_usage out reference 'fuelEconomy' : 'AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue'[attribute_def]))
-        (analysis_case_def 'FuelEconomyAnalysis'
-          (subject_membership in 'vehicle' : 'AnalysisIndividualExample::VehicleModel::Vehicle'[part_def])
-          (action_usage composite 'fuelConsumption' : 'AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption'[action_def]
-            (reference_usage in reference 'power'
-              (feature_value (=)))
-            (reference_usage out reference 'fuelEconomy' : 'AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue'[attribute_def]))
-          (return_parameter_membership
-            (feature_def out 'calculatedFuelEconomy' : 'AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue'[attribute_def]
-              (feature_value (=))))))
-      (package 'IndividualAnalysisModel'
-        (namespace_import private -> 'AnalysisIndividualExample::VehicleModel'[package])
-        (namespace_import private -> 'AnalysisIndividualExample::FuelEconomyAnalysisModel'[package])
-        (part_def individual 'Vehicle_1' :> 'AnalysisIndividualExample::VehicleModel::Vehicle'[part_def])
-        (part_def individual 'Engine_1' :> 'AnalysisIndividualExample::VehicleModel::Engine'[part_def])
-        (analysis_case_def individual 'FuelEconomyAnalysis_1' :> 'AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis'[analysis_case_def])
-        (action_def individual 'FuelConsumption_1' :> 'AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption'[action_def])
-        (not_implemented 'malformed')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample"))) (name "AnalysisIndividualExample") (declared-name "AnalysisIndividualExample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel"))) (name "FuelEconomyAnalysisModel") (declared-name "FuelEconomyAnalysisModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "action def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))) (name "FuelConsumption") (declared-name "FuelConsumption")
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::fuelEconomy"))) (name "fuelEconomy") (declared-name "fuelEconomy") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
+              )
+            )
+            (element (kind "analysis def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (name "FuelEconomyAnalysis") (declared-name "FuelEconomyAnalysis")
+              (contains
+                (element (kind "analysis result") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (name "calculatedFuelEconomy") (declared-name "calculatedFuelEconomy") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (name "fuelConsumption") (declared-name "fuelConsumption") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::fuelEconomy"))) (name "fuelEconomy") (declared-name "fuelEconomy") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption")))))
+                  )
+                )
+                (element (kind "subject") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis")))))
+              )
+            )
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SamplePair"))) (name "SamplePair") (declared-name "SamplePair"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::SampledFunction"))) (name "SampledFunction") (declared-name "SampledFunction"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::forAll"))) (name "forAll") (declared-name "forAll"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::size"))) (name "size") (declared-name "size"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel"))) (name "IndividualAnalysisModel") (declared-name "IndividualAnalysisModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::*#import"))) (name "*") (declared-name "*"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Engine_1"))) (name "Engine_1") (declared-name "Engine_1") (declared (properties (individual true))))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1") (declared (properties (individual true))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel"))) (name "VehicleModel") (declared-name "VehicleModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))) (name "Engine") (declared-name "Engine") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::fuelEfficiency"))) (name "fuelEfficiency") (declared-name "fuelEfficiency") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine::peakPower"))) (name "peakPower") (declared-name "peakPower") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine")))))
+              )
+            )
+            (element (kind "part def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle::power"))) (name "power") (declared-name "power") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (composite true) (reference false) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (name "power") (declared-name "power") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "peakPower") (children (expression (kind "featureReference") (reference "engine")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (role feature-value))))
+              )
+            )
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities"))) (name "VehicleQuantities") (declared-name "VehicleQuantities")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::*"))) (name "*") (declared-name "*"))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))) (name "DistancePerVolumeUnit") (declared-name "DistancePerVolumeUnit") (declared (properties (ordered false) (unique true)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF"))) (name "distancePF") (declared-name "distancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF"))) (name "volumePF") (declared-name "volumePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))) (name "DistancePerVolumeValue") (declared-name "DistancePerVolumeValue") (declared (properties (ordered false) (unique true)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue")))))
+              )
+            )
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon"))) (name "gallon") (declared-name "gallon") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "**") (children (expression (kind "binary") (operator "*") (children (expression (kind "realLiteral") (literal "231.0")) (expression (kind "featureReference") (reference "in")))) (expression (kind "integerLiteral") (literal 3)))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::gallon"))) (role feature-value))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp"))) (name "hp") (declared-name "hp") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "745.7")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "SI::W")))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::hp"))) (role feature-value))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (name "mpg") (declared-name "mpg") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "mi")) (expression (kind "featureReference") (reference "gallon")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (role feature-value))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::power"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle::power"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Engine_1"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::fuelEconomy"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::fuelEconomy"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::vehicle_c1::engine"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleModel::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::mpg"))) (to (node (document "d0") (qualified-name "AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

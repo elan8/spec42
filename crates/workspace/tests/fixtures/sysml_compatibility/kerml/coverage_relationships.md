@@ -145,26 +145,15 @@ package RelationshipCoverage {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'RelationshipCoverage'
-      (not_implemented 'malformed')
-      (not_implemented 'malformed')
-      (not_implemented 'malformed')
-      (not_implemented 'malformed')
-      (feature_def 'f')
-      (feature_def 'g')
-      (feature_def 'parent')
-      (feature_def 'child')
-      (disjoining_decl 'd1')
-      (disjoining_decl)
-      (not_implemented 'malformed')
-      (feature_typing_decl)
-      (feature_typing_decl)
-      (subsetting_decl)
-      (redefinition_decl)
-      (redefinition_decl)
-      (not_implemented 'malformed')
-      (not_implemented 'malformed')
-      (not_implemented 'malformed'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "RelationshipCoverage"))) (name "RelationshipCoverage") (declared-name "RelationshipCoverage"))
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

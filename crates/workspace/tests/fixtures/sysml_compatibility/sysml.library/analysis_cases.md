@@ -144,23 +144,47 @@ standard library package AnalysisCases {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'AnalysisCases'
-      (documentation)
-      (membership_import private -> 'Performances::Evaluation'[unresolved])
-      (membership_import private -> 'Performances::evaluations'[unresolved])
-      (membership_import private -> 'Calculations::Calculation'[unresolved])
-      (membership_import private -> 'Cases::Case'[unresolved])
-      (membership_import private -> 'Cases::cases'[unresolved])
-      (analysis_case_def abstract 'AnalysisCase' :> 'Case'[unresolved]
-        (documentation)
-        (analysis_case_usage reference 'self' : 'AnalysisCases::AnalysisCase'[analysis_case_def] :>> 'Case::self'[unresolved])
-        (subject_membership in 'subj' :>> 'Case::subj'[unresolved])
-        (analysis_case_usage abstract composite 'subAnalysisCases' : 'AnalysisCases::AnalysisCase'[analysis_case_def] :> 'AnalysisCases::analysisCases'[analysis_case_usage] :> 'subcases'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (analysis_case_usage abstract 'analysisCases' : 'AnalysisCases::AnalysisCase'[analysis_case_def] :> 'cases'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "AnalysisCases"))) (name "AnalysisCases") (declared-name "AnalysisCases")
+      (contains
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))) (name "AnalysisCase") (declared-name "AnalysisCase")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase")))))
+            (element (kind "analysis") (id (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::self"))) (name "self") (declared-name "self") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase")))))
+            (element (kind "analysis") (id (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))) (name "subAnalysisCases") (declared-name "subAnalysisCases") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisCases::Calculation"))) (name "Calculation") (declared-name "Calculation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisCases::Case"))) (name "Case") (declared-name "Case"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisCases::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisCases::_documentation"))) (name ""))
+        (element (kind "analysis") (id (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))) (name "analysisCases") (declared-name "analysisCases")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "AnalysisCases::analysisCases::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisCases::cases"))) (name "cases") (declared-name "cases"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "AnalysisCases::evaluations"))) (name "evaluations") (declared-name "evaluations"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::analysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::self"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

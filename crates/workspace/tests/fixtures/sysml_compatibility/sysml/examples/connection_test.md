@@ -244,50 +244,74 @@ parse.expected_usage_declaration
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ConnectionTest'
-      (part_usage 'p'
-        (part_usage composite 'x'
-          (part_usage composite 'x1')))
-      (part_def 'P'
-        (part_usage composite 'y')
-        (connection_usage composite
-          (connector_end 'p')
-          (connector_end 'y'))
-        (part_usage composite 'p1' :> 'ConnectionTest::p'[part_usage])
-        (connection_usage composite
-          (connector_end 'p1.x')
-          (connector_end 'y'))
-        (connection_usage composite
-          (connector_end 'p1.x.x1')
-          (connector_end 'y')))
-      (connection_def abstract 'C'
-        (part_usage composite 'p')
-        (port_usage end 'end1')
-        (port_usage end 'end2')
-        (port_usage end 'end3'))
-      (part_usage 'd1')
-      (part_usage 'd2')
-      (part_usage 'd3')
-      (part_usage 'd4')
-      (connection_usage 'bus' : 'ConnectionTest::C'[connection_def])
-      (connection_usage : 'ConnectionTest::C'[connection_def]
-        (port_usage end :>> 'ConnectionTest::C::end1'[port_usage] :> 'ConnectionTest::d1'[part_usage])
-        (port_usage end 'end2' :> 'ConnectionTest::d2'[part_usage])
-        (port_usage end 'end3' :> 'ConnectionTest::d3'[part_usage]))
-      (not_implemented 'malformed')
-      (flow_def abstract 'F')
-      (flow_usage : 'ConnectionTest::F'[flow_def]
-        (connector_end 'p')
-        (connector_end 'p'))
-      (part_def 'A'
-        (reference_usage reference 'b' : 'ConnectionTest::B'[part_def]))
-      (part_def 'B')
-      (connection_def 'AB'
-        (port_usage end 'a' : 'ConnectionTest::A'[part_def]
-          (multiplicity_range [1])
-          (metadata_usage :> 'ConnectionTest::M'[metadata_def]))
-        (port_usage end 'b' : 'ConnectionTest::B'[part_def]))
-      (metadata_def 'M'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ConnectionTest"))) (name "ConnectionTest") (declared-name "ConnectionTest")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "ConnectionTest::A"))) (name "A") (declared-name "A") (declared)
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (name "b") (declared-name "b") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::A")))))
+          )
+        )
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "ConnectionTest::AB"))) (name "AB") (declared-name "AB")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (name "b") (declared-name "b") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::AB")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "ConnectionTest::B"))) (name "B") (declared-name "B") (declared))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "ConnectionTest::C"))) (name "C") (declared-name "C"))
+        (element (kind "flow def") (id (node (document "d0") (qualified-name "ConnectionTest::F"))) (name "F") (declared-name "F"))
+        (element (kind "metadata def") (id (node (document "d0") (qualified-name "ConnectionTest::M"))) (name "M") (declared-name "M"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "ConnectionTest::P"))) (name "P") (declared-name "P") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::P::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConnectionTest::P")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::P::y"))) (name "y") (declared-name "y") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConnectionTest::P")))))
+          )
+        )
+        (element (kind "connection") (id (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (name "_connection") (declared-name "_connection")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::_connection::end2"))) (name "end2") (declared-name "end2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::C")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::_connection::end3"))) (name "end3") (declared-name "end3") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::C")))))
+          )
+        )
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "ConnectionTest::_connectionDef"))) (name "_connectionDef")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "ConnectionTest::_connectionDef::end2"))) (name "end2") (declared-name "end2") (declared (properties (end true))) (effective (featuring-type (node (document "d0") (qualified-name "ConnectionTest::_connectionDef")))))
+          )
+        )
+        (element (kind "connection") (id (node (document "d0") (qualified-name "ConnectionTest::bus"))) (name "bus") (declared-name "bus"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d1"))) (name "d1") (declared-name "d1") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d2"))) (name "d2") (declared-name "d2") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d3"))) (name "d3") (declared-name "d3") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d4"))) (name "d4") (declared-name "d4") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x::x1"))) (name "x1") (declared-name "x1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d1"))) (to (node (document "d0") (qualified-name "ConnectionTest::d2"))) (connect (source-expression "d1") (target-expression "d2") (container-prefix "ConnectionTest")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d1"))) (to (node (document "d0") (qualified-name "ConnectionTest::d3"))) (connect (source-expression "d1") (target-expression "d3") (container-prefix "ConnectionTest")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d1"))) (to (node (document "d0") (qualified-name "ConnectionTest::d4"))) (connect (source-expression "d1") (target-expression "d4") (container-prefix "ConnectionTest")))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::d2"))) (to (node (document "d0") (qualified-name "ConnectionTest::d3"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::p"))) (to (node (document "d0") (qualified-name "ConnectionTest::P::y"))) (connect (source-expression "p") (target-expression "y") (container-prefix "ConnectionTest::P")))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::A::b"))) (to (node (document "d0") (qualified-name "ConnectionTest::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::AB::b"))) (to (node (document "d0") (qualified-name "ConnectionTest::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::_connection"))) (to (node (document "d0") (qualified-name "ConnectionTest::C"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ConnectionTest::bus"))) (to (node (document "d0") (qualified-name "ConnectionTest::C"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (connection (status pending-expression) (document "d0") (source-expression "p1::x") (target-expression "y") (container-prefix "ConnectionTest::P"))
+    (connection (status pending-expression) (document "d0") (source-expression "p1::x::x1") (target-expression "y") (container-prefix "ConnectionTest::P"))
+  )
+)
 ~~~

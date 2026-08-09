@@ -151,27 +151,31 @@ package FeatureAdvancedCoverage {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'FeatureAdvancedCoverage'
-      (not_implemented 'malformed')
-      (feature_def 'myFeature' : 'T'[unresolved])
-      (package 'MyPackage')
-      (feature_def 'fIn'
-        (feature_def in 'input' : 'T'[unresolved]))
-      (feature_def 'fOut' ~ 'FeatureAdvancedCoverage::fIn'[feature_def])
-      (feature_def 'fConj' ~ 'FeatureAdvancedCoverage::fIn'[feature_def])
-      (feature_def 'x' :> 'FeatureAdvancedCoverage::myFeature'[feature_def])
-      (feature_def 'y' :> 'FeatureAdvancedCoverage::myFeature'[feature_def])
-      (feature_def 'z' :>> 'myFeature'[unresolved])
-      (feature_def 'w' :>> 'myFeature'[unresolved])
-      (feature_def 'z1' : 'T'[unresolved])
-      (class_def 'C'
-        (feature_def end 'port1' : 'T'[unresolved])
-        (feature_def end 'constPort' : 'T'[unresolved])
-        (feature_def 'm' : 'T'[unresolved]))
-      (namespace 'NS')
-      (not_implemented 'malformed')
-      (namespace_import -> 'FeatureAdvancedCoverage::C'[class_def])
-      (membership_import recursive -> 'FeatureAdvancedCoverage::C'[class_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (name "FeatureAdvancedCoverage") (declared-name "FeatureAdvancedCoverage")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C"))) (name "C") (declared-name "C"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))) (name "C") (declared-name "C"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::MyPackage"))) (name "MyPackage") (declared-name "MyPackage"))
+        (element (kind "metadata keyword") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (name "Safety") (declared-name "Safety"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fConj"))) (name "fConj") (declared-name "fConj"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fIn"))) (name "fIn") (declared-name "fIn"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::fOut"))) (name "fOut") (declared-name "fOut"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::w"))) (name "w") (declared-name "w"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::x"))) (name "x") (declared-name "x"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::y"))) (name "y") (declared-name "y"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z"))) (name "z") (declared-name "z"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "FeatureAdvancedCoverage::z1"))) (name "z1") (declared-name "z1"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (to (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

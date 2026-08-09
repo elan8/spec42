@@ -80,19 +80,26 @@ package FuncSpec {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'FuncSpec'
-      (function_def 'F' :> 'Base::G'[unresolved])
-      (function_def 'H' :> 'Base::I'[unresolved] :> 'Base::J'[unresolved])
-      (function_def abstract 'K' :> 'Base::L'[unresolved])
-      (predicate_def 'P' :> 'Base::Q'[unresolved])
-      (predicate_def 'R' :> 'Base::S'[unresolved])
-      (function_def 'FI' :> 'Base::G'[unresolved]
-        (intersecting))
-      (predicate_def 'PI' :> 'Base::Q'[unresolved]
-        (intersecting)
-        (intersecting))
-      (invariant_def 'I'
-        (result_expr_membership)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "FuncSpec"))) (name "FuncSpec") (declared-name "FuncSpec")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::F"))) (name "F") (declared-name "F"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::FI"))) (name "FI") (declared-name "FI"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::H"))) (name "H") (declared-name "H"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::I"))) (name "I") (declared-name "I"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::K"))) (name "K") (declared-name "K"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::P"))) (name "P") (declared-name "P"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::PI"))) (name "PI") (declared-name "PI"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "FuncSpec::R"))) (name "R") (declared-name "R"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

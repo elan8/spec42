@@ -47,13 +47,21 @@ package InvalidMult {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'InvalidMult'
-      (classifier_def 'Bad'
-        (multiplicity_range [3..1]))
-      (classifier_def 'AlsoBad'
-        (multiplicity_range [65534..5]))
-      (classifier_def 'Valid'
-        (multiplicity_range [1..3])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "InvalidMult"))) (name "InvalidMult") (declared-name "InvalidMult")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "InvalidMult::AlsoBad"))) (name "AlsoBad") (declared-name "AlsoBad"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "InvalidMult::Bad"))) (name "Bad") (declared-name "Bad"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "InvalidMult::Valid"))) (name "Valid") (declared-name "Valid"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

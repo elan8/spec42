@@ -120,28 +120,25 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Associations'
-      (datatype_def 'X')
-      (class_def 'Y')
-      (association_def 'A'
-        (feature_def end 'x' : 'Associations::X'[datatype_def]
-          (multiplicity_range [1..1]))
-        (feature_def end 'y' : 'Associations::Y'[class_def]
-          (multiplicity_range [1..*])))
-      (association_def 'B' :> 'Associations::A'[association_def]
-        (feature_def end 'x1' :>> 'Associations::A::x'[feature_def][implied])
-        (feature_def end 'y1' :>> 'Associations::A::y'[feature_def]
-          (multiplicity_range [0..*])))
-      (assoc_struct_def 'C'
-        (feature_def end 'a'
-          (multiplicity_range [1]))
-        (feature_def end 'b'))
-      (metaclass_def 'M')
-      (association_def 'XY'
-        (feature_def end 'x' : 'Associations::X'[datatype_def]
-          (multiplicity_range [0..1])
-          (metadata_usage :> 'Associations::M'[metaclass_def]))
-        (feature_def end 'y' : 'Associations::Y'[class_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Associations"))) (name "Associations") (declared-name "Associations")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Associations::A"))) (name "A") (declared-name "A"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Associations::B"))) (name "B") (declared-name "B"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Associations::M"))) (name "M") (declared-name "M"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Associations::X"))) (name "X") (declared-name "X"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Associations::XY"))) (name "XY") (declared-name "XY"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Associations::Y"))) (name "Y") (declared-name "Y"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Associations::struct"))) (name "struct") (declared-name "struct"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

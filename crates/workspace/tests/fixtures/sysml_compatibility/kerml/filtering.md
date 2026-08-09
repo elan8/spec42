@@ -198,38 +198,53 @@ semantic.unresolved_name 'Natural'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Filtering'
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (package 'Annotations'
-        (metaclass_def 'ApprovalAnnotation'
-          (feature_def 'approved' : 'Boolean'[unresolved])
-          (feature_def 'approver' : 'String'[unresolved])
-          (feature_def 'level' : 'Natural'[unresolved])))
-      (package 'DesignModel'
-        (namespace_import private -> 'Filtering::Annotations'[package])
-        (structure_def 'System'
-          (metadata_usage :> 'Filtering::Annotations::ApprovalAnnotation'[metaclass_def]
-            (feature_def 'approved' :>> 'Filtering::Annotations::ApprovalAnnotation::approved'[feature_def][implied]
-              (feature_value (=)))
-            (feature_def 'approver' :>> 'Filtering::Annotations::ApprovalAnnotation::approver'[feature_def][implied]
-              (feature_value (=)))
-            (feature_def 'level' :>> 'Filtering::Annotations::ApprovalAnnotation::level'[feature_def][implied]
-              (feature_value (=)))))
-        (feature_def composite 'system' : 'Filtering::DesignModel::System'[structure_def]))
-      (package 'UpperLevelApprovals'
-        (membership_import private recursive -> 'Filtering::DesignModel'[package])
-        (element_filter_membership)
-        (structure_def 'Test' :> 'Filtering::DesignModel::System'[structure_def]))
-      (package 'UpperLevelApprovals1'
-        (membership_import private recursive -> 'Filtering::Annotations'[package])
-        (membership_import private recursive -> 'Filtering::DesignModel'[package])
-        (structure_def 'Test' :> 'Filtering::DesignModel::System'[structure_def]))
-      (namespace_import private -> 'KerML'[unresolved])
-      (package 'Meta'
-        (namespace_import private -> 'Filtering::DesignModel'[package])
-        (element_filter_membership)
-        (structure_def 'Test' :> 'Filtering::DesignModel::System'[structure_def])
-        (feature_def :> 'Filtering::DesignModel::system'[feature_def])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Filtering"))) (name "Filtering") (declared-name "Filtering")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Filtering::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Filtering::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "Filtering::Annotations"))) (name "Annotations") (declared-name "Annotations")
+          (contains
+            (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Filtering::Annotations::ApprovalAnnotation"))) (name "ApprovalAnnotation") (declared-name "ApprovalAnnotation"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Filtering::DesignModel"))) (name "DesignModel") (declared-name "DesignModel")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Filtering::DesignModel::*"))) (name "*") (declared-name "*"))
+            (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Filtering::DesignModel::System"))) (name "System") (declared-name "System"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Filtering::Meta"))) (name "Meta") (declared-name "Meta")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Filtering::Meta::*"))) (name "*") (declared-name "*"))
+            (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Filtering::Meta::Test"))) (name "Test") (declared-name "Test"))
+            (element (kind "filter") (id (node (document "d0") (qualified-name "Filtering::Meta::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "||") (children (expression (kind "parenthesized") (children (expression (kind "binary") (operator "&&") (children (expression (kind "binary") (operator "==") (children (expression (kind "featureReference") (reference "Element::name")) (expression (kind "stringLiteral") (literal "System")))) (expression (kind "unary") (operator "not") (children (expression (kind "featureReference") (reference "Type::isAbstract")))))))) (expression (kind "featureReference") (reference "Feature::isComposite")))))))
+            (element (kind "feature decl") (id (node (document "d0") (qualified-name "Filtering::Meta::feature"))) (name "feature") (declared-name "feature"))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals"))) (name "UpperLevelApprovals") (declared-name "UpperLevelApprovals")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals::DesignModel"))) (name "DesignModel") (declared-name "DesignModel"))
+            (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals::Test"))) (name "Test") (declared-name "Test"))
+            (element (kind "filter") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "&&") (children (expression (kind "featureReference") (reference "Annotations::ApprovalAnnotation::approved")) (expression (kind "binary") (operator ">") (children (expression (kind "featureReference") (reference "Annotations::ApprovalAnnotation::level")) (expression (kind "integerLiteral") (literal 1)))))))))
+          )
+        )
+        (element (kind "package") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals1"))) (name "UpperLevelApprovals1") (declared-name "UpperLevelApprovals1")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals1::Annotations"))) (name "Annotations") (declared-name "Annotations"))
+            (element (kind "import") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals1::DesignModel"))) (name "DesignModel") (declared-name "DesignModel"))
+            (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Filtering::UpperLevelApprovals1::Test"))) (name "Test") (declared-name "Test"))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

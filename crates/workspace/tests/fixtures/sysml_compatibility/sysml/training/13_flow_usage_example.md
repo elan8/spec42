@@ -88,14 +88,27 @@ semantic.unresolved_name 'Engine'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Flow Usage Example'
-      (namespace_import private -> 'Port Example'[unresolved])
-      (part_def 'Vehicle')
-      (part_usage 'vehicle' : 'Flow Usage Example::Vehicle'[part_def]
-        (part_usage composite 'tankAssy' : 'FuelTankAssembly'[unresolved])
-        (part_usage composite 'eng' : 'Engine'[unresolved])
-        (flow_usage composite 'of')
-        (flow_usage composite 'of')))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Flow Usage Example"))) (name "Flow Usage Example") (declared-name "Flow Usage Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Flow Usage Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Flow Usage Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Flow Usage Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Usage Example::vehicle::tankAssy"))) (name "tankAssy") (declared-name "tankAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Flow Usage Example::Vehicle")))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flow Usage Example::vehicle"))) (to (node (document "d0") (qualified-name "Flow Usage Example::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

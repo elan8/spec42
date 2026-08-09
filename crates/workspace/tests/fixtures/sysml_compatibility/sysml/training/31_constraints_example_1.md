@@ -142,28 +142,41 @@ semantic.unresolved_name 'MassValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Constraints Example-1'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'NumericalFunctions'[unresolved])
-      (part_def 'Engine')
-      (part_def 'Transmission')
-      (constraint_def 'MassConstraint'
-        (reference_usage in reference 'partMasses' : 'MassValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (reference_usage in reference 'massLimit' : 'MassValue'[unresolved])
-        (result_expr_membership))
-      (part_def 'Vehicle'
-        (constraint_usage composite 'massConstraint' : 'Constraints Example-1::MassConstraint'[constraint_def]
-          (reference_usage in reference 'partMasses'
-            (feature_value (=)))
-          (reference_usage in reference 'massLimit'
-            (feature_value (=))))
-        (attribute_usage composite 'chassisMass' : 'MassValue'[unresolved])
-        (part_usage composite 'engine' : 'Constraints Example-1::Engine'[part_def]
-          (attribute_usage composite 'mass' : 'MassValue'[unresolved]))
-        (part_usage composite 'transmission' : 'Constraints Example-1::Engine'[part_def]
-          (attribute_usage composite 'mass' : 'MassValue'[unresolved]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Constraints Example-1"))) (name "Constraints Example-1") (declared-name "Constraints Example-1")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Constraints Example-1::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Constraints Example-1::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Constraints Example-1::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Constraints Example-1::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Constraints Example-1::MassConstraint"))) (name "MassConstraint") (declared-name "MassConstraint"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Constraints Example-1::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Constraints Example-1::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Constraints Example-1::Vehicle::chassisMass"))) (name "chassisMass") (declared-name "chassisMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Constraints Example-1::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Constraints Example-1::Vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Constraints Example-1::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Constraints Example-1::Vehicle::engine::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Constraints Example-1::Engine")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Constraints Example-1::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "Constraints Example-1::Vehicle::transmission::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Constraints Example-1::Engine")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints Example-1::Vehicle::engine"))) (to (node (document "d0") (qualified-name "Constraints Example-1::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints Example-1::Vehicle::transmission"))) (to (node (document "d0") (qualified-name "Constraints Example-1::Engine"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -3812,981 +3812,442 @@ standard library package ShapeItems {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ShapeItems'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Positive'[unresolved])
-      (namespace_import private -> 'ISQSpaceTime'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (membership_import private -> 'SI::m'[unresolved])
-      (membership_import private -> 'Occurrences::MatesWith'[unresolved])
-      (namespace_import private -> 'Objects'[unresolved])
-      (membership_import private -> 'Items::Item'[unresolved])
-      (membership_import private -> 'SequenceFunctions::equals'[unresolved])
-      (membership_import private -> 'SequenceFunctions::isEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::notEmpty'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'SequenceFunctions::includes'[unresolved])
-      (membership_import private -> 'ControlFunctions::if'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (membership_import private -> 'ControlFunctions::exists'[unresolved])
-      (membership_import private -> 'Quantities::scalarQuantities'[unresolved])
-      (item_def 'PlanarCurve' :> 'Curve'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'length'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'outerSpaceDimension'[unresolved])
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (item_def 'PlanarSurface' :> 'Surface'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'area'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'outerSpaceDimension'[unresolved]
-          (feature_value (=)))
-        (item_usage composite :>> 'shape'[unresolved] : 'ShapeItems::PlanarCurve'[item_def]))
-      (item_def 'Line' :> 'ShapeItems::PlanarCurve'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'length'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'outerSpaceDimension'[unresolved]
-          (feature_value (=))))
-      (item_def abstract 'Path' :> 'StructuredSpaceObject::StructuredCurve'[unresolved]
-        (documentation)
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [0]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [1..*])
-          (item_usage composite :>> 'vertices'[unresolved]
-            (multiplicity_range [0..2])))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [*])
-          (feature_value (=)))
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (attribute_usage 'semiMajorAxis' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [0..*]))
-      (attribute_usage 'semiMinorAxis' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [0..*]))
-      (attribute_usage 'xoffset' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [0..*])
-        (feature_value (default =)))
-      (attribute_usage 'yoffset' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [0..*])
-        (feature_value (default =)))
-      (attribute_usage 'baseLength' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [0..*]))
-      (attribute_usage 'baseWidth' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [0..*]))
-      (item_def 'ConicSection' :> 'ShapeItems::Path'[item_def] :> 'ShapeItems::PlanarCurve'[item_def]
-        (documentation)
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [1..2]))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [0])))
-      (item_def 'Ellipse' :> 'ShapeItems::ConicSection'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'ShapeItems::semiMajorAxis'[attribute_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::semiMinorAxis'[attribute_usage]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [1])))
-      (item_def 'Circle' :> 'ShapeItems::Ellipse'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'radius'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (item_usage composite :>> 'edges'[unresolved]
-          (attribute_usage composite 'length'
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (item_def 'Parabola' :> 'ShapeItems::ConicSection'[item_def]
-        (documentation)
-        (attribute_usage composite 'focalDistance' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [1])))
-      (item_def 'Hyperbola' :> 'ShapeItems::ConicSection'[item_def]
-        (documentation)
-        (attribute_usage composite 'tranverseAxis' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'conjugateAxis' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1])))
-      (item_def 'Polygon' :> 'ShapeItems::Path'[item_def] :> 'ShapeItems::PlanarCurve'[item_def]
-        (documentation)
-        (item_usage composite :>> 'edges'[unresolved] : 'ShapeItems::Line'[item_def]
-          (item_usage composite :>> 'vertices'[unresolved]
-            (multiplicity_range [2])))
-        (attribute_usage composite :>> 'isClosed'[unresolved]
-          (feature_value (=)))
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (item_def 'Triangle' :> 'ShapeItems::Polygon'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'length'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'width'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::xoffset'[attribute_usage]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [3])
-          (feature_value (=)))
-        (item_usage composite 'base'
-          (multiplicity_range [1])
-          (reference_usage reference 'length'
-            (feature_value (=))))
-        (item_usage composite 'e2'
-          (multiplicity_range [1]))
-        (item_usage composite 'e3'
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [6]))
-        (item_usage composite ordered 'v12'
-          (multiplicity_range [2])
-          (feature_value (=)))
-        (item_usage composite ordered 'apex'
-          (multiplicity_range [2])
-          (feature_value (=)))
-        (item_usage composite ordered 'v31'
-          (multiplicity_range [2])
-          (feature_value (=))))
-      (item_def 'RightTriangle' :> 'ShapeItems::Triangle'[item_def]
-        (documentation)
-        (attribute_usage composite :>> ''[attribute_usage]
-          (feature_value (=)))
-        (item_usage composite :>> 'ShapeItems::Triangle::e2'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite 'hypotenuse' :>> 'ShapeItems::Triangle::e3'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))))
-      (item_def 'Quadrilateral' :> 'ShapeItems::Polygon'[item_def]
-        (documentation)
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [4])
-          (feature_value (=)))
-        (item_usage composite 'e1'
-          (multiplicity_range [1]))
-        (item_usage composite 'e2'
-          (multiplicity_range [1]))
-        (item_usage composite 'e3'
-          (multiplicity_range [1]))
-        (item_usage composite 'e4'
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [8]))
-        (item_usage composite ordered 'v12'
-          (multiplicity_range [2])
-          (feature_value (=)))
-        (item_usage composite ordered 'v23'
-          (multiplicity_range [2])
-          (feature_value (=)))
-        (item_usage composite ordered 'v34'
-          (multiplicity_range [2])
-          (feature_value (=)))
-        (item_usage composite ordered 'v41'
-          (multiplicity_range [2])
-          (feature_value (=))))
-      (item_def 'Rectangle' :> 'ShapeItems::Quadrilateral'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'length'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'width'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'ShapeItems::Quadrilateral::e1'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::Quadrilateral::e2'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::Quadrilateral::e3'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::Quadrilateral::e4'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))))
-      (item_def abstract 'Shell' :> 'StructuredSpaceObject::StructuredSurface'[unresolved]
-        (documentation))
-      (item_def 'Disc' :> 'ShapeItems::Shell'[item_def] :> 'ShapeItems::PlanarSurface'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'ShapeItems::semiMajorAxis'[attribute_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::semiMinorAxis'[attribute_usage]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'shape'[unresolved] : 'ShapeItems::Ellipse'[item_def]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> ''[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> ''[attribute_usage]
-            (feature_value (=))))
-        (item_usage composite :>> 'faces'[unresolved] : 'ShapeItems::PlanarSurface'[item_def]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'edges'[unresolved]
-            (multiplicity_range [1])))
-        (item_usage composite :>> 'edges'[unresolved] : 'ShapeItems::Ellipse'[item_def]
-          (multiplicity_range [1])
-          (feature_value (=))
-          (attribute_usage composite :>> 'Shell::edges::innerSpaceDimension'[unresolved] :>> 'Ellipse::innerSpaceDimension'[unresolved])
-          (item_usage reference :>> 'Shell::edges::vertices'[unresolved] :>> 'Ellipse::vertices'[unresolved]))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [0])))
-      (item_def 'CircularDisc' :> 'ShapeItems::Disc'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'radius'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (item_usage composite :>> 'shape'[unresolved] : 'ShapeItems::Circle'[item_def]
-          (attribute_usage composite :>> 'Disc::shape::semiMajorAxis'[unresolved] :>> ''[attribute_usage])
-          (attribute_usage composite :>> 'Disc::shape::semiMinorAxis'[unresolved] :>> ''[attribute_usage]))
-        (item_usage composite :>> 'edges'[unresolved] : 'ShapeItems::Circle'[item_def]))
-      (item_def 'ConicSurface' :> 'ShapeItems::Shell'[item_def]
-        (documentation)
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [1..2]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [0]))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [0]))
-        (attribute_usage composite :>> 'genus'[unresolved]
-          (feature_value (=))))
-      (item_def 'Ellipsoid' :> 'ShapeItems::ConicSurface'[item_def]
-        (documentation)
-        (attribute_usage composite 'semiAxis1' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'semiAxis2' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'semiAxis3' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [1])))
-      (item_def 'Sphere' :> 'ShapeItems::Ellipsoid'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'radius'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::Ellipsoid::semiAxis1'[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite :>> 'ShapeItems::Ellipsoid::semiAxis2'[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite :>> 'ShapeItems::Ellipsoid::semiAxis3'[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=))))
-      (item_def 'Paraboloid' :> 'ShapeItems::ConicSurface'[item_def]
-        (documentation)
-        (attribute_usage composite 'focalDistance' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [1])))
-      (item_def 'Hyperboloid' :> 'ShapeItems::ConicSurface'[item_def]
-        (documentation)
-        (attribute_usage composite 'transverseAxis' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'conjugateAxis' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1])))
-      (item_def 'Toroid' :> 'ShapeItems::Shell'[item_def]
-        (documentation)
-        (attribute_usage composite 'revolutionRadius' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite 'revolvedCurve' : 'ShapeItems::PlanarCurve'[item_def]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'isClosed'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [0]))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [0]))
-        (attribute_usage composite :>> 'genus'[unresolved]
-          (feature_value (=))))
-      (item_def 'Torus' :> 'ShapeItems::Toroid'[item_def]
-        (documentation)
-        (attribute_usage composite 'majorRadius' :>> 'ShapeItems::Toroid::revolutionRadius'[attribute_usage])
-        (attribute_usage composite 'minorRadius' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'ShapeItems::Toroid::revolvedCurve'[item_usage] : 'ShapeItems::Circle'[item_def]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'radius'[unresolved]
-            (feature_value (=)))))
-      (item_def 'RectangularToroid' :> 'ShapeItems::Toroid'[item_def]
-        (documentation)
-        (attribute_usage composite 'rectangleLength' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'rectangleWidth' : 'LengthValue'[unresolved] :> 'scalarQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'ShapeItems::Toroid::revolvedCurve'[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'revolvedCurve::isClosed'[unresolved] :>> 'Rectangle::isClosed'[unresolved])))
-      (item_def 'ConeOrCylinder' :> 'ShapeItems::Shell'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'ShapeItems::semiMajorAxis'[attribute_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::semiMinorAxis'[attribute_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'height'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::xoffset'[attribute_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::yoffset'[attribute_usage]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [2..3]))
-        (item_usage composite 'base' : 'ShapeItems::Disc'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [1])
-          (attribute_usage composite :>> 'Disc::innerSpaceDimension'[unresolved] :>> 'faces::innerSpaceDimension'[unresolved])
-          (reference_usage reference :>> 'Disc::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved]
-            (attribute_usage composite :>> 'Disc::edges::innerSpaceDimension'[unresolved] :>> 'ConeOrCylinder::faces::edges::innerSpaceDimension'[unresolved]))
-          (reference_usage reference :>> 'Disc::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite 'af' : 'ShapeItems::Disc'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [0..1])
-          (attribute_usage composite :>> 'Disc::innerSpaceDimension'[unresolved] :>> 'faces::innerSpaceDimension'[unresolved])
-          (reference_usage reference :>> 'Disc::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved]
-            (attribute_usage composite :>> 'Disc::edges::innerSpaceDimension'[unresolved] :>> 'ConeOrCylinder::faces::edges::innerSpaceDimension'[unresolved]))
-          (reference_usage reference :>> 'Disc::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite 'cf' : 'Surface'[unresolved] :> 'faces'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [2..4])
-          (feature_value (=)))
-        (item_usage composite 'be' :> 'edges'[unresolved]
-          (multiplicity_range [2])
-          (attribute_usage composite :>> ''[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> ''[attribute_usage]
-            (feature_value (=))))
-        (item_usage composite 'ae' :> 'edges'[unresolved]
-          (multiplicity_range [0..2])
-          (attribute_usage composite :>> ''[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite :>> ''[attribute_usage]
-            (feature_value (=))))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (item_usage composite :>> 'vertices'[unresolved]
-          (multiplicity_range [0..1])
-          (feature_value (=)))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'base.edges')
-          (connector_end 'be'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'cf.edges')
-          (connector_end 'be'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'be')
-          (connector_end 'be'))
-        (attribute_usage composite :>> 'genus'[unresolved]
-          (feature_value (=))))
-      (item_def 'Cone' :> 'ShapeItems::ConeOrCylinder'[item_def]
-        (documentation)
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'apex' :>> 'vertices'[unresolved])
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'cf.vertices')
-          (connector_end 'apex')))
-      (item_def 'EccentricCone' :> 'ShapeItems::Cone'[item_def]
-        (documentation)
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (item_def 'CircularCone' :> 'ShapeItems::Cone'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'radius'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (item_usage composite :>> 'ShapeItems::ConeOrCylinder::base'[item_usage] : 'ShapeItems::CircularDisc'[item_def]
-          (reference_usage reference :>> 'base::edges'[unresolved] :>> 'CircularDisc::edges'[unresolved])))
-      (item_def 'RightCircularCone' :> 'ShapeItems::CircularCone'[item_def]
-        (documentation)
-        (attribute_usage composite :>> ''[attribute_usage]
-          (attribute_usage composite :>> 'num'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (attribute_usage composite :>> 'num'[unresolved]
-            (feature_value (=)))))
-      (item_def 'Cylinder' :> 'ShapeItems::ConeOrCylinder'[item_def]
-        (documentation)
-        (item_usage composite :>> 'ShapeItems::ConeOrCylinder::af'[item_usage]
-          (multiplicity_range [1]))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'cf.edges')
-          (connector_end 'ae'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'ae')
-          (connector_end 'ae')
-          (documentation)))
-      (item_def 'EccentricCylinder' :> 'ShapeItems::Cylinder'[item_def]
-        (documentation)
-        (assert_constraint_usage
-          (result_expr_membership)))
-      (item_def 'CircularCylinder' :> 'ShapeItems::Cylinder'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'radius'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (item_usage composite :>> 'ShapeItems::ConeOrCylinder::base'[item_usage] : 'ShapeItems::CircularDisc'[item_def]
-          (reference_usage reference :>> 'base::edges'[unresolved] :>> 'CircularDisc::edges'[unresolved]))
-        (item_usage composite :>> ''[item_usage] : 'ShapeItems::CircularDisc'[item_def]
-          (reference_usage reference :>> 'af::edges'[unresolved] :>> 'CircularDisc::edges'[unresolved])))
-      (item_def 'RightCircularCylinder' :> 'ShapeItems::CircularCylinder'[item_def]
-        (documentation)
-        (attribute_usage composite :>> ''[attribute_usage]
-          (attribute_usage composite :>> 'num'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> ''[attribute_usage]
-          (attribute_usage composite :>> 'num'[unresolved]
-            (feature_value (=)))))
-      (item_def 'Polyhedron' :> 'ShapeItems::Shell'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'isClosed'[unresolved]
-          (feature_value (=)))
-        (item_usage composite :>> 'faces'[unresolved] : 'ShapeItems::Polygon'[item_def]
-          (multiplicity_range [2..*])
-          (attribute_usage composite :>> 'Polygon::innerSpaceDimension'[unresolved] :>> 'faces::innerSpaceDimension'[unresolved])
-          (reference_usage reference :>> 'Polygon::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Polygon::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'outerSpaceDimension'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'genus'[unresolved]
-          (feature_value (=))))
-      (item_def 'CuboidOrTriangularPrism' :> 'ShapeItems::Polyhedron'[item_def]
-        (documentation)
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [5..6]))
-        (item_usage composite 'tf' : 'ShapeItems::Quadrilateral'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'Quadrilateral::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Quadrilateral::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite 'bf' : 'ShapeItems::Quadrilateral'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'Quadrilateral::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Quadrilateral::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite 'ff' : 'ShapeItems::Polygon'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'Polygon::edges'[unresolved] :>> 'faces::edges'[unresolved]
-            (multiplicity_range [3..4])))
-        (item_usage composite 'rf' : 'ShapeItems::Polygon'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'Polygon::edges'[unresolved] :>> 'faces::edges'[unresolved]
-            (multiplicity_range [3..4])))
-        (item_usage composite 'slf' : 'ShapeItems::Quadrilateral'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'Quadrilateral::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Quadrilateral::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite 'srf' : 'ShapeItems::Quadrilateral'[item_def] :> 'faces'[unresolved]
-          (multiplicity_range [0..1])
-          (reference_usage reference :>> 'Quadrilateral::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Quadrilateral::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite :>> 'edges'[unresolved])
-        (assert_constraint_usage
-          (result_expr_membership))
-        (item_usage composite 'tfe' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'tre' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'tsle' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'tsre' :> 'edges'[unresolved]
-          (multiplicity_range [0..2]))
-        (item_usage composite 'bfe' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'bre' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'bsle' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'bsre' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'ufle' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'ufre' :> 'edges'[unresolved]
-          (multiplicity_range [0..2]))
-        (item_usage composite 'urle' :> 'edges'[unresolved]
-          (multiplicity_range [2]))
-        (item_usage composite 'urre' :> 'edges'[unresolved]
-          (multiplicity_range [0..2]))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (item_usage composite :>> 'vertices'[unresolved])
-        (assert_constraint_usage
-          (result_expr_membership))
-        (item_usage composite 'tflv' :> 'vertices'[unresolved]
-          (multiplicity_range [3]))
-        (item_usage composite 'tfrv' :> 'vertices'[unresolved]
-          (multiplicity_range [0..3]))
-        (item_usage composite 'trlv' :> 'vertices'[unresolved]
-          (multiplicity_range [3]))
-        (item_usage composite 'trrv' :> 'vertices'[unresolved]
-          (multiplicity_range [0..3]))
-        (item_usage composite 'bflv' :> 'vertices'[unresolved]
-          (multiplicity_range [3]))
-        (item_usage composite 'bfrv' :> 'vertices'[unresolved]
-          (multiplicity_range [3]))
-        (item_usage composite 'brlv' :> 'vertices'[unresolved]
-          (multiplicity_range [3]))
-        (item_usage composite 'brrv' :> 'vertices'[unresolved]
-          (multiplicity_range [3]))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tf.edges')
-          (connector_end 'tfe'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tf.edges')
-          (connector_end 'tre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tf.edges')
-          (connector_end 'tsle'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bf.edges')
-          (connector_end 'bfe'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bf.edges')
-          (connector_end 'bre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bf.edges')
-          (connector_end 'bsle'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bf.edges')
-          (connector_end 'bsre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ff.edges')
-          (connector_end 'tfe'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ff.edges')
-          (connector_end 'bfe'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ff.edges')
-          (connector_end 'ufle'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'rf.edges')
-          (connector_end 'tre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'rf.edges')
-          (connector_end 'bre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'rf.edges')
-          (connector_end 'urle'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tfe.vertices')
-          (connector_end 'tflv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tre.vertices')
-          (connector_end 'trlv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tsle.vertices')
-          (connector_end 'tflv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tsle.vertices')
-          (connector_end 'trlv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bfe.vertices')
-          (connector_end 'bflv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bfe.vertices')
-          (connector_end 'bfrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bre.vertices')
-          (connector_end 'brlv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bre.vertices')
-          (connector_end 'brrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bsle.vertices')
-          (connector_end 'bflv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bsle.vertices')
-          (connector_end 'brlv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bsre.vertices')
-          (connector_end 'bfrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'bsre.vertices')
-          (connector_end 'brrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ufle.vertices')
-          (connector_end 'tflv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ufle.vertices')
-          (connector_end 'bflv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'urle.vertices')
-          (connector_end 'trlv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'urle.vertices')
-          (connector_end 'brlv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'tfe')
-          (connector_end 'tfe'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'tre')
-          (connector_end 'tre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'tsle')
-          (connector_end 'tsle'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bfe')
-          (connector_end 'bfe'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bre')
-          (connector_end 'bre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bsle')
-          (connector_end 'bsle'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bsre')
-          (connector_end 'bsre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'ufle')
-          (connector_end 'ufle'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'urle')
-          (connector_end 'urle'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bsre')
-          (connector_end 'bsre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'tflv')
-          (connector_end 'tflv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'trlv')
-          (connector_end 'trlv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bflv')
-          (connector_end 'bflv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bfrv')
-          (connector_end 'bfrv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'brlv')
-          (connector_end 'brlv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'brrv')
-          (connector_end 'brrv')))
-      (item_def 'TriangularPrism' :> 'ShapeItems::CuboidOrTriangularPrism'[item_def]
-        (documentation)
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [5]))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::ff'[item_usage] : 'ShapeItems::Triangle'[item_def]
-          (reference_usage reference :>> 'Triangle::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Triangle::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::rf'[item_usage] : 'ShapeItems::Triangle'[item_def]
-          (reference_usage reference :>> 'Triangle::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Triangle::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [18]))
-        (item_usage composite :>> 'vertices'[unresolved])
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tf.edges')
-          (connector_end 'bsre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tfe.vertices')
-          (connector_end 'bfrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tre.vertices')
-          (connector_end 'bfrv')))
-      (item_def 'RightTriangularPrism' :> 'ShapeItems::TriangularPrism'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'length'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'width'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'height'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::tf'[item_usage] : 'ShapeItems::Rectangle'[item_def])
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::bf'[item_usage] : 'ShapeItems::Rectangle'[item_def])
-        (item_usage composite :>> ''[item_usage] : 'ShapeItems::RightTriangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> ''[item_usage] : 'ShapeItems::RightTriangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::slf'[item_usage] : 'ShapeItems::Rectangle'[item_def])
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::srf'[item_usage] : 'ShapeItems::Rectangle'[item_def])
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::tfe'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::tre'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::tsle'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::bfe'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::bre'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::bsle'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::bsre'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::ufle'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::urle'[item_usage]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'Wedge' -> 'ShapeItems::RightTriangularPrism'[item_def])
-      (item_def 'Cuboid' :> 'ShapeItems::CuboidOrTriangularPrism'[item_def]
-        (documentation)
-        (item_usage composite :>> 'faces'[unresolved]
-          (multiplicity_range [6]))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::ff'[item_usage] : 'ShapeItems::Quadrilateral'[item_def]
-          (reference_usage reference :>> 'Quadrilateral::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Quadrilateral::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::rf'[item_usage] : 'ShapeItems::Quadrilateral'[item_def]
-          (reference_usage reference :>> 'Quadrilateral::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Quadrilateral::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (item_usage composite :>> 'edges'[unresolved]
-          (multiplicity_range [24]))
-        (item_usage composite :>> 'vertices'[unresolved])
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tf.edges')
-          (connector_end 'tsre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ff.edges')
-          (connector_end 'ufre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'rf.edges')
-          (connector_end 'urre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'srf.edges')
-          (connector_end 'tsre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'srf.edges')
-          (connector_end 'bsre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'srf.edges')
-          (connector_end 'ufre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'srf.edges')
-          (connector_end 'urre'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tfe.vertices')
-          (connector_end 'tfrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tre.vertices')
-          (connector_end 'trrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tsre.vertices')
-          (connector_end 'tfrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'tsre.vertices')
-          (connector_end 'trrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ufre.vertices')
-          (connector_end 'tfrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'ufre.vertices')
-          (connector_end 'bfrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'urre.vertices')
-          (connector_end 'trrv'))
-        (binding_connector_def
-          (multiplicity_range [1])
-          (connector_end 'urre.vertices')
-          (connector_end 'brrv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'tsre')
-          (connector_end 'tsre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'ufre')
-          (connector_end 'ufre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'urre')
-          (connector_end 'urre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'bsre')
-          (connector_end 'bsre'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'tfrv')
-          (connector_end 'tfrv'))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'trrv')
-          (connector_end 'trrv')))
-      (item_def 'RectangularCuboid' :> 'ShapeItems::Cuboid'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'length'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'width'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'height'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::tf'[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::bf'[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> ''[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> ''[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::slf'[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))
-        (item_usage composite :>> 'ShapeItems::CuboidOrTriangularPrism::srf'[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'Box' -> 'ShapeItems::RectangularCuboid'[item_def])
-      (item_def 'Pyramid' :> 'ShapeItems::Polyhedron'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'height'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::xoffset'[attribute_usage])
-        (attribute_usage composite :>> 'ShapeItems::yoffset'[attribute_usage])
-        (item_usage composite :>> 'faces'[unresolved])
-        (item_usage composite 'base' :> 'faces'[unresolved]
-          (multiplicity_range [1]))
-        (item_usage composite 'wall' : 'ShapeItems::Triangle'[item_def] :> 'faces'[unresolved]
-          (reference_usage reference :>> 'Triangle::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Triangle::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved]))
-        (attribute_usage composite 'wallNumber' : 'Positive'[unresolved]
-          (feature_value (=)))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (item_usage composite :>> 'edges'[unresolved])
-        (assert_constraint_usage
-          (result_expr_membership))
-        (item_usage composite :>> 'vertices'[unresolved])
-        (item_usage composite 'apex' :> 'vertices'[unresolved]
-          (feature_value (=)))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (connection_usage composite : 'MatesWith'[unresolved]
-          (connector_end 'apex')
-          (connector_end 'apex')))
-      (item_def 'Tetrahedron' :> 'ShapeItems::Pyramid'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'ShapeItems::baseLength'[attribute_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::baseWidth'[attribute_usage]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'ShapeItems::Pyramid::base'[item_usage] : 'ShapeItems::Triangle'[item_def]
-          (reference_usage reference :>> 'Triangle::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Triangle::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved])
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=)))))
-      (item_def 'RectangularPyramid' :> 'ShapeItems::Pyramid'[item_def]
-        (documentation)
-        (attribute_usage composite :>> 'ShapeItems::baseLength'[attribute_usage]
-          (multiplicity_range [1]))
-        (attribute_usage composite :>> 'ShapeItems::baseWidth'[attribute_usage]
-          (multiplicity_range [1]))
-        (item_usage composite :>> 'ShapeItems::Pyramid::base'[item_usage] : 'ShapeItems::Rectangle'[item_def]
-          (reference_usage reference :>> 'Rectangle::edges'[unresolved] :>> 'ConeOrCylinder::faces::edges'[unresolved])
-          (reference_usage reference :>> 'Rectangle::vertices'[unresolved] :>> 'ConeOrCylinder::faces::vertices'[unresolved])
-          (attribute_usage composite :>> 'length'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'width'[unresolved]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ShapeItems"))) (name "ShapeItems") (declared-name "ShapeItems")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ShapeItems::Box"))) (name "Box") (declared-name "Box"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Circle"))) (name "Circle") (declared-name "Circle")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Circle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Circle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Circle::radius"))) (name "radius") (declared-name "radius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Circle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Circle::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Circle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Circle::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Circle")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::CircularCone"))) (name "CircularCone") (declared-name "CircularCone")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::CircularCone::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCone")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularCone::radius"))) (name "radius") (declared-name "radius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCone")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularCone::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCone")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularCone::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCone")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::CircularCylinder"))) (name "CircularCylinder") (declared-name "CircularCylinder")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::CircularCylinder::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularCylinder::radius"))) (name "radius") (declared-name "radius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularCylinder::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularCylinder::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularCylinder")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::CircularDisc"))) (name "CircularDisc") (declared-name "CircularDisc")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::CircularDisc::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularDisc")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularDisc::radius"))) (name "radius") (declared-name "radius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularDisc")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularDisc::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularDisc")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::CircularDisc::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::CircularDisc")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Cone"))) (name "Cone") (declared-name "Cone")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Cone::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Cone")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder"))) (name "ConeOrCylinder") (declared-name "ConeOrCylinder")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::genus"))) (name "genus") (declared-name "genus") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::xoffset"))) (name "xoffset") (declared-name "xoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::yoffset"))) (name "yoffset") (declared-name "yoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::ConicSection"))) (name "ConicSection") (declared-name "ConicSection")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::ConicSection::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConicSection")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::ConicSurface"))) (name "ConicSurface") (declared-name "ConicSurface")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::ConicSurface::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConicSurface")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::ConicSurface::genus"))) (name "genus") (declared-name "genus") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::ConicSurface")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Cuboid"))) (name "Cuboid") (declared-name "Cuboid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Cuboid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Cuboid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism"))) (name "CuboidOrTriangularPrism") (declared-name "CuboidOrTriangularPrism")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Cylinder"))) (name "Cylinder") (declared-name "Cylinder")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Cylinder::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Cylinder")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Disc"))) (name "Disc") (declared-name "Disc")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Disc::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Disc")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Disc::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Disc")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Disc::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Disc")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::EccentricCone"))) (name "EccentricCone") (declared-name "EccentricCone")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::EccentricCone::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::EccentricCone")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::EccentricCylinder"))) (name "EccentricCylinder") (declared-name "EccentricCylinder")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::EccentricCylinder::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::EccentricCylinder")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Ellipse"))) (name "Ellipse") (declared-name "Ellipse")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Ellipse::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Ellipse")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Ellipse::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Ellipse")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Ellipse::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Ellipse")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Ellipsoid"))) (name "Ellipsoid") (declared-name "Ellipsoid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Ellipsoid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::semiAxis1"))) (name "semiAxis1") (declared-name "semiAxis1") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Ellipsoid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::semiAxis2"))) (name "semiAxis2") (declared-name "semiAxis2") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Ellipsoid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::semiAxis3"))) (name "semiAxis3") (declared-name "semiAxis3") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Ellipsoid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Hyperbola"))) (name "Hyperbola") (declared-name "Hyperbola")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Hyperbola::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Hyperbola")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Hyperbola::conjugateAxis"))) (name "conjugateAxis") (declared-name "conjugateAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Hyperbola")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Hyperbola::tranverseAxis"))) (name "tranverseAxis") (declared-name "tranverseAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Hyperbola")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Hyperboloid"))) (name "Hyperboloid") (declared-name "Hyperboloid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Hyperboloid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Hyperboloid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Hyperboloid::conjugateAxis"))) (name "conjugateAxis") (declared-name "conjugateAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Hyperboloid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Hyperboloid::transverseAxis"))) (name "transverseAxis") (declared-name "transverseAxis") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Hyperboloid")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::Item"))) (name "Item") (declared-name "Item"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Line"))) (name "Line") (declared-name "Line")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Line::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Line")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Line::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Line")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Line::outerSpaceDimension"))) (name "outerSpaceDimension") (declared-name "outerSpaceDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Line")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::MatesWith"))) (name "MatesWith") (declared-name "MatesWith"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Parabola"))) (name "Parabola") (declared-name "Parabola")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Parabola::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Parabola")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Parabola::focalDistance"))) (name "focalDistance") (declared-name "focalDistance") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Parabola")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Paraboloid"))) (name "Paraboloid") (declared-name "Paraboloid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Paraboloid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Paraboloid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Paraboloid::focalDistance"))) (name "focalDistance") (declared-name "focalDistance") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Paraboloid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Path"))) (name "Path") (declared-name "Path")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Path::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Path")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::PlanarCurve"))) (name "PlanarCurve") (declared-name "PlanarCurve")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::PlanarCurve")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::PlanarCurve")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::outerSpaceDimension"))) (name "outerSpaceDimension") (declared-name "outerSpaceDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::PlanarCurve")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::PlanarSurface"))) (name "PlanarSurface") (declared-name "PlanarSurface")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::PlanarSurface::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::PlanarSurface")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::PlanarSurface::area"))) (name "area") (declared-name "area") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::PlanarSurface")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::PlanarSurface::outerSpaceDimension"))) (name "outerSpaceDimension") (declared-name "outerSpaceDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::PlanarSurface")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Polygon"))) (name "Polygon") (declared-name "Polygon")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Polygon::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Polygon")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Polygon::isClosed"))) (name "isClosed") (declared-name "isClosed") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Polygon")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Polyhedron"))) (name "Polyhedron") (declared-name "Polyhedron")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Polyhedron::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Polyhedron")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Polyhedron::genus"))) (name "genus") (declared-name "genus") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Polyhedron")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Polyhedron::isClosed"))) (name "isClosed") (declared-name "isClosed") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Polyhedron")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Polyhedron::outerSpaceDimension"))) (name "outerSpaceDimension") (declared-name "outerSpaceDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Polyhedron")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::Positive"))) (name "Positive") (declared-name "Positive"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Pyramid"))) (name "Pyramid") (declared-name "Pyramid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Pyramid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Pyramid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Pyramid::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Pyramid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Pyramid::wallNumber"))) (name "wallNumber") (declared-name "wallNumber") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Pyramid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Pyramid::xoffset"))) (name "xoffset") (declared-name "xoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Pyramid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Pyramid::yoffset"))) (name "yoffset") (declared-name "yoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Pyramid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Quadrilateral"))) (name "Quadrilateral") (declared-name "Quadrilateral")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Quadrilateral::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Quadrilateral")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Rectangle"))) (name "Rectangle") (declared-name "Rectangle")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Rectangle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Rectangle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Rectangle::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Rectangle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Rectangle::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Rectangle")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid"))) (name "RectangularCuboid") (declared-name "RectangularCuboid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid"))) (name "RectangularPyramid") (declared-name "RectangularPyramid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid::baseLength"))) (name "baseLength") (declared-name "baseLength") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid::baseWidth"))) (name "baseWidth") (declared-name "baseWidth") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::RectangularToroid"))) (name "RectangularToroid") (declared-name "RectangularToroid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::RectangularToroid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularToroid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RectangularToroid::rectangleLength"))) (name "rectangleLength") (declared-name "rectangleLength") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularToroid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RectangularToroid::rectangleWidth"))) (name "rectangleWidth") (declared-name "rectangleWidth") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RectangularToroid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCone"))) (name "RightCircularCone") (declared-name "RightCircularCone")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCone::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightCircularCone")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCone::xoffset"))) (name "xoffset") (declared-name "xoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightCircularCone")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCone::yoffset"))) (name "yoffset") (declared-name "yoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightCircularCone")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder"))) (name "RightCircularCylinder") (declared-name "RightCircularCylinder")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder::xoffset"))) (name "xoffset") (declared-name "xoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder::yoffset"))) (name "yoffset") (declared-name "yoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangle"))) (name "RightTriangle") (declared-name "RightTriangle")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightTriangle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangle::xoffset"))) (name "xoffset") (declared-name "xoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightTriangle")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism"))) (name "RightTriangularPrism") (declared-name "RightTriangularPrism")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism::height"))) (name "height") (declared-name "height") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Shell"))) (name "Shell") (declared-name "Shell")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Shell::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Shell")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Sphere"))) (name "Sphere") (declared-name "Sphere")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Sphere::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Sphere")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Sphere::radius"))) (name "radius") (declared-name "radius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Sphere")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Sphere::semiAxis1"))) (name "semiAxis1") (declared-name "semiAxis1") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Sphere")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Sphere::semiAxis2"))) (name "semiAxis2") (declared-name "semiAxis2") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Sphere")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Sphere::semiAxis3"))) (name "semiAxis3") (declared-name "semiAxis3") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Sphere")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Tetrahedron"))) (name "Tetrahedron") (declared-name "Tetrahedron")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Tetrahedron::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Tetrahedron")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Tetrahedron::baseLength"))) (name "baseLength") (declared-name "baseLength") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Tetrahedron")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Tetrahedron::baseWidth"))) (name "baseWidth") (declared-name "baseWidth") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Tetrahedron")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Toroid"))) (name "Toroid") (declared-name "Toroid")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Toroid::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Toroid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Toroid::genus"))) (name "genus") (declared-name "genus") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Toroid")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Toroid::revolutionRadius"))) (name "revolutionRadius") (declared-name "revolutionRadius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Toroid")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Torus"))) (name "Torus") (declared-name "Torus")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Torus::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Torus")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Torus::majorRadius"))) (name "majorRadius") (declared-name "majorRadius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Torus")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Torus::minorRadius"))) (name "minorRadius") (declared-name "minorRadius") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Torus")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::Triangle"))) (name "Triangle") (declared-name "Triangle")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::Triangle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::Triangle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Triangle::length"))) (name "length") (declared-name "length") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Triangle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Triangle::width"))) (name "width") (declared-name "width") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Triangle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ShapeItems::Triangle::xoffset"))) (name "xoffset") (declared-name "xoffset") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ShapeItems::Triangle")))))
+          )
+        )
+        (element (kind "item def") (id (node (document "d0") (qualified-name "ShapeItems::TriangularPrism"))) (name "TriangularPrism") (declared-name "TriangularPrism")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::TriangularPrism::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ShapeItems::TriangularPrism")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ShapeItems::Wedge"))) (name "Wedge") (declared-name "Wedge"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ShapeItems::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ShapeItems::baseLength"))) (name "baseLength") (declared-name "baseLength") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ShapeItems::baseWidth"))) (name "baseWidth") (declared-name "baseWidth") (declared (properties (ordered false) (unique true))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::equals"))) (name "equals") (declared-name "equals"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::exists"))) (name "exists") (declared-name "exists"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::if"))) (name "if") (declared-name "if"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::includes"))) (name "includes") (declared-name "includes"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::m"))) (name "m") (declared-name "m"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::scalarQuantities"))) (name "scalarQuantities") (declared-name "scalarQuantities"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ShapeItems::semiMajorAxis"))) (name "semiMajorAxis") (declared-name "semiMajorAxis") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ShapeItems::semiMinorAxis"))) (name "semiMinorAxis") (declared-name "semiMinorAxis") (declared (properties (ordered false) (unique true))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ShapeItems::size"))) (name "size") (declared-name "size"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ShapeItems::xoffset"))) (name "xoffset") (declared-name "xoffset") (declared (properties (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 0)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ShapeItems::yoffset"))) (name "yoffset") (declared-name "yoffset") (declared (properties (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 0)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Circle::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Circle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCone::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::CircularCone"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCylinder::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::CircularCylinder"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularDisc::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::CircularDisc"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Cone::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Cone"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::ConicSection::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSection"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::ConicSurface::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSurface"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Cuboid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Cuboid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Cylinder::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Cylinder"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Disc::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Disc"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::EccentricCone::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::EccentricCone"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::EccentricCylinder::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::EccentricCylinder"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Ellipse::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipse"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipsoid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Hyperbola::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Hyperbola"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Hyperboloid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Hyperboloid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Line::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Line"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Parabola::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Parabola"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Paraboloid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Paraboloid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Path::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Path"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::PlanarSurface::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarSurface"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Polygon::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Polygon"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Polyhedron::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Polyhedron"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Pyramid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Pyramid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Quadrilateral::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Quadrilateral"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Rectangle::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Rectangle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RectangularToroid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::RectangularToroid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCone::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::RightCircularCone"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightTriangle::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::RightTriangle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Shell::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Shell"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Sphere::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Sphere"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Tetrahedron::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Tetrahedron"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Toroid::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Toroid"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Torus::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Torus"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Triangle::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::Triangle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::TriangularPrism::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems::TriangularPrism"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::_documentation"))) (to (node (document "d0") (qualified-name "ShapeItems"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Circle::semiMajorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipse::semiMajorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Circle::semiMinorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipse::semiMinorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCone::semiMajorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::semiMajorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCone::semiMinorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::semiMinorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCylinder::semiMajorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::semiMajorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCylinder::semiMinorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::semiMinorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularDisc::semiMajorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::Disc::semiMajorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularDisc::semiMinorAxis"))) (to (node (document "d0") (qualified-name "ShapeItems::Disc::semiMinorAxis"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Line::length"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::length"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Line::outerSpaceDimension"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::outerSpaceDimension"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Rectangle::length"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::length"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCone::xoffset"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::xoffset"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCone::yoffset"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::yoffset"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder::xoffset"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::xoffset"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder::yoffset"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder::yoffset"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightTriangle::xoffset"))) (to (node (document "d0") (qualified-name "ShapeItems::Triangle::xoffset"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Sphere::semiAxis1"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::semiAxis1"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Sphere::semiAxis2"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::semiAxis2"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Sphere::semiAxis3"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipsoid::semiAxis3"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Torus::majorRadius"))) (to (node (document "d0") (qualified-name "ShapeItems::Toroid::revolutionRadius"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Triangle::length"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve::length"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Circle"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipse"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCone"))) (to (node (document "d0") (qualified-name "ShapeItems::Cone"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularCylinder"))) (to (node (document "d0") (qualified-name "ShapeItems::Cylinder"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CircularDisc"))) (to (node (document "d0") (qualified-name "ShapeItems::Disc"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Cone"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder"))) (to (node (document "d0") (qualified-name "ShapeItems::Shell"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::ConicSection"))) (to (node (document "d0") (qualified-name "ShapeItems::Path"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::ConicSection"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::ConicSurface"))) (to (node (document "d0") (qualified-name "ShapeItems::Shell"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Cuboid"))) (to (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism"))) (to (node (document "d0") (qualified-name "ShapeItems::Polyhedron"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Cylinder"))) (to (node (document "d0") (qualified-name "ShapeItems::ConeOrCylinder"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Disc"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarSurface"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Disc"))) (to (node (document "d0") (qualified-name "ShapeItems::Shell"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::EccentricCone"))) (to (node (document "d0") (qualified-name "ShapeItems::Cone"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::EccentricCylinder"))) (to (node (document "d0") (qualified-name "ShapeItems::Cylinder"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Ellipse"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSection"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Ellipsoid"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSurface"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Hyperbola"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSection"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Hyperboloid"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSurface"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Line"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Parabola"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSection"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Paraboloid"))) (to (node (document "d0") (qualified-name "ShapeItems::ConicSurface"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Polygon"))) (to (node (document "d0") (qualified-name "ShapeItems::Path"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Polygon"))) (to (node (document "d0") (qualified-name "ShapeItems::PlanarCurve"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Polyhedron"))) (to (node (document "d0") (qualified-name "ShapeItems::Shell"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Pyramid"))) (to (node (document "d0") (qualified-name "ShapeItems::Polyhedron"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Quadrilateral"))) (to (node (document "d0") (qualified-name "ShapeItems::Polygon"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Rectangle"))) (to (node (document "d0") (qualified-name "ShapeItems::Quadrilateral"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RectangularCuboid"))) (to (node (document "d0") (qualified-name "ShapeItems::Cuboid"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RectangularPyramid"))) (to (node (document "d0") (qualified-name "ShapeItems::Pyramid"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RectangularToroid"))) (to (node (document "d0") (qualified-name "ShapeItems::Toroid"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCone"))) (to (node (document "d0") (qualified-name "ShapeItems::CircularCone"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightCircularCylinder"))) (to (node (document "d0") (qualified-name "ShapeItems::CircularCylinder"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightTriangle"))) (to (node (document "d0") (qualified-name "ShapeItems::Triangle"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::RightTriangularPrism"))) (to (node (document "d0") (qualified-name "ShapeItems::TriangularPrism"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Sphere"))) (to (node (document "d0") (qualified-name "ShapeItems::Ellipsoid"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Tetrahedron"))) (to (node (document "d0") (qualified-name "ShapeItems::Pyramid"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Toroid"))) (to (node (document "d0") (qualified-name "ShapeItems::Shell"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Torus"))) (to (node (document "d0") (qualified-name "ShapeItems::Toroid"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::Triangle"))) (to (node (document "d0") (qualified-name "ShapeItems::Polygon"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ShapeItems::TriangularPrism"))) (to (node (document "d0") (qualified-name "ShapeItems::CuboidOrTriangularPrism"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

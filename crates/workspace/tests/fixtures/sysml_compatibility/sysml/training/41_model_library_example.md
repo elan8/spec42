@@ -145,33 +145,58 @@ semantic.unresolved_name 'Occurrences::HappensBefore'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Model Library Example'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (membership_import private -> 'RiskMetadata::Level'[unresolved])
-      (occurrence_def abstract 'Situation')
-      (occurrence_usage abstract 'situations' : 'Model Library Example::Situation'[occurrence_def]
-        (multiplicity_range [*]))
-      (occurrence_def abstract 'Cause'
-        (attribute_usage composite 'probability' : 'Real'[unresolved]))
-      (occurrence_usage abstract 'causes' : 'Model Library Example::Cause'[occurrence_def] :> 'Model Library Example::situations'[occurrence_usage]
-        (multiplicity_range [*]))
-      (occurrence_def abstract 'Failure'
-        (attribute_usage composite 'severity' : 'Level'[unresolved]))
-      (occurrence_usage abstract 'failures' : 'Model Library Example::Failure'[occurrence_def] :> 'Model Library Example::situations'[occurrence_usage]
-        (multiplicity_range [*]))
-      (connection_def abstract 'Causation' :> 'Occurrences::HappensBefore'[unresolved]
-        (port_usage end 'cause' : 'Model Library Example::Situation'[occurrence_def]
-          (multiplicity_range [*]))
-        (port_usage end 'effect' : 'Model Library Example::Situation'[occurrence_def]
-          (multiplicity_range [*])))
-      (connection_usage abstract 'causations' : 'Model Library Example::Causation'[connection_def]
-        (multiplicity_range [*]))
-      (item_def 'Scenario'
-        (occurrence_usage composite :>> 'Model Library Example::situations'[occurrence_usage])
-        (occurrence_usage composite :>> 'Model Library Example::causes'[occurrence_usage] :> ''[occurrence_usage])
-        (occurrence_usage composite :>> 'Model Library Example::failures'[occurrence_usage] :> ''[occurrence_usage]))
-      (item_usage 'scenarios' : 'Model Library Example::Scenario'[item_def]
-        (multiplicity_range [*])))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Model Library Example"))) (name "Model Library Example") (declared-name "Model Library Example")
+      (contains
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "Model Library Example::Causation"))) (name "Causation") (declared-name "Causation")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Model Library Example::Causation::cause"))) (name "cause") (declared-name "cause") (declared (properties (end true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Model Library Example::Causation")))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Model Library Example::Causation::effect"))) (name "effect") (declared-name "effect") (declared (properties (end true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Model Library Example::Causation")))))
+          )
+        )
+        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "Model Library Example::Cause"))) (name "Cause") (declared-name "Cause") (declared (properties (abstract true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Model Library Example::Cause::probability"))) (name "probability") (declared-name "probability") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Model Library Example::Cause")))))
+          )
+        )
+        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "Model Library Example::Failure"))) (name "Failure") (declared-name "Failure") (declared (properties (abstract true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Model Library Example::Failure::severity"))) (name "severity") (declared-name "severity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Model Library Example::Failure")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Model Library Example::Level"))) (name "Level") (declared-name "Level"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Model Library Example::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Model Library Example::Scenario"))) (name "Scenario") (declared-name "Scenario")
+          (contains
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Model Library Example::Scenario::"))) (name "") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Model Library Example::Scenario")))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Model Library Example::Scenario::#occurrence"))) (name "") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Model Library Example::Scenario")))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Model Library Example::Scenario::#occurrence2"))) (name "") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Model Library Example::Scenario")))))
+          )
+        )
+        (element (kind "occurrence def") (id (node (document "d0") (qualified-name "Model Library Example::Situation"))) (name "Situation") (declared-name "Situation") (declared (properties (abstract true))))
+        (element (kind "connection def") (id (node (document "d0") (qualified-name "Model Library Example::causations"))) (name "causations") (declared-name "causations"))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Model Library Example::causes"))) (name "causes") (declared-name "causes") (declared (properties (abstract true) (composite true) (reference false))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Model Library Example::failures"))) (name "failures") (declared-name "failures") (declared (properties (abstract true) (composite true) (reference false))))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "Model Library Example::scenarios"))) (name "scenarios") (declared-name "scenarios"))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Model Library Example::situations"))) (name "situations") (declared-name "situations") (declared (properties (abstract true) (composite true) (reference false))))
+      )
+    )
+  )
+  (relationships
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::causations"))) (to (node (document "d0") (qualified-name "Model Library Example::Causation"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::scenarios"))) (to (node (document "d0") (qualified-name "Model Library Example::Scenario"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::causes"))) (to (node (document "d0") (qualified-name "Model Library Example::situations"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::failures"))) (to (node (document "d0") (qualified-name "Model Library Example::situations"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::Causation::cause"))) (to (node (document "d0") (qualified-name "Model Library Example::Situation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::Causation::effect"))) (to (node (document "d0") (qualified-name "Model Library Example::Situation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::causes"))) (to (node (document "d0") (qualified-name "Model Library Example::Cause"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::failures"))) (to (node (document "d0") (qualified-name "Model Library Example::Failure"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Model Library Example::situations"))) (to (node (document "d0") (qualified-name "Model Library Example::Situation"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -1136,172 +1136,147 @@ semantic.unresolved_name 'elements'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'SimpleQuadcopter'
-      (namespace_import private -> 'ISQ'[unresolved])
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'SpatialItems'[unresolved])
-      (namespace_import private -> 'ShapeItems'[unresolved])
-      (membership_import private -> 'RealFunctions::sqrt'[unresolved])
-      (membership_import private -> 'TrigFunctions::pi'[unresolved])
-      (membership_import private -> 'TrigFunctions::tan'[unresolved])
-      (membership_import private -> 'MeasurementReferences::CoordinateFrame'[unresolved])
-      (membership_import private -> 'MeasurementReferences::TranslationRotationSequence'[unresolved])
-      (membership_import private -> 'MeasurementReferences::Translation'[unresolved])
-      (membership_import private -> 'MeasurementReferences::Rotation'[unresolved])
-      (part_usage 'motorShape' : 'SpatialItem'[unresolved]
-        (item_usage composite :>> 'shape'[unresolved] : 'Cylinder'[unresolved]
-          (reference_usage reference :>> 'radius'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'height'[unresolved]
-            (feature_value (=)))))
-      (part_def 'Strut' :> 'SpatialItem'[unresolved]
-        (part_usage composite 'rawStrut' :> 'subSpatialParts'[unresolved]
-          (item_usage composite :>> 'shape'[unresolved] : 'Box'[unresolved]
-            (reference_usage reference :>> 'length'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'width'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'height'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'motorCutout' :> 'subSpatialParts'[unresolved]
-          (item_usage composite :>> 'shape'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (attribute_usage composite :> 'differencesOf'[unresolved]
-          (multiplicity_range [1])
-          (item_usage composite :>> 'elements'[unresolved]
-            (feature_value (=)))))
-      (part_def 'PropellerMotorAssy' :> 'SpatialItem'[unresolved]
-        (part_usage composite 'propeller' :> 'subSpatialParts'[unresolved]
-          (item_usage composite :>> 'shape'[unresolved] : 'Cylinder'[unresolved]
-            (documentation)
-            (reference_usage reference :>> 'radius'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'height'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'motor' :> 'subSpatialParts'[unresolved]
-          (item_usage composite :>> 'shape'[unresolved]
-            (feature_value (=)))
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=)))))))
-      (part_def 'Camera' :> 'SpatialItem'[unresolved]
-        (part_usage composite 'cameraHousing' :> 'subSpatialParts'[unresolved]
-          (item_usage composite :>> 'shape'[unresolved] : 'Cylinder'[unresolved]
-            (reference_usage reference :>> 'radius'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'height'[unresolved]
-              (feature_value (=)))))
-        (item_usage composite 'fieldOfView' :> 'subSpatialParts'[unresolved]
-          (documentation)
-          (item_usage composite :>> 'shape'[unresolved] : 'Cone'[unresolved]
-            (reference_usage reference :>> 'radius'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'height'[unresolved]
-              (feature_value (=))))
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=)))))))
-      (part_usage 'quadCopter' : 'SpatialItem'[unresolved]
-        (attribute_usage composite 'datum' :>> 'coordinateFrame'[unresolved]
-          (documentation)
-          (reference_usage reference :>> 'mRefs'[unresolved]
-            (feature_value (=))))
-        (part_usage composite 'mainBody' :> 'subSpatialParts'[unresolved]
-          (part_usage composite 'rawBody' :> 'subSpatialParts'[unresolved]
-            (item_usage composite :>> 'shape'[unresolved] : 'Box'[unresolved]
-              (reference_usage reference :>> 'length'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'width'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'height'[unresolved]
-                (feature_value (=))))
-            (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-              (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-                (reference_usage reference :>> 'elements'[unresolved]
-                  (feature_value (=))))))
-          (part_usage composite 'cuttingCornersBox' :> 'subSpatialParts'[unresolved]
-            (item_usage composite :>> 'shape'[unresolved] : 'Box'[unresolved]
-              (reference_usage reference :>> 'length'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'width'[unresolved]
-                (feature_value (=)))
-              (reference_usage reference :>> 'height'[unresolved]
-                (feature_value (=))))
-            (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-              (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-                (reference_usage reference :>> 'elements'[unresolved]
-                  (feature_value (=))))))
-          (attribute_usage composite :> 'intersectionsOf'[unresolved]
-            (multiplicity_range [1])
-            (item_usage composite :>> 'elements'[unresolved]
-              (feature_value (=)))))
-        (attribute_usage composite 'xStrut' : 'LengthValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'yStrut' : 'LengthValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'zStrut' : 'LengthValue'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'zPMAssy' : 'LengthValue'[unresolved]
-          (feature_value (=)))
-        (part_usage composite 'strut1' : 'SimpleQuadcopter::Strut'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'strut2' : 'SimpleQuadcopter::Strut'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'strut3' : 'SimpleQuadcopter::Strut'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'strut4' : 'SimpleQuadcopter::Strut'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'propellerMotorAssy1' : 'SimpleQuadcopter::PropellerMotorAssy'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'propellerMotorAssy2' : 'SimpleQuadcopter::PropellerMotorAssy'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'propellerMotorAssy3' : 'SimpleQuadcopter::PropellerMotorAssy'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'propellerMotorAssy4' : 'SimpleQuadcopter::PropellerMotorAssy'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))
-        (part_usage composite 'camera' : 'SimpleQuadcopter::Camera'[part_def] :> 'subSpatialParts'[unresolved]
-          (attribute_usage composite :>> 'coordinateFrame'[unresolved]
-            (reference_usage reference :>> 'transformation'[unresolved] : 'TranslationRotationSequence'[unresolved]
-              (reference_usage reference :>> 'elements'[unresolved]
-                (feature_value (=))))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SimpleQuadcopter"))) (name "SimpleQuadcopter") (declared-name "SimpleQuadcopter")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Camera"))) (name "Camera") (declared-name "Camera") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Camera::cameraHousing"))) (name "cameraHousing") (declared-name "cameraHousing") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Camera")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Camera::fieldOfView"))) (name "fieldOfView") (declared-name "fieldOfView") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Camera"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Camera::fieldOfView::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Camera")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Camera::fieldOfView::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Camera")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::CoordinateFrame"))) (name "CoordinateFrame") (declared-name "CoordinateFrame"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))) (name "PropellerMotorAssy") (declared-name "PropellerMotorAssy") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy::motor"))) (name "motor") (declared-name "motor") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy::motor::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy::propeller"))) (name "propeller") (declared-name "propeller") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy::propeller::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Rotation"))) (name "Rotation") (declared-name "Rotation"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Strut"))) (name "Strut") (declared-name "Strut") (declared)
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Strut::motorCutout"))) (name "motorCutout") (declared-name "motorCutout") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Strut::motorCutout::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Strut::rawStrut"))) (name "rawStrut") (declared-name "rawStrut") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Strut::rawStrut::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut")))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::Translation"))) (name "Translation") (declared-name "Translation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::TranslationRotationSequence"))) (name "TranslationRotationSequence") (declared-name "TranslationRotationSequence"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::motorShape"))) (name "motorShape") (declared-name "motorShape") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::pi"))) (name "pi") (declared-name "pi"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter"))) (name "quadCopter") (declared-name "quadCopter") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::camera"))) (name "camera") (declared-name "camera") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::camera::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Camera")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::datum"))) (name "datum") (declared-name "datum") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::mainBody"))) (name "mainBody") (declared-name "mainBody") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::mainBody::cuttingCornersBox"))) (name "cuttingCornersBox") (declared-name "cuttingCornersBox") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::mainBody::cuttingCornersBox::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+                (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::mainBody::rawBody"))) (name "rawBody") (declared-name "rawBody") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                  (contains
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::mainBody::rawBody::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy1"))) (name "propellerMotorAssy1") (declared-name "propellerMotorAssy1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy1::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy2"))) (name "propellerMotorAssy2") (declared-name "propellerMotorAssy2") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy2::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy3"))) (name "propellerMotorAssy3") (declared-name "propellerMotorAssy3") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy3::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy4"))) (name "propellerMotorAssy4") (declared-name "propellerMotorAssy4") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy4::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut1"))) (name "strut1") (declared-name "strut1") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut1::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut2"))) (name "strut2") (declared-name "strut2") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut2::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut3"))) (name "strut3") (declared-name "strut3") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut3::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut4"))) (name "strut4") (declared-name "strut4") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut4::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SimpleQuadcopter::Strut")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::xStrut"))) (name "xStrut") (declared-name "xStrut") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "49.60")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::xStrut"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::yStrut"))) (name "yStrut") (declared-name "yStrut") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "24.65")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::yStrut"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::zPMAssy"))) (name "zPMAssy") (declared-name "zPMAssy") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 12)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::zPMAssy"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::zStrut"))) (name "zStrut") (declared-name "zStrut") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 25)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "mm")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::zStrut"))) (role feature-value))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::sqrt"))) (name "sqrt") (declared-name "sqrt"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SimpleQuadcopter::tan"))) (name "tan") (declared-name "tan"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::Camera::fieldOfView::_documentation"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::Camera::fieldOfView"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::camera"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::Camera"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy1"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy2"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy3"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::propellerMotorAssy4"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::PropellerMotorAssy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut1"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::Strut"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut2"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::Strut"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut3"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::Strut"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SimpleQuadcopter::quadCopter::strut4"))) (to (node (document "d0") (qualified-name "SimpleQuadcopter::Strut"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

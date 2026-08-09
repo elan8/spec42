@@ -9681,1879 +9681,1540 @@ standard library package ISQElectromagnetism {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQElectromagnetism'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (namespace_import private -> 'ISQBase'[unresolved])
-      (membership_import private -> 'ISQMechanics::PowerValue'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::AngularMeasureValue'[unresolved])
-      (membership_import private -> 'ISQThermodynamics::EnergyValue'[unresolved])
-      (attribute_def 'ElectricChargeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricChargeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricCharge' : 'ISQElectromagnetism::ElectricChargeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricChargeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ElectricChargeDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricChargeDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricChargeDensity' : 'ISQElectromagnetism::ElectricChargeDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricChargeDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'VolumicElectricChargeUnit' -> 'ISQElectromagnetism::ElectricChargeDensityUnit'[attribute_def])
-      (alias_member 'VolumicElectricChargeValue' -> 'ISQElectromagnetism::ElectricChargeDensityValue'[attribute_def])
-      (alias_member 'volumicElectricCharge' -> 'ISQElectromagnetism::electricChargeDensity'[attribute_usage])
-      (attribute_def 'SurfaceDensityOfElectricChargeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'surfaceDensityOfElectricCharge' : 'ISQElectromagnetism::SurfaceDensityOfElectricChargeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SurfaceDensityOfElectricChargeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'AreicElectricChargeUnit' -> 'ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit'[attribute_def])
-      (alias_member 'AreicElectricChargeValue' -> 'ISQElectromagnetism::SurfaceDensityOfElectricChargeValue'[attribute_def])
-      (alias_member 'areicElectricCharge' -> 'ISQElectromagnetism::surfaceDensityOfElectricCharge'[attribute_usage])
-      (attribute_def 'LinearDensityOfElectricChargeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::LinearDensityOfElectricChargeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearDensityOfElectricCharge' : 'ISQElectromagnetism::LinearDensityOfElectricChargeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearDensityOfElectricChargeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'LineicElectricChargeUnit' -> 'ISQElectromagnetism::LinearDensityOfElectricChargeUnit'[attribute_def])
-      (alias_member 'LineicElectricChargeValue' -> 'ISQElectromagnetism::LinearDensityOfElectricChargeValue'[attribute_def])
-      (alias_member 'lineicElectricCharge' -> 'ISQElectromagnetism::linearDensityOfElectricCharge'[attribute_usage])
-      (attribute_def 'ElectricDipoleMomentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricDipoleMomentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricDipoleMoment' : 'ISQElectromagnetism::ElectricDipoleMomentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricDipoleMomentUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianElectricDipoleMoment3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianElectricDipoleMoment3dVector' : 'ISQElectromagnetism::CartesianElectricDipoleMoment3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianElectricDipoleMoment3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::ElectricDipoleMomentUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'ElectricPolarizationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricPolarizationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricPolarization' : 'ISQElectromagnetism::ElectricPolarizationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricPolarizationUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianElectricPolarization3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianElectricPolarization3dVector' : 'ISQElectromagnetism::CartesianElectricPolarization3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianElectricPolarization3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::ElectricPolarizationUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'ElectricCurrentDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricCurrentDensity' : 'ISQElectromagnetism::ElectricCurrentDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricCurrentDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianElectricCurrentDensity3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianElectricCurrentDensity3dVector' : 'ISQElectromagnetism::CartesianElectricCurrentDensity3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianElectricCurrentDensity3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::ElectricCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (alias_member 'CartesianAreicElectricCurrent3dCoordinateFrame' -> 'ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame'[attribute_def])
-      (alias_member 'cartesianAreicElectricCurrent3dVector' -> 'ISQElectromagnetism::cartesianElectricCurrentDensity3dVector'[attribute_usage])
-      (attribute_def 'LinearElectricCurrentDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::LinearElectricCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linearElectricCurrentDensity' : 'ISQElectromagnetism::LinearElectricCurrentDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinearElectricCurrentDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianLinearElectricCurrentDensity3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianLinearElectricCurrentDensity3dVector' : 'ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianLinearElectricCurrentDensity3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::LinearElectricCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (alias_member 'CartesianLineicElectricCurrent3dCoordinateFrame' -> 'ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame'[attribute_def])
-      (alias_member 'cartesianLineicElectricCurrent3dVector' -> 'ISQElectromagnetism::cartesianLinearElectricCurrentDensity3dVector'[attribute_usage])
-      (attribute_def 'ElectricFieldStrengthValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricFieldStrengthUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricFieldStrength' : 'ISQElectromagnetism::ElectricFieldStrengthValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricFieldStrengthUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianElectricFieldStrength3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianElectricFieldStrength3dVector' : 'ISQElectromagnetism::CartesianElectricFieldStrength3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianElectricFieldStrength3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::ElectricFieldStrengthUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'ElectricPotentialValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricPotentialUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricPotential' : 'ISQElectromagnetism::ElectricPotentialValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricPotentialUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ElectricPotentialDifferenceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricPotentialDifferenceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricPotentialDifference' : 'ISQElectromagnetism::ElectricPotentialDifferenceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricPotentialDifferenceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'voltage' : 'ISQElectromagnetism::ElectricPotentialDifferenceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'electricTension' -> 'ISQElectromagnetism::voltage'[attribute_usage])
-      (attribute_def 'ElectricFluxDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricFluxDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricFluxDensity' : 'ISQElectromagnetism::ElectricFluxDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricFluxDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianElectricFluxDensity3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianElectricFluxDensity3dVector' : 'ISQElectromagnetism::CartesianElectricFluxDensity3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianElectricFluxDensity3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::ElectricFluxDensityUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (alias_member 'CartesianElectricDisplacement3dCoordinateFrame' -> 'ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame'[attribute_def])
-      (alias_member 'cartesianElectricDisplacement3dVector' -> 'ISQElectromagnetism::cartesianElectricFluxDensity3dVector'[attribute_usage])
-      (attribute_def 'CapacitanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CapacitanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'capacitance' : 'ISQElectromagnetism::CapacitanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CapacitanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ElectricConstantValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricConstantUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricConstant' : 'ISQElectromagnetism::ElectricConstantValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricConstantUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'PermittivityOfVacuumUnit' -> 'ISQElectromagnetism::ElectricConstantUnit'[attribute_def])
-      (alias_member 'PermittivityOfVacuumValue' -> 'ISQElectromagnetism::ElectricConstantValue'[attribute_def])
-      (alias_member 'permittivityOfVacuum' -> 'ISQElectromagnetism::electricConstant'[attribute_usage])
-      (attribute_def 'PermittivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::PermittivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'permittivity' : 'ISQElectromagnetism::PermittivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PermittivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RelativePermittivityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativePermittivity' : 'ISQElectromagnetism::RelativePermittivityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ElectricSusceptibilityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'electricSusceptibility' : 'ISQElectromagnetism::ElectricSusceptibilityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ElectricFluxValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectricFluxUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricFlux' : 'ISQElectromagnetism::ElectricFluxValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricFluxUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'DisplacementCurrentDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::DisplacementCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'displacementCurrentDensity' : 'ISQElectromagnetism::DisplacementCurrentDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DisplacementCurrentDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianDisplacementCurrentDensity3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianDisplacementCurrentDensity3dVector' : 'ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianDisplacementCurrentDensity3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::DisplacementCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_usage 'displacementCurrent' : 'ElectricCurrentValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'totalCurrent' : 'ElectricCurrentValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'TotalCurrentDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::TotalCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'totalCurrentDensity' : 'ISQElectromagnetism::TotalCurrentDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'TotalCurrentDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianTotalCurrentDensity3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianTotalCurrentDensity3dVector' : 'ISQElectromagnetism::CartesianTotalCurrentDensity3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianTotalCurrentDensity3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::TotalCurrentDensityUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'MagneticFluxDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticFluxDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticFluxDensity' : 'ISQElectromagnetism::MagneticFluxDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticFluxDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagneticFluxDensity3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagneticFluxDensity3dVector' : 'ISQElectromagnetism::CartesianMagneticFluxDensity3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagneticFluxDensity3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::MagneticFluxDensityUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'MagneticFluxValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticFluxUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticFlux' : 'ISQElectromagnetism::MagneticFluxValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticFluxUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LinkedFluxValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::LinkedFluxUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'linkedFlux' : 'ISQElectromagnetism::LinkedFluxValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LinkedFluxUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MagneticMomentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticMomentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticMoment' : 'ISQElectromagnetism::MagneticMomentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticMomentUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagneticMoment3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagneticMoment3dVector' : 'ISQElectromagnetism::CartesianMagneticMoment3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagneticMoment3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::MagneticMomentUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (alias_member 'CartesianMagneticAreaMoment3dCoordinateFrame' -> 'ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame'[attribute_def])
-      (alias_member 'cartesianMagneticAreaMoment3dVector' -> 'ISQElectromagnetism::cartesianMagneticMoment3dVector'[attribute_usage])
-      (attribute_def 'MagnetizationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagnetizationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magnetization' : 'ISQElectromagnetism::MagnetizationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagnetizationUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagnetization3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagnetization3dVector' : 'ISQElectromagnetism::CartesianMagnetization3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagnetization3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::MagnetizationUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'MagneticFieldStrengthValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticFieldStrengthUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticFieldStrength' : 'ISQElectromagnetism::MagneticFieldStrengthValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticFieldStrengthUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagneticFieldStrength3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagneticFieldStrength3dVector' : 'ISQElectromagnetism::CartesianMagneticFieldStrength3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagneticFieldStrength3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::MagneticFieldStrengthUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (alias_member 'CartesianMagnetizingField3dCoordinateFrame' -> 'ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame'[attribute_def])
-      (alias_member 'cartesianMagnetizingField3dVector' -> 'ISQElectromagnetism::cartesianMagneticFieldStrength3dVector'[attribute_usage])
-      (attribute_def 'MagneticConstantValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticConstantUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticConstant' : 'ISQElectromagnetism::MagneticConstantValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticConstantUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'PermeabilityOfVacuumUnit' -> 'ISQElectromagnetism::MagneticConstantUnit'[attribute_def])
-      (alias_member 'PermeabilityOfVacuumValue' -> 'ISQElectromagnetism::MagneticConstantValue'[attribute_def])
-      (alias_member 'permeabilityOfVacuum' -> 'ISQElectromagnetism::magneticConstant'[attribute_usage])
-      (attribute_def 'PermeabilityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::PermeabilityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'permeability' : 'ISQElectromagnetism::PermeabilityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PermeabilityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'RelativePermeabilityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'relativePermeability' : 'ISQElectromagnetism::RelativePermeabilityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'MagneticSusceptibilityValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'magneticSusceptibility' : 'ISQElectromagnetism::MagneticSusceptibilityValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'MagneticPolarizationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticPolarizationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticPolarization' : 'ISQElectromagnetism::MagneticPolarizationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticPolarizationUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagneticPolarization3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagneticPolarization3dVector' : 'ISQElectromagnetism::CartesianMagneticPolarization3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagneticPolarization3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::MagneticPolarizationUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'MagneticDipoleMomentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticDipoleMomentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticDipoleMoment' : 'ISQElectromagnetism::MagneticDipoleMomentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticDipoleMomentUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagneticDipoleMoment3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagneticDipoleMoment3dVector' : 'ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagneticDipoleMoment3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::MagneticDipoleMomentUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'CoercivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CoercivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'coercivity' : 'ISQElectromagnetism::CoercivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'CoercivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MagneticVectorPotentialValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagneticVectorPotentialUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magneticVectorPotential' : 'ISQElectromagnetism::MagneticVectorPotentialValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagneticVectorPotentialUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianMagneticVectorPotential3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianMagneticVectorPotential3dVector' : 'ISQElectromagnetism::CartesianMagneticVectorPotential3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianMagneticVectorPotential3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::MagneticVectorPotentialUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'ElectromagneticEnergyDensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ElectromagneticEnergyDensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electromagneticEnergyDensity' : 'ISQElectromagnetism::ElectromagneticEnergyDensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectromagneticEnergyDensityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'VolumicElectromagneticEnergyUnit' -> 'ISQElectromagnetism::ElectromagneticEnergyDensityUnit'[attribute_def])
-      (alias_member 'VolumicElectromagneticEnergyValue' -> 'ISQElectromagnetism::ElectromagneticEnergyDensityValue'[attribute_def])
-      (alias_member 'volumicElectromagneticEnergy' -> 'ISQElectromagnetism::electromagneticEnergyDensity'[attribute_usage])
-      (attribute_def 'PoyntingVectorMagnitudeValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::PoyntingVectorMagnitudeUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'poyntingVectorMagnitude' : 'ISQElectromagnetism::PoyntingVectorMagnitudeValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PoyntingVectorMagnitudeUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'CartesianPoynting3dVector' :> '3dVectorQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::CartesianPoynting3dCoordinateFrame'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'cartesianPoynting3dVector' : 'ISQElectromagnetism::CartesianPoynting3dVector'[attribute_def] :> 'vectorQuantities'[unresolved])
-      (attribute_def 'CartesianPoynting3dCoordinateFrame' :> '3dCoordinateFrame'[unresolved]
-        (attribute_usage composite :>> 'isBound'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'isOrthogonal'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'mRefs'[unresolved] : 'ISQElectromagnetism::PoyntingVectorMagnitudeUnit'[attribute_def]
-          (multiplicity_range [3])))
-      (attribute_def 'PhaseSpeedOfElectromagneticWavesValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'phaseSpeedOfElectromagneticWaves' : 'ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhaseSpeedOfElectromagneticWavesUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'SpeedOfLightValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::SpeedOfLightUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'speedOfLight' : 'ISQElectromagnetism::SpeedOfLightValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SpeedOfLightUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'LightSpeedUnit' -> 'ISQElectromagnetism::SpeedOfLightUnit'[attribute_def])
-      (alias_member 'LightSpeedValue' -> 'ISQElectromagnetism::SpeedOfLightValue'[attribute_def])
-      (alias_member 'lightSpeed' -> 'ISQElectromagnetism::speedOfLight'[attribute_usage])
-      (attribute_def 'SourceVoltageValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::SourceVoltageUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'sourceVoltage' : 'ISQElectromagnetism::SourceVoltageValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SourceVoltageUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'SourceTensionUnit' -> 'ISQElectromagnetism::SourceVoltageUnit'[attribute_def])
-      (alias_member 'SourceTensionValue' -> 'ISQElectromagnetism::SourceVoltageValue'[attribute_def])
-      (alias_member 'sourceTension' -> 'ISQElectromagnetism::sourceVoltage'[attribute_usage])
-      (attribute_usage 'scalarMagneticPotential' : 'ElectricCurrentValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'magneticTension' : 'ElectricCurrentValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'MagnetomotiveForceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::MagnetomotiveForceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'magnetomotiveForce' : 'ISQElectromagnetism::MagnetomotiveForceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MagnetomotiveForceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'currentLinkage' : 'ElectricCurrentValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'numberOfTurnsInAWinding' : 'CountValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ReluctanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ReluctanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'reluctance' : 'ISQElectromagnetism::ReluctanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ReluctanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PermeanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::PermeanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'permeance' : 'ISQElectromagnetism::PermeanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PermeanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'InductanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::InductanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'inductance' : 'ISQElectromagnetism::InductanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'InductanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'SelfInductanceUnit' -> 'ISQElectromagnetism::InductanceUnit'[attribute_def])
-      (alias_member 'SelfInductanceValue' -> 'ISQElectromagnetism::InductanceValue'[attribute_def])
-      (alias_member 'selfInductance' -> 'ISQElectromagnetism::inductance'[attribute_usage])
-      (attribute_usage 'mutualInductance' : 'ISQElectromagnetism::InductanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'CouplingFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'couplingFactor' : 'ISQElectromagnetism::CouplingFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LeakageFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'leakageFactor' : 'ISQElectromagnetism::LeakageFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'ConductivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ConductivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'conductivity' : 'ISQElectromagnetism::ConductivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ConductivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ResistivityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ResistivityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'resistivity' : 'ISQElectromagnetism::ResistivityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ResistivityUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'electricPower' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (alias_member 'instantaneousPower' -> 'ISQElectromagnetism::electricPower'[attribute_usage])
-      (attribute_def 'ResistanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ResistanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'resistance' : 'ISQElectromagnetism::ResistanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ResistanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ConductanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ConductanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'conductance' : 'ISQElectromagnetism::ConductanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ConductanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'PhaseDifferenceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::PhaseDifferenceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'phaseDifference' : 'ISQElectromagnetism::PhaseDifferenceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'PhaseDifferenceUnit' :> 'DimensionOneUnit'[unresolved])
-      (attribute_usage 'electricCurrentPhasor' : 'ElectricCurrentValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'voltagePhasor' : 'ISQElectromagnetism::ElectricPotentialDifferenceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'ImpedanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ImpedanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'impedance' : 'ISQElectromagnetism::ImpedanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ImpedanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'ComplexImpedanceUnit' -> 'ISQElectromagnetism::ImpedanceUnit'[attribute_def])
-      (alias_member 'ComplexImpedanceValue' -> 'ISQElectromagnetism::ImpedanceValue'[attribute_def])
-      (alias_member 'complexImpedance' -> 'ISQElectromagnetism::impedance'[attribute_usage])
-      (attribute_def 'ResistanceToAlternatingCurrentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ResistanceToAlternatingCurrentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'resistanceToAlternatingCurrent' : 'ISQElectromagnetism::ResistanceToAlternatingCurrentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ResistanceToAlternatingCurrentUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ReactanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ReactanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'reactance' : 'ISQElectromagnetism::ReactanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ReactanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ModulusOfImpedanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ModulusOfImpedanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'modulusOfImpedance' : 'ISQElectromagnetism::ModulusOfImpedanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ModulusOfImpedanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'AdmittanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::AdmittanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'admittance' : 'ISQElectromagnetism::AdmittanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AdmittanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (alias_member 'ComplexAdmittanceUnit' -> 'ISQElectromagnetism::AdmittanceUnit'[attribute_def])
-      (alias_member 'ComplexAdmittanceValue' -> 'ISQElectromagnetism::AdmittanceValue'[attribute_def])
-      (alias_member 'complexAdmittance' -> 'ISQElectromagnetism::admittance'[attribute_usage])
-      (attribute_usage 'conductanceForAlternatingCurrent' : 'ISQElectromagnetism::ConductanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'SusceptanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::SusceptanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'susceptance' : 'ISQElectromagnetism::SusceptanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'SusceptanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ModulusOfAdmittanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQElectromagnetism::ModulusOfAdmittanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'modulusOfAdmittance' : 'ISQElectromagnetism::ModulusOfAdmittanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ModulusOfAdmittanceUnit' :> 'DerivedUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'QualityFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'qualityFactor' : 'ISQElectromagnetism::QualityFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_def 'LossFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'lossFactor' : 'ISQElectromagnetism::LossFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'lossAngle' : 'AngularMeasureValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'activePower' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'apparentPower' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_def 'PowerFactorValue' :> 'DimensionOneValue'[unresolved]
-        (documentation))
-      (attribute_usage 'powerFactor' : 'ISQElectromagnetism::PowerFactorValue'[attribute_def] :> 'scalarQuantities'[unresolved])
-      (attribute_usage 'complexPower' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'reactivePower' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'nonActivePower' : 'PowerValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation))
-      (attribute_usage 'activeEnergy' : 'EnergyValue'[unresolved] :> 'scalarQuantities'[unresolved]
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQElectromagnetism"))) (name "ISQElectromagnetism") (declared-name "ISQElectromagnetism")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQElectromagnetism::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQElectromagnetism::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQElectromagnetism::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit"))) (name "AdmittanceUnit") (declared-name "AdmittanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue"))) (name "AdmittanceValue") (declared-name "AdmittanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AngularMeasureValue"))) (name "AngularMeasureValue") (declared-name "AngularMeasureValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AreicElectricChargeUnit"))) (name "AreicElectricChargeUnit") (declared-name "AreicElectricChargeUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::AreicElectricChargeValue"))) (name "AreicElectricChargeValue") (declared-name "AreicElectricChargeValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit"))) (name "CapacitanceUnit") (declared-name "CapacitanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue"))) (name "CapacitanceValue") (declared-name "CapacitanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianAreicElectricCurrent3dCoordinateFrame"))) (name "CartesianAreicElectricCurrent3dCoordinateFrame") (declared-name "CartesianAreicElectricCurrent3dCoordinateFrame"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame"))) (name "CartesianDisplacementCurrentDensity3dCoordinateFrame") (declared-name "CartesianDisplacementCurrentDensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector"))) (name "CartesianDisplacementCurrentDensity3dVector") (declared-name "CartesianDisplacementCurrentDensity3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame"))) (name "CartesianElectricCurrentDensity3dCoordinateFrame") (declared-name "CartesianElectricCurrentDensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector"))) (name "CartesianElectricCurrentDensity3dVector") (declared-name "CartesianElectricCurrentDensity3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame"))) (name "CartesianElectricDipoleMoment3dCoordinateFrame") (declared-name "CartesianElectricDipoleMoment3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector"))) (name "CartesianElectricDipoleMoment3dVector") (declared-name "CartesianElectricDipoleMoment3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDisplacement3dCoordinateFrame"))) (name "CartesianElectricDisplacement3dCoordinateFrame") (declared-name "CartesianElectricDisplacement3dCoordinateFrame"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame"))) (name "CartesianElectricFieldStrength3dCoordinateFrame") (declared-name "CartesianElectricFieldStrength3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector"))) (name "CartesianElectricFieldStrength3dVector") (declared-name "CartesianElectricFieldStrength3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame"))) (name "CartesianElectricFluxDensity3dCoordinateFrame") (declared-name "CartesianElectricFluxDensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector"))) (name "CartesianElectricFluxDensity3dVector") (declared-name "CartesianElectricFluxDensity3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame"))) (name "CartesianElectricPolarization3dCoordinateFrame") (declared-name "CartesianElectricPolarization3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector"))) (name "CartesianElectricPolarization3dVector") (declared-name "CartesianElectricPolarization3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame"))) (name "CartesianLinearElectricCurrentDensity3dCoordinateFrame") (declared-name "CartesianLinearElectricCurrentDensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector"))) (name "CartesianLinearElectricCurrentDensity3dVector") (declared-name "CartesianLinearElectricCurrentDensity3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLineicElectricCurrent3dCoordinateFrame"))) (name "CartesianLineicElectricCurrent3dCoordinateFrame") (declared-name "CartesianLineicElectricCurrent3dCoordinateFrame"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticAreaMoment3dCoordinateFrame"))) (name "CartesianMagneticAreaMoment3dCoordinateFrame") (declared-name "CartesianMagneticAreaMoment3dCoordinateFrame"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame"))) (name "CartesianMagneticDipoleMoment3dCoordinateFrame") (declared-name "CartesianMagneticDipoleMoment3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector"))) (name "CartesianMagneticDipoleMoment3dVector") (declared-name "CartesianMagneticDipoleMoment3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame"))) (name "CartesianMagneticFieldStrength3dCoordinateFrame") (declared-name "CartesianMagneticFieldStrength3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector"))) (name "CartesianMagneticFieldStrength3dVector") (declared-name "CartesianMagneticFieldStrength3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame"))) (name "CartesianMagneticFluxDensity3dCoordinateFrame") (declared-name "CartesianMagneticFluxDensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector"))) (name "CartesianMagneticFluxDensity3dVector") (declared-name "CartesianMagneticFluxDensity3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame"))) (name "CartesianMagneticMoment3dCoordinateFrame") (declared-name "CartesianMagneticMoment3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector"))) (name "CartesianMagneticMoment3dVector") (declared-name "CartesianMagneticMoment3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame"))) (name "CartesianMagneticPolarization3dCoordinateFrame") (declared-name "CartesianMagneticPolarization3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector"))) (name "CartesianMagneticPolarization3dVector") (declared-name "CartesianMagneticPolarization3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame"))) (name "CartesianMagneticVectorPotential3dCoordinateFrame") (declared-name "CartesianMagneticVectorPotential3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector"))) (name "CartesianMagneticVectorPotential3dVector") (declared-name "CartesianMagneticVectorPotential3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame"))) (name "CartesianMagnetization3dCoordinateFrame") (declared-name "CartesianMagnetization3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector"))) (name "CartesianMagnetization3dVector") (declared-name "CartesianMagnetization3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetizingField3dCoordinateFrame"))) (name "CartesianMagnetizingField3dCoordinateFrame") (declared-name "CartesianMagnetizingField3dCoordinateFrame"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame"))) (name "CartesianPoynting3dCoordinateFrame") (declared-name "CartesianPoynting3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector"))) (name "CartesianPoynting3dVector") (declared-name "CartesianPoynting3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame"))) (name "CartesianTotalCurrentDensity3dCoordinateFrame") (declared-name "CartesianTotalCurrentDensity3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector"))) (name "CartesianTotalCurrentDensity3dVector") (declared-name "CartesianTotalCurrentDensity3dVector") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit"))) (name "CoercivityUnit") (declared-name "CoercivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue"))) (name "CoercivityValue") (declared-name "CoercivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ComplexAdmittanceUnit"))) (name "ComplexAdmittanceUnit") (declared-name "ComplexAdmittanceUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ComplexAdmittanceValue"))) (name "ComplexAdmittanceValue") (declared-name "ComplexAdmittanceValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ComplexImpedanceUnit"))) (name "ComplexImpedanceUnit") (declared-name "ComplexImpedanceUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ComplexImpedanceValue"))) (name "ComplexImpedanceValue") (declared-name "ComplexImpedanceValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit"))) (name "ConductanceUnit") (declared-name "ConductanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue"))) (name "ConductanceValue") (declared-name "ConductanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit"))) (name "ConductivityUnit") (declared-name "ConductivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue"))) (name "ConductivityValue") (declared-name "ConductivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CouplingFactorValue"))) (name "CouplingFactorValue") (declared-name "CouplingFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::CouplingFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::CouplingFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit"))) (name "DisplacementCurrentDensityUnit") (declared-name "DisplacementCurrentDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue"))) (name "DisplacementCurrentDensityValue") (declared-name "DisplacementCurrentDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit"))) (name "ElectricChargeDensityUnit") (declared-name "ElectricChargeDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue"))) (name "ElectricChargeDensityValue") (declared-name "ElectricChargeDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit"))) (name "ElectricChargeUnit") (declared-name "ElectricChargeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue"))) (name "ElectricChargeValue") (declared-name "ElectricChargeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit"))) (name "ElectricConstantUnit") (declared-name "ElectricConstantUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue"))) (name "ElectricConstantValue") (declared-name "ElectricConstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit"))) (name "ElectricCurrentDensityUnit") (declared-name "ElectricCurrentDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue"))) (name "ElectricCurrentDensityValue") (declared-name "ElectricCurrentDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit"))) (name "ElectricDipoleMomentUnit") (declared-name "ElectricDipoleMomentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue"))) (name "ElectricDipoleMomentValue") (declared-name "ElectricDipoleMomentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit"))) (name "ElectricFieldStrengthUnit") (declared-name "ElectricFieldStrengthUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue"))) (name "ElectricFieldStrengthValue") (declared-name "ElectricFieldStrengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit"))) (name "ElectricFluxDensityUnit") (declared-name "ElectricFluxDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue"))) (name "ElectricFluxDensityValue") (declared-name "ElectricFluxDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit"))) (name "ElectricFluxUnit") (declared-name "ElectricFluxUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue"))) (name "ElectricFluxValue") (declared-name "ElectricFluxValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit"))) (name "ElectricPolarizationUnit") (declared-name "ElectricPolarizationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue"))) (name "ElectricPolarizationValue") (declared-name "ElectricPolarizationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit"))) (name "ElectricPotentialDifferenceUnit") (declared-name "ElectricPotentialDifferenceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue"))) (name "ElectricPotentialDifferenceValue") (declared-name "ElectricPotentialDifferenceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit"))) (name "ElectricPotentialUnit") (declared-name "ElectricPotentialUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue"))) (name "ElectricPotentialValue") (declared-name "ElectricPotentialValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricSusceptibilityValue"))) (name "ElectricSusceptibilityValue") (declared-name "ElectricSusceptibilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricSusceptibilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricSusceptibilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit"))) (name "ElectromagneticEnergyDensityUnit") (declared-name "ElectromagneticEnergyDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue"))) (name "ElectromagneticEnergyDensityValue") (declared-name "ElectromagneticEnergyDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQElectromagnetism::EnergyValue"))) (name "EnergyValue") (declared-name "EnergyValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit"))) (name "ImpedanceUnit") (declared-name "ImpedanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue"))) (name "ImpedanceValue") (declared-name "ImpedanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit"))) (name "InductanceUnit") (declared-name "InductanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue"))) (name "InductanceValue") (declared-name "InductanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LeakageFactorValue"))) (name "LeakageFactorValue") (declared-name "LeakageFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LeakageFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LeakageFactorValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LightSpeedUnit"))) (name "LightSpeedUnit") (declared-name "LightSpeedUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LightSpeedValue"))) (name "LightSpeedValue") (declared-name "LightSpeedValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit"))) (name "LinearDensityOfElectricChargeUnit") (declared-name "LinearDensityOfElectricChargeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue"))) (name "LinearDensityOfElectricChargeValue") (declared-name "LinearDensityOfElectricChargeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit"))) (name "LinearElectricCurrentDensityUnit") (declared-name "LinearElectricCurrentDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue"))) (name "LinearElectricCurrentDensityValue") (declared-name "LinearElectricCurrentDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LineicElectricChargeUnit"))) (name "LineicElectricChargeUnit") (declared-name "LineicElectricChargeUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LineicElectricChargeValue"))) (name "LineicElectricChargeValue") (declared-name "LineicElectricChargeValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit"))) (name "LinkedFluxUnit") (declared-name "LinkedFluxUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue"))) (name "LinkedFluxValue") (declared-name "LinkedFluxValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LossFactorValue"))) (name "LossFactorValue") (declared-name "LossFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::LossFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::LossFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit"))) (name "MagneticConstantUnit") (declared-name "MagneticConstantUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue"))) (name "MagneticConstantValue") (declared-name "MagneticConstantValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit"))) (name "MagneticDipoleMomentUnit") (declared-name "MagneticDipoleMomentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue"))) (name "MagneticDipoleMomentValue") (declared-name "MagneticDipoleMomentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit"))) (name "MagneticFieldStrengthUnit") (declared-name "MagneticFieldStrengthUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue"))) (name "MagneticFieldStrengthValue") (declared-name "MagneticFieldStrengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit"))) (name "MagneticFluxDensityUnit") (declared-name "MagneticFluxDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue"))) (name "MagneticFluxDensityValue") (declared-name "MagneticFluxDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit"))) (name "MagneticFluxUnit") (declared-name "MagneticFluxUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue"))) (name "MagneticFluxValue") (declared-name "MagneticFluxValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit"))) (name "MagneticMomentUnit") (declared-name "MagneticMomentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue"))) (name "MagneticMomentValue") (declared-name "MagneticMomentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit"))) (name "MagneticPolarizationUnit") (declared-name "MagneticPolarizationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue"))) (name "MagneticPolarizationValue") (declared-name "MagneticPolarizationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticSusceptibilityValue"))) (name "MagneticSusceptibilityValue") (declared-name "MagneticSusceptibilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticSusceptibilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticSusceptibilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit"))) (name "MagneticVectorPotentialUnit") (declared-name "MagneticVectorPotentialUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue"))) (name "MagneticVectorPotentialValue") (declared-name "MagneticVectorPotentialValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit"))) (name "MagnetizationUnit") (declared-name "MagnetizationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue"))) (name "MagnetizationValue") (declared-name "MagnetizationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceUnit"))) (name "MagnetomotiveForceUnit") (declared-name "MagnetomotiveForceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue"))) (name "MagnetomotiveForceValue") (declared-name "MagnetomotiveForceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit"))) (name "ModulusOfAdmittanceUnit") (declared-name "ModulusOfAdmittanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue"))) (name "ModulusOfAdmittanceValue") (declared-name "ModulusOfAdmittanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit"))) (name "ModulusOfImpedanceUnit") (declared-name "ModulusOfImpedanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue"))) (name "ModulusOfImpedanceValue") (declared-name "ModulusOfImpedanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityOfVacuumUnit"))) (name "PermeabilityOfVacuumUnit") (declared-name "PermeabilityOfVacuumUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityOfVacuumValue"))) (name "PermeabilityOfVacuumValue") (declared-name "PermeabilityOfVacuumValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit"))) (name "PermeabilityUnit") (declared-name "PermeabilityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue"))) (name "PermeabilityValue") (declared-name "PermeabilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit"))) (name "PermeanceUnit") (declared-name "PermeanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue"))) (name "PermeanceValue") (declared-name "PermeanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityOfVacuumUnit"))) (name "PermittivityOfVacuumUnit") (declared-name "PermittivityOfVacuumUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityOfVacuumValue"))) (name "PermittivityOfVacuumValue") (declared-name "PermittivityOfVacuumValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit"))) (name "PermittivityUnit") (declared-name "PermittivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue"))) (name "PermittivityValue") (declared-name "PermittivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceUnit"))) (name "PhaseDifferenceUnit") (declared-name "PhaseDifferenceUnit") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue"))) (name "PhaseDifferenceValue") (declared-name "PhaseDifferenceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit"))) (name "PhaseSpeedOfElectromagneticWavesUnit") (declared-name "PhaseSpeedOfElectromagneticWavesUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue"))) (name "PhaseSpeedOfElectromagneticWavesValue") (declared-name "PhaseSpeedOfElectromagneticWavesValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PowerFactorValue"))) (name "PowerFactorValue") (declared-name "PowerFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PowerFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PowerFactorValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PowerValue"))) (name "PowerValue") (declared-name "PowerValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit"))) (name "PoyntingVectorMagnitudeUnit") (declared-name "PoyntingVectorMagnitudeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue"))) (name "PoyntingVectorMagnitudeValue") (declared-name "PoyntingVectorMagnitudeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::QualityFactorValue"))) (name "QualityFactorValue") (declared-name "QualityFactorValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::QualityFactorValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::QualityFactorValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit"))) (name "ReactanceUnit") (declared-name "ReactanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue"))) (name "ReactanceValue") (declared-name "ReactanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQElectromagnetism::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermeabilityValue"))) (name "RelativePermeabilityValue") (declared-name "RelativePermeabilityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermeabilityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermeabilityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermittivityValue"))) (name "RelativePermittivityValue") (declared-name "RelativePermittivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermittivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermittivityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit"))) (name "ReluctanceUnit") (declared-name "ReluctanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue"))) (name "ReluctanceValue") (declared-name "ReluctanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit"))) (name "ResistanceToAlternatingCurrentUnit") (declared-name "ResistanceToAlternatingCurrentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue"))) (name "ResistanceToAlternatingCurrentValue") (declared-name "ResistanceToAlternatingCurrentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit"))) (name "ResistanceUnit") (declared-name "ResistanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue"))) (name "ResistanceValue") (declared-name "ResistanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit"))) (name "ResistivityUnit") (declared-name "ResistivityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue"))) (name "ResistivityValue") (declared-name "ResistivityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SelfInductanceUnit"))) (name "SelfInductanceUnit") (declared-name "SelfInductanceUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SelfInductanceValue"))) (name "SelfInductanceValue") (declared-name "SelfInductanceValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceTensionUnit"))) (name "SourceTensionUnit") (declared-name "SourceTensionUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceTensionValue"))) (name "SourceTensionValue") (declared-name "SourceTensionValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit"))) (name "SourceVoltageUnit") (declared-name "SourceVoltageUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue"))) (name "SourceVoltageValue") (declared-name "SourceVoltageValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit"))) (name "SpeedOfLightUnit") (declared-name "SpeedOfLightUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue"))) (name "SpeedOfLightValue") (declared-name "SpeedOfLightValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit"))) (name "SurfaceDensityOfElectricChargeUnit") (declared-name "SurfaceDensityOfElectricChargeUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue"))) (name "SurfaceDensityOfElectricChargeValue") (declared-name "SurfaceDensityOfElectricChargeValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit"))) (name "SusceptanceUnit") (declared-name "SusceptanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue"))) (name "SusceptanceValue") (declared-name "SusceptanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit"))) (name "TotalCurrentDensityUnit") (declared-name "TotalCurrentDensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue"))) (name "TotalCurrentDensityValue") (declared-name "TotalCurrentDensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::VolumicElectricChargeUnit"))) (name "VolumicElectricChargeUnit") (declared-name "VolumicElectricChargeUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::VolumicElectricChargeValue"))) (name "VolumicElectricChargeValue") (declared-name "VolumicElectricChargeValue"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::VolumicElectromagneticEnergyUnit"))) (name "VolumicElectromagneticEnergyUnit") (declared-name "VolumicElectromagneticEnergyUnit"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::VolumicElectromagneticEnergyValue"))) (name "VolumicElectromagneticEnergyValue") (declared-name "VolumicElectromagneticEnergyValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::activeEnergy"))) (name "activeEnergy") (declared-name "activeEnergy") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::activeEnergy::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::activeEnergy")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::activePower"))) (name "activePower") (declared-name "activePower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::activePower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::activePower")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::admittance"))) (name "admittance") (declared-name "admittance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::apparentPower"))) (name "apparentPower") (declared-name "apparentPower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::apparentPower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::apparentPower")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::areicElectricCharge"))) (name "areicElectricCharge") (declared-name "areicElectricCharge"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::capacitance"))) (name "capacitance") (declared-name "capacitance") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianAreicElectricCurrent3dVector"))) (name "cartesianAreicElectricCurrent3dVector") (declared-name "cartesianAreicElectricCurrent3dVector"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianDisplacementCurrentDensity3dVector"))) (name "cartesianDisplacementCurrentDensity3dVector") (declared-name "cartesianDisplacementCurrentDensity3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricCurrentDensity3dVector"))) (name "cartesianElectricCurrentDensity3dVector") (declared-name "cartesianElectricCurrentDensity3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricDipoleMoment3dVector"))) (name "cartesianElectricDipoleMoment3dVector") (declared-name "cartesianElectricDipoleMoment3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricDisplacement3dVector"))) (name "cartesianElectricDisplacement3dVector") (declared-name "cartesianElectricDisplacement3dVector"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricFieldStrength3dVector"))) (name "cartesianElectricFieldStrength3dVector") (declared-name "cartesianElectricFieldStrength3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricFluxDensity3dVector"))) (name "cartesianElectricFluxDensity3dVector") (declared-name "cartesianElectricFluxDensity3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricPolarization3dVector"))) (name "cartesianElectricPolarization3dVector") (declared-name "cartesianElectricPolarization3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianLinearElectricCurrentDensity3dVector"))) (name "cartesianLinearElectricCurrentDensity3dVector") (declared-name "cartesianLinearElectricCurrentDensity3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianLineicElectricCurrent3dVector"))) (name "cartesianLineicElectricCurrent3dVector") (declared-name "cartesianLineicElectricCurrent3dVector"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticAreaMoment3dVector"))) (name "cartesianMagneticAreaMoment3dVector") (declared-name "cartesianMagneticAreaMoment3dVector"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticDipoleMoment3dVector"))) (name "cartesianMagneticDipoleMoment3dVector") (declared-name "cartesianMagneticDipoleMoment3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticFieldStrength3dVector"))) (name "cartesianMagneticFieldStrength3dVector") (declared-name "cartesianMagneticFieldStrength3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticFluxDensity3dVector"))) (name "cartesianMagneticFluxDensity3dVector") (declared-name "cartesianMagneticFluxDensity3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticMoment3dVector"))) (name "cartesianMagneticMoment3dVector") (declared-name "cartesianMagneticMoment3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticPolarization3dVector"))) (name "cartesianMagneticPolarization3dVector") (declared-name "cartesianMagneticPolarization3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticVectorPotential3dVector"))) (name "cartesianMagneticVectorPotential3dVector") (declared-name "cartesianMagneticVectorPotential3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagnetization3dVector"))) (name "cartesianMagnetization3dVector") (declared-name "cartesianMagnetization3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagnetizingField3dVector"))) (name "cartesianMagnetizingField3dVector") (declared-name "cartesianMagnetizingField3dVector"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianPoynting3dVector"))) (name "cartesianPoynting3dVector") (declared-name "cartesianPoynting3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianTotalCurrentDensity3dVector"))) (name "cartesianTotalCurrentDensity3dVector") (declared-name "cartesianTotalCurrentDensity3dVector") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::coercivity"))) (name "coercivity") (declared-name "coercivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::complexAdmittance"))) (name "complexAdmittance") (declared-name "complexAdmittance"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::complexImpedance"))) (name "complexImpedance") (declared-name "complexImpedance"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::complexPower"))) (name "complexPower") (declared-name "complexPower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::complexPower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::complexPower")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::conductance"))) (name "conductance") (declared-name "conductance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::conductanceForAlternatingCurrent"))) (name "conductanceForAlternatingCurrent") (declared-name "conductanceForAlternatingCurrent") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::conductanceForAlternatingCurrent::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::conductanceForAlternatingCurrent")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::conductivity"))) (name "conductivity") (declared-name "conductivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::couplingFactor"))) (name "couplingFactor") (declared-name "couplingFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::currentLinkage"))) (name "currentLinkage") (declared-name "currentLinkage") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::currentLinkage::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::currentLinkage")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::displacementCurrent"))) (name "displacementCurrent") (declared-name "displacementCurrent") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::displacementCurrent::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::displacementCurrent")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::displacementCurrentDensity"))) (name "displacementCurrentDensity") (declared-name "displacementCurrentDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricCharge"))) (name "electricCharge") (declared-name "electricCharge") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricChargeDensity"))) (name "electricChargeDensity") (declared-name "electricChargeDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricConstant"))) (name "electricConstant") (declared-name "electricConstant") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricCurrentDensity"))) (name "electricCurrentDensity") (declared-name "electricCurrentDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricCurrentPhasor"))) (name "electricCurrentPhasor") (declared-name "electricCurrentPhasor") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricCurrentPhasor::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::electricCurrentPhasor")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricDipoleMoment"))) (name "electricDipoleMoment") (declared-name "electricDipoleMoment") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricFieldStrength"))) (name "electricFieldStrength") (declared-name "electricFieldStrength") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricFlux"))) (name "electricFlux") (declared-name "electricFlux") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricFluxDensity"))) (name "electricFluxDensity") (declared-name "electricFluxDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricPolarization"))) (name "electricPolarization") (declared-name "electricPolarization") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricPotential"))) (name "electricPotential") (declared-name "electricPotential") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricPotentialDifference"))) (name "electricPotentialDifference") (declared-name "electricPotentialDifference") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricPower"))) (name "electricPower") (declared-name "electricPower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricPower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::electricPower")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricSusceptibility"))) (name "electricSusceptibility") (declared-name "electricSusceptibility") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electricTension"))) (name "electricTension") (declared-name "electricTension"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::electromagneticEnergyDensity"))) (name "electromagneticEnergyDensity") (declared-name "electromagneticEnergyDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::impedance"))) (name "impedance") (declared-name "impedance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::inductance"))) (name "inductance") (declared-name "inductance") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::instantaneousPower"))) (name "instantaneousPower") (declared-name "instantaneousPower"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::leakageFactor"))) (name "leakageFactor") (declared-name "leakageFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::lightSpeed"))) (name "lightSpeed") (declared-name "lightSpeed"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::linearDensityOfElectricCharge"))) (name "linearDensityOfElectricCharge") (declared-name "linearDensityOfElectricCharge") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::linearElectricCurrentDensity"))) (name "linearElectricCurrentDensity") (declared-name "linearElectricCurrentDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::lineicElectricCharge"))) (name "lineicElectricCharge") (declared-name "lineicElectricCharge"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::linkedFlux"))) (name "linkedFlux") (declared-name "linkedFlux") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::lossAngle"))) (name "lossAngle") (declared-name "lossAngle") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::lossAngle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::lossAngle")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::lossFactor"))) (name "lossFactor") (declared-name "lossFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticConstant"))) (name "magneticConstant") (declared-name "magneticConstant") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticDipoleMoment"))) (name "magneticDipoleMoment") (declared-name "magneticDipoleMoment") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticFieldStrength"))) (name "magneticFieldStrength") (declared-name "magneticFieldStrength") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticFlux"))) (name "magneticFlux") (declared-name "magneticFlux") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticFluxDensity"))) (name "magneticFluxDensity") (declared-name "magneticFluxDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticMoment"))) (name "magneticMoment") (declared-name "magneticMoment") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticPolarization"))) (name "magneticPolarization") (declared-name "magneticPolarization") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticSusceptibility"))) (name "magneticSusceptibility") (declared-name "magneticSusceptibility") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticTension"))) (name "magneticTension") (declared-name "magneticTension") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticTension::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::magneticTension")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magneticVectorPotential"))) (name "magneticVectorPotential") (declared-name "magneticVectorPotential") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magnetization"))) (name "magnetization") (declared-name "magnetization") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::magnetomotiveForce"))) (name "magnetomotiveForce") (declared-name "magnetomotiveForce") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::modulusOfAdmittance"))) (name "modulusOfAdmittance") (declared-name "modulusOfAdmittance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::modulusOfImpedance"))) (name "modulusOfImpedance") (declared-name "modulusOfImpedance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::mutualInductance"))) (name "mutualInductance") (declared-name "mutualInductance") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::mutualInductance::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::mutualInductance")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::nonActivePower"))) (name "nonActivePower") (declared-name "nonActivePower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::nonActivePower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::nonActivePower")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::numberOfTurnsInAWinding"))) (name "numberOfTurnsInAWinding") (declared-name "numberOfTurnsInAWinding") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::numberOfTurnsInAWinding::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::numberOfTurnsInAWinding")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::permeability"))) (name "permeability") (declared-name "permeability") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::permeabilityOfVacuum"))) (name "permeabilityOfVacuum") (declared-name "permeabilityOfVacuum"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::permeance"))) (name "permeance") (declared-name "permeance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::permittivity"))) (name "permittivity") (declared-name "permittivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::permittivityOfVacuum"))) (name "permittivityOfVacuum") (declared-name "permittivityOfVacuum"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::phaseDifference"))) (name "phaseDifference") (declared-name "phaseDifference") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::phaseSpeedOfElectromagneticWaves"))) (name "phaseSpeedOfElectromagneticWaves") (declared-name "phaseSpeedOfElectromagneticWaves") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::powerFactor"))) (name "powerFactor") (declared-name "powerFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::poyntingVectorMagnitude"))) (name "poyntingVectorMagnitude") (declared-name "poyntingVectorMagnitude") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::qualityFactor"))) (name "qualityFactor") (declared-name "qualityFactor") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::reactance"))) (name "reactance") (declared-name "reactance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::reactivePower"))) (name "reactivePower") (declared-name "reactivePower") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::reactivePower::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::reactivePower")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::relativePermeability"))) (name "relativePermeability") (declared-name "relativePermeability") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::relativePermittivity"))) (name "relativePermittivity") (declared-name "relativePermittivity") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::reluctance"))) (name "reluctance") (declared-name "reluctance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::resistance"))) (name "resistance") (declared-name "resistance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::resistanceToAlternatingCurrent"))) (name "resistanceToAlternatingCurrent") (declared-name "resistanceToAlternatingCurrent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::resistivity"))) (name "resistivity") (declared-name "resistivity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::scalarMagneticPotential"))) (name "scalarMagneticPotential") (declared-name "scalarMagneticPotential") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::scalarMagneticPotential::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::scalarMagneticPotential")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::selfInductance"))) (name "selfInductance") (declared-name "selfInductance"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::sourceTension"))) (name "sourceTension") (declared-name "sourceTension"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::sourceVoltage"))) (name "sourceVoltage") (declared-name "sourceVoltage") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::speedOfLight"))) (name "speedOfLight") (declared-name "speedOfLight") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::surfaceDensityOfElectricCharge"))) (name "surfaceDensityOfElectricCharge") (declared-name "surfaceDensityOfElectricCharge") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::susceptance"))) (name "susceptance") (declared-name "susceptance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::totalCurrent"))) (name "totalCurrent") (declared-name "totalCurrent") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::totalCurrent::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::totalCurrent")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::totalCurrentDensity"))) (name "totalCurrentDensity") (declared-name "totalCurrentDensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::voltage"))) (name "voltage") (declared-name "voltage") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::voltage::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::voltage")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQElectromagnetism::voltagePhasor"))) (name "voltagePhasor") (declared-name "voltagePhasor") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQElectromagnetism::voltagePhasor::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQElectromagnetism::voltagePhasor")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::volumicElectricCharge"))) (name "volumicElectricCharge") (declared-name "volumicElectricCharge"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "ISQElectromagnetism::volumicElectromagneticEnergy"))) (name "volumicElectromagneticEnergy") (declared-name "volumicElectromagneticEnergy"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CouplingFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CouplingFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricSusceptibilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricSusceptibilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LeakageFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LeakageFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LossFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LossFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticSusceptibilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticSusceptibilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PowerFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PowerFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::QualityFactorValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::QualityFactorValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermeabilityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermeabilityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermittivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermittivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::activeEnergy::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::activeEnergy"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::activePower::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::activePower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::apparentPower::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::apparentPower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::complexPower::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::complexPower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::conductanceForAlternatingCurrent::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::conductanceForAlternatingCurrent"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::currentLinkage::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::currentLinkage"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::displacementCurrent::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::displacementCurrent"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricCurrentPhasor::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::electricCurrentPhasor"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricPower::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::electricPower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::lossAngle::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::lossAngle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticTension::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::magneticTension"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::mutualInductance::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::mutualInductance"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::nonActivePower::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::nonActivePower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::numberOfTurnsInAWinding::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::numberOfTurnsInAWinding"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::reactivePower::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::reactivePower"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::scalarMagneticPotential::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::scalarMagneticPotential"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::totalCurrent::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::totalCurrent"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::voltage::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::voltage"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::voltagePhasor::_documentation"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::voltagePhasor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame::mRefs"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dCoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::admittance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::AdmittanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::capacitance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CapacitanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianDisplacementCurrentDensity3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianDisplacementCurrentDensity3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricCurrentDensity3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricCurrentDensity3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricDipoleMoment3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricDipoleMoment3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricFieldStrength3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFieldStrength3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricFluxDensity3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricFluxDensity3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianElectricPolarization3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianElectricPolarization3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianLinearElectricCurrentDensity3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianLinearElectricCurrentDensity3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticDipoleMoment3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticDipoleMoment3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticFieldStrength3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFieldStrength3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticFluxDensity3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticFluxDensity3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticMoment3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticMoment3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticPolarization3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticPolarization3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagneticVectorPotential3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagneticVectorPotential3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianMagnetization3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianMagnetization3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianPoynting3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianPoynting3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::cartesianTotalCurrentDensity3dVector"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CartesianTotalCurrentDensity3dVector"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::coercivity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CoercivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::conductance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::conductanceForAlternatingCurrent"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ConductanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::conductivity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ConductivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::couplingFactor"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::CouplingFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::displacementCurrentDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::DisplacementCurrentDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricCharge"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricChargeDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricChargeDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricConstant"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricConstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricCurrentDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricCurrentDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricDipoleMoment"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricDipoleMomentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricFieldStrength"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFieldStrengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricFlux"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricFluxDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricFluxDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricPolarization"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPolarizationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricPotential"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricPotentialDifference"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electricSusceptibility"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricSusceptibilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::electromagneticEnergyDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectromagneticEnergyDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::impedance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ImpedanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::inductance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::leakageFactor"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LeakageFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::linearDensityOfElectricCharge"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinearDensityOfElectricChargeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::linearElectricCurrentDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinearElectricCurrentDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::linkedFlux"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LinkedFluxValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::lossFactor"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::LossFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticConstant"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticConstantValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticDipoleMoment"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticDipoleMomentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticFieldStrength"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFieldStrengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticFlux"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticFluxDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticFluxDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticMoment"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticMomentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticPolarization"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticPolarizationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticSusceptibility"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticSusceptibilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magneticVectorPotential"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagneticVectorPotentialValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magnetization"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetizationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::magnetomotiveForce"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::MagnetomotiveForceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::modulusOfAdmittance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfAdmittanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::modulusOfImpedance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ModulusOfImpedanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::mutualInductance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::InductanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::permeability"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermeabilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::permeance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermeanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::permittivity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PermittivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::phaseDifference"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseDifferenceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::phaseSpeedOfElectromagneticWaves"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PhaseSpeedOfElectromagneticWavesValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::powerFactor"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PowerFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::poyntingVectorMagnitude"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::PoyntingVectorMagnitudeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::qualityFactor"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::QualityFactorValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::reactance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ReactanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::relativePermeability"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermeabilityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::relativePermittivity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::RelativePermittivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::reluctance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ReluctanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::resistance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::resistanceToAlternatingCurrent"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistanceToAlternatingCurrentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::resistivity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ResistivityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::sourceVoltage"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SourceVoltageValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::speedOfLight"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SpeedOfLightValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::surfaceDensityOfElectricCharge"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SurfaceDensityOfElectricChargeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::susceptance"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::SusceptanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::totalCurrentDensity"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::TotalCurrentDensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::voltage"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQElectromagnetism::voltagePhasor"))) (to (node (document "d0") (qualified-name "ISQElectromagnetism::ElectricPotentialDifferenceValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

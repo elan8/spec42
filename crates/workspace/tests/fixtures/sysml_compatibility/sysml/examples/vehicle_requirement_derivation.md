@@ -174,30 +174,54 @@ semantic.unresolved_name 'ISQ::mass'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VehicleRequirementDerivation'
-      (namespace_import private -> 'RequirementDerivation'[unresolved])
-      (part_usage 'vehicle'
-        (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])
-        (part_usage composite 'chassis'
-          (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved]))
-        (part_usage composite 'engine'
-          (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])))
-      (requirement_def 'MassRequirement'
-        (subject_membership in 'mass' :> 'ISQ::mass'[unresolved])
-        (attribute_usage composite 'massLimit' :> 'ISQ::mass'[unresolved])
-        (require_constraint_usage composite
-          (result_expr_membership)))
-      (requirement_usage 'vehicleMassRequirement' : 'VehicleRequirementDerivation::MassRequirement'[requirement_def]
-        (subject_membership in :>> 'VehicleRequirementDerivation::MassRequirement::mass'[subject_membership]
-          (feature_value (=))))
-      (requirement_usage 'chassisMassRequirement' : 'VehicleRequirementDerivation::MassRequirement'[requirement_def]
-        (subject_membership in :>> 'VehicleRequirementDerivation::MassRequirement::mass'[subject_membership]
-          (feature_value (=))))
-      (requirement_usage 'engineMassRequirement' : 'VehicleRequirementDerivation::MassRequirement'[requirement_def]
-        (subject_membership in :>> 'VehicleRequirementDerivation::MassRequirement::mass'[subject_membership]
-          (feature_value (=))))
-      (not_implemented 'malformed')
-      (not_implemented 'malformed'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation"))) (name "VehicleRequirementDerivation") (declared-name "VehicleRequirementDerivation")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::*"))) (name "*") (declared-name "*"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (name "MassRequirement") (declared-name "MassRequirement")
+          (contains
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement::massLimit"))) (name "massLimit") (declared-name "massLimit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement")))))
+          )
+        )
+        (element (kind "derivation connection") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::_derivationConnection"))) (name "_derivationConnection")
+          (contains
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::_derivationConnection::#derive"))) (name "#derive") (declared-name "#derive") (declared (properties (end true))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::_derivationConnection::#derive#interface_end"))) (name "#derive") (declared-name "#derive") (declared (properties (end true))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::_derivationConnection::#original"))) (name "#original") (declared-name "#original") (declared (properties (end true))))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (name "chassisMassRequirement") (declared-name "chassisMassRequirement"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (name "engineMassRequirement") (declared-name "engineMassRequirement"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis"))) (name "chassis") (declared-name "chassis") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement"))
+      )
+    )
+  )
+  (relationships
+    (derivation (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

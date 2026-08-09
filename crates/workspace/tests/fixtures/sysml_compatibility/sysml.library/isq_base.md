@@ -822,148 +822,163 @@ standard library package ISQBase {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'ISQBase'
-      (documentation)
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Quantities'[unresolved])
-      (namespace_import private -> 'MeasurementReferences'[unresolved])
-      (attribute_def 'LengthValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQBase::LengthUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'length' : 'ISQBase::LengthValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LengthUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'lengthPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'DurationValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQBase::DurationUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'duration' : 'ISQBase::DurationValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'DurationUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'durationPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'MassValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQBase::MassUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'mass' : 'ISQBase::MassValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'MassUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'massPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ThermodynamicTemperatureValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQBase::ThermodynamicTemperatureUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'thermodynamicTemperature' : 'ISQBase::ThermodynamicTemperatureValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ThermodynamicTemperatureUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'thermodynamicTemperaturePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'ElectricCurrentValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQBase::ElectricCurrentUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'electricCurrent' : 'ISQBase::ElectricCurrentValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'ElectricCurrentUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'electricCurrentPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'LuminousIntensityValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQBase::LuminousIntensityUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'luminousIntensity' : 'ISQBase::LuminousIntensityValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'LuminousIntensityUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'luminousIntensityPF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_def 'AmountOfSubstanceValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'ISQBase::AmountOfSubstanceUnit'[attribute_def]
-          (multiplicity_range [1])))
-      (attribute_usage 'amountOfSubstance' : 'ISQBase::AmountOfSubstanceValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_def 'AmountOfSubstanceUnit' :> 'SimpleUnit'[unresolved]
-        (attribute_usage composite 'amountOfSubstancePF' : 'QuantityPowerFactor'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'quantity'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'exponent'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'quantityDimension'[unresolved]
-          (reference_usage reference :>> 'quantityPowerFactors'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'International System of Quantities' : 'SystemOfQuantities'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'baseQuantities'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'L' : 'ISQBase::LengthValue'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'M' : 'ISQBase::MassValue'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'T' : 'ISQBase::DurationValue'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'I' : 'ISQBase::ElectricCurrentValue'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'Θ' : 'ISQBase::ThermodynamicTemperatureValue'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'N' : 'ISQBase::AmountOfSubstanceValue'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'J' : 'ISQBase::LuminousIntensityValue'[attribute_def]
-          (multiplicity_range [1]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ISQBase"))) (name "ISQBase") (declared-name "ISQBase")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQBase::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQBase::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))) (name "AmountOfSubstanceUnit") (declared-name "AmountOfSubstanceUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::amountOfSubstancePF"))) (name "amountOfSubstancePF") (declared-name "amountOfSubstancePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))) (name "AmountOfSubstanceValue") (declared-name "AmountOfSubstanceValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::DurationUnit"))) (name "DurationUnit") (declared-name "DurationUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationUnit::durationPF"))) (name "durationPF") (declared-name "durationPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::DurationValue"))) (name "DurationValue") (declared-name "DurationValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::DurationValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::DurationValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::DurationValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))) (name "ElectricCurrentUnit") (declared-name "ElectricCurrentUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::electricCurrentPF"))) (name "electricCurrentPF") (declared-name "electricCurrentPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))) (name "ElectricCurrentValue") (declared-name "ElectricCurrentValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))) (name "International System of Quantities") (declared-name "International System of Quantities") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (name "I") (declared-name "I") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (name "J") (declared-name "J") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (name "L") (declared-name "L") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (name "M") (declared-name "M") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (name "N") (declared-name "N") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (name "T") (declared-name "T") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::baseQuantities"))) (name "baseQuantities") (declared-name "baseQuantities") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (name "Θ") (declared-name "Θ") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::International System of Quantities")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LengthUnit"))) (name "LengthUnit") (declared-name "LengthUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthUnit::lengthPF"))) (name "lengthPF") (declared-name "lengthPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LengthValue"))) (name "LengthValue") (declared-name "LengthValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::LengthValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LengthValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LengthValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))) (name "LuminousIntensityUnit") (declared-name "LuminousIntensityUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::luminousIntensityPF"))) (name "luminousIntensityPF") (declared-name "luminousIntensityPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))) (name "LuminousIntensityValue") (declared-name "LuminousIntensityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::MassUnit"))) (name "MassUnit") (declared-name "MassUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassUnit::massPF"))) (name "massPF") (declared-name "massPF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::MassValue"))) (name "MassValue") (declared-name "MassValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::MassValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::MassValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::MassValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::MassValue")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ISQBase::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))) (name "ThermodynamicTemperatureUnit") (declared-name "ThermodynamicTemperatureUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit::thermodynamicTemperaturePF"))) (name "thermodynamicTemperaturePF") (declared-name "thermodynamicTemperaturePF") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))) (name "ThermodynamicTemperatureValue") (declared-name "ThermodynamicTemperatureValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "ISQBase::_documentation"))) (name ""))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (name "amountOfSubstance") (declared-name "amountOfSubstance") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::duration"))) (name "duration") (declared-name "duration") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (name "electricCurrent") (declared-name "electricCurrent") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::length"))) (name "length") (declared-name "length") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (name "luminousIntensity") (declared-name "luminousIntensity") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (name "thermodynamicTemperature") (declared-name "thermodynamicTemperature") (declared (properties (ordered false) (unique false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::DurationValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::DurationValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::International System of Quantities"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LengthValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::LengthValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::MassValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::MassValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQBase::_documentation"))) (to (node (document "d0") (qualified-name "ISQBase"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::DurationValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::DurationUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::I"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::J"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::L"))) (to (node (document "d0") (qualified-name "ISQBase::LengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::M"))) (to (node (document "d0") (qualified-name "ISQBase::MassValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::N"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::T"))) (to (node (document "d0") (qualified-name "ISQBase::DurationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::International System of Quantities::Θ"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LengthValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::LengthUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::MassValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::MassUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue::mRef"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::amountOfSubstance"))) (to (node (document "d0") (qualified-name "ISQBase::AmountOfSubstanceValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::duration"))) (to (node (document "d0") (qualified-name "ISQBase::DurationValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::electricCurrent"))) (to (node (document "d0") (qualified-name "ISQBase::ElectricCurrentValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::length"))) (to (node (document "d0") (qualified-name "ISQBase::LengthValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::luminousIntensity"))) (to (node (document "d0") (qualified-name "ISQBase::LuminousIntensityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::mass"))) (to (node (document "d0") (qualified-name "ISQBase::MassValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQBase::thermodynamicTemperature"))) (to (node (document "d0") (qualified-name "ISQBase::ThermodynamicTemperatureValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

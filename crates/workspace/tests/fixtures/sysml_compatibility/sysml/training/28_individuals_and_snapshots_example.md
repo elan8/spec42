@@ -135,30 +135,20 @@ semantic.unresolved_name 'acceleratorPosition'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Individuals and Snapshots Example'
-      (namespace_import public -> 'Part Definition Example'[unresolved])
-      (part_def individual 'Vehicle_1' :> 'Vehicle'[unresolved]
-        (not_implemented 'malformed')
-        (part_usage composite 'vehicle_1_t0'
-          (reference_usage reference :>> 'mass'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'status'[unresolved]
-            (reference_usage reference :>> 'gearSetting'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'acceleratorPosition'[unresolved]
-              (feature_value (=)))))
-        (not_implemented 'malformed')
-        (part_usage composite 'vehicle_1_t1'
-          (reference_usage reference :>> 'mass'[unresolved]
-            (feature_value (=)))
-          (reference_usage reference :>> 'status'[unresolved]
-            (reference_usage reference :>> 'gearSetting'[unresolved]
-              (feature_value (=)))
-            (reference_usage reference :>> 'acceleratorPosition'[unresolved]
-              (feature_value (=)))))
-        (succession_def
-          (connector_end 'vehicle_1_t0')
-          (connector_end 'vehicle_1_t1'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (name "Individuals and Snapshots Example") (declared-name "Individuals and Snapshots Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (name "Vehicle_1") (declared-name "Vehicle_1") (declared (properties (individual true))))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

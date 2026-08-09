@@ -67,26 +67,24 @@ package SuccessionStructured {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'SuccessionStructured'
-      (succession_def
-        (multiplicity_range [*])
-        (connector_end 'trigger')
-        (connector_end 'guard'))
-      (succession_def
-        (multiplicity_range [1])
-        (connector_end 'entry')
-        (connector_end 'middle'))
-      (succession_def
-        (connector_end 'X')
-        (connector_end 'Y'))
-      (succession_def 's'
-        (connector_end 'A')
-        (connector_end 'B'))
-      (succession_def
-        (multiplicity_range [*])
-        (connector_end 'acceptable')
-        (connector_end 'exit'))
-      (succession_def 'x'))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SuccessionStructured"))) (name "SuccessionStructured") (declared-name "SuccessionStructured")
+      (contains
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SuccessionStructured::1"))) (name "1") (declared-name "1"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SuccessionStructured::all"))) (name "all") (declared-name "all"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SuccessionStructured::all#kermlDecl"))) (name "all") (declared-name "all"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SuccessionStructured::first"))) (name "first") (declared-name "first"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SuccessionStructured::s"))) (name "s") (declared-name "s"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "SuccessionStructured::x"))) (name "x") (declared-name "x"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

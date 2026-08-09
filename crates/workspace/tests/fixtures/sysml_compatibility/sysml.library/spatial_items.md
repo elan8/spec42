@@ -634,133 +634,98 @@ standard library package SpatialItems {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'SpatialItems'
-      (documentation)
-      (membership_import private -> 'Objects::Point'[unresolved])
-      (membership_import private -> 'SpatialFrames::SpatialFrame'[unresolved])
-      (membership_import private -> 'Quantities::VectorQuantityValue'[unresolved])
-      (membership_import private -> 'MeasurementReferences::ThreeDCoordinateFrame'[unresolved])
-      (membership_import private -> 'MeasurementReferences::nullTransformation'[unresolved])
-      (membership_import private -> 'Time::Clock'[unresolved])
-      (membership_import private -> 'Time::TimeInstantValue'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (membership_import private -> 'ISQ::universalCartesianSpatial3dCoordinateFrame'[unresolved])
-      (membership_import private -> 'ISQ::Position3dVector'[unresolved])
-      (membership_import private -> 'ISQ::Displacement3dVector'[unresolved])
-      (membership_import private -> 'VectorFunctions::isZeroVector'[unresolved])
-      (membership_import private -> 'SequenceFunctions::isEmpty'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (item_def 'SpatialItem' :> 'SpatialFrame'[unresolved]
-        (documentation)
-        (item_usage reference :>> 'localClock'[unresolved] : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (attribute_usage composite 'coordinateFrame' : 'ThreeDCoordinateFrame'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (item_usage composite 'originPoint' : 'Point'[unresolved] :> 'spaceShots'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (assert_constraint_usage 'originPointConstraint'
-          (documentation)
-          (result_expr_membership))
-        (item_usage composite 'subSpatialItems' : 'SpatialItems::SpatialItem'[item_def] :> 'subitems'[unresolved]
-          (multiplicity_range [1..*])
-          (item_usage reference :>> 'SpatialItem::localClock'[unresolved] :>> 'subitems::localClock'[unresolved]))
-        (part_usage composite 'subSpatialParts' : 'SpatialItems::SpatialItem'[item_def] :> 'SpatialItems::SpatialItem::subSpatialItems'[item_usage] :> 'subparts'[unresolved]
-          (multiplicity_range [1..*])
-          (item_usage reference :>> 'SpatialItem::localClock'[unresolved] :>> 'subSpatialItems::localClock'[unresolved] :>> 'subparts::localClock'[unresolved]))
-        (item_usage composite 'componentItems' : 'SpatialItems::SpatialItem'[item_def] :> 'SpatialItems::SpatialItem::subSpatialItems'[item_usage]
-          (multiplicity_range [1..*])
-          (documentation)
-          (item_usage reference :>> 'SpatialItem::localClock'[unresolved] :>> 'subSpatialItems::localClock'[unresolved]
-            (feature_value (default =)))
-          (attribute_usage composite :>> 'SpatialItems::SpatialItem::coordinateFrame'[attribute_usage]
-            (attribute_usage composite :>> 'mRefs'[unresolved]
-              (feature_value (default =)))
-            (attribute_usage composite :>> 'transformation'[unresolved]
-              (multiplicity_range [1])
-              (feature_value (default =))
-              (attribute_usage composite :>> 'source'[unresolved]
-                (feature_value (default =))))))
-        (attribute_usage composite 'cunionNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (attribute_usage composite 'componentUnion' :> 'unionsOf'[unresolved]
-          (multiplicity_range [?])
-          (documentation)
-          (item_usage composite :>> 'elements'[unresolved] : 'SpatialItems::SpatialItem'[item_def]
-            (multiplicity_range [1..*])
-            (feature_value (=))))
-        (part_usage composite 'componentParts' : 'SpatialItems::SpatialItem'[item_def] :> 'SpatialItems::SpatialItem::componentItems'[item_usage] :> 'SpatialItems::SpatialItem::subSpatialParts'[part_usage]
-          (multiplicity_range [1..*])
-          (item_usage reference :>> 'SpatialItem::localClock'[unresolved] :>> 'componentItems::localClock'[unresolved] :>> 'subSpatialParts::localClock'[unresolved] :>> 'subparts::localClock'[unresolved])))
-      (calculation_def 'PositionOf' :> 'SpatialFrames::PositionOf'[unresolved]
-        (documentation)
-        (reference_usage in reference 'point' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'timeInstant' : 'TimeInstantValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'enclosingItem' :>> 'frame'[unresolved] : 'SpatialItems::SpatialItem'[item_def]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'positionVector' : 'Position3dVector'[unresolved]
-            (multiplicity_range [1])
-            (attribute_usage composite :>> 'mRef'[unresolved]
-              (feature_value (=))))))
-      (calculation_def 'CurrentPositionOf' :> 'SpatialFrames::CurrentPositionOf'[unresolved]
-        (documentation)
-        (reference_usage in reference 'point' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'enclosingItem' :>> 'frame'[unresolved] : 'SpatialItems::SpatialItem'[item_def]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'positionVector' : 'Position3dVector'[unresolved]
-            (multiplicity_range [1])
-            (attribute_usage composite :>> 'mRef'[unresolved]
-              (feature_value (=))))))
-      (calculation_def 'DisplacementOf' :> 'SpatialFrames::DisplacementOf'[unresolved]
-        (documentation)
-        (reference_usage in reference 'point1' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'point2' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'timeInstant' : 'TimeInstantValue'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'spatialItem' :>> 'frame'[unresolved] : 'SpatialItems::SpatialItem'[item_def]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'displacementVector' : 'Displacement3dVector'[unresolved]
-            (multiplicity_range [1])
-            (attribute_usage composite :>> 'mRef'[unresolved]
-              (feature_value (=))))))
-      (calculation_def 'CurrentDisplacementOf' :> 'SpatialFrames::CurrentDisplacementOf'[unresolved]
-        (documentation)
-        (reference_usage in reference 'point1' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'point2' : 'Point'[unresolved]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'spatialItem' :>> 'frame'[unresolved] : 'SpatialItems::SpatialItem'[item_def]
-          (multiplicity_range [1]))
-        (reference_usage in reference 'clock' : 'Clock'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (return_parameter_membership
-          (feature_def out 'displacementVector' : 'Displacement3dVector'[unresolved]
-            (multiplicity_range [1])
-            (attribute_usage composite :>> 'mRef'[unresolved]
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "SpatialItems"))) (name "SpatialItems") (declared-name "SpatialItems")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::Clock"))) (name "Clock") (declared-name "Clock"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf"))) (name "CurrentDisplacementOf") (declared-name "CurrentDisplacementOf")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf::clock"))) (name "clock") (declared-name "clock") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf::point1"))) (name "point1") (declared-name "point1") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf::point2"))) (name "point2") (declared-name "point2") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf::spatialItem"))) (name "spatialItem") (declared-name "spatialItem") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf")))))
+          )
+        )
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf"))) (name "CurrentPositionOf") (declared-name "CurrentPositionOf")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf::clock"))) (name "clock") (declared-name "clock") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf::enclosingItem"))) (name "enclosingItem") (declared-name "enclosingItem") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf::point"))) (name "point") (declared-name "point") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::Displacement3dVector"))) (name "Displacement3dVector") (declared-name "Displacement3dVector"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SpatialItems::DisplacementOf"))) (name "DisplacementOf") (declared-name "DisplacementOf")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::DisplacementOf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::DisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::DisplacementOf::clock"))) (name "clock") (declared-name "clock") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::DisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::DisplacementOf::point1"))) (name "point1") (declared-name "point1") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::DisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::DisplacementOf::point2"))) (name "point2") (declared-name "point2") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::DisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::DisplacementOf::spatialItem"))) (name "spatialItem") (declared-name "spatialItem") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::DisplacementOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::DisplacementOf::timeInstant"))) (name "timeInstant") (declared-name "timeInstant") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::DisplacementOf")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::Point"))) (name "Point") (declared-name "Point"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::Position3dVector"))) (name "Position3dVector") (declared-name "Position3dVector"))
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "SpatialItems::PositionOf"))) (name "PositionOf") (declared-name "PositionOf")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::PositionOf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::PositionOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::PositionOf::clock"))) (name "clock") (declared-name "clock") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::PositionOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::PositionOf::enclosingItem"))) (name "enclosingItem") (declared-name "enclosingItem") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::PositionOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::PositionOf::point"))) (name "point") (declared-name "point") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::PositionOf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "SpatialItems::PositionOf::timeInstant"))) (name "timeInstant") (declared-name "timeInstant") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::PositionOf")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::SpatialFrame"))) (name "SpatialFrame") (declared-name "SpatialFrame"))
+        (element (kind "item def") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem"))) (name "SpatialItem") (declared-name "SpatialItem")
+          (contains
+            (element (kind "ref") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::"))) (name "") (declared (properties (composite false) (reference true)) (feature-value (kind default) (expression (kind "featureReference") (reference "Time::universalClock")))) (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::componentParts"))) (name "componentParts") (declared-name "componentParts") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::componentUnion"))) (name "componentUnion") (declared-name "componentUnion") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::componentUnion::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::coordinateFrame"))) (name "coordinateFrame") (declared-name "coordinateFrame") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::coordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem")))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::cunionNum"))) (name "cunionNum") (declared-name "cunionNum") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (name "subSpatialParts") (declared-name "subSpatialParts") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "SpatialItems::SpatialItem")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::ThreeDCoordinateFrame"))) (name "ThreeDCoordinateFrame") (declared-name "ThreeDCoordinateFrame"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::TimeInstantValue"))) (name "TimeInstantValue") (declared-name "TimeInstantValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "SpatialItems::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::isEmpty"))) (name "isEmpty") (declared-name "isEmpty"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::isZeroVector"))) (name "isZeroVector") (declared-name "isZeroVector"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::nullTransformation"))) (name "nullTransformation") (declared-name "nullTransformation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "SpatialItems::universalCartesianSpatial3dCoordinateFrame"))) (name "universalCartesianSpatial3dCoordinateFrame") (declared-name "universalCartesianSpatial3dCoordinateFrame"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems::CurrentDisplacementOf"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems::CurrentPositionOf"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::DisplacementOf::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems::DisplacementOf"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::PositionOf::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems::PositionOf"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::SpatialItem::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems::SpatialItem"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::SpatialItem::componentUnion::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems::SpatialItem::componentUnion"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::SpatialItem::coordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems::SpatialItem::coordinateFrame"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::_documentation"))) (to (node (document "d0") (qualified-name "SpatialItems"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::SpatialItem::componentParts"))) (to (node (document "d0") (qualified-name "SpatialItems::SpatialItem"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "SpatialItems::SpatialItem::subSpatialParts"))) (to (node (document "d0") (qualified-name "SpatialItems::SpatialItem"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

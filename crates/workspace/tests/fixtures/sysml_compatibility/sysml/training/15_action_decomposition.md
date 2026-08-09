@@ -134,33 +134,68 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Action Decomposition'
-      (part_def 'Scene')
-      (part_def 'Image')
-      (part_def 'Picture')
-      (action_def 'Focus'
-        (reference_usage in reference 'scene' : 'Action Decomposition::Scene'[part_def])
-        (reference_usage out reference 'image' : 'Action Decomposition::Image'[part_def]))
-      (action_def 'Shoot'
-        (reference_usage in reference 'image' : 'Action Decomposition::Image'[part_def])
-        (reference_usage out reference 'picture' : 'Action Decomposition::Picture'[part_def]))
-      (action_def 'TakePicture'
-        (reference_usage in reference 'scene' : 'Action Decomposition::Scene'[part_def])
-        (reference_usage out reference 'picture' : 'Action Decomposition::Picture'[part_def]))
-      (action_usage 'takePicture' : 'Action Decomposition::TakePicture'[action_def]
-        (item_usage in 'scene')
-        (item_usage out 'picture')
-        (action_usage composite 'focus' : 'Action Decomposition::Focus'[action_def]
-          (item_usage in 'scene'
-            (feature_value (=)))
-          (item_usage out 'image'))
-        (flow_usage composite
-          (connector_end 'focus.image')
-          (connector_end 'shoot.image'))
-        (action_usage composite 'shoot' : 'Action Decomposition::Shoot'[action_def]
-          (item_usage in)
-          (item_usage out 'picture'
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Action Decomposition"))) (name "Action Decomposition") (declared-name "Action Decomposition")
+      (contains
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (name "Focus") (declared-name "Focus")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Image"))) (name "Image") (declared-name "Image") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Picture"))) (name "Picture") (declared-name "Picture") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (name "Scene") (declared-name "Scene") (declared))
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (name "Shoot") (declared-name "Shoot")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
+          )
+        )
+        (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared (properties (composite true) (reference false)))
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (name "focus") (declared-name "focus") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (role feature-value))))
+              )
+            )
+            (element (kind "flow") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))))
+              (contains
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out") (composite true) (reference false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (role feature-value))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (to (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (to (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (to (node (document "d0") (qualified-name "Action Decomposition::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (to (node (document "d0") (qualified-name "Action Decomposition::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (to (node (document "d0") (qualified-name "Action Decomposition::Image"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (to (node (document "d0") (qualified-name "Action Decomposition::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (to (node (document "d0") (qualified-name "Action Decomposition::Picture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (to (node (document "d0") (qualified-name "Action Decomposition::Scene"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (to (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (to (node (document "d0") (qualified-name "Action Decomposition::Focus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (to (node (document "d0") (qualified-name "Action Decomposition::Shoot"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

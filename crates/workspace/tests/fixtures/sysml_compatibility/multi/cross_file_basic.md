@@ -29,11 +29,30 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (package 'Definitions'
-    (part_def 'Vehicle' :> 'Parts::Part'[part_def][implied]
-      (attribute_usage composite 'mass' : 'ScalarValues::Real'[datatype_def] :> 'Base::dataValues'[feature_def][implied])))
-  (package 'Usage'
-    (namespace_import -> 'Definitions'[package])
-    (part_usage 'v' : 'Definitions::Vehicle'[part_def] :> 'Parts::parts'[part_usage][implied])))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Definitions"))) (name "Definitions") (declared-name "Definitions")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Definitions::Vehicle")))))
+          )
+        )
+      )
+    )
+    (element (kind "package") (id (node (document "d1") (qualified-name "Usage"))) (name "Usage") (declared-name "Usage")
+      (contains
+        (element (kind "import") (id (node (document "d1") (qualified-name "Usage::*"))) (name "*") (declared-name "*"))
+        (element (kind "part") (id (node (document "d1") (qualified-name "Usage::v"))) (name "v") (declared-name "v") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (typing (status resolved) (from (node (document "d1") (qualified-name "Usage::v"))) (to (node (document "d0") (qualified-name "Definitions::Vehicle"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

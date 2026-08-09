@@ -56,11 +56,21 @@ semantic.unresolved_name 'B::f'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Conjugation'
-      (class_def 'A'
-        (feature_def in 'f'))
-      (class_def 'B' ~ 'Conjugation::A'[class_def])
-      (feature_def 'g' ~ 'B::f'[unresolved]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Conjugation"))) (name "Conjugation") (declared-name "Conjugation")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Conjugation::A"))) (name "A") (declared-name "A"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Conjugation::B"))) (name "B") (declared-name "B"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Conjugation::g"))) (name "g") (declared-name "g"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

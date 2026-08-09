@@ -1230,249 +1230,230 @@ semantic.unresolved_name 'ISQ::electricPotential'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'EVSample'
-      (namespace_import private -> 'SI'[unresolved])
-      (namespace_import private -> 'StateSpaceRepresentation'[unresolved])
-      (attribute_usage 'ampere hour' : 'ElectricChargeUnit'[unresolved]
-        (feature_value (=)))
-      (part_def 'Vehicle'
-        (attribute_usage composite 'mass' :> 'ISQ::mass'[unresolved])
-        (attribute_def 'VehicleInput' :> 'Input'[unresolved]
-          (attribute_usage composite 'force' :> 'ISQ::force'[unresolved]))
-        (attribute_def 'VehicleOutput' :> 'Output'[unresolved]
-          (attribute_usage composite 'accel' :> 'ISQ::acceleration'[unresolved])
-          (attribute_usage composite 'velocity' :> 'ISQ::speed'[unresolved])
-          (attribute_usage composite 'distance' :> 'ISQ::distance'[unresolved]))
-        (attribute_def 'VehicleState' :> 'StateSpace'[unresolved]
-          (attribute_usage composite 'velocity' :> 'ISQ::speed'[unresolved])
-          (attribute_usage composite 'distance' :> 'ISQ::distance'[unresolved])))
-      (part_def 'Battery'
-        (attribute_usage composite 'baseVoltage' :> 'ISQ::electricPotential'[unresolved])
-        (attribute_usage composite 'socInit' : 'ScalarValues::Real'[unresolved])
-        (attribute_usage composite 'capacity' :> 'ISQ::electricCharge'[unresolved])
-        (attribute_usage composite 'internalResistance' :> 'ISQ::resistance'[unresolved])
-        (attribute_def 'BatteryInput' :> 'Input'[unresolved]
-          (attribute_usage composite 'current' :> 'ISQ::electricCurrent'[unresolved]))
-        (attribute_def 'BatteryOutput' :> 'Output'[unresolved]
-          (attribute_usage composite 'voltage' :> 'ISQ::electricPotential'[unresolved]))
-        (attribute_def 'BatteryState' :> 'StateSpace'[unresolved]
-          (attribute_usage composite 'soc' : 'ScalarValues::Real'[unresolved])))
-      (part_def 'Motor'
-        (reference_usage reference 'torquePerCurrent' :> 'Quantities::scalarQuantities'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite 'motR' :> 'ISQ::resistance'[unresolved])
-        (attribute_usage composite 'motL' :> 'ISQ::inductance'[unresolved])
-        (attribute_def 'MotorInput' :> 'Input'[unresolved]
-          (attribute_usage composite 'voltage' :> 'ISQ::electricPotential'[unresolved])
-          (attribute_usage composite 'friction' :> 'ISQ::torque'[unresolved]))
-        (attribute_def 'MotorOutput' :> 'Output'[unresolved]
-          (attribute_usage composite 'current' :> 'ISQ::electricCurrent'[unresolved])
-          (attribute_usage composite 'torque' :> 'ISQ::torque'[unresolved]))
-        (attribute_def 'MotorState' :> 'StateSpace'[unresolved]
-          (attribute_usage composite 'current' :> 'ISQ::electricCurrent'[unresolved])))
-      (part_def 'Tire'
-        (attribute_usage composite 'radius' :> 'ISQ::length'[unresolved])
-        (attribute_usage composite 'moment' :> 'ISQ::momentOfInertia'[unresolved])
-        (attribute_def 'TireInput' :> 'Input'[unresolved]
-          (attribute_usage composite 'torque' :> 'ISQ::torque'[unresolved])
-          (attribute_usage composite 'accel' :> 'ISQ::acceleration'[unresolved]))
-        (attribute_def 'TireOutput' :> 'Output'[unresolved]
-          (attribute_usage composite 'force' :> 'ISQ::force'[unresolved])
-          (attribute_usage composite 'outTorque' :> 'ISQ::torque'[unresolved])))
-      (requirement_def 'VehicleRequirement'
-        (subject_membership in 'vehicle' : 'EVSample::Vehicle'[part_def]))
-      (analysis_case_def 'VehicleAnalysis'
-        (subject_membership in 'vehicle' : 'EVSample::Vehicle'[part_def])
-        (requirement_usage composite 'vehicleRequirement' : 'EVSample::VehicleRequirement'[requirement_def]))
-      (requirement_def 'RangeRequirement' :> 'EVSample::VehicleRequirement'[requirement_def]
-        (documentation)
-        (attribute_usage composite 'actualRange' : 'LengthValue'[unresolved])
-        (attribute_usage composite 'requiredRange' : 'LengthValue'[unresolved])
-        (require_constraint_usage composite
-          (result_expr_membership)))
-      (analysis_case_def 'RangeAnalysis' :> 'EVSample::VehicleAnalysis'[analysis_case_def]
-        (return_parameter_membership
-          (feature_def out 'simulatedRange' : 'LengthValue'[unresolved]))
-        (requirement_usage composite 'rangeRequirement' :>> 'EVSample::VehicleAnalysis::vehicleRequirement'[requirement_usage] : 'EVSample::RangeRequirement'[requirement_def])
-        (objective_membership composite 'rangeAnalysisObjective'
-          (documentation)
-          (require_constraint_usage composite 'rangeRequirement'
-            (reference_usage reference :>> 'actualRange'[unresolved]
-              (feature_value (=))))))
-      (requirement_def 'EfficiencyRequirement' :> 'EVSample::VehicleRequirement'[requirement_def]
-        (documentation)
-        (attribute_usage composite 'actualEfficiency')
-        (attribute_usage composite 'requiredEfficiency')
-        (require_constraint_usage composite
-          (result_expr_membership)))
-      (analysis_case_def 'EfficiencyAnalysis' :> 'EVSample::VehicleAnalysis'[analysis_case_def]
-        (return_parameter_membership
-          (feature_def out 'simulatedEfficiency'))
-        (requirement_usage composite 'efficiencyRequirement' :>> 'EVSample::VehicleAnalysis::vehicleRequirement'[requirement_usage] : 'EVSample::EfficiencyRequirement'[requirement_def])
-        (objective_membership composite 'efficiencyAnalysisObjective'
-          (require_constraint_usage composite 'efficiencyRequirement'
-            (attribute_usage :>> 'actualEfficiency'[unresolved]
-              (feature_value (=))))))
-      (requirement_def 'MaxSpeedRequirement' :> 'EVSample::VehicleRequirement'[requirement_def]
-        (documentation)
-        (attribute_usage composite 'actualMaxSpeed' :> 'ISQ::speed'[unresolved])
-        (attribute_usage composite 'requiredMaxSpeed' :> 'ISQ::speed'[unresolved]))
-      (analysis_case_def 'MaxSpeedAnalysis' :> 'EVSample::VehicleAnalysis'[analysis_case_def]
-        (return_parameter_membership
-          (feature_def out 'simulatedMaxSpeed'))
-        (requirement_usage composite 'maxSpeedRequirement' :>> 'EVSample::VehicleAnalysis::vehicleRequirement'[requirement_usage] : 'EVSample::MaxSpeedRequirement'[requirement_def])
-        (objective_membership composite 'maxSpeedAnalysisObjective'
-          (require_constraint_usage composite 'maxSpeedRequirement'
-            (attribute_usage :>> 'actualMaxSpeed'[unresolved]
-              (feature_value (=))))))
-      (part_usage 'vehicle' : 'EVSample::Vehicle'[part_def]
-        (attribute_usage composite :>> 'EVSample::Vehicle::mass'[attribute_usage]
-          (feature_value (default =)))
-        (attribute_usage composite 'airFrictionCoefficient'
-          (feature_value (=)))
-        (attribute_usage composite 'efficiency')
-        (action_usage composite 'vehicleBehavior' : 'ContinuousStateSpaceDynamics'[unresolved]
-          (reference_usage in reference 'input' : 'EVSample::Vehicle::VehicleInput'[attribute_def])
-          (reference_usage out reference 'output' : 'EVSample::Vehicle::VehicleOutput'[attribute_def])
-          (reference_usage reference :>> 'stateSpace'[unresolved] : 'EVSample::Vehicle::VehicleState'[attribute_def]))
-        (part_usage composite 'battery' : 'EVSample::Battery'[part_def]
-          (reference_usage reference :>> 'EVSample::Battery::baseVoltage'[attribute_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> 'EVSample::Battery::capacity'[attribute_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> 'EVSample::Battery::socInit'[attribute_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> 'EVSample::Battery::internalResistance'[attribute_usage]
-            (feature_value (=)))
-          (action_usage composite 'batteryBehavior' : 'ContinuousStateSpaceDynamics'[unresolved]
-            (reference_usage in reference 'input' : 'EVSample::Battery::BatteryInput'[attribute_def])
-            (reference_usage out reference 'output' : 'EVSample::Battery::BatteryOutput'[attribute_def])
-            (reference_usage reference :>> 'stateSpace'[unresolved] : 'EVSample::Battery::BatteryState'[attribute_def])))
-        (flow_usage composite 'battery')
-        (part_usage composite 'motor' : 'EVSample::Motor'[part_def]
-          (reference_usage reference :>> 'EVSample::Motor::motR'[attribute_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> 'EVSample::Motor::motL'[attribute_usage]
-            (feature_value (=)))
-          (action_usage composite 'motorBehavior' : 'ContinuousStateSpaceDynamics'[unresolved]
-            (reference_usage in reference 'input' : 'EVSample::Motor::MotorInput'[attribute_def])
-            (reference_usage out reference 'output' : 'EVSample::Motor::MotorOutput'[attribute_def])
-            (reference_usage reference :>> 'stateSpace'[unresolved] : 'EVSample::Motor::MotorState'[attribute_def])))
-        (flow_usage composite 'motor')
-        (part_usage composite 'tire' : 'EVSample::Tire'[part_def]
-          (reference_usage reference :>> 'EVSample::Tire::moment'[attribute_usage]
-            (feature_value (default =)))
-          (reference_usage reference :>> 'EVSample::Tire::radius'[attribute_usage]
-            (feature_value (default =)))
-          (action_usage composite 'tireBehavior' : 'ContinuousStateSpaceDynamics'[unresolved]
-            (reference_usage in reference 'input' : 'EVSample::Tire::TireInput'[attribute_def])
-            (reference_usage out reference 'output' : 'EVSample::Tire::TireOutput'[attribute_def])))
-        (flow_usage composite 'tire')
-        (flow_usage composite 'tire'))
-      (part_usage 'vehicle_compact' :> 'EVSample::vehicle'[part_usage]
-        (attribute_usage composite :>> ''[attribute_usage]
-          (feature_value (=)))
-        (part_usage composite :>> 'EVSample::vehicle::tire'[part_usage]
-          (reference_usage reference :>> ''[reference_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> ''[reference_usage]
-            (feature_value (=)))))
-      (part_usage 'smallEVRangeContext'
-        (requirement_usage composite 'smallEVRequirement' : 'EVSample::VehicleRequirement'[requirement_def]
-          (documentation)
-          (subject_membership in :>> 'EVSample::VehicleRequirement::vehicle'[subject_membership]
-            (feature_value (=)))
-          (assume_constraint_usage composite
-            (result_expr_membership)))
-        (analysis_case_usage composite 'smallEVAnalysis' : 'EVSample::VehicleAnalysis'[analysis_case_def]
-          (subject_membership in :>> 'EVSample::VehicleAnalysis::vehicle'[subject_membership] :> 'EVSample::vehicle_compact'[part_usage])
-          (requirement_usage composite :>> 'EVSample::VehicleAnalysis::vehicleRequirement'[requirement_usage]
-            (feature_value (=))))
-        (requirement_usage composite 'rangeRequirementSmall' :> 'EVSample::smallEVRangeContext::smallEVRequirement'[requirement_usage] : 'EVSample::RangeRequirement'[requirement_def]
-          (documentation)
-          (attribute_usage composite :>> 'EVSample::RangeRequirement::requiredRange'[attribute_usage]
-            (feature_value (=))))
-        (analysis_case_usage composite 'rangeAnalysisSmall' :> 'EVSample::smallEVRangeContext::smallEVAnalysis'[analysis_case_usage] : 'EVSample::RangeAnalysis'[analysis_case_def]
-          (requirement_usage composite :>> 'EVSample::RangeAnalysis::rangeRequirement'[requirement_usage]
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'simulatedRange'
-              (feature_value (=)))))
-        (requirement_usage composite 'efficiencyRequirementSmall' :> 'EVSample::smallEVRangeContext::smallEVRequirement'[requirement_usage] : 'EVSample::EfficiencyRequirement'[requirement_def]
-          (documentation)
-          (attribute_usage composite :>> 'EVSample::EfficiencyRequirement::requiredEfficiency'[attribute_usage]
-            (feature_value (=))))
-        (analysis_case_usage composite 'efficiencyAnalysisSmall' :> 'EVSample::smallEVRangeContext::smallEVAnalysis'[analysis_case_usage] : 'EVSample::EfficiencyAnalysis'[analysis_case_def]
-          (requirement_usage composite :>> 'EVSample::EfficiencyAnalysis::efficiencyRequirement'[requirement_usage]
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'simulatedEfficiency'
-              (feature_value (=)))))
-        (requirement_usage composite 'maxSpeedRequirementSmall' :> 'EVSample::smallEVRangeContext::smallEVRequirement'[requirement_usage] : 'EVSample::MaxSpeedRequirement'[requirement_def]
-          (documentation)
-          (attribute_usage composite :>> 'EVSample::MaxSpeedRequirement::requiredMaxSpeed'[attribute_usage]
-            (feature_value (=))))
-        (analysis_case_usage composite 'maxSpeedAnalysisSmall' :> 'EVSample::smallEVRangeContext::smallEVAnalysis'[analysis_case_usage] : 'EVSample::MaxSpeedAnalysis'[analysis_case_def]
-          (subject_membership in :>> ''[subject_membership][implied])
-          (requirement_usage composite :>> 'EVSample::MaxSpeedAnalysis::maxSpeedRequirement'[requirement_usage]
-            (feature_value (=)))
-          (reference_usage out reference 'voltage' :> 'ISQ::electricPotential'[unresolved]
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'simulatedMaxSpeed'
-              (feature_value (=))))))
-      (part_usage 'vehicle_large' :> 'EVSample::vehicle'[part_usage]
-        (attribute_usage composite :>> ''[attribute_usage]
-          (feature_value (=)))
-        (part_usage composite :>> 'EVSample::vehicle::tire'[part_usage]
-          (reference_usage reference :>> ''[reference_usage]
-            (feature_value (=)))
-          (reference_usage reference :>> ''[reference_usage]
-            (feature_value (=)))))
-      (part_usage 'largeEVRangeContext'
-        (requirement_usage composite 'largeEVRequirement' : 'EVSample::VehicleRequirement'[requirement_def]
-          (documentation)
-          (subject_membership in :>> 'EVSample::VehicleRequirement::vehicle'[subject_membership]
-            (feature_value (=)))
-          (assume_constraint_usage composite
-            (result_expr_membership)))
-        (analysis_case_usage composite 'largeEVAnalysis' : 'EVSample::VehicleAnalysis'[analysis_case_def]
-          (subject_membership in :>> 'EVSample::VehicleAnalysis::vehicle'[subject_membership] :> 'EVSample::vehicle_large'[part_usage])
-          (requirement_usage composite :>> 'EVSample::VehicleAnalysis::vehicleRequirement'[requirement_usage]
-            (feature_value (=))))
-        (requirement_usage composite 'rangeRequirementLarge' :> 'EVSample::largeEVRangeContext::largeEVRequirement'[requirement_usage] : 'EVSample::RangeRequirement'[requirement_def]
-          (documentation)
-          (attribute_usage composite :>> 'EVSample::RangeRequirement::requiredRange'[attribute_usage]
-            (feature_value (=))))
-        (analysis_case_usage composite 'rangeAnalysisLarge' :> 'EVSample::largeEVRangeContext::largeEVAnalysis'[analysis_case_usage] : 'EVSample::RangeAnalysis'[analysis_case_def]
-          (requirement_usage composite :>> 'EVSample::RangeAnalysis::rangeRequirement'[requirement_usage]
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'simulatedRange'
-              (feature_value (=)))))
-        (requirement_usage composite 'efficiencyRequirementLarge' :> 'EVSample::largeEVRangeContext::largeEVRequirement'[requirement_usage] : 'EVSample::EfficiencyRequirement'[requirement_def]
-          (documentation)
-          (attribute_usage composite :>> 'EVSample::EfficiencyRequirement::requiredEfficiency'[attribute_usage]
-            (feature_value (=))))
-        (analysis_case_usage composite 'efficiencyAnalysisLarge' :> 'EVSample::largeEVRangeContext::largeEVAnalysis'[analysis_case_usage] : 'EVSample::EfficiencyAnalysis'[analysis_case_def]
-          (requirement_usage composite :>> 'EVSample::EfficiencyAnalysis::efficiencyRequirement'[requirement_usage]
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'simulatedEfficiency'
-              (feature_value (=)))))
-        (requirement_usage composite 'maxSpeedRequirementLarge' :> 'EVSample::largeEVRangeContext::largeEVRequirement'[requirement_usage] : 'EVSample::MaxSpeedRequirement'[requirement_def]
-          (documentation)
-          (attribute_usage composite :>> 'EVSample::MaxSpeedRequirement::requiredMaxSpeed'[attribute_usage]
-            (feature_value (=))))
-        (analysis_case_usage composite 'maxSpeedAnalysisLarge' :> 'EVSample::largeEVRangeContext::largeEVAnalysis'[analysis_case_usage] : 'EVSample::MaxSpeedAnalysis'[analysis_case_def]
-          (subject_membership in :>> ''[subject_membership][implied])
-          (requirement_usage composite :>> 'EVSample::MaxSpeedAnalysis::maxSpeedRequirement'[requirement_usage]
-            (feature_value (=)))
-          (reference_usage out reference 'voltage'
-            (feature_value (=)))
-          (return_parameter_membership
-            (feature_def out 'simulatedMaxSpeed'
-              (feature_value (=)))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "EVSample"))) (name "EVSample") (declared-name "EVSample")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "EVSample::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "EVSample::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "EVSample::Battery"))) (name "Battery") (declared-name "Battery") (declared)
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Battery::BatteryInput"))) (name "BatteryInput") (declared-name "BatteryInput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Battery::BatteryOutput"))) (name "BatteryOutput") (declared-name "BatteryOutput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Battery::BatteryState"))) (name "BatteryState") (declared-name "BatteryState") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Battery::baseVoltage"))) (name "baseVoltage") (declared-name "baseVoltage") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Battery::capacity"))) (name "capacity") (declared-name "capacity") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Battery::internalResistance"))) (name "internalResistance") (declared-name "internalResistance") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Battery::socInit"))) (name "socInit") (declared-name "socInit") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+          )
+        )
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis"))) (name "EfficiencyAnalysis") (declared-name "EfficiencyAnalysis")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis::efficiencyAnalysisObjective"))) (name "efficiencyAnalysisObjective") (declared-name "efficiencyAnalysisObjective") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis")))))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis::efficiencyRequirement"))) (name "efficiencyRequirement") (declared-name "efficiencyRequirement") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis")))))
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis::simulatedEfficiency"))) (name "simulatedEfficiency") (declared-name "simulatedEfficiency") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement"))) (name "EfficiencyRequirement") (declared-name "EfficiencyRequirement")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement")))))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement::actualEfficiency"))) (name "actualEfficiency") (declared-name "actualEfficiency") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement::requiredEfficiency"))) (name "requiredEfficiency") (declared-name "requiredEfficiency") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement")))))
+          )
+        )
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis"))) (name "MaxSpeedAnalysis") (declared-name "MaxSpeedAnalysis")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis::maxSpeedAnalysisObjective"))) (name "maxSpeedAnalysisObjective") (declared-name "maxSpeedAnalysisObjective") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis")))))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis::maxSpeedRequirement"))) (name "maxSpeedRequirement") (declared-name "maxSpeedRequirement") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis")))))
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis::simulatedMaxSpeed"))) (name "simulatedMaxSpeed") (declared-name "simulatedMaxSpeed") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement"))) (name "MaxSpeedRequirement") (declared-name "MaxSpeedRequirement")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement::actualMaxSpeed"))) (name "actualMaxSpeed") (declared-name "actualMaxSpeed") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement::requiredMaxSpeed"))) (name "requiredMaxSpeed") (declared-name "requiredMaxSpeed") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "EVSample::Motor"))) (name "Motor") (declared-name "Motor") (declared)
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Motor::MotorInput"))) (name "MotorInput") (declared-name "MotorInput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Motor")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Motor::MotorOutput"))) (name "MotorOutput") (declared-name "MotorOutput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Motor")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Motor::MotorState"))) (name "MotorState") (declared-name "MotorState") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Motor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Motor::motL"))) (name "motL") (declared-name "motL") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Motor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Motor::motR"))) (name "motR") (declared-name "motR") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Motor")))))
+          )
+        )
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "EVSample::RangeAnalysis"))) (name "RangeAnalysis") (declared-name "RangeAnalysis")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "EVSample::RangeAnalysis::rangeAnalysisObjective"))) (name "rangeAnalysisObjective") (declared-name "rangeAnalysisObjective") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::RangeAnalysis")))))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "EVSample::RangeAnalysis::rangeRequirement"))) (name "rangeRequirement") (declared-name "rangeRequirement") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::RangeAnalysis")))))
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "EVSample::RangeAnalysis::simulatedRange"))) (name "simulatedRange") (declared-name "simulatedRange") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::RangeAnalysis")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "EVSample::RangeRequirement"))) (name "RangeRequirement") (declared-name "RangeRequirement")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "EVSample::RangeRequirement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::RangeRequirement")))))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "EVSample::RangeRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::RangeRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::RangeRequirement::actualRange"))) (name "actualRange") (declared-name "actualRange") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::RangeRequirement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::RangeRequirement::requiredRange"))) (name "requiredRange") (declared-name "requiredRange") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::RangeRequirement")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "EVSample::Tire"))) (name "Tire") (declared-name "Tire") (declared)
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Tire::TireInput"))) (name "TireInput") (declared-name "TireInput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Tire::TireOutput"))) (name "TireOutput") (declared-name "TireOutput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Tire::moment"))) (name "moment") (declared-name "moment") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Tire::radius"))) (name "radius") (declared-name "radius") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "EVSample::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Vehicle::VehicleInput"))) (name "VehicleInput") (declared-name "VehicleInput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Vehicle::VehicleOutput"))) (name "VehicleOutput") (declared-name "VehicleOutput") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+            (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::Vehicle::VehicleState"))) (name "VehicleState") (declared-name "VehicleState") (declared (properties (ordered false) (unique true))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+          )
+        )
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "EVSample::VehicleAnalysis"))) (name "VehicleAnalysis") (declared-name "VehicleAnalysis")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "EVSample::VehicleAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::VehicleAnalysis")))))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "EVSample::VehicleAnalysis::vehicleRequirement"))) (name "vehicleRequirement") (declared-name "vehicleRequirement") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::VehicleAnalysis")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "EVSample::VehicleRequirement"))) (name "VehicleRequirement") (declared-name "VehicleRequirement")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "EVSample::VehicleRequirement::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::VehicleRequirement")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "EVSample::ampere hour"))) (name "ampere hour") (declared-name "ampere hour") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "*") (children (expression (kind "featureReference") (reference "A")) (expression (kind "featureReference") (reference "h")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::ampere hour"))) (role feature-value))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::largeEVRangeContext"))) (name "largeEVRangeContext") (declared-name "largeEVRangeContext") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::smallEVRangeContext"))) (name "smallEVRangeContext") (declared-name "smallEVRangeContext") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::airFrictionCoefficient"))) (name "airFrictionCoefficient") (declared-name "airFrictionCoefficient") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "realLiteral") (literal "0.2")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle::airFrictionCoefficient"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery"))) (name "battery") (declared-name "battery") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery::baseVoltage"))) (name "baseVoltage") (declared-name "baseVoltage") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 300)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "V")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle::battery::baseVoltage"))) (role feature-value))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery::batteryBehavior"))) (name "batteryBehavior") (declared-name "batteryBehavior") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Battery"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery::batteryBehavior::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery::batteryBehavior::output"))) (name "output") (declared-name "output") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Battery")))))
+                  )
+                )
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery::capacity"))) (name "capacity") (declared-name "capacity") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 50)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "A⋅h")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle::battery::capacity"))) (role feature-value))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery::internalResistance"))) (name "internalResistance") (declared-name "internalResistance") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "1.8")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "Ω")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle::battery::internalResistance"))) (role feature-value))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::battery::socInit"))) (name "socInit") (declared-name "socInit") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "realLiteral") (literal "0.8")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Battery"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle::battery::socInit"))) (role feature-value))))
+              )
+            )
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::efficiency"))) (name "efficiency") (declared-name "efficiency") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1000)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle::motor"))) (name "motor") (declared-name "motor") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::motor::motL"))) (name "motL") (declared-name "motL") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "0.2")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "H")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Motor"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle::motor::motL"))) (role feature-value))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::motor::motR"))) (name "motR") (declared-name "motR") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 4)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "Ω")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Motor"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle::motor::motR"))) (role feature-value))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "EVSample::vehicle::motor::motorBehavior"))) (name "motorBehavior") (declared-name "motorBehavior") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Motor"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::motor::motorBehavior::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Motor")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::motor::motorBehavior::output"))) (name "output") (declared-name "output") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Motor")))))
+                  )
+                )
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle::tire"))) (name "tire") (declared-name "tire") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::tire::moment"))) (name "moment") (declared-name "moment") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 300)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg⋅m²")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle::tire::radius"))) (name "radius") (declared-name "radius") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind default) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "0.7")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "EVSample::vehicle::tire::tireBehavior"))) (name "tireBehavior") (declared-name "tireBehavior") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Tire"))))
+                  (contains
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::tire::tireBehavior::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+                    (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::tire::tireBehavior::output"))) (name "output") (declared-name "output") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Tire")))))
+                  )
+                )
+              )
+            )
+            (element (kind "action") (id (node (document "d0") (qualified-name "EVSample::vehicle::vehicleBehavior"))) (name "vehicleBehavior") (declared-name "vehicleBehavior") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::vehicleBehavior::input"))) (name "input") (declared-name "input") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "EVSample::vehicle::vehicleBehavior::output"))) (name "output") (declared-name "output") (effective (featuring-type (node (document "d0") (qualified-name "EVSample::Vehicle")))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle_compact"))) (name "vehicle_compact") (declared-name "vehicle_compact") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle_compact::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 800)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle_compact::mass"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle_compact::tire"))) (name "tire") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle_compact::tire::moment"))) (name "moment") (declared-name "moment") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 200)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg⋅m²")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle_compact::tire::moment"))) (role feature-value))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle_compact::tire::radius"))) (name "radius") (declared-name "radius") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "0.5")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle_compact::tire::radius"))) (role feature-value))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle_large"))) (name "vehicle_large") (declared-name "vehicle_large") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle_large::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 1100)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle_large::mass"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "EVSample::vehicle_large::tire"))) (name "tire") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle_large::tire::moment"))) (name "moment") (declared-name "moment") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal 300)) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg⋅m²")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle_large::tire::moment"))) (role feature-value))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "EVSample::vehicle_large::tire::radius"))) (name "radius") (declared-name "radius") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal "0.7")) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "m")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EVSample::vehicle_large::tire::radius"))) (role feature-value))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement::_documentation"))) (to (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement::_documentation"))) (to (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "EVSample::RangeRequirement::_documentation"))) (to (node (document "d0") (qualified-name "EVSample::RangeRequirement"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::tire::tireBehavior::output"))) (to (node (document "d0") (qualified-name "EVSample::vehicle::motor::motorBehavior::input"))) (flow (source-expression "tire::tireBehavior::output") (target-expression "motor::motorBehavior::input")))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::tire::tireBehavior::output"))) (to (node (document "d0") (qualified-name "EVSample::vehicle::vehicleBehavior::input"))) (flow (source-expression "tire::tireBehavior::output") (target-expression "vehicleBehavior::input")))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::battery::baseVoltage"))) (to (node (document "d0") (qualified-name "EVSample::Battery::baseVoltage"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::battery::capacity"))) (to (node (document "d0") (qualified-name "EVSample::Battery::capacity"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::battery::internalResistance"))) (to (node (document "d0") (qualified-name "EVSample::Battery::internalResistance"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::battery::socInit"))) (to (node (document "d0") (qualified-name "EVSample::Battery::socInit"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::mass"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle::mass"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::motor::motL"))) (to (node (document "d0") (qualified-name "EVSample::Motor::motL"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::motor::motR"))) (to (node (document "d0") (qualified-name "EVSample::Motor::motR"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::tire::moment"))) (to (node (document "d0") (qualified-name "EVSample::Tire::moment"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::tire::radius"))) (to (node (document "d0") (qualified-name "EVSample::Tire::radius"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis"))) (to (node (document "d0") (qualified-name "EVSample::VehicleAnalysis"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement"))) (to (node (document "d0") (qualified-name "EVSample::VehicleRequirement"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis"))) (to (node (document "d0") (qualified-name "EVSample::VehicleAnalysis"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement"))) (to (node (document "d0") (qualified-name "EVSample::VehicleRequirement"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EVSample::RangeAnalysis"))) (to (node (document "d0") (qualified-name "EVSample::VehicleAnalysis"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "EVSample::RangeRequirement"))) (to (node (document "d0") (qualified-name "EVSample::VehicleRequirement"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "EVSample::VehicleAnalysis"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "EVSample::VehicleRequirement"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "EVSample::VehicleRequirement"))) (to (node (document "d0") (qualified-name "EVSample::VehicleRequirement::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle_compact"))) (to (node (document "d0") (qualified-name "EVSample::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle_large"))) (to (node (document "d0") (qualified-name "EVSample::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::EfficiencyAnalysis::efficiencyRequirement"))) (to (node (document "d0") (qualified-name "EVSample::EfficiencyRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::MaxSpeedAnalysis::maxSpeedRequirement"))) (to (node (document "d0") (qualified-name "EVSample::MaxSpeedRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::RangeAnalysis::rangeRequirement"))) (to (node (document "d0") (qualified-name "EVSample::RangeRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::VehicleAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::VehicleAnalysis::vehicleRequirement"))) (to (node (document "d0") (qualified-name "EVSample::VehicleRequirement"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::VehicleRequirement::vehicle"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::battery"))) (to (node (document "d0") (qualified-name "EVSample::Battery"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::battery::batteryBehavior::input"))) (to (node (document "d0") (qualified-name "EVSample::Battery::BatteryInput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::battery::batteryBehavior::output"))) (to (node (document "d0") (qualified-name "EVSample::Battery::BatteryOutput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::motor"))) (to (node (document "d0") (qualified-name "EVSample::Motor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::motor::motorBehavior::input"))) (to (node (document "d0") (qualified-name "EVSample::Motor::MotorInput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::motor::motorBehavior::output"))) (to (node (document "d0") (qualified-name "EVSample::Motor::MotorOutput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::tire"))) (to (node (document "d0") (qualified-name "EVSample::Tire"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::tire::tireBehavior::input"))) (to (node (document "d0") (qualified-name "EVSample::Tire::TireInput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::tire::tireBehavior::output"))) (to (node (document "d0") (qualified-name "EVSample::Tire::TireOutput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::vehicleBehavior::input"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle::VehicleInput"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "EVSample::vehicle::vehicleBehavior::output"))) (to (node (document "d0") (qualified-name "EVSample::Vehicle::VehicleOutput"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

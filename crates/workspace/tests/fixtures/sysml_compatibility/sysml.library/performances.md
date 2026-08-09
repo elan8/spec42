@@ -933,159 +933,59 @@ standard library package Performances {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Performances'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Base::things'[unresolved])
-      (membership_import private -> 'Occurrences::Occurrence'[unresolved])
-      (membership_import private -> 'Occurrences::occurrences'[unresolved])
-      (membership_import private -> 'Occurrences::HappensDuring'[unresolved])
-      (membership_import private -> 'Objects::Object'[unresolved])
-      (membership_import private -> 'Links::BinaryLink'[unresolved])
-      (membership_import private -> 'Metaobjects::Metaobject'[unresolved])
-      (membership_import private -> 'Transfers::Transfer'[unresolved])
-      (membership_import private -> 'Transfers::transfers'[unresolved])
-      (membership_import private -> 'Transfers::TransferBefore'[unresolved])
-      (membership_import private -> 'Transfers::transfersBefore'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'SequenceFunctions::includes'[unresolved])
-      (behavior_def abstract 'Performance' :> 'Occurrence'[unresolved]
-        (disjoining_decl)
-        (documentation)
-        (feature_def 'self' : 'Performances::Performance'[behavior_def] :>> 'Occurrence::self'[unresolved])
-        (feature_def 'involvedObjects' : 'Object'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (feature_def 'performers' : 'Object'[unresolved] :> 'Performances::Performance::involvedObjects'[feature_def]
-          (multiplicity_range [0..*])
-          (documentation))
-        (feature_def :>> 'isDispatch'[unresolved]
-          (feature_value (default =)))
-        (feature_def :>> 'dispatchScope'[unresolved]
-          (feature_value (default =)))
-        (step_def 'enclosedPerformances' : 'Performances::Performance'[behavior_def] :> 'Performances::performances'[step_def] :> 'timeEnclosedOccurrences'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (feature_def 'thisPerformance' : 'Performances::Performance'[behavior_def]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (connector_def : 'HappensDuring'[unresolved]
-          (connector_end 'self')
-          (connector_end 'thisPerformance'))
-        (step_def composite 'subperformances' : 'Performances::Performance'[behavior_def] :> 'Performances::Performance::enclosedPerformances'[step_def] :> 'suboccurrences'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation)
-          (feature_def :>> 'this'[unresolved]
-            (feature_value (default =))
-            (documentation))
-          (feature_def :>> 'Performances::Performance::thisPerformance'[feature_def]
-            (feature_value (default =)))))
-      (function_def abstract 'Evaluation' :> 'Performances::Performance'[behavior_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out 'result' : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (predicate_def abstract 'BooleanEvaluation' :> 'Performances::Evaluation'[function_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved] :>> 'result'[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def abstract 'MetadataAccessEvaluation' :> 'Performances::Evaluation'[function_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'Metaobject'[unresolved] :>> 'result'[feature_def][implied]
-            (multiplicity_range [1..*]))))
-      (function_def abstract 'LiteralEvaluation' :> 'Performances::Evaluation'[function_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'ScalarValue'[unresolved] :>> 'result'[feature_def][implied]
-            (multiplicity_range [1]))))
-      (predicate_def abstract 'LiteralBooleanEvaluation' :> 'Performances::LiteralEvaluation'[function_def] :> 'Performances::BooleanEvaluation'[predicate_def]
-        (intersecting)
-        (intersecting)
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved] :>> ''[feature_def][implied] :>> ''[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def abstract 'LiteralIntegerEvaluation' :> 'Performances::LiteralEvaluation'[function_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'Integer'[unresolved] :>> ''[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def abstract 'LiteralRationalEvaluation' :> 'Performances::LiteralEvaluation'[function_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'Real'[unresolved] :>> ''[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def abstract 'LiteralStringEvaluation' :> 'Performances::LiteralEvaluation'[function_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved] :>> ''[feature_def][implied]
-            (multiplicity_range [1]))))
-      (function_def 'NullEvaluation' :> 'Performances::Evaluation'[function_def]
-        (documentation)
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved] :>> 'result'[feature_def][implied]
-            (multiplicity_range [0..0]))))
-      (association_def sufficient 'InvolvedIn' :> 'BinaryLink'[unresolved]
-        (documentation)
-        (feature_def end 'involvedObject' : 'Object'[unresolved] :>> 'source'[unresolved] :> 'Performances::Performance::involvedObjects'[feature_def])
-        (feature_def end 'involvingPerformance' : 'Performances::Performance'[behavior_def] :>> 'target'[unresolved] :> 'involvedObject::involvingPerformances'[unresolved]))
-      (association_def sufficient 'Performs' :> 'Performances::InvolvedIn'[association_def]
-        (documentation)
-        (feature_def end 'performerObject' : 'Object'[unresolved] :>> 'Performances::InvolvedIn::involvedObject'[feature_def] :> 'Performances::Performance::performers'[feature_def])
-        (feature_def end 'performance' : 'Performances::Performance'[behavior_def] :>> 'Performances::InvolvedIn::involvingPerformance'[feature_def] :> 'performerObject::enactedPerformances'[unresolved]))
-      (step_def abstract 'performances' : 'Performances::Performance'[behavior_def] :> 'occurrences'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'evaluations' : 'Performances::Evaluation'[function_def] :> 'Performances::performances'[step_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'constructorEvaluations' :> 'Performances::evaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation)
-        (return_parameter_membership
-          (feature_def out 'result'
-            (multiplicity_range [1..1]))))
-      (expression_def abstract 'booleanEvaluations' : 'Performances::BooleanEvaluation'[predicate_def] :> 'Performances::evaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'trueEvaluations' :> 'Performances::booleanEvaluations'[expression_def]
-        (documentation)
-        (feature_def 'trueValue'
-          (feature_value (=)))
-        (binding_connector_def
-          (connector_end 'result')
-          (connector_end 'trueValue')))
-      (expression_def abstract 'falseEvaluations' :> 'Performances::booleanEvaluations'[expression_def]
-        (documentation)
-        (feature_def 'falseValue'
-          (feature_value (=)))
-        (binding_connector_def
-          (connector_end 'result')
-          (connector_end 'falseValue')))
-      (expression_def abstract 'metadataAccessEvaluations' : 'Performances::MetadataAccessEvaluation'[function_def] :> 'Performances::evaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'literalEvaluations' : 'Performances::LiteralEvaluation'[function_def] :> 'Performances::evaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'literalBooleanEvaluations' : 'Performances::LiteralBooleanEvaluation'[predicate_def] :> 'Performances::literalEvaluations'[expression_def] :> 'Performances::booleanEvaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'literalIntegerEvaluations' : 'Performances::LiteralIntegerEvaluation'[function_def] :> 'Performances::literalEvaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'literalRationalEvaluations' : 'Performances::LiteralRationalEvaluation'[function_def] :> 'Performances::literalEvaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'literalStringEvaluations' : 'Performances::LiteralStringEvaluation'[function_def] :> 'Performances::literalEvaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation))
-      (expression_def abstract 'nullEvaluations' : 'Performances::NullEvaluation'[function_def] :> 'Performances::evaluations'[expression_def]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Performances"))) (name "Performances") (declared-name "Performances")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::BinaryLink"))) (name "BinaryLink") (declared-name "BinaryLink"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::BooleanEvaluation"))) (name "BooleanEvaluation") (declared-name "BooleanEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::Evaluation"))) (name "Evaluation") (declared-name "Evaluation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::HappensDuring"))) (name "HappensDuring") (declared-name "HappensDuring"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralBooleanEvaluation"))) (name "LiteralBooleanEvaluation") (declared-name "LiteralBooleanEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralEvaluation"))) (name "LiteralEvaluation") (declared-name "LiteralEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralIntegerEvaluation"))) (name "LiteralIntegerEvaluation") (declared-name "LiteralIntegerEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralRationalEvaluation"))) (name "LiteralRationalEvaluation") (declared-name "LiteralRationalEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::LiteralStringEvaluation"))) (name "LiteralStringEvaluation") (declared-name "LiteralStringEvaluation"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::MetadataAccessEvaluation"))) (name "MetadataAccessEvaluation") (declared-name "MetadataAccessEvaluation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::NullEvaluation"))) (name "NullEvaluation") (declared-name "NullEvaluation"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Object"))) (name "Object") (declared-name "Object"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Occurrence"))) (name "Occurrence") (declared-name "Occurrence"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::Transfer"))) (name "Transfer") (declared-name "Transfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::TransferBefore"))) (name "TransferBefore") (declared-name "TransferBefore"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Performances::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::all"))) (name "all") (declared-name "all"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::all#kermlDecl"))) (name "all") (declared-name "all"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::booleanEvaluations"))) (name "booleanEvaluations") (declared-name "booleanEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::constructorEvaluations"))) (name "constructorEvaluations") (declared-name "constructorEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::evaluations"))) (name "evaluations") (declared-name "evaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::falseEvaluations"))) (name "falseEvaluations") (declared-name "falseEvaluations"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::includes"))) (name "includes") (declared-name "includes"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalBooleanEvaluations"))) (name "literalBooleanEvaluations") (declared-name "literalBooleanEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalEvaluations"))) (name "literalEvaluations") (declared-name "literalEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalIntegerEvaluations"))) (name "literalIntegerEvaluations") (declared-name "literalIntegerEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalRationalEvaluations"))) (name "literalRationalEvaluations") (declared-name "literalRationalEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::literalStringEvaluations"))) (name "literalStringEvaluations") (declared-name "literalStringEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::metadataAccessEvaluations"))) (name "metadataAccessEvaluations") (declared-name "metadataAccessEvaluations"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::nullEvaluations"))) (name "nullEvaluations") (declared-name "nullEvaluations"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::occurrences"))) (name "occurrences") (declared-name "occurrences"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::performances"))) (name "performances") (declared-name "performances"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::things"))) (name "things") (declared-name "things"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::transfers"))) (name "transfers") (declared-name "transfers"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Performances::transfersBefore"))) (name "transfersBefore") (declared-name "transfersBefore"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Performances::trueEvaluations"))) (name "trueEvaluations") (declared-name "trueEvaluations"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Performances::_documentation"))) (to (node (document "d0") (qualified-name "Performances"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

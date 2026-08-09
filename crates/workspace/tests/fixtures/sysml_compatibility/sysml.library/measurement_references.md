@@ -1565,234 +1565,353 @@ standard library package MeasurementReferences {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'MeasurementReferences'
-      (documentation)
-      (membership_import private -> 'Collections::Array'[unresolved])
-      (membership_import private -> 'Collections::List'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (membership_import private -> 'VectorValues::ThreeVectorValue'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'SequenceFunctions::equals'[unresolved])
-      (membership_import private -> 'ControlFunctions::forAll'[unresolved])
-      (membership_import private -> 'Quantities::QuantityDimension'[unresolved])
-      (membership_import private -> 'Quantities::VectorQuantityValue'[unresolved])
-      (membership_import private -> 'Quantities::scalarQuantities'[unresolved])
-      (membership_import private -> 'Quantities::ScalarQuantityValue'[unresolved])
-      (membership_import private -> 'Quantities::SystemOfQuantities'[unresolved])
-      (membership_import private -> 'ISQSpaceTime::angularMeasure'[unresolved])
-      (attribute_def 'TensorMeasurementReference' :> 'Array'[unresolved]
-        (documentation)
-        (attribute_usage composite 'isBound' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (attribute_usage composite 'order' :>> 'rank'[unresolved])
-        (attribute_usage composite 'mRefs' : 'MeasurementReferences::ScalarMeasurementReference'[attribute_def] :>> 'elements'[unresolved]
-          (multiplicity_range [1..*]))
-        (attribute_usage composite 'definitionalQuantityValues' : 'MeasurementReferences::DefinitionalQuantityValue'[attribute_def]
-          (multiplicity_range [0..*])))
-      (attribute_def 'VectorMeasurementReference' :> 'MeasurementReferences::TensorMeasurementReference'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'dimensions'[unresolved] : 'Positive'[unresolved]
-          (multiplicity_range [0..1]))
-        (attribute_usage composite 'isOrthogonal' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))))
-      (attribute_def abstract 'ScalarMeasurementReference' :> 'MeasurementReferences::VectorMeasurementReference'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'MeasurementReferences::VectorMeasurementReference::isOrthogonal'[attribute_usage]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'MeasurementReferences::TensorMeasurementReference::mRefs'[attribute_usage]
-          (feature_value (=)))
-        (attribute_usage composite 'quantityDimension' : 'QuantityDimension'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_def 'CoordinateFrame' :> 'MeasurementReferences::VectorMeasurementReference'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'transformation' : 'MeasurementReferences::CoordinateTransformation'[attribute_def]
-          (multiplicity_range [0..1])
-          (attribute_usage composite :>> 'MeasurementReferences::CoordinateTransformation::target'[attribute_usage]
-            (feature_value (=)))))
-      (attribute_def '3dCoordinateFrame' :> 'MeasurementReferences::CoordinateFrame'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=))))
-      (alias_member 'ThreeDCoordinateFrame' -> 'MeasurementReferences::3dCoordinateFrame'[attribute_def])
-      (attribute_def abstract 'CoordinateTransformation'
-        (documentation)
-        (attribute_usage composite 'source' : 'MeasurementReferences::VectorMeasurementReference'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'target' : 'MeasurementReferences::VectorMeasurementReference'[attribute_def]
-          (multiplicity_range [1]))
-        (assert_constraint_usage 'validSourceTargetDimensions'
-          (result_expr_membership)))
-      (attribute_def 'CoordinateFramePlacement' :> 'MeasurementReferences::CoordinateTransformation'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'origin' : 'VectorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite ordered 'basisDirections' : 'VectorQuantityValue'[unresolved]
-          (multiplicity_range [0..*]))
-        (assert_constraint_usage 'validOriginDimensions'
-          (result_expr_membership))
-        (assert_constraint_usage
-          (result_expr_membership))
-        (assert_constraint_usage 'validateBasisDirections'
-          (result_expr_membership)))
-      (attribute_def abstract 'TranslationOrRotation'
-        (documentation))
-      (attribute_def 'Translation' :> 'MeasurementReferences::TranslationOrRotation'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'translationVector' : 'VectorQuantityValue'[unresolved]
-          (multiplicity_range [1])))
-      (attribute_def 'Rotation' :> 'MeasurementReferences::TranslationOrRotation'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'axisDirection' : 'VectorQuantityValue'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'angle' :>> 'angularMeasure'[unresolved])
-        (attribute_usage composite 'isIntrinsic' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))))
-      (attribute_def 'TranslationRotationSequence' :> 'MeasurementReferences::CoordinateTransformation'[attribute_def] :> 'List'[unresolved]
-        (documentation)
-        (attribute_usage composite ordered :>> 'elements'[unresolved] : 'MeasurementReferences::TranslationOrRotation'[attribute_def]
-          (multiplicity_range [1..*])))
-      (attribute_def 'AffineTransformationMatrix3d' :> 'MeasurementReferences::CoordinateTransformation'[attribute_def] :> 'Array'[unresolved]
-        (documentation)
-        (attribute_usage composite 'rotationMatrix' : 'Array'[unresolved]
-          (attribute_usage composite ordered :>> 'elements'[unresolved] : 'Real'[unresolved]
-            (multiplicity_range [9]))
-          (attribute_usage composite :>> 'dimensions'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite 'translationVector' : 'ThreeVectorValue'[unresolved]
-          (multiplicity_range [1])
-          (reference_usage reference :>> 'elements'[unresolved] : 'Real'[unresolved]
-            (multiplicity_range [3])))
-        (attribute_usage composite :>> 'dimensions'[unresolved]
-          (feature_value (=)))
-        (attribute_usage composite ordered :>> 'elements'[unresolved] : 'Real'[unresolved]
-          (multiplicity_range [16])
-          (feature_value (=)))
-        (assert_constraint_usage 'validSourceDimensions'
-          (result_expr_membership)))
-      (attribute_def 'NullTransformation' :> 'MeasurementReferences::AffineTransformationMatrix3d'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'MeasurementReferences::AffineTransformationMatrix3d::rotationMatrix'[attribute_usage]
-          (attribute_usage composite :>> 'elements'[unresolved]
-            (feature_value (=))))
-        (attribute_usage composite :>> 'MeasurementReferences::AffineTransformationMatrix3d::translationVector'[attribute_usage]
-          (attribute_usage composite :>> 'elements'[unresolved]
-            (feature_value (=)))))
-      (attribute_usage 'nullTransformation' : 'MeasurementReferences::NullTransformation'[attribute_def]
-        (multiplicity_range [1]))
-      (attribute_def abstract 'MeasurementUnit' :> 'MeasurementReferences::ScalarMeasurementReference'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'MeasurementReferences::TensorMeasurementReference::isBound'[attribute_usage]
-          (feature_value (=)))
-        (attribute_usage composite ordered 'unitPowerFactors' : 'MeasurementReferences::UnitPowerFactor'[attribute_def]
-          (multiplicity_range [0..*]))
-        (attribute_usage composite 'unitConversion' : 'MeasurementReferences::UnitConversion'[attribute_def]
-          (multiplicity_range [0..1]))
-        (assert_constraint_usage 'hasValidUnitPowerFactors' : 'MeasurementReferences::VerifyUnitPowerFactors'[constraint_def]
-          (reference_usage in reference 'unitPowerFactors'
-            (feature_value (=)))
-          (reference_usage in reference 'quantityDimension'
-            (feature_value (=)))))
-      (attribute_def abstract 'SimpleUnit' :> 'MeasurementReferences::MeasurementUnit'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'simpleUnitSelf' : 'MeasurementReferences::SimpleUnit'[attribute_def]
-          (feature_value (=)))
-        (attribute_usage composite :>> 'MeasurementReferences::MeasurementUnit::unitPowerFactors'[attribute_usage] : 'MeasurementReferences::UnitPowerFactor'[attribute_def]
-          (multiplicity_range [1])
-          (attribute_usage composite 'unit' :>> 'MeasurementReferences::UnitPowerFactor::unit'[attribute_usage]
-            (feature_value (=)))
-          (attribute_usage composite 'exponent' :>> 'MeasurementReferences::UnitPowerFactor::exponent'[attribute_usage]
-            (feature_value (=)))))
-      (attribute_def abstract 'DerivedUnit' :> 'MeasurementReferences::MeasurementUnit'[attribute_def]
-        (documentation))
-      (attribute_def 'UnitPowerFactor'
-        (documentation)
-        (attribute_usage composite 'unit' : 'MeasurementReferences::MeasurementUnit'[attribute_def])
-        (attribute_usage composite 'exponent' : 'Real'[unresolved]))
-      (attribute_def abstract 'UnitConversion'
-        (documentation)
-        (attribute_usage composite 'referenceUnit' : 'MeasurementReferences::MeasurementUnit'[attribute_def])
-        (attribute_usage composite 'conversionFactor' : 'Real'[unresolved])
-        (attribute_usage composite 'isExact' : 'Boolean'[unresolved]
-          (feature_value (default =))))
-      (attribute_def 'ConversionByConvention' :> 'MeasurementReferences::UnitConversion'[attribute_def]
-        (documentation))
-      (attribute_def 'ConversionByPrefix' :> 'MeasurementReferences::UnitConversion'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'prefix' : 'MeasurementReferences::UnitPrefix'[attribute_def]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'conversionFactor' :>> 'MeasurementReferences::UnitConversion::conversionFactor'[attribute_usage]
-          (feature_value (=))))
-      (attribute_def 'UnitPrefix'
-        (documentation)
-        (attribute_usage composite 'longName' : 'String'[unresolved])
-        (attribute_usage composite 'symbol' : 'String'[unresolved])
-        (attribute_usage composite 'conversionFactor' : 'Real'[unresolved]))
-      (attribute_def abstract 'MeasurementScale' :> 'MeasurementReferences::ScalarMeasurementReference'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'unit' : 'MeasurementReferences::MeasurementUnit'[attribute_def])
-        (attribute_usage composite 'quantityValueMapping' : 'MeasurementReferences::QuantityValueMapping'[attribute_def]
-          (multiplicity_range [0..1])))
-      (attribute_def 'OrdinalScale' :> 'MeasurementReferences::MeasurementScale'[attribute_def]
-        (documentation))
-      (attribute_def 'IntervalScale' :> 'MeasurementReferences::MeasurementScale'[attribute_def] :> 'MeasurementReferences::CoordinateFrame'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'MeasurementReferences::TensorMeasurementReference::isBound'[attribute_usage]
-          (feature_value (=))))
-      (attribute_def 'CyclicRatioScale' :> 'MeasurementReferences::MeasurementScale'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'modulus' : 'Number'[unresolved]))
-      (attribute_def 'LogarithmicScale' :> 'MeasurementReferences::MeasurementScale'[attribute_def]
-        (documentation)
-        (attribute_usage composite 'logarithmBase' : 'Number'[unresolved])
-        (attribute_usage composite 'factor' : 'Number'[unresolved])
-        (attribute_usage composite 'exponent' : 'Number'[unresolved])
-        (attribute_usage composite 'referenceQuantity' : 'ScalarQuantityValue'[unresolved]
-          (multiplicity_range [0..1])))
-      (attribute_def 'QuantityValueMapping'
-        (documentation)
-        (attribute_usage composite 'mappedQuantityValue' : 'MeasurementReferences::DefinitionalQuantityValue'[attribute_def])
-        (attribute_usage composite 'referenceQuantityValue' : 'MeasurementReferences::DefinitionalQuantityValue'[attribute_def]))
-      (attribute_def 'DefinitionalQuantityValue'
-        (documentation)
-        (attribute_usage composite 'num' : 'Number'[unresolved]
-          (multiplicity_range [1..*]))
-        (attribute_usage composite 'definition' : 'String'[unresolved]))
-      (attribute_def 'DimensionOneUnit' :> 'MeasurementReferences::DerivedUnit'[attribute_def]
-        (documentation)
-        (attribute_usage composite :>> 'MeasurementReferences::MeasurementUnit::unitPowerFactors'[attribute_usage]
-          (feature_value (=))))
-      (attribute_def 'DimensionOneValue' :> 'ScalarQuantityValue'[unresolved]
-        (documentation)
-        (attribute_usage composite :>> 'num'[unresolved] : 'Real'[unresolved])
-        (attribute_usage composite :>> 'mRef'[unresolved] : 'MeasurementReferences::DimensionOneUnit'[attribute_def]))
-      (attribute_usage 'dimensionOneQuantities' : 'MeasurementReferences::DimensionOneValue'[attribute_def] :> 'scalarQuantities'[unresolved]
-        (multiplicity_range [*]))
-      (attribute_usage 'one' : 'MeasurementReferences::DimensionOneUnit'[attribute_def]
-        (multiplicity_range [1])
-        (feature_value (=)))
-      (attribute_def 'CountValue' :> 'MeasurementReferences::DimensionOneValue'[attribute_def]
-        (documentation))
-      (attribute_usage 'countQuantities' : 'MeasurementReferences::CountValue'[attribute_def] :> 'MeasurementReferences::dimensionOneQuantities'[attribute_usage]
-        (multiplicity_range [*]))
-      (attribute_def 'SystemOfUnits'
-        (documentation)
-        (attribute_usage composite 'longName' : 'String'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite 'systemOfQuantities' : 'SystemOfQuantities'[unresolved]
-          (multiplicity_range [1]))
-        (attribute_usage composite ordered 'baseUnits' : 'MeasurementReferences::SimpleUnit'[attribute_def]
-          (multiplicity_range [1..*])))
-      (constraint_def 'VerifyUnitPowerFactors'
-        (documentation)
-        (reference_usage in reference ordered 'unitPowerFactors' : 'MeasurementReferences::UnitPowerFactor'[attribute_def]
-          (multiplicity_range [*]))
-        (reference_usage in reference 'quantityDimension' : 'QuantityDimension'[unresolved]
-          (multiplicity_range [1]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "MeasurementReferences"))) (name "MeasurementReferences") (declared-name "MeasurementReferences")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::*"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame"))) (name "3dCoordinateFrame") (declared-name "3dCoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d"))) (name "AffineTransformationMatrix3d") (declared-name "AffineTransformationMatrix3d") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::elements"))) (name "elements") (declared-name "elements") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::rotationMatrix"))) (name "rotationMatrix") (declared-name "rotationMatrix") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::translationVector"))) (name "translationVector") (declared-name "translationVector") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::Array"))) (name "Array") (declared-name "Array"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::ConversionByConvention"))) (name "ConversionByConvention") (declared-name "ConversionByConvention") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::ConversionByConvention::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ConversionByConvention")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix"))) (name "ConversionByPrefix") (declared-name "ConversionByPrefix") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix::prefix"))) (name "prefix") (declared-name "prefix") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame"))) (name "CoordinateFrame") (declared-name "CoordinateFrame") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame::transformation"))) (name "transformation") (declared-name "transformation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement"))) (name "CoordinateFramePlacement") (declared-name "CoordinateFramePlacement") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement::basisDirections"))) (name "basisDirections") (declared-name "basisDirections") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement::origin"))) (name "origin") (declared-name "origin") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation"))) (name "CoordinateTransformation") (declared-name "CoordinateTransformation") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation::source"))) (name "source") (declared-name "source") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation::target"))) (name "target") (declared-name "target") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::CountValue"))) (name "CountValue") (declared-name "CountValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::CountValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CountValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale"))) (name "CyclicRatioScale") (declared-name "CyclicRatioScale") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale::modulus"))) (name "modulus") (declared-name "modulus") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue"))) (name "DefinitionalQuantityValue") (declared-name "DefinitionalQuantityValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue::definition"))) (name "definition") (declared-name "definition") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::DerivedUnit"))) (name "DerivedUnit") (declared-name "DerivedUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::DerivedUnit::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DerivedUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit"))) (name "DimensionOneUnit") (declared-name "DimensionOneUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit::unitPowerFactors"))) (name "unitPowerFactors") (declared-name "unitPowerFactors") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue"))) (name "DimensionOneValue") (declared-name "DimensionOneValue") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue::mRef"))) (name "mRef") (declared-name "mRef") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue::num"))) (name "num") (declared-name "num") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale"))) (name "IntervalScale") (declared-name "IntervalScale") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::List"))) (name "List") (declared-name "List"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale"))) (name "LogarithmicScale") (declared-name "LogarithmicScale") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale::exponent"))) (name "exponent") (declared-name "exponent") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale::factor"))) (name "factor") (declared-name "factor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale::logarithmBase"))) (name "logarithmBase") (declared-name "logarithmBase") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale::referenceQuantity"))) (name "referenceQuantity") (declared-name "referenceQuantity") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale"))) (name "MeasurementScale") (declared-name "MeasurementScale") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale::quantityValueMapping"))) (name "quantityValueMapping") (declared-name "quantityValueMapping") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale::unit"))) (name "unit") (declared-name "unit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))) (name "MeasurementUnit") (declared-name "MeasurementUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::unitConversion"))) (name "unitConversion") (declared-name "unitConversion") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::unitPowerFactors"))) (name "unitPowerFactors") (declared-name "unitPowerFactors") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation"))) (name "NullTransformation") (declared-name "NullTransformation") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation::rotationMatrix"))) (name "rotationMatrix") (declared-name "rotationMatrix") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation::translationVector"))) (name "translationVector") (declared-name "translationVector") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::OrdinalScale"))) (name "OrdinalScale") (declared-name "OrdinalScale") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::OrdinalScale::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::OrdinalScale")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::QuantityDimension"))) (name "QuantityDimension") (declared-name "QuantityDimension"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping"))) (name "QuantityValueMapping") (declared-name "QuantityValueMapping") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping::mappedQuantityValue"))) (name "mappedQuantityValue") (declared-name "mappedQuantityValue") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping::referenceQuantityValue"))) (name "referenceQuantityValue") (declared-name "referenceQuantityValue") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::Rotation"))) (name "Rotation") (declared-name "Rotation") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::Rotation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::Rotation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::Rotation::angle"))) (name "angle") (declared-name "angle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::Rotation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::Rotation::axisDirection"))) (name "axisDirection") (declared-name "axisDirection") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::Rotation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::Rotation::isIntrinsic"))) (name "isIntrinsic") (declared-name "isIntrinsic") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::Rotation")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference"))) (name "ScalarMeasurementReference") (declared-name "ScalarMeasurementReference") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::quantityDimension"))) (name "quantityDimension") (declared-name "quantityDimension") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit"))) (name "SimpleUnit") (declared-name "SimpleUnit") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit::simpleUnitSelf"))) (name "simpleUnitSelf") (declared-name "simpleUnitSelf") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit::unitPowerFactors"))) (name "unitPowerFactors") (declared-name "unitPowerFactors") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::SystemOfQuantities"))) (name "SystemOfQuantities") (declared-name "SystemOfQuantities"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits"))) (name "SystemOfUnits") (declared-name "SystemOfUnits") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits::baseUnits"))) (name "baseUnits") (declared-name "baseUnits") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits::systemOfQuantities"))) (name "systemOfQuantities") (declared-name "systemOfQuantities") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference"))) (name "TensorMeasurementReference") (declared-name "TensorMeasurementReference") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::definitionalQuantityValues"))) (name "definitionalQuantityValues") (declared-name "definitionalQuantityValues") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::isBound"))) (name "isBound") (declared-name "isBound") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::order"))) (name "order") (declared-name "order") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference")))))
+          )
+        )
+        (element (kind "alias") (id (node (document "d0") (qualified-name "MeasurementReferences::ThreeDCoordinateFrame"))) (name "ThreeDCoordinateFrame") (declared-name "ThreeDCoordinateFrame"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::ThreeVectorValue"))) (name "ThreeVectorValue") (declared-name "ThreeVectorValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::Translation"))) (name "Translation") (declared-name "Translation") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::Translation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::Translation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::Translation::translationVector"))) (name "translationVector") (declared-name "translationVector") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::Translation")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation"))) (name "TranslationOrRotation") (declared-name "TranslationOrRotation") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence"))) (name "TranslationRotationSequence") (declared-name "TranslationRotationSequence") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence::elements"))) (name "elements") (declared-name "elements") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion"))) (name "UnitConversion") (declared-name "UnitConversion") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion::isExact"))) (name "isExact") (declared-name "isExact") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion::referenceUnit"))) (name "referenceUnit") (declared-name "referenceUnit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor"))) (name "UnitPowerFactor") (declared-name "UnitPowerFactor") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor::exponent"))) (name "exponent") (declared-name "exponent") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor::unit"))) (name "unit") (declared-name "unit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix"))) (name "UnitPrefix") (declared-name "UnitPrefix") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix::conversionFactor"))) (name "conversionFactor") (declared-name "conversionFactor") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix::longName"))) (name "longName") (declared-name "longName") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix::symbol"))) (name "symbol") (declared-name "symbol") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference"))) (name "VectorMeasurementReference") (declared-name "VectorMeasurementReference") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference::dimensions"))) (name "dimensions") (declared-name "dimensions") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference::isOrthogonal"))) (name "isOrthogonal") (declared-name "isOrthogonal") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::VectorQuantityValue"))) (name "VectorQuantityValue") (declared-name "VectorQuantityValue"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors"))) (name "VerifyUnitPowerFactors") (declared-name "VerifyUnitPowerFactors")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors")))))
+          )
+        )
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "MeasurementReferences::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::angularMeasure"))) (name "angularMeasure") (declared-name "angularMeasure"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::countQuantities"))) (name "countQuantities") (declared-name "countQuantities") (declared (properties (ordered false) (unique false))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::dimensionOneQuantities"))) (name "dimensionOneQuantities") (declared-name "dimensionOneQuantities") (declared (properties (ordered false) (unique false))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::equals"))) (name "equals") (declared-name "equals"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::forAll"))) (name "forAll") (declared-name "forAll"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::nullTransformation"))) (name "nullTransformation") (declared-name "nullTransformation") (declared (properties (ordered false) (unique true))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MeasurementReferences::one"))) (name "one") (declared-name "one") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "constructor") (reference "DimensionOneUnit")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "MeasurementReferences::one"))) (role feature-value))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::scalarQuantities"))) (name "scalarQuantities") (declared-name "scalarQuantities"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "MeasurementReferences::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ConversionByConvention::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::ConversionByConvention"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CountValue::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CountValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DerivedUnit::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DerivedUnit"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::OrdinalScale::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::OrdinalScale"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::Rotation::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::Rotation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::Translation::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::Translation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VerifyUnitPowerFactors"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementReferences"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame::dimensions"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference::dimensions"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix::conversionFactor"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion::conversionFactor"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit::unitPowerFactors"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::unitPowerFactors"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale::isBound"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::isBound"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::isBound"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::isBound"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation::rotationMatrix"))) (to (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::rotationMatrix"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation::translationVector"))) (to (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d::translationVector"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::dimensions"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference::dimensions"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::isOrthogonal"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference::isOrthogonal"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference::mRefs"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::mRefs"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit::unitPowerFactors"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::unitPowerFactors"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::3dCoordinateFrame"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ConversionByConvention"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ConversionByPrefix::prefix"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitPrefix"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame::transformation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFramePlacement"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation::source"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation::target"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CountValue"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::CyclicRatioScale"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DerivedUnit"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DerivedUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue::mRef"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateFrame"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::IntervalScale"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::LogarithmicScale"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale"))) (to (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale::quantityValueMapping"))) (to (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale::unit"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))) (to (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::unitConversion"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit::unitPowerFactors"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::AffineTransformationMatrix3d"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::OrdinalScale"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementScale"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping::mappedQuantityValue"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::QuantityValueMapping::referenceQuantityValue"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::Rotation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference"))) (to (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit::simpleUnitSelf"))) (to (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit::unitPowerFactors"))) (to (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::SystemOfUnits::baseUnits"))) (to (node (document "d0") (qualified-name "MeasurementReferences::SimpleUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::definitionalQuantityValues"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DefinitionalQuantityValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference::mRefs"))) (to (node (document "d0") (qualified-name "MeasurementReferences::ScalarMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::Translation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CoordinateTransformation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::TranslationRotationSequence::elements"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TranslationOrRotation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::UnitConversion::referenceUnit"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::UnitPowerFactor::unit"))) (to (node (document "d0") (qualified-name "MeasurementReferences::MeasurementUnit"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::VectorMeasurementReference"))) (to (node (document "d0") (qualified-name "MeasurementReferences::TensorMeasurementReference"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::countQuantities"))) (to (node (document "d0") (qualified-name "MeasurementReferences::CountValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::dimensionOneQuantities"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::nullTransformation"))) (to (node (document "d0") (qualified-name "MeasurementReferences::NullTransformation"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MeasurementReferences::one"))) (to (node (document "d0") (qualified-name "MeasurementReferences::DimensionOneUnit"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

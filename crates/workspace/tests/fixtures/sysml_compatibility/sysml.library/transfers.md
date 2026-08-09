@@ -974,180 +974,67 @@ standard library package Transfers {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Transfers'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (namespace_import private -> 'Occurrences'[unresolved])
-      (namespace_import private -> 'Links'[unresolved])
-      (membership_import private -> 'Objects::BinaryLinkObject'[unresolved])
-      (membership_import private -> 'Performances::Performance'[unresolved])
-      (membership_import private -> 'Performances::performances'[unresolved])
-      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
-      (membership_import private -> 'ScalarValues::Natural'[unresolved])
-      (namespace_import private -> 'SequenceFunctions'[unresolved])
-      (interaction_def 'Transfer' :> 'Performance'[unresolved] :> 'BinaryLink'[unresolved]
-        (documentation)
-        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'BinaryLink::source'[unresolved]
-          (documentation)
-          (feature_def 'sourceOutput' : 'Anything'[unresolved]
-            (multiplicity_range [0..*])))
-        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'BinaryLink::target'[unresolved]
-          (documentation)
-          (feature_def 'targetInput' : 'Anything'[unresolved]
-            (multiplicity_range [0..*])))
-        (feature_def 'isInstant' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (feature_def 'payload' : 'Anything'[unresolved]
-          (multiplicity_range [1..*])
-          (documentation))
-        (feature_def 'payloadNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (feature_def 'instantNum' : 'Natural'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (=)))
-        (binding_connector_def 'instant'
-          (multiplicity_range [?])
-          (connector_end 'startShot')
-          (connector_end 'endShot')
-          (documentation)))
-      (interaction_def 'MessageTransfer' :> 'Transfers::Transfer'[interaction_def]
-        (documentation))
-      (interaction_def 'FlowTransfer' :> 'Transfers::Transfer'[interaction_def]
-        (disjoining_decl)
-        (documentation)
-        (feature_def 'isMove' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (feature_def 'isPush' : 'Boolean'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =))
-          (documentation))
-        (connector_def 'sourceOutputLink' : 'BinaryLinkObject'[unresolved]
-          (multiplicity_range [?])
-          (documentation)
-          (feature_def end 'transferSource' :> 'Transfers::Transfer::source'[feature_def]
-            (multiplicity_range [1]))
-          (feature_def end 'transferPayload' :> 'Transfers::Transfer::payload'[feature_def] :> 'Transfers::Transfer::source::sourceOutput'[feature_def]
-            (multiplicity_range [?])))
-        (connector_def 'targetInputLink' : 'BinaryLinkObject'[unresolved]
-          (multiplicity_range [?])
-          (documentation)
-          (feature_def end 'transferTarget' :> 'Transfers::Transfer::target'[feature_def]
-            (multiplicity_range [1]))
-          (feature_def end 'transferPayload' :> 'Transfers::Transfer::payload'[feature_def] :> 'Transfers::Transfer::target::targetInput'[feature_def]
-            (multiplicity_range [?])))
-        (connector_def 'sending' : 'HappensDuring'[unresolved]
-          (multiplicity_range [?])
-          (connector_end 'startShot')
-          (connector_end 'sourceOutputLink')
-          (documentation))
-        (connector_def 'moving' : 'HappensWhile'[unresolved]
-          (multiplicity_range [0..*])
-          (connector_end 'sourceOutputLink.endShot')
-          (connector_end 'startShot')
-          (documentation))
-        (invariant_def
-          (result_expr_membership))
-        (connector_def 'pushing' : 'HappensWhile'[unresolved]
-          (multiplicity_range [0..*])
-          (connector_end 'sourceOutputLink.startShot')
-          (connector_end 'startShot')
-          (documentation))
-        (invariant_def
-          (result_expr_membership))
-        (connector_def 'delivering' : 'HappensWhile'[unresolved]
-          (multiplicity_range [?])
-          (connector_end 'targetInputLink.startShot')
-          (connector_end 'endShot')
-          (documentation)))
-      (interaction_def 'TransferBefore' :> 'Transfers::Transfer'[interaction_def] :> 'HappensBefore'[unresolved]
-        (intersecting)
-        (intersecting)
-        (documentation)
-        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'HappensBefore::earlierOccurrence'[unresolved])
-        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'HappensBefore::laterOccurrence'[unresolved])
-        (feature_def 'self' : 'Transfers::TransferBefore'[interaction_def] :>> 'Performance::self'[unresolved])
-        (succession_def
-          (connector_end 'source')
-          (connector_end 'self'))
-        (succession_def
-          (connector_end 'self')
-          (connector_end 'target')))
-      (interaction_def 'FlowTransferBefore' :> 'Transfers::TransferBefore'[interaction_def] :> 'Transfers::FlowTransfer'[interaction_def]
-        (intersecting)
-        (intersecting)
-        (documentation)
-        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'Transfers::TransferBefore::source'[feature_def])
-        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'Transfers::TransferBefore::target'[feature_def]))
-      (step_def abstract 'transfers' : 'Transfers::Transfer'[interaction_def] :> 'performances'[unresolved] :> 'binaryLinks'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)
-        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'binaryLinks::source'[unresolved])
-        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'binaryLinks::target'[unresolved]))
-      (step_def abstract 'messageTransfers' : 'Transfers::MessageTransfer'[interaction_def] :> 'Transfers::transfers'[step_def]
-        (multiplicity_range [0..*])
-        (documentation)
-        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'Transfers::transfers::source'[feature_def])
-        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'Transfers::transfers::target'[feature_def]))
-      (flow_usage abstract 'flowTransfers' : 'Transfers::FlowTransfer'[interaction_def] :> 'Transfers::transfers'[step_def]
-        (multiplicity_range [0..*])
-        (documentation)
-        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'Transfers::transfers::source'[feature_def])
-        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'Transfers::transfers::target'[feature_def]))
-      (flow_usage abstract 'transfersBefore' : 'Transfers::TransferBefore'[interaction_def] :> 'Transfers::transfers'[step_def] :> 'happensBeforeLinks'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)
-        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::TransferBefore::source'[feature_def] :>> 'Transfers::transfers::source'[feature_def] :>> 'happensBeforeLinks::earlierOccurrence'[unresolved])
-        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::TransferBefore::target'[feature_def] :>> 'Transfers::transfers::target'[feature_def] :>> 'happensBeforeLinks::laterOccurrence'[unresolved]))
-      (flow_usage abstract 'flowTransfersBefore' : 'Transfers::FlowTransferBefore'[interaction_def] :> 'Transfers::flowTransfers'[flow_usage] :> 'Transfers::transfersBefore'[flow_usage]
-        (multiplicity_range [0..*])
-        (documentation)
-        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::FlowTransferBefore::source'[feature_def] :>> 'Transfers::flowTransfers::source'[port_usage] :>> 'Transfers::transfersBefore::source'[port_usage])
-        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::FlowTransferBefore::target'[feature_def] :>> 'Transfers::flowTransfers::target'[port_usage] :>> 'Transfers::transfersBefore::target'[port_usage]))
-      (behavior_def 'SendPerformance' :> 'Performance'[unresolved]
-        (documentation)
-        (feature_def in 'payload'
-          (multiplicity_range [0..*]))
-        (feature_def in 'sender' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def in 'receiver' : 'Occurrence'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def 'sentTransfer' : 'Transfers::MessageTransfer'[interaction_def] :> 'sender::outgoingTransfersFromSelf'[unresolved]
-          (multiplicity_range [1])
-          (feature_def :>> 'Transfers::Transfer::payload'[feature_def]
-            (feature_value (=))))
-        (binding_connector_def
-          (multiplicity_range [0..1])
-          (connector_end 'receiver.incomingTransfersToSelf')
-          (connector_end 'sentTransfer'))
-        (succession_def
-          (connector_end 'self')
-          (connector_end 'sentTransfer')))
-      (behavior_def 'AcceptPerformance' :> 'Performance'[unresolved]
-        (documentation)
-        (feature_def inout 'payload'
-          (multiplicity_range [0..*]))
-        (feature_def in 'receiver' : 'Occurrence'[unresolved]
-          (multiplicity_range [1])
-          (feature_value (default =)))
-        (feature_def 'acceptedTransfer' : 'Transfers::MessageTransfer'[interaction_def] :> 'receiver::incomingTransfersToSelf'[unresolved]
-          (multiplicity_range [1]))
-        (succession_def
-          (connector_end 'acceptedTransfer')
-          (connector_end 'self.endShot'))
-        (binding_connector_def
-          (connector_end 'payload')
-          (connector_end 'acceptedTransfer.payload')))
-      (step_def abstract 'sendPerformances' : 'Transfers::SendPerformance'[behavior_def] :> 'performances'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (step_def abstract 'acceptPerformances' : 'Transfers::AcceptPerformance'[behavior_def] :> 'performances'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Transfers"))) (name "Transfers") (declared-name "Transfers")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::AcceptPerformance"))) (name "AcceptPerformance") (declared-name "AcceptPerformance"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::BinaryLinkObject"))) (name "BinaryLinkObject") (declared-name "BinaryLinkObject"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Boolean"))) (name "Boolean") (declared-name "Boolean"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::FlowTransfer"))) (name "FlowTransfer") (declared-name "FlowTransfer"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))) (name "FlowTransferBefore") (declared-name "FlowTransferBefore"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::MessageTransfer"))) (name "MessageTransfer") (declared-name "MessageTransfer"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Natural"))) (name "Natural") (declared-name "Natural"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::Performance"))) (name "Performance") (declared-name "Performance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::SendPerformance"))) (name "SendPerformance") (declared-name "SendPerformance"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::Transfer"))) (name "Transfer") (declared-name "Transfer"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::TransferBefore"))) (name "TransferBefore") (declared-name "TransferBefore"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::acceptPerformances"))) (name "acceptPerformances") (declared-name "acceptPerformances"))
+        (element (kind "flow") (id (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (name "flowTransfers") (declared-name "flowTransfers")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::flowTransfers::_documentation"))) (name ""))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfers::source"))) (name "source") (declared-name "source") (declared (properties (end true))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfers::target"))) (name "target") (declared-name "target") (declared (properties (end true))))
+          )
+        )
+        (element (kind "flow") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (name "flowTransfersBefore") (declared-name "flowTransfersBefore")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::_documentation"))) (name ""))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::source"))) (name "source") (declared-name "source") (declared (properties (end true))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::target"))) (name "target") (declared-name "target") (declared (properties (end true))))
+          )
+        )
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::messageTransfers"))) (name "messageTransfers") (declared-name "messageTransfers"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Transfers::performances"))) (name "performances") (declared-name "performances"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::sendPerformances"))) (name "sendPerformances") (declared-name "sendPerformances"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Transfers::transfers"))) (name "transfers") (declared-name "transfers"))
+        (element (kind "flow") (id (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (name "transfersBefore") (declared-name "transfersBefore")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Transfers::transfersBefore::_documentation"))) (name ""))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::transfersBefore::source"))) (name "source") (declared-name "source") (declared (properties (end true))))
+            (element (kind "interface end") (id (node (document "d0") (qualified-name "Transfers::transfersBefore::target"))) (name "target") (declared-name "target") (declared (properties (end true))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfers"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::transfersBefore"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransfer"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::TransferBefore"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

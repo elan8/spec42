@@ -590,80 +590,136 @@ standard library package Requirements {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'Requirements'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (membership_import private -> 'ControlFunctions::allTrue'[unresolved])
-      (membership_import private -> 'Constraints::constraintChecks'[unresolved])
-      (membership_import private -> 'Constraints::assertedConstraintChecks'[unresolved])
-      (membership_import private -> 'Constraints::negatedConstraintChecks'[unresolved])
-      (membership_import private -> 'Parts::Part'[unresolved])
-      (membership_import private -> 'Parts::parts'[unresolved])
-      (membership_import private -> 'Actions::Action'[unresolved])
-      (membership_import private -> 'Interfaces::Interface'[unresolved])
-      (membership_import private -> 'Attributes::AttributeValue'[unresolved])
-      (constraint_def abstract 'RequirementConstraintCheck'
-        (documentation)
-        (constraint_usage composite 'assumptions' :> 'constraintChecks'[unresolved] :> 'subperformances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (constraint_usage composite 'constraints' :> 'constraintChecks'[unresolved] :> 'subperformances'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (return_parameter_membership
-          (feature_def out 'result'
-            (feature_value (=))
-            (documentation))))
-      (requirement_def abstract 'RequirementCheck' :> 'Requirements::RequirementConstraintCheck'[constraint_def]
-        (documentation)
-        (requirement_usage reference :>> 'self'[unresolved] : 'Requirements::RequirementCheck'[requirement_def] :> 'Requirements::requirementChecks'[requirement_usage][implied])
-        (subject_membership in 'subj' : 'Anything'[unresolved]
-          (multiplicity_range [1])
-          (documentation))
-        (part_usage reference 'actors' : 'Part'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (part_usage reference 'stakeholders' : 'Part'[unresolved]
-          (multiplicity_range [0..*])
-          (documentation))
-        (constraint_usage composite 'assumptions' :>> 'Requirements::RequirementConstraintCheck::assumptions'[constraint_usage])
-        (constraint_usage composite 'constraints' :>> 'Requirements::RequirementConstraintCheck::constraints'[constraint_usage])
-        (requirement_usage abstract composite 'subrequirements' :> 'Requirements::requirementChecks'[requirement_usage] :> 'Requirements::RequirementCheck::constraints'[constraint_usage]
-          (multiplicity_range [0..*])
-          (documentation))
-        (concern_usage abstract composite 'concerns' :> 'Requirements::concernChecks'[concern_usage] :> 'Requirements::RequirementCheck::subrequirements'[requirement_usage]
-          (multiplicity_range [0..*])
-          (documentation)))
-      (requirement_def 'FunctionalRequirementCheck' :> 'Requirements::RequirementCheck'[requirement_def]
-        (documentation)
-        (subject_membership in : 'Action'[unresolved] :>> 'Requirements::RequirementCheck::subj'[subject_membership][implied]))
-      (requirement_def 'InterfaceRequirementCheck' :> 'Requirements::RequirementCheck'[requirement_def]
-        (documentation)
-        (subject_membership in : 'Interface'[unresolved] :>> 'Requirements::RequirementCheck::subj'[subject_membership][implied]))
-      (requirement_def 'PerformanceRequirementCheck' :> 'Requirements::RequirementCheck'[requirement_def]
-        (documentation)
-        (subject_membership in : 'AttributeValue'[unresolved] :>> 'Requirements::RequirementCheck::subj'[subject_membership][implied]))
-      (requirement_def 'PhysicalRequirementCheck' :> 'Requirements::RequirementCheck'[requirement_def]
-        (documentation)
-        (subject_membership in : 'Part'[unresolved] :>> 'Requirements::RequirementCheck::subj'[subject_membership][implied]))
-      (requirement_def 'DesignConstraintCheck' :> 'Requirements::RequirementCheck'[requirement_def]
-        (documentation)
-        (subject_membership in : 'Part'[unresolved] :>> 'Requirements::RequirementCheck::subj'[subject_membership][implied]))
-      (concern_def 'ConcernCheck' :> 'Requirements::RequirementCheck'[requirement_def]
-        (documentation)
-        (concern_usage reference :>> 'self'[unresolved] : 'Requirements::ConcernCheck'[concern_def]))
-      (requirement_usage abstract 'requirementChecks' : 'Requirements::RequirementCheck'[requirement_def] :> 'constraintChecks'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (requirement_usage abstract 'satisfiedRequirementChecks' :> 'Requirements::requirementChecks'[requirement_usage] :> 'assertedConstraintChecks'[unresolved]
-        (documentation))
-      (requirement_usage abstract 'notSatisfiedRequirementChecks' : 'Requirements::RequirementCheck'[requirement_def] :> 'Requirements::requirementChecks'[requirement_usage] :> 'negatedConstraintChecks'[unresolved]
-        (multiplicity_range [0..*])
-        (documentation))
-      (concern_usage abstract 'concernChecks' : 'Requirements::ConcernCheck'[concern_def] :> 'Requirements::requirementChecks'[requirement_usage]
-        (multiplicity_range [0..*])
-        (documentation)))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Requirements"))) (name "Requirements") (declared-name "Requirements")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::Action"))) (name "Action") (declared-name "Action"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::AttributeValue"))) (name "AttributeValue") (declared-name "AttributeValue"))
+        (element (kind "concern def") (id (node (document "d0") (qualified-name "Requirements::ConcernCheck"))) (name "ConcernCheck") (declared-name "ConcernCheck")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::ConcernCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::ConcernCheck")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck"))) (name "DesignConstraintCheck") (declared-name "DesignConstraintCheck")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck"))) (name "FunctionalRequirementCheck") (declared-name "FunctionalRequirementCheck")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::Interface"))) (name "Interface") (declared-name "Interface"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck"))) (name "InterfaceRequirementCheck") (declared-name "InterfaceRequirementCheck")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::Part"))) (name "Part") (declared-name "Part"))
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck"))) (name "PerformanceRequirementCheck") (declared-name "PerformanceRequirementCheck")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck"))) (name "PhysicalRequirementCheck") (declared-name "PhysicalRequirementCheck")
+          (contains
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck::"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck")))))
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck")))))
+          )
+        )
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "Requirements::RequirementCheck"))) (name "RequirementCheck") (declared-name "RequirementCheck")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::RequirementCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Requirements::RequirementCheck::subj"))) (name "subj") (declared-name "subj") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirements::RequirementCheck::subrequirements"))) (name "subrequirements") (declared-name "subrequirements") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+              (contains
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::RequirementCheck::subrequirements::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
+              )
+            )
+            (element (kind "constraint") (id (node (document "d0") (qualified-name "Requirements::assumptions"))) (name "assumptions") (declared-name "assumptions") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
+            (element (kind "constraint") (id (node (document "d0") (qualified-name "Requirements::constraints"))) (name "constraints") (declared-name "constraints") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
+          )
+        )
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck"))) (name "RequirementConstraintCheck") (declared-name "RequirementConstraintCheck")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::String"))) (name "String") (declared-name "String"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::_documentation"))) (name ""))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::allTrue"))) (name "allTrue") (declared-name "allTrue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::assertedConstraintChecks"))) (name "assertedConstraintChecks") (declared-name "assertedConstraintChecks"))
+        (element (kind "concern") (id (node (document "d0") (qualified-name "Requirements::concernChecks"))) (name "concernChecks") (declared-name "concernChecks")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::concernChecks::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::ConcernCheck")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::constraintChecks"))) (name "constraintChecks") (declared-name "constraintChecks"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::negatedConstraintChecks"))) (name "negatedConstraintChecks") (declared-name "negatedConstraintChecks"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirements::notSatisfiedRequirementChecks"))) (name "notSatisfiedRequirementChecks") (declared-name "notSatisfiedRequirementChecks")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::notSatisfiedRequirementChecks::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Requirements::parts"))) (name "parts") (declared-name "parts"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirements::requirementChecks"))) (name "requirementChecks") (declared-name "requirementChecks")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::requirementChecks::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirements::satisfiedRequirementChecks"))) (name "satisfiedRequirementChecks") (declared-name "satisfiedRequirementChecks")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::satisfiedRequirementChecks::_documentation"))) (name ""))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::ConcernCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::ConcernCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::RequirementCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::RequirementCheck::subrequirements::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck::subrequirements"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::_documentation"))) (to (node (document "d0") (qualified-name "Requirements"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::concernChecks::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::concernChecks"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::notSatisfiedRequirementChecks::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::notSatisfiedRequirementChecks"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::requirementChecks::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::requirementChecks"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirements::satisfiedRequirementChecks::_documentation"))) (to (node (document "d0") (qualified-name "Requirements::satisfiedRequirementChecks"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Requirements::RequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck"))) (to (node (document "d0") (qualified-name "Requirements::DesignConstraintCheck::"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::FunctionalRequirementCheck::"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::InterfaceRequirementCheck::"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::PerformanceRequirementCheck::"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::PhysicalRequirementCheck::"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirements::RequirementCheck"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck::subj"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirements::RequirementCheck::subrequirements"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck::subj"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Requirements::notSatisfiedRequirementChecks"))) (to (node (document "d0") (qualified-name "Requirements::requirementChecks"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Requirements::requirementChecks"))) (to (node (document "d0") (qualified-name "Requirements::constraintChecks"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Requirements::satisfiedRequirementChecks"))) (to (node (document "d0") (qualified-name "Requirements::requirementChecks"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Requirements::concernChecks"))) (to (node (document "d0") (qualified-name "Requirements::ConcernCheck"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Requirements::notSatisfiedRequirementChecks"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Requirements::requirementChecks"))) (to (node (document "d0") (qualified-name "Requirements::RequirementCheck"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

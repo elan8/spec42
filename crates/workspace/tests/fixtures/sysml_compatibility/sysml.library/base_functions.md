@@ -388,119 +388,40 @@ standard library package BaseFunctions {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (library_package 'BaseFunctions'
-      (documentation)
-      (membership_import private -> 'Base::Anything'[unresolved])
-      (membership_import private -> 'Objects::Object'[unresolved])
-      (membership_import private -> 'Metaobjects::Metaobject'[unresolved])
-      (membership_import private -> 'KerML::Metaclass'[unresolved])
-      (namespace_import private -> 'ScalarValues'[unresolved])
-      (function_def abstract '=='
-        (feature_def in 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '!='
-        (feature_def in 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def abstract '==='
-        (feature_def in 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def '!=='
-        (feature_def in 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (feature_def in 'y' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1])
-            (feature_value (=)))))
-      (function_def abstract 'ToString'
-        (feature_def in 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..1]))
-        (return_parameter_membership
-          (feature_def out : 'String'[unresolved])))
-      (function_def abstract '['
-        (feature_def in 'x' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'y' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract '#'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'index' : 'Positive'[unresolved]
-          (multiplicity_range [1..*]))
-        (return_parameter_membership
-          (feature_def out : 'Anything'[unresolved]
-            (multiplicity_range [0..1]))))
-      (function_def abstract ','
-        (feature_def in ordered 'seq1' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in ordered 'seq2' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract 'all'
-        (return_parameter_membership
-          (feature_def out : 'Object'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract 'istype'
-        (feature_def in 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'type' : 'Anything'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'hastype'
-        (feature_def in 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'type' : 'Anything'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved])))
-      (function_def abstract '@'
-        (feature_def in 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'type' : 'Anything'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract '@@'
-        (feature_def in 'seq' : 'Metaobject'[unresolved]
-          (multiplicity_range [0..*]))
-        (feature_def in 'type' : 'Metaobject'[unresolved])
-        (return_parameter_membership
-          (feature_def out : 'Boolean'[unresolved]
-            (multiplicity_range [1]))))
-      (function_def abstract 'as'
-        (feature_def in ordered 'seq' : 'Anything'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Anything'[unresolved]
-            (multiplicity_range [0..*]))))
-      (function_def abstract 'meta'
-        (feature_def in ordered 'seq' : 'Metaobject'[unresolved]
-          (multiplicity_range [0..*]))
-        (return_parameter_membership
-          (feature_def out ordered : 'Metaobject'[unresolved]
-            (multiplicity_range [0..*])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "BaseFunctions"))) (name "BaseFunctions") (declared-name "BaseFunctions")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Anything"))) (name "Anything") (declared-name "Anything"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Metaclass"))) (name "Metaclass") (declared-name "Metaclass"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "BaseFunctions::Object"))) (name "Object") (declared-name "Object"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::ToString"))) (name "ToString") (declared-name "ToString"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "BaseFunctions::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl10"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl11"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl12"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl2"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl3"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl4"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl5"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl6"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl7"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl8"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::in#kermlDecl9"))) (name "in") (declared-name "in"))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "BaseFunctions::return"))) (name "return") (declared-name "return"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "BaseFunctions::_documentation"))) (to (node (document "d0") (qualified-name "BaseFunctions"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

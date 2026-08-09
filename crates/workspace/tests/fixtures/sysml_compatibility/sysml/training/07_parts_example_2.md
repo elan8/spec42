@@ -119,22 +119,53 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Parts Example-2'
-      (part_def 'Vehicle')
-      (part_def 'Engine')
-      (part_def 'Cylinder')
-      (part_usage 'vehicle' : 'Parts Example-2::Vehicle'[part_def]
-        (part_usage composite 'eng' : 'Parts Example-2::Engine'[part_def]
-          (part_usage composite 'cyl' : 'Parts Example-2::Cylinder'[part_def]
-            (multiplicity_range [4..6]))))
-      (part_usage 'smallVehicle' :> 'Parts Example-2::vehicle'[part_usage]
-        (part_usage composite :>> 'Parts Example-2::vehicle::eng'[part_usage]
-          (part_usage composite :>> 'Parts Example-2::vehicle::eng::cyl'[part_usage]
-            (multiplicity_range [4]))))
-      (part_usage 'bigVehicle' :> 'Parts Example-2::vehicle'[part_usage]
-        (part_usage composite :>> 'Parts Example-2::vehicle::eng'[part_usage]
-          (part_usage composite :>> 'Parts Example-2::vehicle::eng::cyl'[part_usage]
-            (multiplicity_range [6])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Parts Example-2"))) (name "Parts Example-2") (declared-name "Parts Example-2")
+      (contains
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Parts Example-2::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Parts Example-2::Engine"))) (name "Engine") (declared-name "Engine") (declared))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Parts Example-2::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::bigVehicle"))) (name "bigVehicle") (declared-name "bigVehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::bigVehicle::eng"))) (name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::bigVehicle::eng::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::smallVehicle"))) (name "smallVehicle") (declared-name "smallVehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::smallVehicle::eng"))) (name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::smallVehicle::eng::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))))
+              )
+            )
+          )
+        )
+        (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-2::Vehicle"))))
+              (contains
+                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-2::vehicle::eng::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts Example-2::Engine")))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Parts Example-2::bigVehicle"))) (to (node (document "d0") (qualified-name "Parts Example-2::vehicle"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Parts Example-2::smallVehicle"))) (to (node (document "d0") (qualified-name "Parts Example-2::vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts Example-2::vehicle"))) (to (node (document "d0") (qualified-name "Parts Example-2::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts Example-2::vehicle::eng"))) (to (node (document "d0") (qualified-name "Parts Example-2::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Parts Example-2::vehicle::eng::cyl"))) (to (node (document "d0") (qualified-name "Parts Example-2::Cylinder"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

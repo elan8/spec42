@@ -317,52 +317,64 @@ semantic.unresolved_name 'PowerValue'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Analysis Case Definition Example'
-      (membership_import private -> 'ScalarValues::Real'[unresolved])
-      (namespace_import private -> 'Calculation Definitions'[unresolved])
-      (namespace_import private -> 'Analytical Constraints'[unresolved])
-      (namespace_import private -> 'USCustomaryUnits'[unresolved])
-      (membership_import private -> 'SequenceFunctions::size'[unresolved])
-      (membership_import private -> 'Quantities::ScalarQuantityValue'[unresolved])
-      (namespace_import private -> 'ControlFunctions'[unresolved])
-      (membership_import private -> 'ScalarValues::Positive'[unresolved])
-      (attribute_def 'DistancePerVolumeValue' :> 'ScalarQuantityValue'[unresolved])
-      (part_def 'Vehicle'
-        (attribute_usage composite 'mass' : 'MassValue'[unresolved])
-        (attribute_usage composite 'cargoMass' : 'MassValue'[unresolved])
-        (attribute_usage composite 'wheelDiameter' : 'LengthValue'[unresolved])
-        (attribute_usage composite 'driveTrainEfficiency' : 'Real'[unresolved])
-        (attribute_usage composite 'fuelEconomy_city' : 'Analysis Case Definition Example::DistancePerVolumeValue'[attribute_def])
-        (attribute_usage composite 'fuelEconomy_highway' : 'Analysis Case Definition Example::DistancePerVolumeValue'[attribute_def]))
-      (attribute_def 'WayPoint'
-        (reference_usage reference 'time' : 'TimeValue'[unresolved])
-        (reference_usage reference 'position' : 'LengthValue'[unresolved])
-        (reference_usage reference 'speed' : 'SpeedValue'[unresolved]))
-      (analysis_case_def 'FuelEconomyAnalysis'
-        (subject_membership in 'vehicle' : 'Analysis Case Definition Example::Vehicle'[part_def])
-        (objective_membership composite 'fuelEconomyAnalysisObjective'
-          (assume_constraint_usage composite
-            (result_expr_membership))
-          (require_constraint_usage composite
-            (result_expr_membership)))
-        (attribute_usage in 'scenario' : 'Analysis Case Definition Example::WayPoint'[attribute_def]
-          (multiplicity_range [*]))
-        (action_usage composite 'solveForPower'
-          (reference_usage out reference 'power' : 'PowerValue'[unresolved]
-            (multiplicity_range [*]))
-          (reference_usage out reference 'acceleration' : 'AccelerationValue'[unresolved]
-            (multiplicity_range [*]))
-          (assert_constraint_usage
-            (result_expr_membership)))
-        (source_succession
-          (action_usage 'solveForFuelConsumption'
-            (reference_usage in reference 'power' : 'PowerValue'[unresolved]
-              (multiplicity_range [*])
-              (feature_value (=)))
-            (reference_usage out reference 'fuelEconomy' : 'Analysis Case Definition Example::DistancePerVolumeValue'[attribute_def])))
-        (return_parameter_membership
-          (feature_def out 'fuelEconomyResult' : 'Analysis Case Definition Example::DistancePerVolumeValue'[attribute_def]
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Analysis Case Definition Example"))) (name "Analysis Case Definition Example") (declared-name "Analysis Case Definition Example")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::*#import2"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::*#import3"))) (name "*") (declared-name "*"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue"))) (name "DistancePerVolumeValue") (declared-name "DistancePerVolumeValue") (declared (properties (ordered false) (unique true))))
+        (element (kind "analysis def") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis"))) (name "FuelEconomyAnalysis") (declared-name "FuelEconomyAnalysis")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::fuelEconomyAnalysisObjective"))) (name "fuelEconomyAnalysisObjective") (declared-name "fuelEconomyAnalysisObjective") (effective (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis")))))
+            (element (kind "analysis result") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::fuelEconomyResult"))) (name "fuelEconomyResult") (declared-name "fuelEconomyResult") (effective (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::scenario"))) (name "scenario") (declared-name "scenario") (declared (properties (direction "in") (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForPower"))) (name "solveForPower") (declared-name "solveForPower") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis"))))
+              (contains
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForPower::acceleration"))) (name "acceleration") (declared-name "acceleration") (effective (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::solveForPower::power"))) (name "power") (declared-name "power") (effective (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis")))))
+              )
+            )
+            (element (kind "subject") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Positive"))) (name "Positive") (declared-name "Positive"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Real"))) (name "Real") (declared-name "Real"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::ScalarQuantityValue"))) (name "ScalarQuantityValue") (declared-name "ScalarQuantityValue"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::cargoMass"))) (name "cargoMass") (declared-name "cargoMass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::driveTrainEfficiency"))) (name "driveTrainEfficiency") (declared-name "driveTrainEfficiency") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_city"))) (name "fuelEconomy_city") (declared-name "fuelEconomy_city") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_highway"))) (name "fuelEconomy_highway") (declared-name "fuelEconomy_highway") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::wheelDiameter"))) (name "wheelDiameter") (declared-name "wheelDiameter") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle")))))
+          )
+        )
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint"))) (name "WayPoint") (declared-name "WayPoint") (declared (properties (ordered false) (unique true)))
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint::position"))) (name "position") (declared-name "position") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint::speed"))) (name "speed") (declared-name "speed") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint::time"))) (name "time") (declared-name "time") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint")))))
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "Analysis Case Definition Example::size"))) (name "size") (declared-name "size"))
+      )
+    )
+  )
+  (relationships
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis"))) (to (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::fuelEconomyResult"))) (to (node (document "d0") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::scenario"))) (to (node (document "d0") (qualified-name "Analysis Case Definition Example::WayPoint"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Analysis Case Definition Example::FuelEconomyAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_city"))) (to (node (document "d0") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Analysis Case Definition Example::Vehicle::fuelEconomy_highway"))) (to (node (document "d0") (qualified-name "Analysis Case Definition Example::DistancePerVolumeValue"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

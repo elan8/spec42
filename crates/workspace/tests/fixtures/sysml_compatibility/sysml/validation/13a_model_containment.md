@@ -206,30 +206,64 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package '13a-Model Containment'
-      (namespace_import private -> '2a-Parts Interconnection'[unresolved])
-      (namespace_import private -> '8-Requirements'[unresolved])
-      (requirement_usage 'BodyAndInteriorRequirements'
-        (membership_import public -> 'MassLimitationRequirement'[unresolved]))
-      (requirement_usage 'PowerTrainRequirements')
-      (package 'Vehicle Model'
-        (documentation)
-        (package 'Vehicle1-Configuration'
-          (alias_member 'Sport Sedan' -> 'vehicle1_c1'[unresolved])
-          (membership_import public -> 'vehicle1_c1 Specification Context::vehicle1-c1 Specification'[unresolved]))
-        (package 'Vehicle Reference Model'
-          (documentation)
-          (membership_import public -> 'VehicleA'[unresolved])
-          (membership_import public -> '13a-Model Containment::Vehicle Model::VehicleSubsystems'[package]))
-        (package 'VehicleSubsystems'
-          (membership_import public -> '13a-Model Containment::Vehicle Model::Body&Interior'[package])
-          (membership_import public -> '13a-Model Containment::Vehicle Model::PowerTrain'[package]))
-        (package 'Body&Interior'
-          (membership_import public -> '13a-Model Containment::BodyAndInteriorRequirements'[requirement_usage]))
-        (package 'PowerTrain'
-          (membership_import public -> 'Engine'[unresolved])
-          (membership_import public -> 'Transmission'[unresolved])
-          (membership_import public -> '13a-Model Containment::PowerTrainRequirements'[requirement_usage]))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "13a-Model Containment"))) (name "13a-Model Containment") (declared-name "13a-Model Containment")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "13a-Model Containment::BodyAndInteriorRequirements"))) (name "BodyAndInteriorRequirements") (declared-name "BodyAndInteriorRequirements")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::BodyAndInteriorRequirements::MassLimitationRequirement"))) (name "MassLimitationRequirement") (declared-name "MassLimitationRequirement"))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "13a-Model Containment::PowerTrainRequirements"))) (name "PowerTrainRequirements") (declared-name "PowerTrainRequirements"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model"))) (name "Vehicle Model") (declared-name "Vehicle Model")
+          (contains
+            (element (kind "package") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Body&Interior"))) (name "Body&Interior") (declared-name "Body&Interior")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Body&Interior::BodyAndInteriorRequirements"))) (name "BodyAndInteriorRequirements") (declared-name "BodyAndInteriorRequirements"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::PowerTrain"))) (name "PowerTrain") (declared-name "PowerTrain")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::PowerTrain::Engine"))) (name "Engine") (declared-name "Engine"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::PowerTrain::PowerTrainRequirements"))) (name "PowerTrainRequirements") (declared-name "PowerTrainRequirements"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::PowerTrain::Transmission"))) (name "Transmission") (declared-name "Transmission"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model"))) (name "Vehicle Reference Model") (declared-name "Vehicle Reference Model")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model::VehicleA"))) (name "VehicleA") (declared-name "VehicleA"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model::VehicleSubsystems"))) (name "VehicleSubsystems") (declared-name "VehicleSubsystems"))
+                (element (kind "documentation") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model::_documentation"))) (name ""))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle1-Configuration"))) (name "Vehicle1-Configuration") (declared-name "Vehicle1-Configuration")
+              (contains
+                (element (kind "alias") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle1-Configuration::Sport Sedan"))) (name "Sport Sedan") (declared-name "Sport Sedan"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle1-Configuration::vehicle1-c1 Specification"))) (name "vehicle1-c1 Specification") (declared-name "vehicle1-c1 Specification"))
+              )
+            )
+            (element (kind "package") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::VehicleSubsystems"))) (name "VehicleSubsystems") (declared-name "VehicleSubsystems")
+              (contains
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::VehicleSubsystems::Body&Interior"))) (name "Body&Interior") (declared-name "Body&Interior"))
+                (element (kind "import") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::VehicleSubsystems::PowerTrain"))) (name "PowerTrain") (declared-name "PowerTrain"))
+              )
+            )
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::_documentation"))) (name ""))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model::_documentation"))) (to (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::_documentation"))) (to (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -109,37 +109,30 @@ package ExpressionCoverage {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ExpressionCoverage'
-      (classifier_def 'Vehicle')
-      (classifier_def 'Item')
-      (feature_def 's'
-        (feature_value (=)))
-      (feature_def 'r'
-        (feature_value (=)))
-      (feature_def 'r2'
-        (feature_value (=)))
-      (feature_def 'n'
-        (feature_value (=)))
-      (feature_def 'inf'
-        (feature_value (=)))
-      (feature_def 'items' : 'ExpressionCoverage::Item'[classifier_def]
-        (multiplicity_range [*]))
-      (feature_def 'arr'
-        (feature_value (=)))
-      (feature_def 'h'
-        (feature_value (=)))
-      (feature_def 'all_v'
-        (feature_value (=)))
-      (feature_def 'coll'
-        (feature_value (=)))
-      (feature_def 'sel'
-        (feature_value (=)))
-      (feature_def 'seq'
-        (feature_value (=)))
-      (feature_def 'cond'
-        (feature_value (=)))
-      (feature_def 'meta_access'
-        (feature_value (=))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ExpressionCoverage"))) (name "ExpressionCoverage") (declared-name "ExpressionCoverage")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::Item"))) (name "Item") (declared-name "Item"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::Vehicle"))) (name "Vehicle") (declared-name "Vehicle"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::all_v"))) (name "all_v") (declared-name "all_v"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::arr"))) (name "arr") (declared-name "arr"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::coll"))) (name "coll") (declared-name "coll"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::h"))) (name "h") (declared-name "h"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::inf"))) (name "inf") (declared-name "inf"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::items"))) (name "items") (declared-name "items"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::n"))) (name "n") (declared-name "n"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::r"))) (name "r") (declared-name "r"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::r2"))) (name "r2") (declared-name "r2"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "ExpressionCoverage::s"))) (name "s") (declared-name "s"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

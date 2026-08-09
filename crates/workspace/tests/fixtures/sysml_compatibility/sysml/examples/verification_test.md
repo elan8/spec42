@@ -150,27 +150,58 @@ semantic.unresolved_name 'ScalarValues::Integer'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'VerificationTest'
-      (part_def 'V'
-        (reference_usage reference 'm' : 'ScalarValues::Integer'[unresolved]))
-      (part_usage 'vv' : 'VerificationTest::V'[part_def])
-      (requirement_def 'R'
-        (documentation))
-      (requirement_usage 'r' : 'VerificationTest::R'[requirement_def])
-      (verification_case_def 'VerificationCase'
-        (subject_membership in 'v' : 'VerificationTest::V'[part_def])
-        (objective_membership composite
-          (verify_requirement_membership : 'VerificationTest::R'[requirement_def]))
-        (result_expr_membership))
-      (verification_case_def 'VerificationPlan'
-        (subject_membership in 'v' : 'VerificationTest::V'[part_def])
-        (objective_membership composite
-          (verify_requirement_membership 'r'))
-        (verification_case_usage composite 'verificationCase' : 'VerificationTest::VerificationCase'[verification_case_def]))
-      (part_usage 'verificationContext'
-        (verification_case_usage composite 'verificationPlan' : 'VerificationTest::VerificationPlan'[verification_case_def]
-          (subject_membership in 'v'
-            (feature_value (=))))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "VerificationTest"))) (name "VerificationTest") (declared-name "VerificationTest")
+      (contains
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "VerificationTest::R"))) (name "R") (declared-name "R")
+          (contains
+            (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationTest::R::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VerificationTest::R")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "VerificationTest::V"))) (name "V") (declared-name "V") (declared))
+        (element (kind "verification def") (id (node (document "d0") (qualified-name "VerificationTest::VerificationCase"))) (name "VerificationCase") (declared-name "VerificationCase")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "VerificationTest::VerificationCase::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "VerificationTest::VerificationCase"))))
+              (contains
+                (element (kind "verified requirement") (id (node (document "d0") (qualified-name "VerificationTest::VerificationCase::objective::R"))) (name "R") (declared-name "R") (effective (featuring-type (node (document "d0") (qualified-name "VerificationTest::VerificationCase")))))
+              )
+            )
+            (element (kind "subject") (id (node (document "d0") (qualified-name "VerificationTest::VerificationCase::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "VerificationTest::VerificationCase")))))
+          )
+        )
+        (element (kind "verification def") (id (node (document "d0") (qualified-name "VerificationTest::VerificationPlan"))) (name "VerificationPlan") (declared-name "VerificationPlan")
+          (contains
+            (element (kind "objective") (id (node (document "d0") (qualified-name "VerificationTest::VerificationPlan::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "VerificationTest::VerificationPlan"))))
+              (contains
+                (element (kind "verified requirement") (id (node (document "d0") (qualified-name "VerificationTest::VerificationPlan::objective::r"))) (name "r") (declared-name "r") (effective (featuring-type (node (document "d0") (qualified-name "VerificationTest::VerificationPlan")))))
+              )
+            )
+            (element (kind "subject") (id (node (document "d0") (qualified-name "VerificationTest::VerificationPlan::v"))) (name "v") (declared-name "v") (effective (featuring-type (node (document "d0") (qualified-name "VerificationTest::VerificationPlan")))))
+          )
+        )
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VerificationTest::r"))) (name "r") (declared-name "r"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VerificationTest::verificationContext"))) (name "verificationContext") (declared-name "verificationContext") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VerificationTest::vv"))) (name "vv") (declared-name "vv") (declared (properties (composite true) (reference false) (ordered false))))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::R::_documentation"))) (to (node (document "d0") (qualified-name "VerificationTest::R"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationCase"))) (to (node (document "d0") (qualified-name "VerificationTest::R"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationCase"))) (to (node (document "d0") (qualified-name "VerificationTest::V"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationPlan"))) (to (node (document "d0") (qualified-name "VerificationTest::V"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationPlan"))) (to (node (document "d0") (qualified-name "VerificationTest::r"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationCase::objective::R"))) (to (node (document "d0") (qualified-name "VerificationTest::R"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationCase::v"))) (to (node (document "d0") (qualified-name "VerificationTest::V"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationPlan::objective::r"))) (to (node (document "d0") (qualified-name "VerificationTest::r"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::VerificationPlan::v"))) (to (node (document "d0") (qualified-name "VerificationTest::V"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::r"))) (to (node (document "d0") (qualified-name "VerificationTest::R"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationTest::vv"))) (to (node (document "d0") (qualified-name "VerificationTest::V"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -454,83 +454,109 @@ semantic.unresolved_name 'consumer'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'ServerSequenceRealization_2'
-      (membership_import private -> 'ScalarValues::String'[unresolved])
-      (namespace_import private -> 'ServerSequenceModel'[unresolved])
-      (namespace_import private -> 'ServerSequenceRealization_2::Configuration'[package])
-      (package 'Configuration'
-        (port_def 'PublicationPort')
-        (port_def 'SubscriptionPort')
-        (part_usage 'producer_2'
-          (multiplicity_range [1])
-          (attribute_usage composite 'someTopic' : 'String'[unresolved])
-          (item_usage composite 'somePublication')
-          (port_usage composite 'publicationPort' : 'ServerSequenceRealization_2::Configuration::PublicationPort'[port_def] ~ 'ServerSequenceRealization_2::Configuration::PublicationPort'[port_def])
-          (perform_action_usage 'producerBehavior'
-            (action_usage 'publish')
-            (send_action_usage)))
-        (not_implemented 'malformed')
-        (part_usage 'server_2'
-          (multiplicity_range [1])
-          (port_usage composite 'publicationPort' : 'ServerSequenceRealization_2::Configuration::PublicationPort'[port_def])
-          (port_usage composite 'subscriptionPort' : 'ServerSequenceRealization_2::Configuration::SubscriptionPort'[port_def])
-          (state_usage composite 'serverBehavior'
-            (state_subaction_membership 'entry'
-              (action_usage))
-            (source_succession
-              (reference_usage reference 'waitForSubscription'))
-            (state_usage composite 'waitForSubscription')
-            (transition_usage 'subscribing')
-            (state_usage composite 'waitForPublication')
-            (transition_usage 'delivering')))
-        (not_implemented 'malformed')
-        (part_usage 'consumer_2'
-          (multiplicity_range [1])
-          (attribute_usage composite 'myTopic' : 'String'[unresolved])
-          (port_usage composite 'subscriptionPort' : 'ServerSequenceRealization_2::Configuration::SubscriptionPort'[port_def] ~ 'ServerSequenceRealization_2::Configuration::SubscriptionPort'[port_def])
-          (perform_action_usage 'consumerBehavior'
-            (action_usage 'subscribe')
-            (send_action_usage)
-            (source_succession
-              (action_usage 'delivery'))
-            (accept_action_usage))))
-      (part_usage 'realization_2' : 'PubSubSequence'[unresolved]
-        (part_usage composite :>> 'producer'[unresolved] :> 'ServerSequenceRealization_2::Configuration::producer_2'[part_usage]
-          (not_implemented 'malformed'))
-        (part_usage composite :>> 'server'[unresolved] :> 'ServerSequenceRealization_2::Configuration::server_2'[part_usage]
-          (not_implemented 'malformed')
-          (not_implemented 'malformed')
-          (not_implemented 'malformed'))
-        (part_usage composite :>> 'consumer'[unresolved] :> 'ServerSequenceRealization_2::Configuration::consumer_2'[part_usage]
-          (not_implemented 'malformed')
-          (not_implemented 'malformed'))
-        (flow_usage composite :>> 'publish_message'[unresolved] : 'Transfers::MessageTransfer'[unresolved]
-          (port_usage end :>> 'source'[unresolved] :> 'producer::publicationPort'[unresolved])
-          (port_usage end :>> 'target'[unresolved] :> 'server::publicationPort'[unresolved]))
-        (flow_usage composite :>> 'subscribe_message'[unresolved] : 'Transfers::MessageTransfer'[unresolved]
-          (port_usage end :>> 'source'[unresolved] :> 'consumer::subscriptionPort'[unresolved])
-          (port_usage end :>> 'target'[unresolved] :> 'server::subscriptionPort'[unresolved]))
-        (flow_usage composite :>> 'deliver_message'[unresolved] : 'Transfers::MessageTransfer'[unresolved]
-          (port_usage end :>> 'source'[unresolved] :> 'server'[unresolved])
-          (port_usage end :>> 'target'[unresolved] :> 'consumer'[unresolved]))
-        (binding_connector_def
-          (connector_end 'producer_2.producerBehavior.publish.sentMessage')
-          (connector_end 'publish_message'))
-        (binding_connector_def
-          (connector_end 'consumer_2.consumerBehavior.subscribe.sentMessage')
-          (connector_end 'subscribe_message'))
-        (binding_connector_def
-          (connector_end 'server_2.serverBehavior.delivering.effect.sentMessage')
-          (connector_end 'deliver_message'))
-        (binding_connector_def
-          (connector_end 'consumer_2.consumerBehavior.delivery.acceptedMessage')
-          (connector_end 'subscribe_message'))
-        (binding_connector_def
-          (connector_end 'server_2.serverBehavior.subscribing.accepter.acceptedMessage')
-          (connector_end 'subscribe_message'))
-        (binding_connector_def
-          (connector_end 'server_2.serverBehavior.delivering.accepter.acceptedMessage')
-          (connector_end 'publish_message'))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2"))) (name "ServerSequenceRealization_2") (declared-name "ServerSequenceRealization_2")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::*"))) (name "*") (declared-name "*"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::*#import"))) (name "*") (declared-name "*"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration"))) (name "Configuration") (declared-name "Configuration")
+          (contains
+            (element (kind "port def") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::PublicationPort"))) (name "PublicationPort") (declared-name "PublicationPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::PublicationPort::~PublicationPort"))) (name "~PublicationPort") (declared-name "~PublicationPort") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::PublicationPort")))))
+              )
+            )
+            (element (kind "port def") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::SubscriptionPort"))) (name "SubscriptionPort") (declared-name "SubscriptionPort")
+              (contains
+                (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::SubscriptionPort::~SubscriptionPort"))) (name "~SubscriptionPort") (declared-name "~SubscriptionPort") (effective (featuring-type (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::SubscriptionPort")))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::consumer_2"))) (name "consumer_2") (declared-name "consumer_2") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+              (contains
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::consumer_2::myTopic"))) (name "myTopic") (declared-name "myTopic") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::consumer_2::subscriptionPort"))) (name "subscriptionPort") (declared-name "subscriptionPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2"))) (name "producer_2") (declared-name "producer_2") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2::publicationPort"))) (name "publicationPort") (declared-name "publicationPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2::someTopic"))) (name "someTopic") (declared-name "someTopic") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2"))) (name "server_2") (declared-name "server_2") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+              (contains
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::publicationPort"))) (name "publicationPort") (declared-name "publicationPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "state") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior"))) (name "serverBehavior") (declared-name "serverBehavior") (declared (properties (composite true) (reference false)))
+                  (contains
+                    (element (kind "action") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::_entry"))) (name "entry") (declared-name "entry"))
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::delivering"))) (name "delivering") (declared-name "delivering")
+                      (contains
+                        (element (kind "transition effect") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::delivering::effect"))) (name "effect") (declared-name "effect"))
+                        (element (kind "transition guard") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::delivering::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "binary") (operator "==") (children (expression (kind "memberAccess") (reference "topic") (children (expression (kind "featureReference") (reference "pub")))) (expression (kind "memberAccess") (reference "topic") (children (expression (kind "memberAccess") (reference "sub") (children (expression (kind "featureReference") (reference "subscribing")))))))))))
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::delivering::trigger"))) (name "trigger") (declared-name "trigger"))
+                      )
+                    )
+                    (element (kind "transition") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::subscribing"))) (name "subscribing") (declared-name "subscribing")
+                      (contains
+                        (element (kind "transition trigger") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::subscribing::trigger"))) (name "trigger") (declared-name "trigger"))
+                      )
+                    )
+                    (element (kind "state") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::waitForPublication"))) (name "waitForPublication") (declared-name "waitForPublication"))
+                    (element (kind "state") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::waitForSubscription"))) (name "waitForSubscription") (declared-name "waitForSubscription"))
+                  )
+                )
+                (element (kind "port") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::subscriptionPort"))) (name "subscriptionPort") (declared-name "subscriptionPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+              )
+            )
+          )
+        )
+        (element (kind "import") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::String"))) (name "String") (declared-name "String"))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2"))) (name "realization_2") (declared-name "realization_2") (declared (properties (composite true) (reference false) (ordered false)))
+          (contains
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::consumer"))) (name "consumer") (declared-name "consumer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::consumer::consumerBehavior.delivery"))) (name "consumerBehavior.delivery") (declared-name "consumerBehavior.delivery") (declared (properties (composite true) (reference false))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::consumer::consumerBehavior.subscribe"))) (name "consumerBehavior.subscribe") (declared-name "consumerBehavior.subscribe") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::producer"))) (name "producer") (declared-name "producer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::producer::producerBehavior.publish"))) (name "producerBehavior.publish") (declared-name "producerBehavior.publish") (declared (properties (composite true) (reference false))))
+              )
+            )
+            (element (kind "part") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::server"))) (name "server") (declared-name "server") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+              (contains
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::server::serverBehavior.delivering.accepter"))) (name "serverBehavior.delivering.accepter") (declared-name "serverBehavior.delivering.accepter") (declared (properties (composite true) (reference false))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::server::serverBehavior.delivering.effect"))) (name "serverBehavior.delivering.effect") (declared-name "serverBehavior.delivering.effect") (declared (properties (composite true) (reference false))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "ServerSequenceRealization_2::realization_2::server::serverBehavior.subscribing.accepter"))) (name "serverBehavior.subscribing.accepter") (declared-name "serverBehavior.subscribing.accepter") (declared (properties (composite true) (reference false))))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::waitForSubscription"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::PublicationPort::~PublicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::PublicationPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::SubscriptionPort::~SubscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::SubscriptionPort"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::waitForPublication"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::waitForPublication"))))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::waitForSubscription"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::serverBehavior::waitForPublication"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::consumer_2::subscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::SubscriptionPort::~SubscriptionPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::producer_2::publicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::PublicationPort::~PublicationPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::publicationPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::PublicationPort"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::server_2::subscriptionPort"))) (to (node (document "d0") (qualified-name "ServerSequenceRealization_2::Configuration::SubscriptionPort"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+    (bind (status pending-expression) (document "d0") (source-expression "consumer_2::consumerBehavior::delivery::acceptedMessage") (target-expression "subscribe_message") (container-prefix "ServerSequenceRealization_2::realization_2"))
+    (bind (status pending-expression) (document "d0") (source-expression "consumer_2::consumerBehavior::subscribe::sentMessage") (target-expression "subscribe_message") (container-prefix "ServerSequenceRealization_2::realization_2"))
+    (bind (status pending-expression) (document "d0") (source-expression "producer_2::producerBehavior::publish::sentMessage") (target-expression "publish_message") (container-prefix "ServerSequenceRealization_2::realization_2"))
+    (bind (status pending-expression) (document "d0") (source-expression "server_2::serverBehavior::delivering::accepter::acceptedMessage") (target-expression "publish_message") (container-prefix "ServerSequenceRealization_2::realization_2"))
+    (bind (status pending-expression) (document "d0") (source-expression "server_2::serverBehavior::delivering::effect::sentMessage") (target-expression "deliver_message") (container-prefix "ServerSequenceRealization_2::realization_2"))
+    (bind (status pending-expression) (document "d0") (source-expression "server_2::serverBehavior::subscribing::accepter::acceptedMessage") (target-expression "subscribe_message") (container-prefix "ServerSequenceRealization_2::realization_2"))
+  )
+)
 ~~~

@@ -70,15 +70,29 @@ NIL
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Circular'
-      (class_def 'A')
-      (feature_def 'a' : 'Circular::A'[class_def])
-      (alias_member 'Circ' -> 'Circular'[package])
-      (package 'P'
-        (namespace_import public -> 'Circular'[package]))
-      (feature_def 'x' :> 'Circular::z'[feature_def])
-      (feature_def 'y' :> 'Circular::x'[feature_def])
-      (feature_def 'z' :> 'Circular::y'[feature_def]))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Circular"))) (name "Circular") (declared-name "Circular")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Circular::A"))) (name "A") (declared-name "A"))
+        (element (kind "alias") (id (node (document "d0") (qualified-name "Circular::Circ"))) (name "Circ") (declared-name "Circ"))
+        (element (kind "package") (id (node (document "d0") (qualified-name "Circular::P"))) (name "P") (declared-name "P")
+          (contains
+            (element (kind "import") (id (node (document "d0") (qualified-name "Circular::P::*"))) (name "*") (declared-name "*"))
+          )
+        )
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::a"))) (name "a") (declared-name "a"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::x"))) (name "x") (declared-name "x"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::y"))) (name "y") (declared-name "y"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Circular::z"))) (name "z") (declared-name "z"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

@@ -65,17 +65,15 @@ class A {
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (class_def 'A'
-      (feature_def 'innerSpaceDimension' : 'Natural'[unresolved]
-        (multiplicity_range [1]))
-      (feature_def 'portions' : 'Occurrence'[unresolved]
-        (multiplicity_range [1..*])
-        (feature_def :>> 'portionOfLife'[unresolved]
-          (feature_value (=))))
-      (feature_def 'spaceTimeEnclosedPoints' : 'Occurrence'[unresolved]
-        (multiplicity_range [1..*])
-        (feature_def :>> 'A::innerSpaceDimension'[feature_def]
-          (feature_value (=)))))))
+(semantic-graph
+  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
+  (containment
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

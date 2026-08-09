@@ -68,13 +68,23 @@ semantic.unresolved_name 'Metaobject'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (package 'Atoms'
-      (documentation)
-      (membership_import private -> 'Metaobjects::Metaobject'[unresolved])
-      (classifier_def 'Atom')
-      (metaclass_def 'AtomMetadata' :> 'Metaobject'[unresolved]
-        (feature_def 'baseType'
-          (feature_value (=)))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Atoms"))) (name "Atoms") (declared-name "Atoms")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Atoms::Atom"))) (name "Atom") (declared-name "Atom"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Atoms::Metaobject"))) (name "Metaobject") (declared-name "Metaobject"))
+        (element (kind "documentation") (id (node (document "d0") (qualified-name "Atoms::_documentation"))) (name ""))
+        (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Atoms::atom"))) (name "atom") (declared-name "atom"))
+      )
+    )
+  )
+  (relationships
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Atoms::_documentation"))) (to (node (document "d0") (qualified-name "Atoms"))))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~

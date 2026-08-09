@@ -156,27 +156,22 @@ semantic.unresolved_name 'Real'
 ~~~
 # SMG
 ~~~
-(model
-  (namespace
-    (namespace_import private -> 'ScalarValues'[unresolved])
-    (membership_import private -> 'Time::DateTime'[unresolved])
-    (package 'Packets'
-      (feature_def 'packet header')
-      (feature_def 'packet data field'
-        (feature_def 'packet secondary header' :>> 'Packets::packet header'[feature_def])
-        (feature_def 'user data field'))
-      (class_def 'Data Packet'
-        (feature_def 'packet primary header' :>> 'Packets::packet header'[feature_def]
-          (feature_def 'packet version number' : 'Integer'[unresolved])
-          (feature_def 'packet identification' : 'String'[unresolved])
-          (feature_def 'packet data length' : 'Integer'[unresolved]))
-        (feature_def :>> 'Packets::packet data field'[feature_def]))
-      (class_def 'Thermal Data Packet' :> 'Packets::Data Packet'[class_def]
-        (feature_def 'packet data field' :>> 'Packets::packet data field'[feature_def]
-          (feature_def 'packet secondary header' :>> 'Packets::packet header'[feature_def]
-            (feature_def 'packet timestamp' : 'DateTime'[unresolved])
-            (feature_def 'telemetry packet type' : 'String'[unresolved]))
-          (feature_def 'user data field' :>> 'Packets::packet data field::user data field'[feature_def]
-            (feature_def 'timestamp' : 'DateTime'[unresolved])
-            (feature_def 'temperature' : 'Real'[unresolved])))))))
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Packets"))) (name "Packets") (declared-name "Packets")
+      (contains
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Packets::Data"))) (name "Data") (declared-name "Data"))
+        (element (kind "classifier decl") (id (node (document "d0") (qualified-name "Packets::Packet"))) (name "Packet") (declared-name "Packet"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Packets::data"))) (name "data") (declared-name "data"))
+        (element (kind "feature decl") (id (node (document "d0") (qualified-name "Packets::header"))) (name "header") (declared-name "header"))
+      )
+    )
+  )
+  (relationships
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+)
 ~~~
