@@ -96,16 +96,24 @@ semantic.invalid_connection_end_count
     )
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (to (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (to (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (to (node (document "d0") (qualified-name "PictureTaking::Exposure"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (to (node (document "d0") (qualified-name "PictureTaking::Exposure"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (to (node (document "d0") (qualified-name "PictureTaking::Focus"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (to (node (document "d0") (qualified-name "PictureTaking::Shoot"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (to (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (to (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (to (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (to (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (to (node (document "d0") (qualified-name "PictureTaking::Focus"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (to (node (document "d0") (qualified-name "PictureTaking::Shoot"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PictureTaking::Focus"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PictureTaking::Shoot"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

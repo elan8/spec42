@@ -253,12 +253,21 @@ standard library package MeasurementRefCalculations {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementRefCalculations::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementRefCalculations"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MeasurementRefCalculations::_documentation"))) (to (node (document "d0") (qualified-name "MeasurementRefCalculations"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MeasurementRefCalculations::*"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MeasurementRefCalculations::**"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MeasurementRefCalculations::/"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame*"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MeasurementRefCalculations::CoordinateFrame/"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MeasurementRefCalculations::ToString"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MeasurementRefCalculations::^"))) (status missing-prerequisite) (target "Calculations::Calculation"))
   )
 )
 ~~~

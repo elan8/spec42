@@ -168,11 +168,17 @@ semantic.unresolved_name 'height'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::_documentation"))) (to (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::_documentation"))) (to (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

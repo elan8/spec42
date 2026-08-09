@@ -224,16 +224,26 @@ NIL
     )
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::Product"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection1"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection1"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::Product"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::Product"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection1"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection1"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::Product"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::OnlineCustomer"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::Product"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection1"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SelectionInfo"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ShoppingCart"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection1"))) (status missing-prerequisite) (target "Connections::Connection"))
   )
 )
 ~~~

@@ -111,13 +111,23 @@ NIL
     )
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor::green"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor::red"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor::yellow"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

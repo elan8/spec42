@@ -191,7 +191,7 @@ semantic.unresolved_name 'ScalarValues::Real'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::_documentation"))) (to (node (document "d0") (qualified-name "VehicleDefinitions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleDefinitions::_documentation"))) (to (node (document "d0") (qualified-name "VehicleDefinitions"))) (provenance authored))
   )
   (pending-relationships
   )

@@ -130,14 +130,23 @@ semantic.unresolved_name 'breadth'
     )
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p1::po1"))) (to (node (document "d0") (qualified-name "AliasTest::p2::pdest"))) (connect (source-expression "p1::po1") (target-expression "p2::pdest") (container-prefix "AliasTest")))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p1"))) (to (node (document "d0") (qualified-name "AliasTest::P1"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p2"))) (to (node (document "d0") (qualified-name "AliasTest::P1"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p1::po1"))) (to (node (document "d0") (qualified-name "AliasTest::p2::pdest"))) (connect (source-expression "p1::po1") (target-expression "p2::pdest") (container-prefix "AliasTest")) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p1"))) (to (node (document "d0") (qualified-name "AliasTest::P1"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasTest::p2"))) (to (node (document "d0") (qualified-name "AliasTest::P1"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
     (connection (status pending-expression) (document "d0") (source-expression "p1::po1") (target-expression "p2::pd1") (container-prefix "AliasTest"))
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasTest::P1"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasTest::P1::porig1"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasTest::b"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasTest::p1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasTest::p1::po1"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasTest::p2"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasTest::p2::pdest"))) (status missing-prerequisite) (target "Ports::ports"))
   )
 )
 ~~~

@@ -156,12 +156,12 @@ semantic.duplicate_name 'stop'
     )
   )
   (relationships
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (provenance authored))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (provenance authored))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (provenance authored))
   )
   (pending-relationships
     (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity") (target-qualified "Terminate Actions Example-1::MonitoredActivity::fork"))
@@ -170,6 +170,16 @@ semantic.duplicate_name 'stop'
     (flow (status pending) (document "d0") (source-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity") (target-qualified "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity::terminate"))
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::_terminate"))) (status missing-prerequisite) (target "Actions::terminateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::performCriticalActivity"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::stop"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::MonitoredActivity::waitForTimeOut"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::criticalActivity"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::monitorCriticalActivity"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-1::waitForTimeOut"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

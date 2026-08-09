@@ -141,14 +141,20 @@ semantic.duplicate_name 'test x'
     )
   )
   (relationships
-    (flow (status resolved) (from (node (document "d0") (qualified-name "DecisionTest::_initial"))) (to (node (document "d0") (qualified-name "DecisionTest::A3"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "DecisionTest"))) (to (node (document "d0") (qualified-name "DecisionTest::A1"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "DecisionTest"))) (to (node (document "d0") (qualified-name "DecisionTest::A2"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "DecisionTest"))) (to (node (document "d0") (qualified-name "DecisionTest::A3"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "DecisionTest::_initial"))) (to (node (document "d0") (qualified-name "DecisionTest::A3"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "DecisionTest"))) (to (node (document "d0") (qualified-name "DecisionTest::A1"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "DecisionTest"))) (to (node (document "d0") (qualified-name "DecisionTest::A2"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "DecisionTest"))) (to (node (document "d0") (qualified-name "DecisionTest::A3"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DecisionTest"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DecisionTest::A1"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DecisionTest::A2"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DecisionTest::A3"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

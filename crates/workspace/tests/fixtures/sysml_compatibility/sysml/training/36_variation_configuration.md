@@ -110,6 +110,14 @@ semantic.unresolved_name 'transmission'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::engine"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle4Cyl::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::engine"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Configuration::vehicle6Cyl::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
+  )
 )
 ~~~
 # DIAGNOSTICS

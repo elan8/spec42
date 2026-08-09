@@ -184,6 +184,14 @@ semantic.unresolved_name 'fuelEconomy_highway'
   (pending-expression-relationships
     (satisfy (status pending-expression) (document "d0") (source-expression "vehicleFuelEconomyRequirements") (target-expression "vehicle_c1") (container-prefix "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_city"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::vehicle_c1::fuelEconomy_highway"))) (status missing-prerequisite) (target "Base::dataValues"))
+  )
 )
 ~~~
 # DIAGNOSTICS

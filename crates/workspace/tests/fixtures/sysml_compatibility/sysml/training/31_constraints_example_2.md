@@ -171,12 +171,23 @@ semantic.unresolved_name 'MassValue'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::engine"))) (to (node (document "d0") (qualified-name "Constraints Example-2::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::transmission"))) (to (node (document "d0") (qualified-name "Constraints Example-2::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::engine"))) (to (node (document "d0") (qualified-name "Constraints Example-2::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::transmission"))) (to (node (document "d0") (qualified-name "Constraints Example-2::Engine"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::MassConstraint"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Transmission"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::chassisMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::engine"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::engine::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints Example-2::Vehicle::transmission::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

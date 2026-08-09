@@ -138,16 +138,27 @@ semantic.unresolved_name 'Integer'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue::_documentation"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::hubDiameter"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::manufacturer"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::manufacturer"))))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::width"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::width"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue::_documentation"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))) (provenance authored))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::hubDiameter"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))) (provenance authored))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::manufacturer"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::manufacturer"))) (provenance authored))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::width"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::width"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire"))) (to (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::LengthValue"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::hubDiameter"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::manufacturer"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::Tire::width"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::hubDiameter"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::manufacturer"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_02-Basic Value Properties::frenchTire::width"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

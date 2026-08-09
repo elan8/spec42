@@ -212,14 +212,28 @@ semantic.unresolved_name 'ISQ::mass'
     )
   )
   (relationships
-    (derivation (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))))
+    (derivation (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (to (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (status missing-prerequisite) (target "Requirements::RequirementCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement::massLimit"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
   )
 )
 ~~~

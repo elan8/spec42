@@ -150,6 +150,13 @@ package CoverageIndividual {
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (status missing-prerequisite) (target "Occurrences::Life"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (status missing-prerequisite) (target "States::stateActions"))
+  )
 )
 ~~~
 # DIAGNOSTICS

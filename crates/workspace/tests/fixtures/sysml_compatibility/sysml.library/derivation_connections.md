@@ -254,16 +254,22 @@ standard library package DerivationConnections {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::Derivation::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::Derivation"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivations::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::derivations"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::originalRequirements::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (to (node (document "d0") (qualified-name "DerivationConnections::Derivation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::Derivation::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivations::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::originalRequirements::_documentation"))) (to (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (to (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::Derivation"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::derivations"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::derivedRequirements"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DerivationConnections::originalRequirements"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
   )
 )
 ~~~

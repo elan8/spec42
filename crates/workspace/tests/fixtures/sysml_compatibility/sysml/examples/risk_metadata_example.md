@@ -120,12 +120,20 @@ semantic.unresolved_name 'Risk'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (to (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk#metadata_usage"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::scheduleRisk"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::technicalRisk"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk::totalRisk"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

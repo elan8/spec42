@@ -123,11 +123,16 @@ NIL
     )
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (to (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (to (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ImportTest::Pkg1::p11"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))) (status missing-prerequisite) (target "Parts::Part"))
   )
 )
 ~~~

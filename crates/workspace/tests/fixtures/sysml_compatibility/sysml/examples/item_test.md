@@ -129,16 +129,27 @@ NIL
     )
   )
   (relationships
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::~P"))) (to (node (document "d0") (qualified-name "ItemTest::P"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "ItemTest::f"))) (to (node (document "d0") (qualified-name "ItemTest::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::A::c"))) (to (node (document "d0") (qualified-name "ItemTest::C"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::B::a"))) (to (node (document "d0") (qualified-name "ItemTest::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::a1"))) (to (node (document "d0") (qualified-name "ItemTest::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::a2"))) (to (node (document "d0") (qualified-name "ItemTest::A"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::~P"))) (to (node (document "d0") (qualified-name "ItemTest::P"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "ItemTest::f"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::A::c"))) (to (node (document "d0") (qualified-name "ItemTest::C"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::B::a"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::a1"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ItemTest::P::a2"))) (to (node (document "d0") (qualified-name "ItemTest::A"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::A"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::B"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::B::a"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::C"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P::a1"))) (status missing-prerequisite) (target "Items::items"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P::a2"))) (status missing-prerequisite) (target "Items::items"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::P::~P"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ItemTest::f"))) (status missing-prerequisite) (target "Items::Item"))
   )
 )
 ~~~

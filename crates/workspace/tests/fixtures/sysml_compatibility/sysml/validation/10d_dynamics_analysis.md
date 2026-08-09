@@ -429,13 +429,28 @@ semantic.unresolved_name 'ISQ::acceleration'
     )
   )
   (relationships
-    (subject (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::initialSpeed"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::speed"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))) (provenance authored))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::initialSpeed"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::speed"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::vehicle"))) (to (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis"))) (status missing-prerequisite) (target "AnalysisCases::AnalysisCase"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::deltaT"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::initialPosition"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::initialSpeed"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::position"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::powerProfile"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::AnalysisModel::DynamicsAnalysis::speed"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Acceleration"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Position"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::StraightLineDynamics"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::DynamicsModel::Velocity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "10d-Dynamics Analysis::VehicleModel::Vehicle::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

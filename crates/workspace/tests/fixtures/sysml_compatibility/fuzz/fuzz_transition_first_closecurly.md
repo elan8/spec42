@@ -66,11 +66,16 @@ package P {
     )
   )
   (relationships
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "P::S"))) (to (node (document "d0") (qualified-name "P::S::off"))))
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "P::S"))) (to (node (document "d0") (qualified-name "P::S::off"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::S"))) (status missing-prerequisite) (target "States::StateAction"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::S::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::S::off"))) (status missing-prerequisite) (target "States::stateActions"))
   )
 )
 ~~~

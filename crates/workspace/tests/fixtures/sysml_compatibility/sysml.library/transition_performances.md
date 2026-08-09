@@ -328,7 +328,7 @@ standard library package TransitionPerformances {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TransitionPerformances::_documentation"))) (to (node (document "d0") (qualified-name "TransitionPerformances"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TransitionPerformances::_documentation"))) (to (node (document "d0") (qualified-name "TransitionPerformances"))) (provenance authored))
   )
   (pending-relationships
   )

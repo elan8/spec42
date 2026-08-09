@@ -113,11 +113,18 @@ semantic.unresolved_name 'height'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::_documentation"))) (to (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::_documentation"))) (to (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox"))) (status missing-prerequisite) (target "Items::items"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

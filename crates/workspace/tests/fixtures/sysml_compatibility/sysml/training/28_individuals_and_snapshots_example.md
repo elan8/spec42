@@ -150,6 +150,9 @@ semantic.unresolved_name 'acceleratorPosition'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (status missing-prerequisite) (target "Parts::Part"))
+  )
 )
 ~~~
 # DIAGNOSTICS

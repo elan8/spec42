@@ -167,6 +167,18 @@ semantic.unresolved_name 'baseType'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::causation"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::causation::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::cause"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::cause::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::failure"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::failure::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::scenario"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::scenario::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::situation"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Semantic Metadata Example::situation::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+  )
 )
 ~~~
 # DIAGNOSTICS

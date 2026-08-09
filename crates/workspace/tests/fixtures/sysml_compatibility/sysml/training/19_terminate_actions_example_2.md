@@ -113,12 +113,21 @@ NIL
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (to (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::internalProcess"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate"))) (status missing-prerequisite) (target "Actions::terminateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate#terminate"))) (status missing-prerequisite) (target "Actions::terminateActions"))
   )
 )
 ~~~

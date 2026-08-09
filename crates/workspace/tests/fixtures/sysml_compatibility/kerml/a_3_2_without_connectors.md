@@ -159,13 +159,18 @@ NIL
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (to (node (document "d0") (qualified-name "WithoutConnectorsExecution"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "WithoutConnectorsExecution::_atom#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
   )
 )
 ~~~

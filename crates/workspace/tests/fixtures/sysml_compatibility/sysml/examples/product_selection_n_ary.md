@@ -125,15 +125,22 @@ NIL
     )
   )
   (relationships
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))))
-    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (provenance authored))
+    (connection (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::account"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::cart"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection::selectedProduct"))) (to (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::Product"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ProductSelection_N_ary_SysML::ShoppingCart"))) (status missing-prerequisite) (target "Items::Item"))
   )
 )
 ~~~

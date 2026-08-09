@@ -142,11 +142,21 @@ NIL
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (to (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (to (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Date"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Person"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::assembly"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::delivery::deliveryDate"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
   )
 )
 ~~~

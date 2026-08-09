@@ -113,13 +113,23 @@ semantic.unresolved_name 'VerificationMethod'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (to (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))) (status missing-prerequisite) (target "VerificationCases::VerificationCase"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests"))) (status missing-prerequisite) (target "VerificationCases::verificationCases"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::VerificationMethod::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::objective"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod::kind"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

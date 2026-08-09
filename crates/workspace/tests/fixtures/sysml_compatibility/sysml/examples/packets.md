@@ -187,12 +187,23 @@ semantic.unresolved_name 'Real'
     )
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (to (node (document "d0") (qualified-name "Packets::packet data field"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (to (node (document "d0") (qualified-name "Packets::Data Packet"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (to (node (document "d0") (qualified-name "Packets::packet data field"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (to (node (document "d0") (qualified-name "Packets::Data Packet"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Data Packet"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Data Packet::packet primary header"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet data field"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet data field::packet secondary header"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet data field::user data field"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packets::packet header"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

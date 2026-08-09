@@ -191,15 +191,25 @@ standard library package ParametersOfInterestMetadata {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance::_documentation"))) (to (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfEffectiveness::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::MeasureOfPerformance::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

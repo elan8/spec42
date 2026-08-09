@@ -91,14 +91,23 @@ package Annotated {
     (element (kind "metadata def") (id (node (document "d0") (qualified-name "Classified"))) (name "Classified") (declared-name "Classified"))
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::_Classified"))) (to (node (document "d0") (qualified-name "Annotated"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Engine"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Vehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Classified"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::_Classified"))) (to (node (document "d0") (qualified-name "Annotated"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Engine"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Annotated::Vehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Annotated::m"))) (to (node (document "d0") (qualified-name "Classified"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::_Classified"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Annotated::m"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Approval"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Classified"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
   )
 )
 ~~~

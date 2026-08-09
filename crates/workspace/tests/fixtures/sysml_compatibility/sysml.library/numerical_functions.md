@@ -392,7 +392,7 @@ standard library package NumericalFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "NumericalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "NumericalFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "NumericalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "NumericalFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

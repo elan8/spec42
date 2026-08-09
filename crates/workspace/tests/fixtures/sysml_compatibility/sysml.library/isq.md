@@ -241,14 +241,23 @@ standard library package ISQ {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQ::_documentation"))) (to (node (document "d0") (qualified-name "ISQ"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQ::temperatureDifference"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::_documentation"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ISQ::_documentation"))) (to (node (document "d0") (qualified-name "ISQ"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::mRef"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ISQ::temperatureDifference"))) (to (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit::quantityDimension"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceUnit::thermodynamicTemperaturePF"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::mRef"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQ::TemperatureDifferenceValue::num"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ISQ::temperatureDifference"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

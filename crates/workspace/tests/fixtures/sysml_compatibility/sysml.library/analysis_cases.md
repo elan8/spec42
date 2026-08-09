@@ -178,17 +178,23 @@ standard library package AnalysisCases {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::analysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::self"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::analysisCases::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::self"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))) (to (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))) (status missing-prerequisite) (target "AnalysisCases::AnalysisCase"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::self"))) (status missing-prerequisite) (target "AnalysisCases::analysisCases"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisCases::AnalysisCase::subAnalysisCases"))) (status missing-prerequisite) (target "AnalysisCases::analysisCases"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisCases::analysisCases"))) (status missing-prerequisite) (target "AnalysisCases::analysisCases"))
   )
 )
 ~~~

@@ -130,16 +130,25 @@ semantic.unresolved_name 'Real'
     )
   )
   (relationships
-    (subject (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (to (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (status missing-prerequisite) (target "AnalysisCases::analysisCases"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (status missing-prerequisite) (target "Calculations::calculations"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::objective"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
   )
 )
 ~~~

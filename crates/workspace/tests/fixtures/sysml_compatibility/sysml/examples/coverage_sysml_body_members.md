@@ -172,13 +172,29 @@ part def Outer {
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::it1"))) (to (node (document "d0") (qualified-name "Outer::InnerItem"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::p1"))) (to (node (document "d0") (qualified-name "Outer::InnerPart"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::r1"))) (to (node (document "d0") (qualified-name "Outer::InnerPart"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::it1"))) (to (node (document "d0") (qualified-name "Outer::InnerItem"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::p1"))) (to (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Outer::r1"))) (to (node (document "d0") (qualified-name "Outer::InnerPart"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::InnerAttr"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::InnerItem"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::InnerPart"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::e"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::ev1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::ind1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::it1"))) (status missing-prerequisite) (target "Items::items"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::o1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::p1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::pt1"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::snap1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::ts1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Outer::x"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

@@ -477,7 +477,7 @@ standard library package RealFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RealFunctions::_documentation"))) (to (node (document "d0") (qualified-name "RealFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RealFunctions::_documentation"))) (to (node (document "d0") (qualified-name "RealFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

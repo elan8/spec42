@@ -114,6 +114,9 @@ NIL
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Comment Example::Automobile"))) (status missing-prerequisite) (target "Parts::Part"))
+  )
 )
 ~~~
 # DIAGNOSTICS

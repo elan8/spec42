@@ -383,6 +383,19 @@ semantic.unresolved_name 'Real'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Accel"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::AccelerationEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Dist"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Horsepwr"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::PositionEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::PowerEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::StraightLineVehicleDynamics"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Time"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Vel"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::VelocityEquation"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVDynamics::Weight"))) (status missing-prerequisite) (target "Base::DataValue"))
+  )
 )
 ~~~
 # DIAGNOSTICS

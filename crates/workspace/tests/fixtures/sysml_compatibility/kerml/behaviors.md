@@ -135,6 +135,9 @@ semantic.feature_typing_kind_mismatch
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Behaviors::msg"))) (status missing-prerequisite) (target "Flows::messages"))
+  )
 )
 ~~~
 # DIAGNOSTICS

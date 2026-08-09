@@ -501,11 +501,29 @@ standard library package VectorCalculations {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorCalculations::_documentation"))) (to (node (document "d0") (qualified-name "VectorCalculations"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorCalculations::_documentation"))) (to (node (document "d0") (qualified-name "VectorCalculations"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::+"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::-"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::["))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::angle"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::inner"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::isUnitVectorQuantity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::isZeroVectorQuantity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::norm"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::outer"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::scalarQuantityVectorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::scalarVectorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::transform"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarDiv"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityDiv"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "VectorCalculations::vectorScalarQuantityMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
   )
 )
 ~~~

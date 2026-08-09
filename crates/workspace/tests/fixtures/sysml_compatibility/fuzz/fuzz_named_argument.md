@@ -67,6 +67,11 @@ package P {
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::F"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::b"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::f"))) (status missing-prerequisite) (target "Base::DataValue"))
+  )
 )
 ~~~
 # DIAGNOSTICS

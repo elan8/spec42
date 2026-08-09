@@ -1035,17 +1035,22 @@ standard library package Transfers {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfers"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::transfersBefore"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransfer"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::TransferBefore"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore::_documentation"))) (to (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransfer"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::FlowTransferBefore"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (to (node (document "d0") (qualified-name "Transfers::TransferBefore"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Transfers::flowTransfers"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Transfers::flowTransfersBefore"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Transfers::transfersBefore"))) (status missing-prerequisite) (target "Flows::messages"))
   )
 )
 ~~~

@@ -166,11 +166,17 @@ semantic.unresolved_name 'severity'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (to (node (document "d0") (qualified-name "User Keyword Example"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (to (node (document "d0") (qualified-name "User Keyword Example"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::Device"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "User Keyword Example::_scenario"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
   )
 )
 ~~~

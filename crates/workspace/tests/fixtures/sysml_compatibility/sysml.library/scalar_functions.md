@@ -369,7 +369,7 @@ standard library package ScalarFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ScalarFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ScalarFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ScalarFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

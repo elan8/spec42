@@ -214,13 +214,26 @@ parse.expected_semicolon_or_body
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::C::s"))) (to (node (document "d0") (qualified-name "ViewTest::S"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::c"))) (to (node (document "d0") (qualified-name "ViewTest::C"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::r"))) (to (node (document "d0") (qualified-name "ViewTest::R"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::C::s"))) (to (node (document "d0") (qualified-name "ViewTest::S"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::c"))) (to (node (document "d0") (qualified-name "ViewTest::C"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ViewTest::r"))) (to (node (document "d0") (qualified-name "ViewTest::R"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::C"))) (status missing-prerequisite) (target "Requirements::ConcernCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::C::s"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::P::p1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::P::p2"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::R"))) (status missing-prerequisite) (target "Views::Rendering"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::S"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::V"))) (status missing-prerequisite) (target "Views::View"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::VP"))) (status missing-prerequisite) (target "Views::Viewpoint"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::c"))) (status missing-prerequisite) (target "Requirements::concernChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::c::_stakeholder_s1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ViewTest::r"))) (status missing-prerequisite) (target "Views::renderings"))
   )
 )
 ~~~

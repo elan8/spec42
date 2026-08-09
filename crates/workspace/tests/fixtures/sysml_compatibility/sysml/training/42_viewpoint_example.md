@@ -176,16 +176,27 @@ NIL
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::modularity"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (to (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (to (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (to (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::modularity"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (to (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (to (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (to (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::IV&V"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::Systems Engineer"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::modularity"))) (status missing-prerequisite) (target "Requirements::concernChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::modularity::se"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown"))) (status missing-prerequisite) (target "Requirements::concernChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::ivv"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system breakdown::se"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective"))) (status missing-prerequisite) (target "Views::viewpoints"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Viewpoint Example::system structure perspective::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
   )
 )
 ~~~

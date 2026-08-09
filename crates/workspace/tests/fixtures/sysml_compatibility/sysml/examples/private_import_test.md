@@ -173,13 +173,20 @@ semantic.unresolved_name 'A'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::x"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::z"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::x"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "PrivateImportTest::z"))) (to (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::P1::A"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::P3::B"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::P4::z1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::x"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "PrivateImportTest::z"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

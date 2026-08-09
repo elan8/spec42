@@ -207,11 +207,16 @@ standard library package Metaobjects {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (to (node (document "d0") (qualified-name "Metaobjects"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metaobjects::_documentation"))) (to (node (document "d0") (qualified-name "Metaobjects"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::baseType"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metaobjects::SemanticMetadata::redefines"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

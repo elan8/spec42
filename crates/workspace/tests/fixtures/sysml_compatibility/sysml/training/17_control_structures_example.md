@@ -162,13 +162,23 @@ semantic.unresolved_name 'Real'
     )
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery"))) (to (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))) (to (node (document "d0") (qualified-name "Control Structures Example::EndCharging"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery"))) (to (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))) (to (node (document "d0") (qualified-name "Control Structures Example::EndCharging"))) (provenance authored))
   )
   (pending-relationships
     (flow (status pending) (document "d0") (source-qualified "Control Structures Example::ChargeBattery::endCharging") (target-qualified "Control Structures Example::ChargeBattery::done"))
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::AddCharge"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::BatteryCharged"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::ChargeBattery::endCharging"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::EndCharging"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::battery"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Control Structures Example::powerSystem"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

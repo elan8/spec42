@@ -36,7 +36,7 @@ impl NodeId {
 
 /// SysML v2 relationship kinds (edges in the graph).
 #[allow(dead_code)] // some relationship kinds are staged for upcoming semantic features
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum RelationshipKind {
     Typing,
@@ -806,17 +806,12 @@ impl SemanticEdge {
 }
 
 /// Provenance carried by every resolved relationship edge.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub enum RelationshipProvenance {
+    #[default]
     Authored,
     Implied(ImpliedRelationshipRule),
-}
-
-impl Default for RelationshipProvenance {
-    fn default() -> Self {
-        Self::Authored
-    }
 }
 
 /// Exhaustive identities of rules that may publish implied relationship facts.
@@ -828,7 +823,7 @@ pub enum ImpliedRelationshipRule {
 
 /// The complete relationship published by the universal standard-library rule for an element
 /// kind. Keeping kind and target together prevents consumers from reimplementing the policy.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UniversalStandardLibraryRelationship {
     pub kind: RelationshipKind,
     pub target: StandardLibraryElement,

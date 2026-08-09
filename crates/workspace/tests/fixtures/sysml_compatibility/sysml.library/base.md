@@ -308,7 +308,7 @@ standard library package Base {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Base::_documentation"))) (to (node (document "d0") (qualified-name "Base"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Base::_documentation"))) (to (node (document "d0") (qualified-name "Base"))) (provenance authored))
   )
   (pending-relationships
   )

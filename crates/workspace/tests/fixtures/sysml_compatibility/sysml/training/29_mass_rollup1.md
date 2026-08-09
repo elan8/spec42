@@ -118,15 +118,25 @@ semantic.unresolved_name 'ISQ::mass'
     )
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::compositeThing::totalMass"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing::totalMass"))))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::simpleThing::totalMass"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing::totalMass"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::compositeThing"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::compositeThing::subcomponents"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::simpleThing"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::compositeThing::totalMass"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing::totalMass"))) (provenance authored))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::simpleThing::totalMass"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing::totalMass"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::compositeThing"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::compositeThing::subcomponents"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup1::simpleThing"))) (to (node (document "d0") (qualified-name "MassRollup1::MassedThing"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::MassedThing"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::MassedThing::simpleMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::MassedThing::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::compositeThing"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::compositeThing::subcomponents"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::compositeThing::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::simpleThing"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup1::simpleThing::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

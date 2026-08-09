@@ -602,7 +602,7 @@ standard library package ControlFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ControlFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ControlFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

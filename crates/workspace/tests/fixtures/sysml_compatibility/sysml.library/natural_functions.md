@@ -271,7 +271,7 @@ standard library package NaturalFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "NaturalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "NaturalFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "NaturalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "NaturalFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

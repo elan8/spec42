@@ -90,11 +90,15 @@ NIL
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasImport::Usages::vehicle"))) (to (node (document "d0") (qualified-name "AliasImport::Definitions::Car"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "AliasImport::Usages::vehicle"))) (to (node (document "d0") (qualified-name "AliasImport::Definitions::Car"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasImport::Definitions::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AliasImport::Usages::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

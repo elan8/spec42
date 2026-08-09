@@ -138,13 +138,20 @@ NIL
     )
   )
   (relationships
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (to (node (document "d0") (qualified-name "Dependency Example::Software Design"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (to (node (document "d0") (qualified-name "Dependency Example::Software Design::DataSchema"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (to (node (document "d0") (qualified-name "Dependency Example::Software Design::MessageSchema"))))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (to (node (document "d0") (qualified-name "Dependency Example::Software Design"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (to (node (document "d0") (qualified-name "Dependency Example::Software Design::DataSchema"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (to (node (document "d0") (qualified-name "Dependency Example::Software Design::MessageSchema"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dependency Example::Software Design::DataSchema"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dependency Example::Software Design::MessageSchema"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dependency Example::System Assembly"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

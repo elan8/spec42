@@ -104,6 +104,11 @@ semantic.unresolved_name 'ScalarValues::Boolean'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (status missing-prerequisite) (target "Actions::Action"))
+  )
 )
 ~~~
 # DIAGNOSTICS

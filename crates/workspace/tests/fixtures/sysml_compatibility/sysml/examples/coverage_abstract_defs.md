@@ -131,11 +131,25 @@ abstract part def Container {
     (element (kind "attribute def") (id (node (document "d0") (qualified-name "Weight"))) (name "Weight") (declared-name "Weight") (declared (properties (ordered false) (unique true))))
   )
   (relationships
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (to (node (document "d0") (qualified-name "AbstractPort"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (to (node (document "d0") (qualified-name "AbstractPort"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractPort"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractPort::~AbstractPort"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AbstractWidget"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container::InnerPart"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container::InnerWeight"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Container::InnerWidget"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "EngineChoices"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Weight"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

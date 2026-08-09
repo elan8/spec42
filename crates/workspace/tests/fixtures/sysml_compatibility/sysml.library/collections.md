@@ -477,7 +477,7 @@ standard library package Collections {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Collections::_documentation"))) (to (node (document "d0") (qualified-name "Collections"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Collections::_documentation"))) (to (node (document "d0") (qualified-name "Collections"))) (provenance authored))
   )
   (pending-relationships
   )

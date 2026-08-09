@@ -140,13 +140,17 @@ standard library package Allocations {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Allocations::Allocation::_documentation"))) (to (node (document "d0") (qualified-name "Allocations::Allocation"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Allocations::_documentation"))) (to (node (document "d0") (qualified-name "Allocations"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocations::allocations"))) (to (node (document "d0") (qualified-name "Allocations::Allocation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Allocations::Allocation::_documentation"))) (to (node (document "d0") (qualified-name "Allocations::Allocation"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Allocations::_documentation"))) (to (node (document "d0") (qualified-name "Allocations"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Allocations::allocations"))) (to (node (document "d0") (qualified-name "Allocations::Allocation"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Allocations::Allocation"))) (status missing-prerequisite) (target "Allocations::Allocation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Allocations::allocations"))) (status missing-prerequisite) (target "Allocations::allocations"))
   )
 )
 ~~~

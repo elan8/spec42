@@ -97,14 +97,19 @@ NIL
     )
   )
   (relationships
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::Application Layer"))) (to (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (to (node (document "d0") (qualified-name "12a-Dependency::Data Layer"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (to (node (document "d0") (qualified-name "12a-Dependency::x"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (to (node (document "d0") (qualified-name "12a-Dependency::y"))))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::Application Layer"))) (to (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::Service Layer"))) (to (node (document "d0") (qualified-name "12a-Dependency::Data Layer"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (to (node (document "d0") (qualified-name "12a-Dependency::x"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (to (node (document "d0") (qualified-name "12a-Dependency::y"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12a-Dependency::x"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12a-Dependency::y"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12a-Dependency::z"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

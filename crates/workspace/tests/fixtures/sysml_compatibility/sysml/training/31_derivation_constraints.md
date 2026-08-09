@@ -155,6 +155,13 @@ semantic.unresolved_name 'ForceValue'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::Dynamics"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle2"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+  )
 )
 ~~~
 # DIAGNOSTICS

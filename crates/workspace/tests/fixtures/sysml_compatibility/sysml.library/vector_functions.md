@@ -1099,7 +1099,7 @@ standard library package VectorFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorFunctions::_documentation"))) (to (node (document "d0") (qualified-name "VectorFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorFunctions::_documentation"))) (to (node (document "d0") (qualified-name "VectorFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

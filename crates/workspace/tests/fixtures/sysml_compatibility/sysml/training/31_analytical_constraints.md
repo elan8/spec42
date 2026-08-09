@@ -242,6 +242,10 @@ semantic.unresolved_name 'AccelerationValue'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamics"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Analytical Constraints::StraightLineDynamicsEquations"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+  )
 )
 ~~~
 # DIAGNOSTICS

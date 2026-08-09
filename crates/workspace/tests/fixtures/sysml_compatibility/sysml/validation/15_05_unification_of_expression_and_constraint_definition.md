@@ -243,12 +243,25 @@ semantic.unresolved_name 'LengthValue'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::wheelAssy"))) (to (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeAssy"))) (to (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::wheelAssy"))) (to (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeAssy"))) (to (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeAssy::radius"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeConstraint"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::DiscBrakeFitConstraint_Alt"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::length"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::Vehicle_2::wheelAssy"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::discBrakeAssy"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_05-Unification of Expression and Constraint Definition::WheelAssy::wheel"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

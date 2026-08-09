@@ -174,13 +174,28 @@ semantic.unresolved_name 'LengthValue'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (to (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Tire"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Tire::height"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Tire::profileDepth"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::leftFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::length"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Vehicle_1::rightFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::hubDiameter"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::outerDiameter"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::tire"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_03-Value Expression::Wheel::width"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

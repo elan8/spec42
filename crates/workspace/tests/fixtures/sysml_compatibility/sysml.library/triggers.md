@@ -608,7 +608,7 @@ standard library package Triggers {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Triggers::_documentation"))) (to (node (document "d0") (qualified-name "Triggers"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Triggers::_documentation"))) (to (node (document "d0") (qualified-name "Triggers"))) (provenance authored))
   )
   (pending-relationships
   )

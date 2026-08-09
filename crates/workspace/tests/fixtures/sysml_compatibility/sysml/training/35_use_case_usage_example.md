@@ -225,14 +225,23 @@ semantic.unresolved_name 'Person'
     )
   )
   (relationships
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::_verdict"))))
-    (flow (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::Fuel Station"))))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (provenance authored))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::_verdict"))) (provenance authored))
+    (flow (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::start"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (to (node (document "d0") (qualified-name "Use Case Usage Example::Fuel Station"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Use Case Usage Example::Fuel Station"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Use Case Usage Example::add fuel"))) (status missing-prerequisite) (target "UseCases::useCases"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fuel station"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Use Case Usage Example::add fuel::fueler"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation"))) (status missing-prerequisite) (target "UseCases::useCases"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle"))) (status missing-prerequisite) (target "UseCases::useCases"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Use Case Usage Example::provide transportation::drive vehicle::add fuel"))) (status missing-prerequisite) (target "UseCases::useCases"))
   )
 )
 ~~~

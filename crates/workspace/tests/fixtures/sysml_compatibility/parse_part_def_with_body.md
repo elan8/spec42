@@ -57,6 +57,11 @@ NIL
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
+  )
 )
 ~~~
 # DIAGNOSTICS

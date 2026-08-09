@@ -728,7 +728,7 @@ standard library package SpatialFrames {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialFrames::_documentation"))) (to (node (document "d0") (qualified-name "SpatialFrames"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SpatialFrames::_documentation"))) (to (node (document "d0") (qualified-name "SpatialFrames"))) (provenance authored))
   )
   (pending-relationships
   )

@@ -110,14 +110,24 @@ NIL
     )
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::W::m"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V::m"))))
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::v1::m"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V::m"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::W"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::v1"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::W::m"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V::m"))) (provenance authored))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::v1::m"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V::m"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::W"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "DefaultValueTest::v1"))) (to (node (document "d0") (qualified-name "DefaultValueTest::V"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::V"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::V::m"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::V::n"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::W"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::W::m"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::v1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::v1::m"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DefaultValueTest::v2"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

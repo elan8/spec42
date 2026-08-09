@@ -148,13 +148,20 @@ standard library package AnalysisTooling {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "AnalysisTooling::_documentation"))) (to (node (document "d0") (qualified-name "AnalysisTooling"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::toolName"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolExecution::uri"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AnalysisTooling::ToolVariable::name"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

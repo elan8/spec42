@@ -119,11 +119,16 @@ semantic.unresolved_name 'Real'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (to (node (document "d0") (qualified-name "TextualRepresentationTest::C"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (to (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TextualRepresentationTest::C"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TextualRepresentationTest::C::x"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (status missing-prerequisite) (target "Actions::Action"))
   )
 )
 ~~~

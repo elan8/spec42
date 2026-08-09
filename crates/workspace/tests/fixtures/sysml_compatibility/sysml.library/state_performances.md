@@ -589,7 +589,7 @@ standard library package StatePerformances {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "StatePerformances::_documentation"))) (to (node (document "d0") (qualified-name "StatePerformances"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StatePerformances::_documentation"))) (to (node (document "d0") (qualified-name "StatePerformances"))) (provenance authored))
   )
   (pending-relationships
   )

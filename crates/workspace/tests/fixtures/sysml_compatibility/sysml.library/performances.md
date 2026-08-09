@@ -988,7 +988,7 @@ standard library package Performances {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Performances::_documentation"))) (to (node (document "d0") (qualified-name "Performances"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Performances::_documentation"))) (to (node (document "d0") (qualified-name "Performances"))) (provenance authored))
   )
   (pending-relationships
   )

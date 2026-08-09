@@ -118,13 +118,19 @@ semantic.unresolved_name 'self'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle::_documentation"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle::_documentation"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (to (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

@@ -259,7 +259,7 @@ standard library package Links {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Links::_documentation"))) (to (node (document "d0") (qualified-name "Links"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Links::_documentation"))) (to (node (document "d0") (qualified-name "Links"))) (provenance authored))
   )
   (pending-relationships
   )

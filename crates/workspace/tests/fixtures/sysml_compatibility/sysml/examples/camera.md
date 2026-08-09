@@ -101,6 +101,13 @@ semantic.unresolved_name 'takePicture::shoot'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::focusingSubsystem::takePicture.focus"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::imagingSubsystem::takePicture.shoot"))) (status missing-prerequisite) (target "Actions::actions"))
+  )
 )
 ~~~
 # DIAGNOSTICS

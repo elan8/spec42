@@ -462,7 +462,7 @@ semantic.unresolved_name 'DriveIF'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VehicleUsages::_documentation"))) (to (node (document "d0") (qualified-name "VehicleUsages"))) (provenance authored))
   )
   (pending-relationships
   )

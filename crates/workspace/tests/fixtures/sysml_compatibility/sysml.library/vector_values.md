@@ -212,7 +212,7 @@ standard library package VectorValues {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorValues::_documentation"))) (to (node (document "d0") (qualified-name "VectorValues"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "VectorValues::_documentation"))) (to (node (document "d0") (qualified-name "VectorValues"))) (provenance authored))
   )
   (pending-relationships
   )

@@ -177,12 +177,30 @@ semantic.unresolved_name 'SysML::PartUsage'
     )
   )
   (relationships
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (provenance authored))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (to (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SafetyFeature#metadata_usage"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature#metadata_usage"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::body"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::bumper"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::bodyAssy::keylessEntry"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::alarm"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::driverAirBag"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::frontSeat"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-1::vehicle::interior::seatBelt"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

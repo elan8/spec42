@@ -248,11 +248,14 @@ semantic.unresolved_name 'cc'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::_M"))) (to (node (document "d0") (qualified-name "MetadataTest"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::_M"))) (to (node (document "d0") (qualified-name "MetadataTest"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::_M"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
   )
 )
 ~~~

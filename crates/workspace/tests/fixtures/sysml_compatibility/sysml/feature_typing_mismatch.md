@@ -41,11 +41,15 @@ part p : Foo;
     (element (kind "part") (id (node (document "d0") (qualified-name "p"))) (name "p") (declared-name "p") (declared (properties (ordered false))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "p"))) (to (node (document "d0") (qualified-name "Foo"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "p"))) (to (node (document "d0") (qualified-name "Foo"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Foo"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "p"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

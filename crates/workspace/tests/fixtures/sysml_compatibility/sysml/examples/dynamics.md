@@ -511,8 +511,8 @@ semantic.unresolved_name 'LengthValue'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn1"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn2"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn1"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Dynamics::dyn2"))) (to (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (provenance authored))
   )
   (pending-relationships
   )
@@ -520,6 +520,15 @@ semantic.unresolved_name 'LengthValue'
     (bind (status pending-expression) (document "d0") (source-expression "a_out") (target-expression "acc::a") (container-prefix "Dynamics::dyn2"))
     (bind (status pending-expression) (document "d0") (source-expression "v_out") (target-expression "vel::v") (container-prefix "Dynamics::dyn2"))
     (bind (status pending-expression) (document "d0") (source-expression "x_out") (target-expression "pos::x") (container-prefix "Dynamics::dyn2"))
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Acceleration"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Position"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Power"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::Velocity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::dyn1"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Dynamics::dyn2"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

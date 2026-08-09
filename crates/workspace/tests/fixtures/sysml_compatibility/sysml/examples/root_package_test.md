@@ -95,11 +95,16 @@ NIL
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "P2::a"))) (to (node (document "d0") (qualified-name "P1::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "P2::a"))) (to (node (document "d0") (qualified-name "P1::A"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P1::A"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P2::a"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P3::b"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

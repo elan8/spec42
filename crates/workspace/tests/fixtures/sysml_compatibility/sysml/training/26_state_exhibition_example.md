@@ -101,6 +101,11 @@ semantic.unresolved_name 'VehicleController'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Exhibition Example::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleController"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates"))) (status missing-prerequisite) (target "States::stateActions"))
+  )
 )
 ~~~
 # DIAGNOSTICS

@@ -519,7 +519,7 @@ standard library package Clocks {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Clocks::_documentation"))) (to (node (document "d0") (qualified-name "Clocks"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Clocks::_documentation"))) (to (node (document "d0") (qualified-name "Clocks"))) (provenance authored))
   )
   (pending-relationships
   )

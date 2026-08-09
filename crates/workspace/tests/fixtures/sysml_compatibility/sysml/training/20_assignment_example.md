@@ -229,11 +229,20 @@ semantic.unresolved_name 'ISQ::length'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (to (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (to (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower"))) (status missing-prerequisite) (target "Actions::forLoopActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::_assign#assign2"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::ComputeMotion::for_vehiclePower::dynamics"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "For Loop Example::StraightLineDynamics"))) (status missing-prerequisite) (target "Actions::Action"))
   )
 )
 ~~~

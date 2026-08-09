@@ -404,7 +404,7 @@ standard library package IntegerFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (to (node (document "d0") (qualified-name "IntegerFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "IntegerFunctions::_documentation"))) (to (node (document "d0") (qualified-name "IntegerFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

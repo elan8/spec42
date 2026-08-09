@@ -101,16 +101,24 @@ package ExtendedExamples {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (to (node (document "d0") (qualified-name "ExtendedExamples"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
   )
 )
 ~~~

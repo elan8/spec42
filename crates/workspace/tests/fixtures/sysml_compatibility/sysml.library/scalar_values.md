@@ -121,7 +121,7 @@ standard library package ScalarValues {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ScalarValues::_documentation"))) (to (node (document "d0") (qualified-name "ScalarValues"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ScalarValues::_documentation"))) (to (node (document "d0") (qualified-name "ScalarValues"))) (provenance authored))
   )
   (pending-relationships
   )

@@ -196,16 +196,22 @@ standard library package Constraints {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::ConstraintCheck::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::_documentation"))) (to (node (document "d0") (qualified-name "Constraints"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::constraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::constraintChecks"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints::constraintChecks"))) (to (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::ConstraintCheck::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::_documentation"))) (to (node (document "d0") (qualified-name "Constraints"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::constraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::constraintChecks"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks::_documentation"))) (to (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Constraints::constraintChecks"))) (to (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints::assertedConstraintChecks"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints::constraintChecks"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Constraints::negatedConstraintChecks"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
   )
 )
 ~~~

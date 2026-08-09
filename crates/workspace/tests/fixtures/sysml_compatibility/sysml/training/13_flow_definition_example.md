@@ -132,11 +132,18 @@ semantic.unresolved_name 'Fuel'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Flow Definition Example::vehicle"))) (to (node (document "d0") (qualified-name "Flow Definition Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flow Definition Example::vehicle"))) (to (node (document "d0") (qualified-name "Flow Definition Example::Vehicle"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Definition Example::FuelFlow"))) (status missing-prerequisite) (target "Flows::MessageAction"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Definition Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Definition Example::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Definition Example::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Definition Example::vehicle::tankAssy"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

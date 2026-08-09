@@ -601,17 +601,24 @@ standard library package Items {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::isSolid::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::isSolid"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::subparts"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (to (node (document "d0") (qualified-name "Items::Touches"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::_documentation"))) (to (node (document "d0") (qualified-name "Items"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::items::_documentation"))) (to (node (document "d0") (qualified-name "Items::items"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Items::Item::self"))) (to (node (document "d0") (qualified-name "Items::Item"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::isSolid::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::isSolid"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (to (node (document "d0") (qualified-name "Items::Item::subparts"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::Touches::_documentation"))) (to (node (document "d0") (qualified-name "Items::Touches"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::_documentation"))) (to (node (document "d0") (qualified-name "Items"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Items::items::_documentation"))) (to (node (document "d0") (qualified-name "Items::items"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Items::Item::self"))) (to (node (document "d0") (qualified-name "Items::Item"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Item"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Item::isSolid"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Item::subparts"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::Touches"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Items::items"))) (status missing-prerequisite) (target "Items::Item"))
   )
 )
 ~~~

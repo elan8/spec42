@@ -13,11 +13,12 @@ use url::Url;
 
 use crate::semantic::model::{
     node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
-    DeclaredMembershipFacts, DerivedRelationshipResolution, EffectiveFeatureOwnership, EffectiveMembershipVisibility,
-    EffectiveSemanticFacts, ElementKind, ExpressionResultId, ExpressionResultRole,
-    FeatureOwnershipProvenance, ImpliedFeatureOwnership, ImpliedFeatureValueBinding,
-    ImpliedMultiplicity, ImpliedRelationshipRule, MembershipVisibilityProvenance, NodeId,
-    RelationshipKind, RelationshipProvenance, SemanticEdge, SemanticNode, VisibilityKind,
+    DeclaredMembershipFacts, DerivedRelationshipResolution, EffectiveFeatureOwnership,
+    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
+    ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
+    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule,
+    MembershipVisibilityProvenance, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
+    SemanticNode, VisibilityKind,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -207,6 +208,8 @@ impl SemanticGraph {
                 provenance: MembershipVisibilityProvenance::Implied,
             },
         })
+    }
+
     /// Returns the graph-published outcome for the universal implied relationship of `node`.
     /// Non-applicable kinds are explicit, rather than being represented as a successful absence.
     pub fn universal_relationship_resolution_for(
@@ -335,7 +338,7 @@ impl SemanticGraph {
                             &source_id,
                             target,
                             SemanticEdge::implied(
-                                specification.kind,
+                                specification.kind.clone(),
                                 ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
                             ),
                         );

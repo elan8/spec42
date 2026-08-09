@@ -136,12 +136,21 @@ semantic.unresolved_name 'EngineChoices'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (to (node (document "d0") (qualified-name "Variation Usages::Vehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (to (node (document "d0") (qualified-name "Variation Usages::Transmission"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (to (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (to (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::Transmission"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::automaticTransmission"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::manualTransmission"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

@@ -88,12 +88,15 @@ NIL
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Documentation Example::Automobile::_documentation"))) (to (node (document "d0") (qualified-name "Documentation Example::Automobile"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Documentation Example::_documentation"))) (to (node (document "d0") (qualified-name "Documentation Example"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Documentation Example::Automobile::_documentation"))) (to (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Documentation Example::_documentation"))) (to (node (document "d0") (qualified-name "Documentation Example"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Documentation Example::Automobile"))) (status missing-prerequisite) (target "Parts::Part"))
   )
 )
 ~~~

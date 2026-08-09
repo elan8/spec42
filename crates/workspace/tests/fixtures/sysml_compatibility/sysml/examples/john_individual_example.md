@@ -225,13 +225,19 @@ semantic.unresolved_name 'presidentOfCountry::asPresident'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Country::_documentation"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Country"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Person::_documentation"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Person"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Person"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Country::_documentation"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Person::_documentation"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))) (to (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "JohnIndividualExample::Country"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "JohnIndividualExample::Person"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "JohnIndividualExample::Person::age"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
   )
 )
 ~~~

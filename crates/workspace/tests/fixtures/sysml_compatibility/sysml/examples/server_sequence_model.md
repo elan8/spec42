@@ -242,6 +242,26 @@ semantic.unresolved_name 'String'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::consumer"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::consumer::deliver_target_event"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::consumer::subscribe_source_event"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::deliver_message"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::producer"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::producer::publish_source_event"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::publish_message"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server::deliver_source_event"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server::publish_target_event"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::server::subscribe_target_event"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::PubSubSequence::subscribe_message"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Deliver"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Publish::topic"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ServerSequenceModel::SignalDefinitions::Subscribe::topic"))) (status missing-prerequisite) (target "Base::dataValues"))
+  )
 )
 ~~~
 # DIAGNOSTICS

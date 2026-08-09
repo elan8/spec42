@@ -150,8 +150,8 @@ semantic.unresolved_name 'generateTorque'
     (element (kind "diagnostic") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context::unresolved_satisfy_source#diagnostic"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (to (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (provenance authored))
   )
   (pending-relationships
     (perform (status pending) (document "d0") (source-qualified "Requirement Satisfaction::vehicle_c1::engine_v1") (target-qualified "Requirement Satisfaction::vehicle_c1::engine_v1::provide power::generate torque"))
@@ -159,6 +159,16 @@ semantic.unresolved_name 'generateTorque'
   (pending-expression-relationships
     (satisfy (status pending-expression) (document "d0") (source-expression "engineSpecification") (target-expression "vehicle_design::engine_v1") (container-prefix "Requirement Satisfaction::Vehicle c1 Design Context"))
     (satisfy (status pending-expression) (document "d0") (source-expression "vehicleSpecification") (target-expression "vehicle_design") (container-prefix "Requirement Satisfaction::Vehicle c1 Design Context"))
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::provide power.generate torque"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::provide power"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

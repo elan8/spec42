@@ -132,13 +132,22 @@ semantic.unresolved_name 'TradeStudy'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (provenance authored))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))) (provenance authored))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))) (to (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale::text"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis"))) (status missing-prerequisite) (target "AnalysisCases::analysisCases"))
   )
 )
 ~~~

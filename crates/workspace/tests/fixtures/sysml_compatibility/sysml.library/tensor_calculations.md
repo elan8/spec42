@@ -402,11 +402,26 @@ standard library package TensorCalculations {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TensorCalculations::_documentation"))) (to (node (document "d0") (qualified-name "TensorCalculations"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TensorCalculations::_documentation"))) (to (node (document "d0") (qualified-name "TensorCalculations"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::+"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::-"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::TensorScalarMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::TensorScalarQuantityMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::["))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::isUnitTensorQuantity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::isZeroTensorQuantity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::scalarQuantityTensorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::scalarTensorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::tensorTensorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::tensorVectorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::transform"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "TensorCalculations::vectorTensorMult"))) (status missing-prerequisite) (target "Calculations::Calculation"))
   )
 )
 ~~~

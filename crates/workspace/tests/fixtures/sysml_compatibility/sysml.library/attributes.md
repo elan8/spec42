@@ -103,7 +103,7 @@ standard library package Attributes {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Attributes::_documentation"))) (to (node (document "d0") (qualified-name "Attributes"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Attributes::_documentation"))) (to (node (document "d0") (qualified-name "Attributes"))) (provenance authored))
   )
   (pending-relationships
   )

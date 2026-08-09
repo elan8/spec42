@@ -115,14 +115,19 @@ NIL
     )
   )
   (relationships
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::System::Application Layer"))) (to (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (to (node (document "d0") (qualified-name "DependencyTest::System::Data Layer"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::z"))) (to (node (document "d0") (qualified-name "DependencyTest::x"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::z"))) (to (node (document "d0") (qualified-name "DependencyTest::y"))))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::System::Application Layer"))) (to (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::System::Service Layer"))) (to (node (document "d0") (qualified-name "DependencyTest::System::Data Layer"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::z"))) (to (node (document "d0") (qualified-name "DependencyTest::x"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "DependencyTest::z"))) (to (node (document "d0") (qualified-name "DependencyTest::y"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DependencyTest::x"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DependencyTest::y"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DependencyTest::z"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

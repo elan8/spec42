@@ -784,7 +784,7 @@ standard library package Objects {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Objects::_documentation"))) (to (node (document "d0") (qualified-name "Objects"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Objects::_documentation"))) (to (node (document "d0") (qualified-name "Objects"))) (provenance authored))
   )
   (pending-relationships
   )

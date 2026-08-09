@@ -204,12 +204,24 @@ semantic.unresolved_name 'fuelCommand'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (to (node (document "d0") (qualified-name "Message Payload Example::EngineController"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (to (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction::setSpeedMessage"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::EngineController"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::FuelCommand"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::FuelCommand::fuelFlow"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::SensedSpeed"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
   )
 )
 ~~~

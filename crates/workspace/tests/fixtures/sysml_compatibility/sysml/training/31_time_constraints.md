@@ -210,14 +210,29 @@ semantic.unresolved_name 'TemperatureValue'
     )
   )
   (relationships
-    (initialState (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::maintenance"))))
-    (transition (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates::vehicle"))) (to (node (document "d0") (qualified-name "Time Constraints::Vehicle"))))
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))) (provenance authored))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::maintenance"))) (provenance authored))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (to (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Time Constraints::healthStates::vehicle"))) (to (node (document "d0") (qualified-name "Time Constraints::Vehicle"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::MaintenanceDone"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::Vehicle::maintenanceInterval"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::Vehicle::maintenanceTime"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::Vehicle::maxTemperature"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates"))) (status missing-prerequisite) (target "States::stateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates::maintenance"))) (status missing-prerequisite) (target "States::stateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates::normal"))) (status missing-prerequisite) (target "States::stateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_maintenance"))) (status missing-prerequisite) (target "Actions::transitionActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_maintenance::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_normal"))) (status missing-prerequisite) (target "Actions::transitionActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_normal::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
   )
 )
 ~~~

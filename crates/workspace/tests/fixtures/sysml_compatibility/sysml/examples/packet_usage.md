@@ -113,6 +113,12 @@ semantic.unresolved_name 'Real'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packet Usage::packet1"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packet Usage::packet2"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packet Usage::packet3"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Packet Usage::packet3::special data field"))) (status missing-prerequisite) (target "Base::dataValues"))
+  )
 )
 ~~~
 # DIAGNOSTICS

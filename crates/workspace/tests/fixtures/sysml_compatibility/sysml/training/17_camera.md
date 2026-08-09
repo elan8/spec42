@@ -144,11 +144,20 @@ semantic.unresolved_name 'Picture'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Camera::camera"))) (to (node (document "d0") (qualified-name "Camera::Camera"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Camera::camera"))) (to (node (document "d0") (qualified-name "Camera::Camera"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::Camera"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::FocusingSubsystem"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::ImagingSubsystem"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::camera"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::camera::autoFocus"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::camera::imager"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Camera::camera::photos"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

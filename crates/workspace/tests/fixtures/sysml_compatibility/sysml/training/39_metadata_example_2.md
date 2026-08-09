@@ -153,6 +153,9 @@ semantic.unresolved_name 'ToolVariable'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics"))) (status missing-prerequisite) (target "Actions::actions"))
+  )
 )
 ~~~
 # DIAGNOSTICS

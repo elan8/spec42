@@ -214,6 +214,26 @@ semantic.unresolved_name 'PerformanceRequirementCheck'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::EcoFriendliness::Emissions"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Ergonomics"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_1"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_2"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::HybridSUVSpec::_requireConstraint_3"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load::Cargo"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load::FuelCapacity"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Load::Passengers"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Acceleration"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Braking"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::FuelEconomy"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Power"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "HSUVRequirements::Performance::Range"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+  )
 )
 ~~~
 # DIAGNOSTICS

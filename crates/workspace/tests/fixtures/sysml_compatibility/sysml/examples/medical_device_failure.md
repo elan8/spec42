@@ -138,6 +138,13 @@ parse.expected_usage_declaration
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::cannotBeCharged"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::battery::depleted"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+  )
 )
 ~~~
 # DIAGNOSTICS

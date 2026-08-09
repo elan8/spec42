@@ -168,15 +168,25 @@ semantic.unresolved_name 'Fuel'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::pump"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelPump"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::tank"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelTank"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::pump"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelPump"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::tank"))) (to (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelTank"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
     (bind (status pending-expression) (document "d0") (source-expression "fuelTankPort::fuelReturn") (target-expression "tank::fuelIn") (container-prefix "Binding Connectors Example-1::vehicle::tank"))
     (bind (status pending-expression) (document "d0") (source-expression "fuelTankPort::fuelSupply") (target-expression "pump::pumpOut") (container-prefix "Binding Connectors Example-1::vehicle::tank"))
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelPump"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::FuelTank"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::fuelTankPort"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::pump"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Binding Connectors Example-1::vehicle::tank::tank"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

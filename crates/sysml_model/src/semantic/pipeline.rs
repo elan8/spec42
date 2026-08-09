@@ -48,13 +48,17 @@ pub fn build_and_link_graph(
     documents: &[SysmlDocument],
 ) -> Result<(SemanticGraph, Vec<WorkspaceParsedDocument>), String> {
     let mut graph = SemanticGraph::new();
-    graph.set_standard_library_uris(documents.iter().filter_map(|document| {
-        matches!(
-            document.source_kind,
-            SysmlDocumentSourceKind::StandardLibrary
-        )
-        .then(|| document.uri.clone())
-    }));
+    graph.set_standard_library_uris(
+        documents
+            .iter()
+            .filter(|document| {
+                matches!(
+                    document.source_kind,
+                    SysmlDocumentSourceKind::StandardLibrary
+                )
+            })
+            .map(|document| document.uri.clone()),
+    );
     let mut parsed_docs = Vec::new();
 
     let mut workspace_docs = Vec::new();
@@ -188,9 +192,12 @@ pub fn link_parsed_documents_parallel_from(
 
     let mut uris: Vec<Url> = base_graph.all_uris();
     let mut graph = base_graph;
-    graph.add_standard_library_uris(library_entries.iter().filter_map(|(kind, entry)| {
-        matches!(kind, SysmlDocumentSourceKind::StandardLibrary).then(|| entry.uri.clone())
-    }));
+    graph.add_standard_library_uris(
+        library_entries
+            .iter()
+            .filter(|(kind, _)| matches!(kind, SysmlDocumentSourceKind::StandardLibrary))
+            .map(|(_, entry)| entry.uri.clone()),
+    );
     let mut parsed_docs = Vec::new();
 
     // Phase 1: workspace documents. Must finish (and its declared-package set must be

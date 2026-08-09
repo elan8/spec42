@@ -126,15 +126,25 @@ semantic.unresolved_name 'takePhoto::shoot'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera"))) (to (node (document "d0") (qualified-name "Action Performance Example::Camera"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (to (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (to (node (document "d0") (qualified-name "Action Performance Example::Imager"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera"))) (to (node (document "d0") (qualified-name "Action Performance Example::Camera"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (to (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (to (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (provenance authored))
   )
   (pending-relationships
     (perform (status pending) (document "d0") (source-qualified "Action Performance Example::camera::f") (target-qualified "Action Performance Example::camera::f::takePhoto::focus"))
     (perform (status pending) (document "d0") (source-qualified "Action Performance Example::camera::i") (target-qualified "Action Performance Example::camera::i::takePhoto::shoot"))
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::AutoFocus"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::Camera"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::f::takePhoto.focus"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Action Performance Example::camera::i::takePhoto.shoot"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

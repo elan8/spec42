@@ -262,12 +262,16 @@ NIL
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model::_documentation"))) (to (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::_documentation"))) (to (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model::_documentation"))) (to (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::Vehicle Reference Model"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model::_documentation"))) (to (node (document "d0") (qualified-name "13a-Model Containment::Vehicle Model"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "13a-Model Containment::BodyAndInteriorRequirements"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "13a-Model Containment::PowerTrainRequirements"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
   )
 )
 ~~~

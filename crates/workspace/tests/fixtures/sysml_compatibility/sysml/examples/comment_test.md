@@ -171,11 +171,15 @@ NIL
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (to (node (document "d0") (qualified-name "CommentTest::C"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (to (node (document "d0") (qualified-name "CommentTest::C"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CommentTest::A"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CommentTest::C"))) (status missing-prerequisite) (target "Parts::Part"))
   )
 )
 ~~~

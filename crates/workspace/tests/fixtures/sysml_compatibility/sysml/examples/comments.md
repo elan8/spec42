@@ -94,13 +94,16 @@ NIL
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::C::_documentation"))) (to (node (document "d0") (qualified-name "Comments::C"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation"))) (to (node (document "d0") (qualified-name "Comments"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (to (node (document "d0") (qualified-name "Comments"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::C::_documentation"))) (to (node (document "d0") (qualified-name "Comments::C"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation"))) (to (node (document "d0") (qualified-name "Comments"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (to (node (document "d0") (qualified-name "Comments"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Comments::C"))) (status missing-prerequisite) (target "Parts::Part"))
   )
 )
 ~~~

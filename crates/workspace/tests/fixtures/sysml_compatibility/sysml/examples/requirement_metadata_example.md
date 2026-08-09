@@ -185,14 +185,27 @@ semantic.unresolved_name 'StatusInfo'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::_documentation"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (to (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::Goal"))) (status missing-prerequisite) (target "Requirements::RequirementCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::_goal"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::deliverPayload"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::goal"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::goals"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::originator"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::owner"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementMetadataExample::vehicleMassRequirement::StatusInfo::status"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

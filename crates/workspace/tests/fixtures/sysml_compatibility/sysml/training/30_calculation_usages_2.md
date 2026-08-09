@@ -170,11 +170,22 @@ semantic.unresolved_name 'PowerValue'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::currState"))) (to (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState::currState"))) (to (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState::v"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::DynamicState::x"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::C_d"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::C_f"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::updateState"))) (status missing-prerequisite) (target "Calculations::calculations"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::wheelPower"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

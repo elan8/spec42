@@ -175,11 +175,18 @@ semantic.unresolved_name 'columnView'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Views Example::vehicle structure view"))) (to (node (document "d0") (qualified-name "Views Example::Part Structure View"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Views Example::vehicle structure view"))) (to (node (document "d0") (qualified-name "Views Example::Part Structure View"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views Example::Part Structure View"))) (status missing-prerequisite) (target "Views::View"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views Example::asTextualNotationTable"))) (status missing-prerequisite) (target "Views::renderings"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views Example::vehicle structure view"))) (status missing-prerequisite) (target "Views::views"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views Example::vehicle structure view::asTreeDiagram"))) (status missing-prerequisite) (target "Views::renderings"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Views Example::vehicle tabular views"))) (status missing-prerequisite) (target "Views::views"))
   )
 )
 ~~~

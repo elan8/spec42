@@ -388,7 +388,7 @@ standard library package DataFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DataFunctions::_documentation"))) (to (node (document "d0") (qualified-name "DataFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DataFunctions::_documentation"))) (to (node (document "d0") (qualified-name "DataFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

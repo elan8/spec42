@@ -218,17 +218,24 @@ standard library package Ports {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port::subports"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::ports"))))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::~Port"))) (to (node (document "d0") (qualified-name "Ports::Port"))))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::~ports"))) (to (node (document "d0") (qualified-name "Ports::ports"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports"))) (to (node (document "d0") (qualified-name "Ports::Port"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::Port::subports"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::_documentation"))) (to (node (document "d0") (qualified-name "Ports::ports"))) (provenance authored))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::~Port"))) (to (node (document "d0") (qualified-name "Ports::Port"))) (provenance authored))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Ports::ports::~ports"))) (to (node (document "d0") (qualified-name "Ports::ports"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Ports::Port::subports"))) (to (node (document "d0") (qualified-name "Ports::Port"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::Port"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::Port::subports"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::Port::~Port"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::ports"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Ports::ports::~ports"))) (status missing-prerequisite) (target "Ports::Port"))
   )
 )
 ~~~

@@ -142,12 +142,19 @@ semantic.unresolved_name 'eng::engineFuelPort'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Flow Interface Example::vehicle"))) (to (node (document "d0") (qualified-name "Flow Interface Example::Vehicle"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Flow Interface Example::vehicle"))) (to (node (document "d0") (qualified-name "Flow Interface Example::Vehicle"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
     (connection (status pending-expression) (document "d0") (source-expression "tankAssy::fuelTankPort") (target-expression "eng::engineFuelPort") (container-prefix "Flow Interface Example::vehicle") (interface-usage true) (interface-type "FuelInterface"))
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Interface Example::FuelInterface"))) (status missing-prerequisite) (target "Interfaces::Interface"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Interface Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Interface Example::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Interface Example::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Flow Interface Example::vehicle::tankAssy"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

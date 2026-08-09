@@ -514,6 +514,9 @@ semantic.unresolved_name 'Return_AllItems'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (status missing-prerequisite) (target "Parts::parts"))
+  )
 )
 ~~~
 # DIAGNOSTICS

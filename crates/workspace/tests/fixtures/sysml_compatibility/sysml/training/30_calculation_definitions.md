@@ -200,6 +200,12 @@ semantic.unresolved_name 'LengthValue'
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Definitions::Acceleration"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Definitions::Position"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Definitions::Power"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculation Definitions::Velocity"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+  )
 )
 ~~~
 # DIAGNOSTICS

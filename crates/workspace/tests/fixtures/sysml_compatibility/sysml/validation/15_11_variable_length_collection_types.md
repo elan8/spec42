@@ -224,12 +224,27 @@ semantic.unresolved_name 'dimensions'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Bag<SparePart>::"))) (to (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::SparePart"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::OrderedSet<Person>::"))) (to (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Person"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Bag<SparePart>::"))) (to (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::SparePart"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::OrderedSet<Person>::"))) (to (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Person"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]::dimensions"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Array<Real>[4]::elements"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Bag<SparePart>"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Integer>"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Integer>::elements"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Set<Person>>"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::List<Set<Person>>::elements"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::OrderedSet<Person>"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Person"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Set<String>"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::Set<String>::elements"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_11-Variable Length Collection Types::SparePart"))) (status missing-prerequisite) (target "Parts::Part"))
   )
 )
 ~~~

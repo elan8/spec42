@@ -176,16 +176,22 @@ standard library package Calculations {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::calculations"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Calculations::calculations::_documentation"))) (to (node (document "d0") (qualified-name "Calculations::calculations"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (to (node (document "d0") (qualified-name "Calculations::Calculation"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::Calculation"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (status missing-prerequisite) (target "Calculations::calculations"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::Calculation::subcalculations"))) (status missing-prerequisite) (target "Calculations::calculations"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Calculations::calculations"))) (status missing-prerequisite) (target "Calculations::Calculation"))
   )
 )
 ~~~

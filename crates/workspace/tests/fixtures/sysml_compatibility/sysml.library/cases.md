@@ -275,15 +275,20 @@ standard library package Cases {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::Case::_documentation"))) (to (node (document "d0") (qualified-name "Cases::Case"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::Case::actors::_documentation"))) (to (node (document "d0") (qualified-name "Cases::Case::actors"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::_documentation"))) (to (node (document "d0") (qualified-name "Cases"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::cases::_documentation"))) (to (node (document "d0") (qualified-name "Cases::cases"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Cases::cases"))) (to (node (document "d0") (qualified-name "Cases::Case"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::Case::_documentation"))) (to (node (document "d0") (qualified-name "Cases::Case"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::Case::actors::_documentation"))) (to (node (document "d0") (qualified-name "Cases::Case::actors"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::_documentation"))) (to (node (document "d0") (qualified-name "Cases"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Cases::cases::_documentation"))) (to (node (document "d0") (qualified-name "Cases::cases"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Cases::cases"))) (to (node (document "d0") (qualified-name "Cases::Case"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Cases::Case"))) (status missing-prerequisite) (target "Cases::Case"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Cases::Case::obj"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Cases::cases"))) (status missing-prerequisite) (target "Cases::cases"))
   )
 )
 ~~~

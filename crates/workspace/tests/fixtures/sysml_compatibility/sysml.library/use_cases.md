@@ -230,14 +230,19 @@ standard library package UseCases {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::useCases"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::UseCase::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases::_documentation"))) (to (node (document "d0") (qualified-name "UseCases::useCases"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "UseCases::useCases"))) (to (node (document "d0") (qualified-name "UseCases::UseCase"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "UseCases::UseCase"))) (status missing-prerequisite) (target "UseCases::UseCase"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "UseCases::UseCase::obj"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "UseCases::useCases"))) (status missing-prerequisite) (target "UseCases::useCases"))
   )
 )
 ~~~

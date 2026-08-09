@@ -123,11 +123,17 @@ semantic.unresolved_name 'ISQ::mass'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup2::composicomackagteThing"))) (to (node (document "d0") (qualified-name "MassRollup2::MassedThing"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MassRollup2::composicomackagteThing"))) (to (node (document "d0") (qualified-name "MassRollup2::MassedThing"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup2::MassedThing"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup2::MassedThing::simpleMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup2::MassedThing::totalMass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MassRollup2::composicomackagteThing"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

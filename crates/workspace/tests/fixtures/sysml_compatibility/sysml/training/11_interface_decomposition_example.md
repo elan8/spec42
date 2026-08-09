@@ -138,16 +138,27 @@ NIL
     )
   )
   (relationships
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet::~Faucet"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet::~FaucetInlet"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet"))))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot::~Spigot"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot"))))
-    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank::~SpigotBank"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank"))))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet::~Faucet"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))) (provenance authored))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet::~FaucetInlet"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet"))) (provenance authored))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot::~Spigot"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot"))) (provenance authored))
+    (portConjugation (status resolved) (from (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank::~SpigotBank"))) (to (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
     (connection (status pending-expression) (document "d0") (source-expression "suppliedBy::cold") (target-expression "deliveredTo::cold") (container-prefix "Interface Decomposition Example::WaterDelivery"))
     (connection (status pending-expression) (document "d0") (source-expression "suppliedBy::hot") (target-expression "deliveredTo::hot") (container-prefix "Interface Decomposition Example::WaterDelivery"))
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::Faucet::~Faucet"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::FaucetInlet::~FaucetInlet"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::Spigot::~Spigot"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::SpigotBank::~SpigotBank"))) (status missing-prerequisite) (target "Ports::Port"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (status missing-prerequisite) (target "Interfaces::Interface"))
   )
 )
 ~~~

@@ -594,7 +594,7 @@ standard library package OccurrenceFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "OccurrenceFunctions::_documentation"))) (to (node (document "d0") (qualified-name "OccurrenceFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "OccurrenceFunctions::_documentation"))) (to (node (document "d0") (qualified-name "OccurrenceFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

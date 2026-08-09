@@ -12,10 +12,10 @@ use super::discovery::path_to_file_url;
 use super::projection::{
     HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts, HostMembershipKind,
-    HostMembershipVisibilityProvenance, HostMultiplicity, HostRelationshipMetaclass,
-    HostRelationshipProvenance, HostSemanticModelNode, HostSemanticModelRelationship,
-    HostSemanticProjection, HostVisibilityKind,
+    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
+    HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity,
+    HostRelationshipMetaclass, HostRelationshipProvenance, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection, HostVisibilityKind,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 

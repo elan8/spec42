@@ -582,7 +582,7 @@ standard library package Observation {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Observation::_documentation"))) (to (node (document "d0") (qualified-name "Observation"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Observation::_documentation"))) (to (node (document "d0") (qualified-name "Observation"))) (provenance authored))
   )
   (pending-relationships
   )

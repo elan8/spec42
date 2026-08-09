@@ -149,13 +149,21 @@ semantic.unresolved_name 'vehicle'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::fuelCommandMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::FuelCommand"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::sensedSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::SensedSpeed"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::SetSpeed"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::fuelCommandMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::FuelCommand"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::sensedSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::SensedSpeed"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-1::SetSpeed"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::fuelCommandMessage"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::sensedSpeedMessage"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction::setSpeedMessage"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-1::FuelCommand"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-1::SensedSpeed"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-1::SetSpeed"))) (status missing-prerequisite) (target "Items::Item"))
   )
 )
 ~~~

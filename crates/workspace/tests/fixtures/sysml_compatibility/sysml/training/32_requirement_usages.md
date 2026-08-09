@@ -154,14 +154,22 @@ semantic.unresolved_name 'massReqd'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))))
-    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))))
-    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (provenance authored))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (provenance authored))
+    (subject (status resolved) (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (to (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

@@ -208,7 +208,7 @@ standard library package TrigFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "TrigFunctions::_documentation"))) (to (node (document "d0") (qualified-name "TrigFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "TrigFunctions::_documentation"))) (to (node (document "d0") (qualified-name "TrigFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

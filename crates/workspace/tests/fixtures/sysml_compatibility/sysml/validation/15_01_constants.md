@@ -239,12 +239,21 @@ semantic.unresolved_name 'DimensionOneValue'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::_documentation"))) (to (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::_documentation"))) (to (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::_documentation"))) (to (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::_documentation"))) (to (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::electron to proton mass ratio"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::fine structure constant"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::speed of light in vacuum"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::e"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::pi"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

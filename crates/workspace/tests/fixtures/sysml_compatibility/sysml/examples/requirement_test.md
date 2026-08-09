@@ -170,16 +170,26 @@ semantic.ambiguous_member 'r1'
     (element (kind "diagnostic") (id (node (document "d0") (qualified-name "RequirementTest::q#part::unresolved_satisfy_source#diagnostic"))) (name "unresolved_satisfy_source") (declared-name "unresolved_satisfy_source"))
   )
   (relationships
-    (satisfy (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::p"))))
-    (satisfy (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::q#part"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::c"))) (to (node (document "d0") (qualified-name "RequirementTest::C"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::R1"))))
+    (satisfy (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::p"))) (provenance authored))
+    (satisfy (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::q#part"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::c"))) (to (node (document "d0") (qualified-name "RequirementTest::C"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (to (node (document "d0") (qualified-name "RequirementTest::R1"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
     (satisfy (status pending-expression) (document "d0") (source-expression "r") (target-expression "p") (container-prefix "RequirementTest::q#part"))
     (satisfy (status pending-expression) (document "d0") (source-expression "r") (target-expression "q") (container-prefix "RequirementTest::q#part"))
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::C"))) (status missing-prerequisite) (target "Constraints::ConstraintCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::R"))) (status missing-prerequisite) (target "Requirements::RequirementCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::R1"))) (status missing-prerequisite) (target "Requirements::RequirementCheck"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::R::_requireConstraint_0"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::c"))) (status missing-prerequisite) (target "Constraints::constraintChecks"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::p"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::q#part"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "RequirementTest::r1"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
   )
 )
 ~~~

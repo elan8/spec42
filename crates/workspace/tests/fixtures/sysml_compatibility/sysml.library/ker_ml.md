@@ -1887,7 +1887,7 @@ standard library package KerML {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "KerML::_documentation"))) (to (node (document "d0") (qualified-name "KerML"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "KerML::_documentation"))) (to (node (document "d0") (qualified-name "KerML"))) (provenance authored))
   )
   (pending-relationships
   )

@@ -3234,7 +3234,7 @@ standard library package Occurrences {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Occurrences::_documentation"))) (to (node (document "d0") (qualified-name "Occurrences"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Occurrences::_documentation"))) (to (node (document "d0") (qualified-name "Occurrences"))) (provenance authored))
   )
   (pending-relationships
   )

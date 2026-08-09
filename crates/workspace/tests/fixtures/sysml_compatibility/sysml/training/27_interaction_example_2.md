@@ -196,12 +196,19 @@ semantic.unresolved_name 'Engine'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-2::FuelCommand"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-2::SetSpeed"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-2::FuelCommand"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage::_payload"))) (to (node (document "d0") (qualified-name "Interaction Example-2::SetSpeed"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::fuelCommandMessage"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-2::CruiseControlInteraction::setSpeedMessage"))) (status missing-prerequisite) (target "Flows::messages"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-2::FuelCommand"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-2::SensedSpeed"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Interaction Example-2::SetSpeed"))) (status missing-prerequisite) (target "Items::Item"))
   )
 )
 ~~~

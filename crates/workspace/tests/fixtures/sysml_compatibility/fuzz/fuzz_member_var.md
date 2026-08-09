@@ -59,6 +59,9 @@ package P {
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::r"))) (status missing-prerequisite) (target "Requirements::requirementChecks"))
+  )
 )
 ~~~
 # DIAGNOSTICS

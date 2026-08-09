@@ -182,11 +182,22 @@ semantic.unresolved_name 'ScalarValues::Boolean'
     )
   )
   (relationships
-    (perform (status resolved) (from (node (document "d0") (qualified-name "StructuredControlTest::"))) (to (node (document "d0") (qualified-name "StructuredControlTest::::aLoop"))))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "StructuredControlTest::"))) (to (node (document "d0") (qualified-name "StructuredControlTest::::aLoop"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::_if"))) (status missing-prerequisite) (target "Actions::ifThenActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::_if#if"))) (status missing-prerequisite) (target "Actions::ifThenActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::_if#if::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::_if::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::_loop::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::_while"))) (status missing-prerequisite) (target "Actions::whileLoopActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::_while::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "StructuredControlTest::::aLoop"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

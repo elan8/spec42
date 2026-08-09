@@ -157,14 +157,24 @@ NIL
     )
   )
   (relationships
-    (allocate (status resolved) (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (to (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))))
-    (perform (status resolved) (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (to (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))))
+    (allocate (status resolved) (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (to (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (provenance authored))
+    (perform (status resolved) (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (to (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (provenance authored))
   )
   (pending-relationships
     (perform (status pending) (document "d0") (source-qualified "12b-Allocation::LogicalModel::torqueGenerator") (target-qualified "12b-Allocation::LogicalModel::torqueGenerator::providePower::generateTorque"))
     (perform (status pending) (document "d0") (source-qualified "12b-Allocation::PhysicalModel::powerTrain::engine") (target-qualified "12b-Allocation::PhysicalModel::powerTrain::engine::providePower::generateTorque"))
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::"))) (status missing-prerequisite) (target "Allocations::allocations"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator::providePower.generateTorque"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine::providePower.generateTorque"))) (status missing-prerequisite) (target "Actions::actions"))
   )
 )
 ~~~

@@ -158,16 +158,26 @@ NIL
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test1::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test1::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test2::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test2::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test1::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test1::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test2::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::Test2::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::x"))) (to (node (document "d0") (qualified-name "CircularImport::P1::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CircularImport::y"))) (to (node (document "d0") (qualified-name "CircularImport::P2::B"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::P1::A"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::P2::B"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::Test1::x"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::Test1::y"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::Test2::x"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::Test2::y"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::x"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CircularImport::y"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

@@ -741,7 +741,7 @@ standard library package FeatureReferencingPerformances {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureReferencingPerformances::_documentation"))) (to (node (document "d0") (qualified-name "FeatureReferencingPerformances"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureReferencingPerformances::_documentation"))) (to (node (document "d0") (qualified-name "FeatureReferencingPerformances"))) (provenance authored))
   )
   (pending-relationships
   )

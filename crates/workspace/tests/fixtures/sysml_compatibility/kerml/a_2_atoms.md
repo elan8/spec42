@@ -81,7 +81,7 @@ semantic.unresolved_name 'Metaobject'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Atoms::_documentation"))) (to (node (document "d0") (qualified-name "Atoms"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Atoms::_documentation"))) (to (node (document "d0") (qualified-name "Atoms"))) (provenance authored))
   )
   (pending-relationships
   )

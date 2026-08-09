@@ -114,13 +114,24 @@ semantic.unresolved_name 'ScalarValues::Integer'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::A::y"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::F::p"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::a"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::A::y"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::F::p"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "ParameterTest::a"))) (to (node (document "d0") (qualified-name "ParameterTest::A"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::A"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::A::x"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::A::y"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::F"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::a"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::b"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::c"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::f"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "ParameterTest::g"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

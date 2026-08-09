@@ -73,6 +73,12 @@ package AssignTest {
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A"))) (status missing-prerequisite) (target "Actions::Action"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A::_assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A::_assign#assign"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "AssignTest::A::_assign#assign2"))) (status missing-prerequisite) (target "Actions::assignmentActions"))
+  )
 )
 ~~~
 # DIAGNOSTICS

@@ -284,17 +284,23 @@ standard library package Connections {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::BinaryConnection::_documentation"))) (to (node (document "d0") (qualified-name "Connections::BinaryConnection"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::Connection::_documentation"))) (to (node (document "d0") (qualified-name "Connections::Connection"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::_documentation"))) (to (node (document "d0") (qualified-name "Connections"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::binaryConnections::_documentation"))) (to (node (document "d0") (qualified-name "Connections::binaryConnections"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::connections::_documentation"))) (to (node (document "d0") (qualified-name "Connections::connections"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Connections::BinaryConnection"))) (to (node (document "d0") (qualified-name "Connections::Connection"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Connections::binaryConnections"))) (to (node (document "d0") (qualified-name "Connections::connections"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::BinaryConnection::_documentation"))) (to (node (document "d0") (qualified-name "Connections::BinaryConnection"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::Connection::_documentation"))) (to (node (document "d0") (qualified-name "Connections::Connection"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::_documentation"))) (to (node (document "d0") (qualified-name "Connections"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::binaryConnections::_documentation"))) (to (node (document "d0") (qualified-name "Connections::binaryConnections"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Connections::connections::_documentation"))) (to (node (document "d0") (qualified-name "Connections::connections"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Connections::BinaryConnection"))) (to (node (document "d0") (qualified-name "Connections::Connection"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Connections::binaryConnections"))) (to (node (document "d0") (qualified-name "Connections::connections"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections::BinaryConnection"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections::Connection"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections::binaryConnections"))) (status missing-prerequisite) (target "Connections::Connection"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Connections::connections"))) (status missing-prerequisite) (target "Connections::Connection"))
   )
 )
 ~~~

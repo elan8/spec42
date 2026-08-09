@@ -66,11 +66,16 @@ NIL
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d1") (qualified-name "Usage::v"))) (to (node (document "d0") (qualified-name "Definitions::Vehicle"))))
+    (typing (status resolved) (from (node (document "d1") (qualified-name "Usage::v"))) (to (node (document "d0") (qualified-name "Definitions::Vehicle"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Definitions::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d1") (qualified-name "Usage::v"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

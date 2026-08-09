@@ -178,11 +178,26 @@ semantic.unresolved_name 'Real'
     )
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind"))) (to (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind::confidential"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind::secret"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind::unclassified"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel::code"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel::color"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::A"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::B"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::C"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::D"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints::F"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

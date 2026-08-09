@@ -116,14 +116,26 @@ part def System {
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "System::a"))) (to (node (document "d0") (qualified-name "A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "System::b"))) (to (node (document "d0") (qualified-name "B"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "System::engine"))) (to (node (document "d0") (qualified-name "A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "System::myA"))) (to (node (document "d0") (qualified-name "A"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::a"))) (to (node (document "d0") (qualified-name "A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::b"))) (to (node (document "d0") (qualified-name "B"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::engine"))) (to (node (document "d0") (qualified-name "A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "System::myA"))) (to (node (document "d0") (qualified-name "A"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "A"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "A::p1"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "A::p2"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "B"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "B::q1"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "B::q2"))) (status missing-prerequisite) (target "Ports::ports"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "System"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "System::a"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "System::b"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "System::myA"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

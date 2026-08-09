@@ -123,13 +123,24 @@ semantic.unresolved_name 'Real'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (to (node (document "d0") (qualified-name "Part Definition Example::Person"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Part Definition Example::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (to (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))) (to (node (document "d0") (qualified-name "Part Definition Example::Person"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (to (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (to (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Person"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::acceleratorPosition"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Part Definition Example::VehicleStatus::gearSetting"))) (status missing-prerequisite) (target "Base::dataValues"))
   )
 )
 ~~~

@@ -170,14 +170,27 @@ semantic.unresolved_name 'MassValue'
     )
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::Vehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (to (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (to (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::MassSum"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::VehiclePart"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::VehiclePart::m"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::masses1"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::masses2"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::ms"))) (status missing-prerequisite) (target "Calculations::Calculation"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicle::trans"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CalculationExample::vehicles"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

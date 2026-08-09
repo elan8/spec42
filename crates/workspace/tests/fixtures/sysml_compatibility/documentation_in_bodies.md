@@ -160,16 +160,25 @@ package DocTests {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::Payload::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::Payload"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::Speed::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::Speed"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::Vehicle::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::Vehicle"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::_documentation"))) (to (node (document "d0") (qualified-name "DocTests"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::vehicle::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::vehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "DocTests::vehicle"))) (to (node (document "d0") (qualified-name "DocTests::Vehicle"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::Payload::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::Payload"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::Speed::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::Speed"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::Vehicle::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::Vehicle"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::_documentation"))) (to (node (document "d0") (qualified-name "DocTests"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "DocTests::vehicle::_documentation"))) (to (node (document "d0") (qualified-name "DocTests::vehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "DocTests::vehicle"))) (to (node (document "d0") (qualified-name "DocTests::Vehicle"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DocTests::Color"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DocTests::Color::red"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DocTests::Payload"))) (status missing-prerequisite) (target "Items::Item"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DocTests::Speed"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DocTests::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DocTests::Vehicle::speed"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "DocTests::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

@@ -168,14 +168,25 @@ NIL
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (to (node (document "d0") (qualified-name "OccurrenceTest::Occ"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::a"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::occ2"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::t"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::Occ::y"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::o1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::o1::o2"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (status missing-prerequisite) (target "Occurrences::occurrences"))
   )
 )
 ~~~

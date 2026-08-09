@@ -171,11 +171,14 @@ package FeatureAdvancedCoverage {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (to (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (to (node (document "d0") (qualified-name "FeatureAdvancedCoverage"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "FeatureAdvancedCoverage::_Safety"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
   )
 )
 ~~~

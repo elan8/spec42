@@ -125,14 +125,22 @@ semantic.unresolved_name 'Vehicle'
     )
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (to (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )
 ~~~

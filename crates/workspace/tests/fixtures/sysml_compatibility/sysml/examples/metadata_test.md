@@ -199,12 +199,20 @@ semantic.unresolved_name 'SysML::Usage'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::_Security"))) (to (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (to (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::_Security"))) (to (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (to (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified::annotatedElement"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::Security"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MetadataTest::User Defined Extensions::_Security"))) (status missing-prerequisite) (target "Metadata::metadataItems"))
   )
 )
 ~~~

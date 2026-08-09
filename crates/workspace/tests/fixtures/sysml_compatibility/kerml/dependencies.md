@@ -122,10 +122,10 @@ NIL
     )
   )
   (relationships
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::System::Application Layer"))) (to (node (document "d0") (qualified-name "Dependencies::System::Service Layer"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::System::Service Layer"))) (to (node (document "d0") (qualified-name "Dependencies::System::Data Layer"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::z"))) (to (node (document "d0") (qualified-name "Dependencies::x"))))
-    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::z"))) (to (node (document "d0") (qualified-name "Dependencies::y"))))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::System::Application Layer"))) (to (node (document "d0") (qualified-name "Dependencies::System::Service Layer"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::System::Service Layer"))) (to (node (document "d0") (qualified-name "Dependencies::System::Data Layer"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::z"))) (to (node (document "d0") (qualified-name "Dependencies::x"))) (provenance authored))
+    (dependency (status resolved) (from (node (document "d0") (qualified-name "Dependencies::z"))) (to (node (document "d0") (qualified-name "Dependencies::y"))) (provenance authored))
   )
   (pending-relationships
   )

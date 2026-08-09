@@ -118,13 +118,27 @@ semantic.unresolved_name 'ScalarValues::Integer'
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::A::x"))) (to (node (document "d0") (qualified-name "MultiplicityTest::A"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::b"))) (to (node (document "d0") (qualified-name "MultiplicityTest::P"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::c"))) (to (node (document "d0") (qualified-name "MultiplicityTest::P"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::A::x"))) (to (node (document "d0") (qualified-name "MultiplicityTest::A"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::b"))) (to (node (document "d0") (qualified-name "MultiplicityTest::P"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "MultiplicityTest::c"))) (to (node (document "d0") (qualified-name "MultiplicityTest::P"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::A"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::A::i"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::A::x"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::P"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::a"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::b"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::c"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::d"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::e"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::f"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::g"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "MultiplicityTest::n"))) (status missing-prerequisite) (target "Base::DataValue"))
   )
 )
 ~~~

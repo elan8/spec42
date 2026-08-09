@@ -373,7 +373,7 @@ standard library package ComplexFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ComplexFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ComplexFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ComplexFunctions::_documentation"))) (to (node (document "d0") (qualified-name "ComplexFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

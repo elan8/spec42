@@ -152,13 +152,17 @@ standard library package Metadata {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::MetadataItem"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::_documentation"))) (to (node (document "d0") (qualified-name "Metadata"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::metadataItems"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::MetadataItem::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::_documentation"))) (to (node (document "d0") (qualified-name "Metadata"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "Metadata::metadataItems::_documentation"))) (to (node (document "d0") (qualified-name "Metadata::metadataItems"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata::MetadataItem"))) (status missing-prerequisite) (target "Metadata::MetadataItem"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Metadata::metadataItems"))) (status missing-prerequisite) (target "Items::Item"))
   )
 )
 ~~~

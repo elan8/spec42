@@ -81,6 +81,10 @@ package P {
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::vehicle"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::vehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
+  )
 )
 ~~~
 # DIAGNOSTICS

@@ -109,16 +109,25 @@ NIL
     )
   )
   (relationships
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))))
-    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (to (node (document "d0") (qualified-name "Generalization Example::Person"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (to (node (document "d0") (qualified-name "Generalization Example::Engine"))))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (provenance authored))
+    (specializes (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (to (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (to (node (document "d0") (qualified-name "Generalization Example::Person"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (to (node (document "d0") (qualified-name "Generalization Example::Engine"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::Person"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
   )
 )
 ~~~

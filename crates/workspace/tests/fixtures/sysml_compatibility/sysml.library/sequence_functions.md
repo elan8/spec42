@@ -633,7 +633,7 @@ standard library package SequenceFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequenceFunctions::_documentation"))) (to (node (document "d0") (qualified-name "SequenceFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "SequenceFunctions::_documentation"))) (to (node (document "d0") (qualified-name "SequenceFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

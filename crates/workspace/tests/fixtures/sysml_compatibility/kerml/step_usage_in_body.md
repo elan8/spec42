@@ -52,6 +52,9 @@ state def SD {
   )
   (pending-expression-relationships
   )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "SD"))) (status missing-prerequisite) (target "States::StateAction"))
+  )
 )
 ~~~
 # DIAGNOSTICS

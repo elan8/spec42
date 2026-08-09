@@ -213,7 +213,7 @@ standard library package StringFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "StringFunctions::_documentation"))) (to (node (document "d0") (qualified-name "StringFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "StringFunctions::_documentation"))) (to (node (document "d0") (qualified-name "StringFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

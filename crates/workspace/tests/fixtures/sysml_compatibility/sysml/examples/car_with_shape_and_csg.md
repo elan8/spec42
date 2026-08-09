@@ -453,13 +453,30 @@ semantic.unresolved_name 'elements'
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::_documentation"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car"))))
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::_documentation"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::powerSource"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::_documentation"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car"))) (provenance authored))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::_documentation"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::powerSource"))) (to (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::datum"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::powerSource"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::powerSource::ecf"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Car::shape"))) (status missing-prerequisite) (target "Items::items"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder1"))) (status missing-prerequisite) (target "Items::items"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder1::coordinateFrame"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder2"))) (status missing-prerequisite) (target "Items::items"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinder2::coordinateFrame"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::cylinderSpacing"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::engineCoordinateFrame"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::rawEngineBlock"))) (status missing-prerequisite) (target "Parts::parts"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::rearCylinderSpacing"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "CarWithShapeAndCSG::Engine::shape"))) (status missing-prerequisite) (target "Items::items"))
   )
 )
 ~~~

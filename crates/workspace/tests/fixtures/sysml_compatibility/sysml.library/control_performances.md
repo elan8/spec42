@@ -502,7 +502,7 @@ standard library package ControlPerformances {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlPerformances::_documentation"))) (to (node (document "d0") (qualified-name "ControlPerformances"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "ControlPerformances::_documentation"))) (to (node (document "d0") (qualified-name "ControlPerformances"))) (provenance authored))
   )
   (pending-relationships
   )

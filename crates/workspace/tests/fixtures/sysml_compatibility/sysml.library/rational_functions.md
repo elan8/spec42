@@ -452,7 +452,7 @@ standard library package RationalFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "RationalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "RationalFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "RationalFunctions::_documentation"))) (to (node (document "d0") (qualified-name "RationalFunctions"))) (provenance authored))
   )
   (pending-relationships
   )

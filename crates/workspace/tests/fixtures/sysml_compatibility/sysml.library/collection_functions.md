@@ -359,7 +359,7 @@ standard library package CollectionFunctions {
     )
   )
   (relationships
-    (annotation (status resolved) (from (node (document "d0") (qualified-name "CollectionFunctions::_documentation"))) (to (node (document "d0") (qualified-name "CollectionFunctions"))))
+    (annotation (status resolved) (from (node (document "d0") (qualified-name "CollectionFunctions::_documentation"))) (to (node (document "d0") (qualified-name "CollectionFunctions"))) (provenance authored))
   )
   (pending-relationships
   )
