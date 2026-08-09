@@ -2,6 +2,8 @@
 //! current semantic graph.  Do not add type-name equality checks here: type
 //! conformance belongs to graph traversal in `kind_compatibility`.
 
+use std::collections::HashSet;
+
 use url::Url;
 
 use crate::helpers::{diag, diagnostic_range};
@@ -12,6 +14,44 @@ use sysml_model::{ElementKind, RelationshipKind, SemanticGraph, SemanticNode};
 
 fn properties(node: &SemanticNode) -> Option<&DeclaredFeatureProperties> {
     node.declared_facts.feature_properties.as_ref()
+}
+
+fn is_connection_like_definition(kind: &ElementKind) -> bool {
+    matches!(
+        kind,
+        ElementKind::ConnectionDef | ElementKind::FlowDef | ElementKind::AllocationDef
+    )
+}
+
+/// A declaration that specializes another connection-like definition can inherit its ends. The
+/// current graph does not yet materialize an effective end closure, so the end-count rule must
+/// suppress rather than guess whenever an explicit specialization chain contains an end fact.
+fn inherits_any_positional_end(graph: &SemanticGraph, node: &SemanticNode) -> bool {
+    let mut pending: Vec<_> = graph
+        .outgoing_targets_by_kind(node, RelationshipKind::Specializes)
+        .into_iter()
+        .map(|target| target.id.clone())
+        .collect();
+    let mut visited = HashSet::new();
+
+    while let Some(id) = pending.pop() {
+        if !visited.insert(id.clone()) {
+            continue;
+        }
+        let Some(ancestor) = graph.get_node(&id) else {
+            continue;
+        };
+        if !graph.positional_end_features(ancestor).is_empty() {
+            return true;
+        }
+        pending.extend(
+            graph
+                .outgoing_targets_by_kind(ancestor, RelationshipKind::Specializes)
+                .into_iter()
+                .map(|target| target.id.clone()),
+        );
+    }
+    false
 }
 
 fn variant_kind_is_compatible(parent: &ElementKind, child: &ElementKind) -> bool {
@@ -45,6 +85,28 @@ pub(crate) fn collect_structural_feature_conformance_diagnostics(
     let mut diagnostics = Vec::new();
 
     for node in graph.nodes_for_uri(uri) {
+        // A connection-like declaration which authors exactly one end has an incomplete binary
+        // end pair. Do not infer an effective end closure: declarations with no authored ends,
+        // declared abstractness, or an explicit specialized ancestor with an end stay silent
+        // until their complete structural facts are represented.
+        if is_connection_like_definition(&node.element_kind)
+            && !properties(node).is_some_and(|props| props.is_abstract)
+            && !inherits_any_positional_end(graph, node)
+            && graph.positional_end_features(node).len() == 1
+        {
+            diagnostics.push(diag(
+                uri,
+                diagnostic_range(graph, node, None),
+                DiagnosticSeverity::Warning,
+                "semantic",
+                "incomplete_connection_like_end_pair",
+                format!(
+                    "{} '{}' declares one end; a binary connection-like declaration needs a second end.",
+                    node.element_kind, node.name
+                ),
+            ));
+        }
+
         let Some(props) = properties(node) else {
             continue;
         };
@@ -253,6 +315,131 @@ mod tests {
                 "missing {expected}: {codes:?}"
             );
         }
+    }
+
+    #[test]
+    fn incomplete_end_pair_uses_only_authored_and_specialized_end_facts() {
+        let uri = Url::parse("file:///connection-like-ends.sysml").unwrap();
+        let mut graph = SemanticGraph::new();
+        let connection = node(
+            &uri,
+            "Incomplete",
+            ElementKind::ConnectionDef,
+            DeclaredFeatureProperties::default(),
+        );
+        let source_end = SemanticNode {
+            parent_id: Some(connection.id.clone()),
+            ..node(
+                &uri,
+                "Incomplete::source",
+                ElementKind::InterfaceEnd,
+                DeclaredFeatureProperties {
+                    is_end: true,
+                    ..Default::default()
+                },
+            )
+        };
+        let base = node(
+            &uri,
+            "Base",
+            ElementKind::ConnectionDef,
+            DeclaredFeatureProperties::default(),
+        );
+        let base_end = SemanticNode {
+            parent_id: Some(base.id.clone()),
+            ..node(
+                &uri,
+                "Base::source",
+                ElementKind::InterfaceEnd,
+                DeclaredFeatureProperties {
+                    is_end: true,
+                    ..Default::default()
+                },
+            )
+        };
+        let base_target_end = SemanticNode {
+            parent_id: Some(base.id.clone()),
+            ..node(
+                &uri,
+                "Base::target",
+                ElementKind::InterfaceEnd,
+                DeclaredFeatureProperties {
+                    is_end: true,
+                    ..Default::default()
+                },
+            )
+        };
+        let derived = node(
+            &uri,
+            "Derived",
+            ElementKind::ConnectionDef,
+            DeclaredFeatureProperties::default(),
+        );
+        let derived_end = SemanticNode {
+            parent_id: Some(derived.id.clone()),
+            ..node(
+                &uri,
+                "Derived::target",
+                ElementKind::InterfaceEnd,
+                DeclaredFeatureProperties {
+                    is_end: true,
+                    ..Default::default()
+                },
+            )
+        };
+        let abstract_connection = node(
+            &uri,
+            "Abstract",
+            ElementKind::ConnectionDef,
+            DeclaredFeatureProperties {
+                is_abstract: true,
+                ..Default::default()
+            },
+        );
+        let abstract_end = SemanticNode {
+            parent_id: Some(abstract_connection.id.clone()),
+            ..node(
+                &uri,
+                "Abstract::source",
+                ElementKind::InterfaceEnd,
+                DeclaredFeatureProperties {
+                    is_end: true,
+                    ..Default::default()
+                },
+            )
+        };
+        for item in [
+            &connection,
+            &source_end,
+            &base,
+            &base_end,
+            &base_target_end,
+            &derived,
+            &derived_end,
+            &abstract_connection,
+            &abstract_end,
+        ] {
+            graph.insert_workspace_node(item.clone());
+        }
+        graph.insert_workspace_edge(
+            &derived.id,
+            &base.id,
+            SemanticEdge::plain(RelationshipKind::Specializes),
+        );
+
+        let reported: HashSet<_> = collect_structural_feature_conformance_diagnostics(&graph, &uri)
+            .into_iter()
+            .filter(|diagnostic| diagnostic.code == "incomplete_connection_like_end_pair")
+            .map(|diagnostic| diagnostic.message)
+            .collect();
+        assert_eq!(
+            reported.len(),
+            1,
+            "only the direct incomplete declaration is reportable"
+        );
+        assert!(reported
+            .iter()
+            .any(|message| message.contains("Incomplete")));
     }
 
     #[test]

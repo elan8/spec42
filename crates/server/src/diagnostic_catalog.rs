@@ -382,6 +382,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "incomplete_connection_like_end_pair",
+        severity: "warning",
+        meaning: "A connection, flow, or allocation definition declares only one direct end.",
+        typical_fix: "Declare a second end, or specialize a definition that supplies the inherited ends.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "end_feature_has_direction",
         severity: "warning",
         meaning: "An end feature declares a direction, which KerML forbids.",
@@ -799,6 +806,7 @@ mod tests {
         ("unknown_unit_symbol", "warning"),
         ("incompatible_unit_dimension", "warning"),
         ("inherited_attribute_value_type_mismatch", "error"),
+        ("incomplete_connection_like_end_pair", "warning"),
         ("interface_end_invalid", "warning"),
         ("invalid_enumeration_value", "error"),
         ("invalid_import_filter", "warning"),

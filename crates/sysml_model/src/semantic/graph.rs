@@ -623,6 +623,36 @@ impl SemanticGraphData {
             .collect()
     }
 
+    /// Returns directly owned end features in authored source order.
+    ///
+    /// An end is a declared structural fact, not a convention based on its name or its type.
+    /// This is the canonical positional view for connection-like definitions/usages; it includes
+    /// only children whose parser-backed feature properties declare `is_end`, and never invents
+    /// a missing counterpart for an incomplete declaration.
+    pub fn positional_end_features(&self, owner: &SemanticNode) -> Vec<&SemanticNode> {
+        let mut ends: Vec<_> = self
+            .children_of(owner)
+            .into_iter()
+            .filter(|child| {
+                child
+                    .declared_facts
+                    .feature_properties
+                    .as_ref()
+                    .is_some_and(|properties| properties.is_end)
+            })
+            .collect();
+        ends.sort_by_key(|child| {
+            (
+                child.range.start.line,
+                child.range.start.character,
+                child.range.end.line,
+                child.range.end.character,
+                child.id.qualified_name.as_str(),
+            )
+        });
+        ends
+    }
+
     /// Returns the node for the given NodeId, if it exists.
     pub fn get_node(&self, id: &NodeId) -> Option<&SemanticNode> {
         self.node_index_by_id

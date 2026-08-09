@@ -7,15 +7,17 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{connection_end_expression, span_to_range, subsetting_target};
+use crate::semantic::ast_util::{
+    connection_end_expression, declared_multiplicity, span_to_range, subsetting_target,
+};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{
     add_edge_if_both_exist, add_typing_edge_if_exists, try_wire_derivation_connection,
 };
 
 use super::expressions;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
 use crate::semantic::resolution::resolve_expression_endpoint_qualified;
 
 pub(super) fn add_end_decl(
@@ -50,6 +52,12 @@ pub(super) fn add_end_decl(
     } else {
         attrs.insert("portType".to_string(), serde_json::json!(&n.type_name));
     }
+    if let Some(target) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(target));
+    }
+    if let Some(target) = subsetting_target(n.crosses.as_deref()) {
+        attrs.insert("crossesFeature".to_string(), serde_json::json!(target));
+    }
     add_node_and_recurse(
         g,
         uri,
@@ -60,7 +68,23 @@ pub(super) fn add_end_decl(
         attrs,
         Some(parent_id),
     );
-    if n.references.is_none() {
+    attach_feature_properties(
+        g,
+        &NodeId::new(uri, &qualified),
+        DeclaredFeatureProperties {
+            is_end: true,
+            ..DeclaredFeatureProperties::default()
+        },
+    );
+    if let Some(multiplicity) = &n.multiplicity {
+        if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+            node.declared_facts.multiplicity = Some(declared_multiplicity(multiplicity, false));
+        }
+    }
+    // A typed end can also carry a trailing `::>` reference-subsetting clause.  The AST's
+    // `references` field represents both that form and the reference-only form, so the syntax
+    // discriminator is the only sound way to decide whether a typing edge is authored.
+    if !n.uses_derived_syntax {
         add_typing_edge_if_exists(g, uri, &qualified, &n.type_name, container_prefix);
     }
 }
