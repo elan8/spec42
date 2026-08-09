@@ -229,15 +229,15 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         diagnostics.len().saturating_sub(d3),
     ));
 
-    // 4) Multiplicity validation (syntax and interval sanity)
+    // 4) Multiplicity validation (parser-backed bounds and interval sanity)
     let t4 = Instant::now();
     let d4 = diagnostics.len();
     for node in &nodes {
-        if let Some(multiplicity) = node.attributes.get("multiplicity").and_then(|v| v.as_str()) {
-            if let Some(message) = multiplicity_issue_message(multiplicity) {
+        if let Some(multiplicity) = node.declared_facts.multiplicity.as_ref() {
+            if let Some(message) = declared_multiplicity_issue_message(multiplicity) {
                 diagnostics.push(diag(
                     uri,
-                    diagnostic_range(graph, node, None),
+                    multiplicity.range,
                     DiagnosticSeverity::Warning,
                     "semantic",
                     "invalid_multiplicity",

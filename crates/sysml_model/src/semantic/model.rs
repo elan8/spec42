@@ -790,6 +790,76 @@ pub struct DeclaredMultiplicity {
     pub is_unique: Option<bool>,
 }
 
+/// The directly-known value of a parser-backed multiplicity bound.
+///
+/// Expressions that need name resolution or evaluation deliberately remain
+/// [`Unevaluated`](Self::Unevaluated).  Consumers must not substitute display
+/// text or treat that state as a resolved bound.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DeclaredMultiplicityBound {
+    /// The `*` spelling used for an unbounded side of a multiplicity.
+    Unbounded,
+    /// A directly declared integer literal, including a signed literal.
+    Integer(i64),
+    /// A literal that cannot be a multiplicity integer (for example `1.5`).
+    NonIntegerLiteral,
+    /// A parser-backed expression whose value is not directly known here.
+    Unevaluated,
+}
+
+/// The directly-known lower and upper sides of a declared multiplicity.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DeclaredMultiplicityBounds {
+    pub lower: DeclaredMultiplicityBound,
+    pub upper: DeclaredMultiplicityBound,
+}
+
+impl DeclaredMultiplicity {
+    /// Returns the literal/unbounded portion of this parser-backed fact without
+    /// consulting display attributes or re-parsing source text.
+    pub fn direct_bounds(&self) -> DeclaredMultiplicityBounds {
+        DeclaredMultiplicityBounds {
+            lower: direct_multiplicity_bound(self.lower.as_ref()),
+            upper: direct_multiplicity_bound(self.upper.as_ref()),
+        }
+    }
+}
+
+fn direct_multiplicity_bound(expression: Option<&DeclaredExpression>) -> DeclaredMultiplicityBound {
+    let Some(expression) = expression else {
+        return DeclaredMultiplicityBound::Unbounded;
+    };
+    if expression.kind == "integerLiteral" {
+        return expression
+            .literal
+            .as_ref()
+            .and_then(serde_json::Value::as_i64)
+            .map(DeclaredMultiplicityBound::Integer)
+            .unwrap_or(DeclaredMultiplicityBound::NonIntegerLiteral);
+    }
+    if expression.kind == "unary" && expression.children.len() == 1 {
+        let child = direct_multiplicity_bound(expression.children.first());
+        return match (expression.operator.as_deref(), child) {
+            (Some("+"), DeclaredMultiplicityBound::Integer(value)) => {
+                DeclaredMultiplicityBound::Integer(value)
+            }
+            (Some("-"), DeclaredMultiplicityBound::Integer(value)) => value
+                .checked_neg()
+                .map(DeclaredMultiplicityBound::Integer)
+                .unwrap_or(DeclaredMultiplicityBound::NonIntegerLiteral),
+            (_, DeclaredMultiplicityBound::NonIntegerLiteral) => {
+                DeclaredMultiplicityBound::NonIntegerLiteral
+            }
+            _ => DeclaredMultiplicityBound::Unevaluated,
+        };
+    }
+    if expression.literal.is_some() {
+        DeclaredMultiplicityBound::NonIntegerLiteral
+    } else {
+        DeclaredMultiplicityBound::Unevaluated
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeclaredFeatureValue {
     pub kind: DeclaredFeatureValueKind,

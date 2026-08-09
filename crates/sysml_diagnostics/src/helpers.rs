@@ -611,30 +611,35 @@ pub(super) fn declared_specializes_refs(node: &SemanticNode) -> Vec<String> {
     }
 }
 
-pub(super) fn multiplicity_issue_message(multiplicity: &str) -> Option<String> {
-    let normalized = multiplicity
-        .trim()
-        .trim_start_matches('[')
-        .trim_end_matches(']');
-    if normalized.is_empty() {
-        return Some("empty multiplicity".to_string());
-    }
-    let Some((lower_raw, upper_raw)) = normalized.split_once("..") else {
-        return validate_single_multiplicity_value(normalized);
-    };
-    let lower = match parse_non_negative_bound(lower_raw.trim()) {
-        Ok(value) => value,
-        Err(error) => return Some(error),
-    };
-    let upper = if upper_raw.trim() == "*" {
-        None
-    } else {
-        match parse_non_negative_bound(upper_raw.trim()) {
-            Ok(value) => Some(value),
-            Err(error) => return Some(error),
+/// Validates only directly-known parser-backed multiplicity bounds.  Bounds
+/// requiring expression evaluation stay explicitly unresolved here; a display
+/// string is never used as a replacement semantic input.
+pub(super) fn declared_multiplicity_issue_message(
+    multiplicity: &sysml_model::DeclaredMultiplicity,
+) -> Option<String> {
+    use sysml_model::DeclaredMultiplicityBound::{Integer, NonIntegerLiteral, Unbounded};
+
+    let bounds = multiplicity.direct_bounds();
+    match bounds.lower {
+        NonIntegerLiteral => return Some("lower bound must be an integer".to_string()),
+        Integer(value) if value < 0 => {
+            return Some(format!("lower bound {value} must be non-negative"));
         }
-    };
-    if let Some(upper) = upper {
+        _ => {}
+    }
+    match bounds.upper {
+        NonIntegerLiteral => return Some("upper bound must be an integer or '*'".to_string()),
+        Integer(value) if value < 0 => {
+            return Some(format!("upper bound {value} must be non-negative"));
+        }
+        _ => {}
+    }
+    if let (Unbounded, Integer(upper)) = (bounds.lower, bounds.upper) {
+        return Some(format!(
+            "unbounded lower bound is not valid with finite upper bound {upper}"
+        ));
+    }
+    if let (Integer(lower), Integer(upper)) = (bounds.lower, bounds.upper) {
         if lower > upper {
             return Some(format!(
                 "lower bound {lower} is greater than upper bound {upper}"
@@ -642,21 +647,6 @@ pub(super) fn multiplicity_issue_message(multiplicity: &str) -> Option<String> {
         }
     }
     None
-}
-
-pub(super) fn validate_single_multiplicity_value(raw: &str) -> Option<String> {
-    if raw == "*" {
-        return None;
-    }
-    parse_non_negative_bound(raw).err()
-}
-
-pub(super) fn parse_non_negative_bound(raw: &str) -> Result<i64, String> {
-    match raw.parse::<i64>() {
-        Ok(value) if value >= 0 => Ok(value),
-        Ok(value) => Err(format!("bound {value} must be non-negative")),
-        Err(_) => Err(format!("bound '{raw}' is not an integer or '*'")),
-    }
 }
 
 /// User-facing text for [`objective_binding_unresolved`](super::engine_impl) diagnostics.

@@ -4,9 +4,8 @@ use url::Url;
 
 use crate::helpers::{
     attribute_value_is_string_literal, declared_specializes_refs, declared_type_ref, diag,
-    diagnostic_range, is_builtin_type_ref, is_synthetic, multiplicity_issue_message,
-    normalize_declared_type_ref, parse_non_negative_bound, resolves_to_enum_def,
-    unresolved_type_diagnostic_range,
+    diagnostic_range, is_builtin_type_ref, is_synthetic, normalize_declared_type_ref,
+    resolves_to_enum_def, unresolved_type_diagnostic_range,
 };
 use crate::kind_rules::{
     allowed_subset_redefine_target_kinds, allowed_typing_target_kinds,
@@ -21,8 +20,8 @@ use sysml_model::semantic::kinds::{
 };
 use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use sysml_model::{
-    resolve_inherited_member_via_type, resolve_type_reference_targets, RelationshipKind,
-    ResolveResult, SemanticGraph,
+    resolve_inherited_member_via_type, resolve_type_reference_targets, DeclaredMultiplicity,
+    DeclaredMultiplicityBound, RelationshipKind, ResolveResult, SemanticGraph,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -31,32 +30,25 @@ struct MultiplicityBounds {
     upper: Option<i64>,
 }
 
-fn parse_multiplicity_bounds(raw: Option<&str>) -> Option<MultiplicityBounds> {
-    let raw = raw?.trim();
-    if raw.is_empty() || multiplicity_issue_message(raw).is_some() {
+fn direct_multiplicity_bounds(
+    multiplicity: Option<&DeclaredMultiplicity>,
+) -> Option<MultiplicityBounds> {
+    let bounds = multiplicity?.direct_bounds();
+    let DeclaredMultiplicityBound::Integer(lower) = bounds.lower else {
+        return None;
+    };
+    if lower < 0 {
         return None;
     }
-    let normalized = raw.trim_start_matches('[').trim_end_matches(']').trim();
-    if let Some((lower_raw, upper_raw)) = normalized.split_once("..") {
-        let lower = parse_non_negative_bound(lower_raw.trim()).ok()?;
-        let upper = if upper_raw.trim() == "*" {
-            None
-        } else {
-            Some(parse_non_negative_bound(upper_raw.trim()).ok()?)
-        };
-        return Some(MultiplicityBounds { lower, upper });
+    let upper = match bounds.upper {
+        DeclaredMultiplicityBound::Integer(value) if value >= 0 => Some(value),
+        DeclaredMultiplicityBound::Unbounded => None,
+        _ => return None,
+    };
+    if upper.is_some_and(|value| lower > value) {
+        return None;
     }
-    if normalized == "*" {
-        return Some(MultiplicityBounds {
-            lower: 0,
-            upper: None,
-        });
-    }
-    let exact = parse_non_negative_bound(normalized).ok()?;
-    Some(MultiplicityBounds {
-        lower: exact,
-        upper: Some(exact),
-    })
+    Some(MultiplicityBounds { lower, upper })
 }
 
 fn multiplicity_widens(child: MultiplicityBounds, parent: MultiplicityBounds) -> bool {
@@ -311,15 +303,10 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                             }
                         }
 
-                        let child_bounds = parse_multiplicity_bounds(
-                            node.attributes.get("multiplicity").and_then(|v| v.as_str()),
-                        );
-                        let parent_bounds = parse_multiplicity_bounds(
-                            target
-                                .attributes
-                                .get("multiplicity")
-                                .and_then(|v| v.as_str()),
-                        );
+                        let child_bounds =
+                            direct_multiplicity_bounds(node.declared_facts.multiplicity.as_ref());
+                        let parent_bounds =
+                            direct_multiplicity_bounds(target.declared_facts.multiplicity.as_ref());
                         if let (Some(child), Some(parent)) = (child_bounds, parent_bounds) {
                             if multiplicity_widens(child, parent) {
                                 let key = format!("mult|{}", node.id.qualified_name);
