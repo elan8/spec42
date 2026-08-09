@@ -2,7 +2,7 @@
 //!
 //! These are deliberately ignored rather than silently discarded: the current
 //! graph does not retain enough facts to validate them without guessing. Each
-//! fixture is a concrete migration target for the relevant graph projection.
+//! fixture is a concrete deferred target for the relevant graph projection.
 
 #[test]
 #[ignore = "SKIP S42-COMPAT-STRUCT-001: connector/flow/allocation end declarations are not projected uniformly as positional ends"]

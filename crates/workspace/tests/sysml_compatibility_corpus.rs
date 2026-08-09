@@ -48,7 +48,7 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
     );
     assert!(
         !Path::new(FIXTURES).join("interchange").exists(),
-        "OMG JSON interchange is intentionally outside this migration"
+        "OMG JSON interchange fixtures are intentionally outside this compatibility corpus"
     );
 
     let mut coverage = Coverage::default();

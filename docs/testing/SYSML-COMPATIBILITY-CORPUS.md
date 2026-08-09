@@ -25,7 +25,7 @@ internal representations and diagnostic wording are implementation-specific. A
 non-matching parser acceptance result or formatter golden produces an explicit
 `SKIP` message (with its reason) under `--nocapture`; it is never silently
 dropped. A non-UTF-8 fuzz fixture is likewise reported as skipped because the
-pinned parser API accepts UTF-8 text. These skips are future migration work,
+pinned parser API accepts UTF-8 text. These skips are future compatibility work,
 not passing conformance claims.
 
 The runner's count guard prevents accidental loss of fixtures. When deliberately
