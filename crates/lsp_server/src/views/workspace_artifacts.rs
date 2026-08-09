@@ -39,7 +39,8 @@ pub(crate) async fn materialize_model_explorer_with_cache(
     state: &ServerState,
     workspace_root_uri: &Url,
 ) -> Result<ModelExplorerBundle, String> {
-    let expected_version = state.session.version();
+    let expected_publication = state.session.publication();
+    let expected_version = expected_publication.version();
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
     if let Some(bundle) = state
         .render_cache
@@ -58,7 +59,7 @@ pub(crate) async fn materialize_model_explorer_with_cache(
         expected_version,
     )?;
     let _ = handle
-        .update_render_cache(expected_version, move |c| *c = cache)
+        .update_render_cache(expected_publication, move |c| *c = cache)
         .await;
     Ok(bundle)
 }
@@ -71,7 +72,8 @@ pub(crate) async fn build_visualization_with_cache(
     selected_view: Option<&str>,
     build_start: Instant,
 ) -> Result<VisualizationBuildOutcome, String> {
-    let expected_version = state.session.version();
+    let expected_publication = state.session.publication();
+    let expected_version = expected_publication.version();
     let workspace_root_uri = util::normalize_file_uri(workspace_root_uri);
     let cache_key = workspace::ViewCacheKey {
         view: view.to_string(),
@@ -104,7 +106,7 @@ pub(crate) async fn build_visualization_with_cache(
         build_start,
     )?;
     let _ = handle
-        .update_render_cache(expected_version, move |c| *c = cache)
+        .update_render_cache(expected_publication, move |c| *c = cache)
         .await;
     Ok(outcome)
 }

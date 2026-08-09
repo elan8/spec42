@@ -354,6 +354,9 @@ pub(crate) async fn sysml_visualization_result(
             workspace::SessionLifecycle::Cold => {
                 "SysML language server is starting. The diagram will appear when the server is ready."
             }
+            workspace::SessionLifecycle::Closed => {
+                "SysML language server session is closed. The diagram is unavailable."
+            }
             workspace::SessionLifecycle::Ready => "SysML model is not ready.",
         };
         return Ok((

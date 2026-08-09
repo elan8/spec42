@@ -32,7 +32,6 @@ pub(crate) async fn did_open(
     let (warning, lock_wait_ms, scheduled_relink) = if already_indexed {
         // Fast path: content unchanged — skip re-parse and re-evaluation entirely.
         let lock_start = Instant::now();
-        handle.bump_version().await.ok();
         let lock_wait_ms = lock_start.elapsed().as_millis();
         (None, lock_wait_ms, false)
     } else {
@@ -116,10 +115,11 @@ pub(crate) async fn did_change(
     let version = params.text_document.version;
     let apply_start = Instant::now();
 
-    // Phase 1: apply the incoming text edit. This is cheap in-memory string
-    // surgery, applied inline on the actor — never CPU-bound parsing.
-    let (content_changed, mut warnings) = handle
-        .apply_document_content_edit(uri_norm.clone(), version, params.content_changes)
+    // Phase 1: derive prospective text from the currently published source. This does not
+    // publish anything: readers continue to observe the prior coherent snapshot until parsing
+    // and the local semantic patch can be committed together.
+    let (edit, mut warnings) = handle
+        .prepare_document_content_edit(uri_norm.clone(), version, params.content_changes)
         .await
         .unwrap_or_default();
 
@@ -129,51 +129,39 @@ pub(crate) async fn did_change(
     // it as a `mutate` closure would stall every other in-flight request
     // (hover, completion, further edits) behind it. `spawn_blocking` also
     // keeps this off the async executor thread.
-    if content_changed {
-        let content = handle
-            .snapshot()
-            .index
-            .get(&uri_norm)
-            .map(|entry| entry.content.clone());
-        if let Some(content) = content {
-            let parse_start = Instant::now();
-            let parse_outcome =
-                tokio::task::spawn_blocking(move || util::parse_for_editor(&content)).await;
-            let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
-            match parse_outcome {
-                Ok(parsed_result) => {
-                    warnings.extend(
-                        handle
-                            .apply_parsed_document_update(
-                                uri_norm.clone(),
-                                version,
-                                parsed_result,
-                                parse_time_ms,
-                            )
-                            .await
-                            .unwrap_or_default(),
-                    );
-                }
-                Err(_) => {
-                    warnings.push((
+    let mut token = None;
+    if let Some(edit) = edit {
+        let content = edit.content.clone();
+        let parse_start = Instant::now();
+        let parse_outcome =
+            tokio::task::spawn_blocking(move || util::parse_for_editor(&content)).await;
+        let parse_time_ms = (parse_start.elapsed().as_millis().max(1)) as u32;
+        match parse_outcome {
+            Ok(parsed_result) => {
+                let (relink, parse_warnings) = handle
+                    .apply_parsed_document_update(edit, parsed_result, parse_time_ms)
+                    .await
+                    .unwrap_or_default();
+                token = relink;
+                warnings.extend(parse_warnings);
+            }
+            Err(_) => {
+                warnings.push((
                         MessageType::WARNING,
                         format!(
                             "didChange: parse task for {} (version {}) failed unexpectedly; document kept at its previous parsed state.",
                             uri_norm, version
                         ),
                     ));
-                }
             }
         }
     }
 
-    // Phase 3: decide whether to schedule a relink now that the document's
-    // own parse/graph patch is committed.
+    // Phase 3: the atomic parse/graph commit above already scheduled its relink token.
     let perf_logging_enabled = runtime_config
         .get()
         .expect("initialize precedes all other LSP requests")
         .perf_logging_enabled;
-    let token = handle.schedule_relink_if_ready().await.unwrap_or_default();
     let apply_ms = apply_start.elapsed().as_millis() as u64;
     for (ty, message) in warnings {
         if ty == MessageType::LOG && !perf_logging_enabled {

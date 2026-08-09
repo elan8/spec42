@@ -56,6 +56,10 @@ impl TracksRelink for ServerState {
     fn is_token_current(&self, token: &RelinkToken) -> bool {
         self.session.is_token_current(token)
     }
+
+    fn rekey_for_actor(&mut self) {
+        self.session.rekey_for_owner();
+    }
 }
 
 /// Shared accessors letting `workspace/services.rs`'s free functions stay agnostic of the

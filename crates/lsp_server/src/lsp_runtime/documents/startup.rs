@@ -280,7 +280,7 @@ pub(crate) async fn initialized(
             // Snapshot index/library_paths (a plain `Arc` read, no lock) before running the
             // expensive rebuild off the actor so semantic-token and hover requests can proceed
             // concurrently instead of queueing behind anything.
-            let (snapshot_version, index_snapshot, library_paths_snapshot) =
+            let (snapshot_publication, index_snapshot, library_paths_snapshot) =
                 handle.relink_snapshot();
             let base_graph_for_rebuild =
                 library_graph_cache_was_hit.then(|| handle.snapshot().semantic_graph.clone());
@@ -297,7 +297,7 @@ pub(crate) async fn initialized(
                 .unwrap_or_else(|e| panic!("startup relink task panicked: {e:?}"));
 
             let outcome = handle
-                .commit_startup_relink_or_stale(snapshot_version, new_graph, new_symbols)
+                .commit_startup_relink_or_stale(snapshot_publication, new_graph, new_symbols)
                 .await;
             match outcome {
                 Ok(crate::workspace::handle::StartupRelinkOutcome::Committed) => {
