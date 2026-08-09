@@ -237,6 +237,19 @@ pub fn is_part_like(element_kind: &ElementKind) -> bool {
     ) || matches!(element_kind, ElementKind::Unknown(s) if s.contains("part"))
 }
 
+/// Definitions that are concrete occurrence types for a flow payload.
+///
+/// This deliberately names the metaclass family rather than relying on a library type name:
+/// part, item, and occurrence definitions are the occurrence classifiers represented by the
+/// current graph. Other typing targets, such as attributes and enumerations, are value types
+/// and cannot be transported as a flow payload occurrence.
+pub fn is_flow_payload_occurrence_type(element_kind: &ElementKind) -> bool {
+    matches!(
+        element_kind,
+        ElementKind::PartDef | ElementKind::ItemDef | ElementKind::OccurrenceDef
+    )
+}
+
 /// Canonical `element_type`-string form of [`is_part_like`], for callers holding only a
 /// projected `element_type: String` (DTOs) rather than a [`SemanticNode`]/[`ElementKind`].
 /// Round-trips losslessly through [`ElementKind::parse`]/[`ElementKind::as_str`] for every

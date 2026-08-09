@@ -48,6 +48,71 @@ fn nested_usage_without_multiplicity_publishes_implied_exactly_one() {
 }
 
 #[test]
+fn only_nested_ordinary_part_attribute_and_port_usages_receive_implied_multiplicity() {
+    let document = workspace_doc(
+        "implied_multiplicity_scope.sysml",
+        r#"package P {
+  part packagePart;
+  attribute packageAttribute;
+  port packagePort;
+  connection packageConnection;
+
+  part def Container {
+    part nestedPart;
+    attribute nestedAttribute;
+    port nestedPort;
+    part base;
+    part subsetPart subsets base;
+    part authoredPart[0..*];
+  }
+}"#,
+    );
+    let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
+
+    for name in ["nestedPart", "nestedAttribute", "nestedPort"] {
+        let node = graph
+            .nodes_named(name)
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| panic!("missing nested usage {name}"));
+        assert_eq!(
+            graph
+                .effective_facts_for(node)
+                .and_then(|facts| facts.implied_multiplicity),
+            Some(sysml_model::ImpliedMultiplicity {
+                lower: 1,
+                upper: Some(1),
+                is_ordered: false,
+                is_unique: None,
+            }),
+            "{name} should receive the owned-usage default"
+        );
+    }
+
+    for name in [
+        "packagePart",
+        "packageAttribute",
+        "packagePort",
+        "packageConnection",
+        "subsetPart",
+        "authoredPart",
+    ] {
+        let node = graph
+            .nodes_named(name)
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| panic!("missing excluded usage {name}"));
+        assert!(
+            graph
+                .effective_facts_for(node)
+                .and_then(|facts| facts.implied_multiplicity)
+                .is_none(),
+            "{name} must not receive the ordinary owned-usage default"
+        );
+    }
+}
+
+#[test]
 fn feature_nested_in_a_usage_publishes_its_nearest_featuring_type() {
     let document = workspace_doc(
         "nested_featuring.sysml",

@@ -9,6 +9,7 @@ use url::Url;
 use crate::helpers::{diag, diagnostic_range};
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
+use sysml_model::semantic::kinds::is_flow_payload_occurrence_type;
 use sysml_model::semantic::model::DeclaredFeatureProperties;
 use sysml_model::{ElementKind, RelationshipKind, SemanticGraph, SemanticNode};
 
@@ -92,6 +93,28 @@ pub(crate) fn collect_structural_feature_conformance_diagnostics(
     let mut diagnostics = Vec::new();
 
     for node in graph.nodes_for_uri(uri) {
+        // SysML flow payloads carry occurrences, not values. The payload's real child feature
+        // and its resolved typing edge are materialized by the graph builder, so this check
+        // needs neither a textual `of` clause nor a parallel type resolver. Leave an untyped
+        // payload to the existing unresolved-type diagnostics rather than guessing.
+        if node.element_kind == ElementKind::FlowPayload {
+            for target in graph.outgoing_targets_by_kind(node, RelationshipKind::Typing) {
+                if !is_flow_payload_occurrence_type(&target.element_kind) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, node, Some(target)),
+                        DiagnosticSeverity::Error,
+                        "semantic",
+                        "flow_payload_type_not_occurrence",
+                        format!(
+                            "Flow payload '{}' is typed by '{}' ({}), which is not an occurrence type.",
+                            node.name, target.name, target.element_kind
+                        ),
+                    ));
+                }
+            }
+        }
+
         // A connection-like declaration which authors exactly one end has an incomplete binary
         // end pair. Do not infer an effective end closure: declarations with no authored ends,
         // declared abstractness, or an explicit specialized ancestor with an end stay silent
@@ -201,6 +224,38 @@ pub(crate) fn collect_structural_feature_conformance_diagnostics(
         }
 
         for target in graph.outgoing_targets_by_kind(node, RelationshipKind::Redefinition) {
+            // A redefinition can only be introduced by the same featuring type or one that
+            // specializes the type featuring the redefined member. These are published
+            // effective facts after linking; absent/ambiguous featuring closure stays silent
+            // instead of being reconstructed from a name or source range.
+            if let (Some(redefining_type), Some(redefined_type)) = (
+                graph
+                    .effective_facts_for(node)
+                    .and_then(|facts| facts.featuring_type.as_ref())
+                    .and_then(|id| graph.get_node(id)),
+                graph
+                    .effective_facts_for(target)
+                    .and_then(|facts| facts.featuring_type.as_ref())
+                    .and_then(|id| graph.get_node(id)),
+            ) {
+                if !graph.specializes_transitively(redefining_type, redefined_type) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, node, Some(target)),
+                        DiagnosticSeverity::Error,
+                        "semantic",
+                        "redefinition_featuring_type_incompatible",
+                        format!(
+                            "Feature '{}' is featured by '{}' and cannot redefine '{}' featured by unrelated type '{}'.",
+                            node.name,
+                            redefining_type.name,
+                            target.name,
+                            redefined_type.name
+                        ),
+                    ));
+                }
+            }
+
             let target_props = properties(target);
             // KerML §8.3.3.3.8: redefining an end requires an end feature.
             if target_props.is_some_and(|p| p.is_end) && !props.is_end {
@@ -348,6 +403,99 @@ mod tests {
                 "missing {expected}: {codes:?}"
             );
         }
+    }
+
+    #[test]
+    fn redefinition_requires_overlapping_effective_featuring_types() {
+        let uri = Url::parse("file:///redefinition-featuring.sysml").unwrap();
+        let mut graph = SemanticGraph::new();
+        let base_type = node(
+            &uri,
+            "Base",
+            ElementKind::PartDef,
+            DeclaredFeatureProperties::default(),
+        );
+        let derived_type = node(
+            &uri,
+            "Derived",
+            ElementKind::PartDef,
+            DeclaredFeatureProperties::default(),
+        );
+        let unrelated_type = node(
+            &uri,
+            "Unrelated",
+            ElementKind::PartDef,
+            DeclaredFeatureProperties::default(),
+        );
+        let base_feature = SemanticNode {
+            parent_id: Some(base_type.id.clone()),
+            ..node(
+                &uri,
+                "Base::feature",
+                ElementKind::Attribute,
+                DeclaredFeatureProperties::default(),
+            )
+        };
+        let valid_redefinition = SemanticNode {
+            parent_id: Some(derived_type.id.clone()),
+            ..node(
+                &uri,
+                "Derived::feature",
+                ElementKind::Attribute,
+                DeclaredFeatureProperties::default(),
+            )
+        };
+        let invalid_redefinition = SemanticNode {
+            parent_id: Some(unrelated_type.id.clone()),
+            ..node(
+                &uri,
+                "Unrelated::feature",
+                ElementKind::Attribute,
+                DeclaredFeatureProperties::default(),
+            )
+        };
+        for item in [
+            &base_type,
+            &derived_type,
+            &unrelated_type,
+            &base_feature,
+            &valid_redefinition,
+            &invalid_redefinition,
+        ] {
+            graph.insert_workspace_node(item.clone());
+        }
+        graph.insert_workspace_edge(
+            &derived_type.id,
+            &base_type.id,
+            SemanticEdge::plain(RelationshipKind::Specializes),
+        );
+        graph.insert_workspace_edge(
+            &valid_redefinition.id,
+            &base_feature.id,
+            SemanticEdge::plain(RelationshipKind::Redefinition),
+        );
+        graph.insert_workspace_edge(
+            &invalid_redefinition.id,
+            &base_feature.id,
+            SemanticEdge::plain(RelationshipKind::Redefinition),
+        );
+        graph.refresh_effective_facts();
+
+        let diagnostics = collect_structural_feature_conformance_diagnostics(&graph, &uri);
+        assert!(
+            diagnostics.iter().any(|diagnostic| {
+                diagnostic.code == "redefinition_featuring_type_incompatible"
+                    && diagnostic.message.contains("Unrelated::feature")
+            }),
+            "unrelated featuring types must be diagnosed: {diagnostics:?}"
+        );
+        assert!(
+            !diagnostics.iter().any(|diagnostic| {
+                diagnostic.code == "redefinition_featuring_type_incompatible"
+                    && diagnostic.message.contains("Derived::feature")
+            }),
+            "specializing featuring type must remain accepted: {diagnostics:?}"
+        );
     }
 
     #[test]

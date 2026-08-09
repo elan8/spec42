@@ -1,5 +1,8 @@
-﻿use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
-use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
+use sysml_model::{
+    build_semantic_graph_from_documents, ElementKind, NodeId, SemanticGraph, SemanticNode,
+    SysmlDocument, SysmlDocumentSourceKind, TextPosition, TextRange,
+};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -728,6 +731,73 @@ fn verification_membership_retains_its_objective_parentage() {
         .expect("verified requirement has an owning objective");
 
     assert_eq!(parent.element_kind, sysml_model::ElementKind::Objective);
+}
+
+#[test]
+fn verification_membership_must_belong_to_a_verification_objective() {
+    let uri = url::Url::parse("memory://workspace/verification_membership.sysml").unwrap();
+    let range = TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1));
+    let node =
+        |qualified_name: &str, name: &str, element_kind: ElementKind, parent_id| SemanticNode {
+            id: NodeId::new(&uri, qualified_name),
+            element_kind,
+            declared_name: Some(name.to_string()),
+            name: name.to_string(),
+            range,
+            attributes: Default::default(),
+            declared_facts: Default::default(),
+            parent_id,
+        };
+    let verification = node("P::Check", "Check", ElementKind::VerificationDef, None);
+    let objective = node(
+        "P::Check::objective",
+        "objective",
+        ElementKind::Objective,
+        Some(verification.id.clone()),
+    );
+    let valid_membership = SemanticNode {
+        range: TextRange::new(TextPosition::new(1, 0), TextPosition::new(1, 1)),
+        ..node(
+            "P::Check::objective::Req",
+            "Req",
+            ElementKind::VerifiedRequirement,
+            Some(objective.id.clone()),
+        )
+    };
+    let misplaced_membership = SemanticNode {
+        range: TextRange::new(TextPosition::new(2, 0), TextPosition::new(2, 1)),
+        ..node(
+            "P::Check::Req",
+            "Req",
+            ElementKind::VerifiedRequirement,
+            Some(verification.id.clone()),
+        )
+    };
+    let mut graph = SemanticGraph::new();
+    for node in [
+        verification,
+        objective,
+        valid_membership.clone(),
+        misplaced_membership.clone(),
+    ] {
+        graph.insert_workspace_node(node);
+    }
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "verification_membership_outside_objective"
+                && diagnostic.range == misplaced_membership.range
+        }),
+        "misplaced membership must be diagnosed: {diagnostics:?}"
+    );
+    assert!(
+        !diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "verification_membership_outside_objective"
+                && diagnostic.range == valid_membership.range
+        }),
+        "membership in a verification objective must remain accepted: {diagnostics:?}"
+    );
 }
 
 #[test]

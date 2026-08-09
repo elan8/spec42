@@ -239,6 +239,40 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         if node.element_kind != ElementKind::VerifiedRequirement || is_synthetic(node) {
             continue;
         }
+        let verification_objective = node
+            .parent_id
+            .as_ref()
+            .and_then(|id| graph.get_node(id))
+            .filter(|parent| parent.element_kind == ElementKind::Objective)
+            .and_then(|objective| {
+                objective
+                    .parent_id
+                    .as_ref()
+                    .and_then(|id| graph.get_node(id))
+                    .filter(|case| {
+                        matches!(
+                            case.element_kind,
+                            ElementKind::VerificationDef | ElementKind::Verification
+                        )
+                    })
+                    .map(|_| objective)
+            });
+        if verification_objective.is_none() {
+            let key = format!("verification_membership_owner|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Error,
+                    "semantic",
+                    "verification_membership_outside_objective",
+                    format!(
+                        "Verification membership '{}' must be owned by an objective of a verification case.",
+                        node.name
+                    ),
+                ));
+            }
+        }
         let Some(requirement_ref) = node
             .attributes
             .get("verifiedRequirement")

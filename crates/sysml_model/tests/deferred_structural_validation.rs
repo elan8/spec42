@@ -174,6 +174,7 @@ package P {
   part def Target;
   flow transfer of Scalar from Source to Target;
 }
+
 "#;
     let doc = workspace_doc("flow_payload.sysml", source);
     let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
@@ -203,6 +204,63 @@ package P {
             .any(|target| target.name == "Scalar"
                 && target.element_kind == ElementKind::AttributeDef),
         "the payload feature must use the canonical typing relationship"
+    );
+}
+
+#[test]
+fn flow_payload_requires_an_occurrence_type_without_rejecting_occurrence_payloads() {
+    let doc = workspace_doc(
+        "flow_payload_occurrence_conformance.sysml",
+        r#"package P {
+  occurrence def Payload;
+  item def ItemPayload;
+  attribute def Scalar;
+  part def Source;
+  part def Target;
+  flow valid of Payload from Source to Target;
+  flow itemValid of ItemPayload from Source to Target;
+  flow invalid of Scalar from Source to Target;
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+
+    let invalid_payload = graph
+        .nodes_named("_payload")
+        .into_iter()
+        .find(|node| node.id.qualified_name.contains("invalid::_payload"))
+        .expect("invalid flow payload");
+    assert!(
+        diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "flow_payload_type_not_occurrence"
+                && diagnostic.range == invalid_payload.range
+        }),
+        "value-typed flow payload must be diagnosed: {diagnostics:?}"
+    );
+    let valid_payload = graph
+        .nodes_named("_payload")
+        .into_iter()
+        .find(|node| node.id.qualified_name.contains("valid::_payload"))
+        .expect("valid flow payload");
+    assert!(
+        !diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "flow_payload_type_not_occurrence"
+                && diagnostic.range == valid_payload.range
+        }),
+        "occurrence-typed flow payload must remain accepted: {diagnostics:?}"
+    );
+    let item_payload = graph
+        .nodes_named("_payload")
+        .into_iter()
+        .find(|node| node.id.qualified_name.contains("itemValid::_payload"))
+        .expect("item flow payload");
+    assert!(
+        !diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == "flow_payload_type_not_occurrence"
+                && diagnostic.range == item_payload.range
+        }),
+        "item-typed flow payload must remain accepted: {diagnostics:?}"
     );
 }
 

@@ -157,15 +157,14 @@ impl SemanticGraph {
 
         let mut effective_facts_by_node_id = HashMap::with_capacity(nodes.len());
         for node in &nodes {
-            let implied_multiplicity = (node.declared_facts.multiplicity.is_none()
-                && !node.element_kind.is_definition()
-                && node.declared_facts.feature_properties.is_some())
-            .then_some(ImpliedMultiplicity {
-                lower: 1,
-                upper: Some(1),
-                is_ordered: false,
-                is_unique: None,
-            });
+            let implied_multiplicity =
+                self.has_implied_exactly_one_multiplicity(node)
+                    .then_some(ImpliedMultiplicity {
+                        lower: 1,
+                        upper: Some(1),
+                        is_ordered: false,
+                        is_unique: None,
+                    });
             let featuring_type = self.nearest_featuring_type(node);
             let implied_feature_value_binding = node
                 .declared_facts
@@ -189,6 +188,38 @@ impl SemanticGraph {
             }
         }
         self.effective_facts_by_node_id = effective_facts_by_node_id;
+    }
+
+    /// Whether a feature receives SysML's implicit `[1..1]` multiplicity.
+    ///
+    /// This is deliberately narrower than "any node with feature properties". The default
+    /// belongs to ordinary, owned part/attribute/port usages only. Package members have
+    /// namespace ownership rather than feature ownership, connection usages have their own
+    /// semantics, and a resolved subsetting relationship supplies a different multiplicity
+    /// context. All of those distinctions are graph facts, so this does not inspect display
+    /// text or reconstruct the source declaration.
+    fn has_implied_exactly_one_multiplicity(&self, node: &SemanticNode) -> bool {
+        if node.declared_facts.multiplicity.is_some()
+            || !matches!(
+                node.element_kind,
+                ElementKind::Part | ElementKind::Attribute | ElementKind::Port
+            )
+        {
+            return false;
+        }
+
+        let Some(owner_id) = node.parent_id.as_ref() else {
+            return false;
+        };
+        let Some(owner) = self.get_node(owner_id) else {
+            return false;
+        };
+        if owner.element_kind == ElementKind::Package {
+            return false;
+        }
+
+        self.outgoing_targets_by_kind(node, RelationshipKind::Subsetting)
+            .is_empty()
     }
 
     fn nearest_featuring_type(&self, node: &SemanticNode) -> Option<NodeId> {
