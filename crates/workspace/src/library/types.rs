@@ -87,17 +87,7 @@ pub fn resolve_explicit_library_path(
                 .join("materialized")
                 .join(materialize_label)
                 .join(stable_path_label(&path));
-            if materialize_root.exists() {
-                fs::remove_dir_all(&materialize_root).map_err(|err| {
-                    format!(
-                        "Failed to clear materialized library at {}: {err}",
-                        materialize_root.display()
-                    )
-                })?;
-            }
-            fs::create_dir_all(&materialize_root)
-                .map_err(|err| format!("Failed to create {}: {err}", materialize_root.display()))?;
-            materialize_kpar_bytes(&bytes, &materialize_root)?;
+            materialize_explicit_archive(&bytes, &materialize_root)?;
             let install_root = LibraryInstallRoot(materialize_root);
             return Ok(ResolvedExplicitLibrary {
                 install_path: install_root.0.clone(),
@@ -122,6 +112,86 @@ pub fn resolve_explicit_library_path(
         "Library path {} does not exist or is not readable.",
         path.display()
     ))
+}
+
+fn materialize_explicit_archive(archive_bytes: &[u8], destination: &Path) -> Result<(), String> {
+    let parent = destination.parent().ok_or_else(|| {
+        format!(
+            "Materialization destination has no parent: {}",
+            destination.display()
+        )
+    })?;
+    fs::create_dir_all(parent)
+        .map_err(|err| format!("Failed to create {}: {err}", parent.display()))?;
+    let staging = tempfile::Builder::new()
+        .prefix(".kpar-library-staging-")
+        .tempdir_in(parent)
+        .map_err(|err| {
+            format!(
+                "Failed to create KPAR staging directory in {}: {err}",
+                parent.display()
+            )
+        })?;
+    let staged_install = staging.path().join("install");
+    materialize_kpar_bytes(archive_bytes, &staged_install)?;
+
+    if !destination.exists() {
+        fs::rename(&staged_install, destination).map_err(|err| {
+            format!(
+                "Failed to publish materialized library at {}: {err}",
+                destination.display()
+            )
+        })?;
+        return Ok(());
+    }
+    if !destination.is_dir() {
+        return Err(format!(
+            "Materialized library destination is not a directory: {}",
+            destination.display()
+        ));
+    }
+
+    let backup = tempfile::Builder::new()
+        .prefix(".kpar-library-backup-")
+        .tempdir_in(parent)
+        .map_err(|err| {
+            format!(
+                "Failed to create KPAR backup directory in {}: {err}",
+                parent.display()
+            )
+        })?;
+    let backup_path = backup.keep();
+    fs::remove_dir(&backup_path).map_err(|err| {
+        format!(
+            "Failed to prepare KPAR backup {}: {err}",
+            backup_path.display()
+        )
+    })?;
+    fs::rename(destination, &backup_path).map_err(|err| {
+        format!(
+            "Failed to stage existing materialized library {}: {err}",
+            destination.display()
+        )
+    })?;
+    if let Err(error) = fs::rename(&staged_install, destination) {
+        let rollback = fs::rename(&backup_path, destination);
+        return Err(format!(
+            "Failed to publish materialized library at {}: {error}; rollback {}",
+            destination.display(),
+            if rollback.is_ok() {
+                "succeeded"
+            } else {
+                "failed"
+            }
+        ));
+    }
+    fs::remove_dir_all(&backup_path).map_err(|err| {
+        format!(
+            "Failed to remove KPAR backup {}: {err}",
+            backup_path.display()
+        )
+    })?;
+    Ok(())
 }
 
 fn stable_path_label(path: &Path) -> String {

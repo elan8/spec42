@@ -26,6 +26,11 @@ pub struct MaterializedProject {
     pub source_files: Vec<PathBuf>,
 }
 
+#[derive(Debug, Clone)]
+struct MaterializationPlan {
+    source_files: Vec<(String, Vec<u8>)>,
+}
+
 /// Returns true when `bytes` is a zip containing `.project.json` at the archive root.
 pub fn is_kpar_archive(bytes: &[u8]) -> bool {
     open_kpar_bytes(bytes).is_ok()
@@ -55,7 +60,6 @@ pub fn verify_checksums(bytes: &[u8]) -> Result<()> {
 
 pub fn materialize(bytes: &[u8], destination_root: &Path) -> Result<MaterializedProject> {
     let archive = open_kpar_bytes(bytes)?;
-    archive.verify_checksums()?;
     archive.materialize_to(destination_root)
 }
 
@@ -64,7 +68,7 @@ pub fn materialize_kpar_directory(
     directory: &Path,
     destination_root: &Path,
 ) -> Result<Vec<PathBuf>> {
-    let mut roots = Vec::new();
+    let mut plans = Vec::new();
     let entries = fs::read_dir(directory).map_err(|source| KparError::Io {
         path: directory.display().to_string(),
         source,
@@ -89,26 +93,32 @@ pub fn materialize_kpar_directory(
             .and_then(|s| s.to_str())
             .unwrap_or("library");
         let dest = destination_root.join(stem);
-        if dest.exists() {
-            fs::remove_dir_all(&dest).map_err(|source| KparError::Io {
-                path: dest.display().to_string(),
-                source,
-            })?;
-        }
-        materialize(
-            &fs::read(&path).map_err(|source| KparError::Io {
-                path: path.display().to_string(),
-                source,
-            })?,
-            &dest,
-        )?;
-        roots.push(dest);
+        let archive = open_kpar_path(&path)?;
+        plans.push((dest, archive.materialization_plan()?));
     }
-    if roots.is_empty() {
+    if plans.is_empty() {
         return Err(KparError::InvalidArchive(format!(
             "no .kpar files found in {}",
             directory.display()
         )));
+    }
+    plans.sort_by(|left, right| left.0.cmp(&right.0));
+    if let Some(duplicate) = plans
+        .windows(2)
+        .find_map(|pair| (pair[0].0 == pair[1].0).then(|| pair[0].0.display().to_string()))
+    {
+        return Err(KparError::InvalidArchive(format!(
+            "multiple archives have destination '{duplicate}'"
+        )));
+    }
+    for (destination, _) in &plans {
+        ensure_absent_publish_target(destination)?;
+    }
+
+    let mut roots = Vec::with_capacity(plans.len());
+    for (dest, plan) in plans {
+        publish_materialization(&dest, &plan)?;
+        roots.push(dest);
     }
     roots.sort();
     Ok(roots)
@@ -157,9 +167,34 @@ impl KparArchive {
         Ok(())
     }
 
+    /// Validate and stage this archive before publishing it to a fresh directory.
+    ///
+    /// Existing targets are refused. The portable standard library has no
+    /// atomic no-clobber directory rename, so a competing creator between the
+    /// final absence check and rename can still cause the platform rename to
+    /// fail or replace that target; callers that need concurrency-safe
+    /// publication must provide owner-scoped destination coordination.
     pub fn materialize_to(&self, destination_root: &Path) -> Result<MaterializedProject> {
+        let plan = self.materialization_plan()?;
+        publish_materialization(destination_root, &plan)?;
+        let mut source_files = plan
+            .source_files
+            .iter()
+            .map(|(logical_path, _)| destination_root.join(logical_path))
+            .collect::<Vec<_>>();
+        source_files.sort();
+
+        Ok(MaterializedProject {
+            project: self.project.clone(),
+            meta: self.meta.clone(),
+            root: destination_root.to_path_buf(),
+            source_files,
+        })
+    }
+
+    fn materialization_plan(&self) -> Result<MaterializationPlan> {
+        self.verify_checksums()?;
         let entries = read_zip_entries(&self.bytes)?;
-        let mut source_files = Vec::new();
 
         let mut paths: Vec<(String, String)> = if self.meta.index.is_empty() {
             entries
@@ -203,37 +238,65 @@ impl KparArchive {
                     "missing archive entry '{archive_path}' for '{logical_path}'"
                 )));
             };
-            planned.push((logical_path, bytes));
+            planned.push((logical_path, bytes.clone()));
         }
+        Ok(MaterializationPlan {
+            source_files: planned,
+        })
+    }
+}
 
-        fs::create_dir_all(destination_root).map_err(|source| KparError::Io {
-            path: destination_root.display().to_string(),
+fn publish_materialization(destination_root: &Path, plan: &MaterializationPlan) -> Result<()> {
+    ensure_absent_publish_target(destination_root)?;
+    let parent = destination_root.parent().unwrap_or_else(|| Path::new("."));
+    fs::create_dir_all(parent).map_err(|source| KparError::Io {
+        path: parent.display().to_string(),
+        source,
+    })?;
+    let staging = tempfile::Builder::new()
+        .prefix(".kpar-staging-")
+        .tempdir_in(parent)
+        .map_err(|source| KparError::Io {
+            path: parent.display().to_string(),
             source,
         })?;
-
-        for (logical_path, bytes) in planned {
-            let dest = destination_root.join(&logical_path);
-            if let Some(parent) = dest.parent() {
-                fs::create_dir_all(parent).map_err(|source| KparError::Io {
-                    path: parent.display().to_string(),
-                    source,
-                })?;
-            }
-            fs::write(&dest, bytes).map_err(|source| KparError::Io {
-                path: dest.display().to_string(),
+    for (logical_path, bytes) in &plan.source_files {
+        let staged_path = staging.path().join(logical_path);
+        if let Some(parent) = staged_path.parent() {
+            fs::create_dir_all(parent).map_err(|source| KparError::Io {
+                path: parent.display().to_string(),
                 source,
             })?;
-            source_files.push(dest);
         }
+        fs::write(&staged_path, bytes).map_err(|source| KparError::Io {
+            path: staged_path.display().to_string(),
+            source,
+        })?;
+    }
+    ensure_absent_publish_target(destination_root)?;
+    fs::rename(staging.path(), destination_root).map_err(|source| KparError::Io {
+        path: destination_root.display().to_string(),
+        source,
+    })
+}
 
-        source_files.sort();
-
-        Ok(MaterializedProject {
-            project: self.project.clone(),
-            meta: self.meta.clone(),
-            root: destination_root.to_path_buf(),
-            source_files,
-        })
+/// Refuse to publish over any existing filesystem object.
+///
+/// Public KPAR packing and materialization are no-force operations. A caller
+/// must select a fresh target rather than treating archive publication as an
+/// implicit destructive update. Directory publication performs an additional
+/// pre-rename check, but cannot make that check atomic on every host.
+pub(crate) fn ensure_absent_publish_target(path: &Path) -> Result<()> {
+    match fs::symlink_metadata(path) {
+        Ok(_) => Err(KparError::InvalidArchive(format!(
+            "refusing to replace existing publication target '{}'",
+            path.display()
+        ))),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(source) => Err(KparError::Io {
+            path: path.display().to_string(),
+            source,
+        }),
     }
 }
 
@@ -246,6 +309,7 @@ fn parse_manifests(bytes: &[u8]) -> Result<(Project, Meta)> {
         .get(META_FILE)
         .ok_or(KparError::MissingFile(META_FILE))?;
     let project: Project = serde_json::from_slice(project_bytes)?;
+    project.validate_identity()?;
     let meta: Meta = serde_json::from_slice(meta_bytes)?;
     Ok((project, meta))
 }
@@ -281,7 +345,7 @@ fn read_zip_entries(bytes: &[u8]) -> Result<HashMap<String, Vec<u8>>> {
 /// ZIP member names and KPAR index values are untrusted archive data. Treating
 /// them as ordinary filesystem paths would make `destination_root.join(...)`
 /// vulnerable to `..`, absolute, or Windows-drive path escapes.
-fn normalize_zip_path(path: &str) -> Result<String> {
+pub(crate) fn normalize_zip_path(path: &str) -> Result<String> {
     let path = path.replace('\\', "/");
     if path.starts_with('/') || is_windows_drive_path(&path) {
         return Err(KparError::InvalidArchive(format!(
@@ -337,8 +401,77 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::pack::{build_kpar, PackOptions};
+    use crate::pack::{build_kpar, ArchiveTimestamp, PackOptions};
     use tempfile::tempdir;
+
+    fn stored_zip(entries: &[(&str, &[u8])]) -> Vec<u8> {
+        fn push_u16(bytes: &mut Vec<u8>, value: u16) {
+            bytes.extend_from_slice(&value.to_le_bytes());
+        }
+        fn push_u32(bytes: &mut Vec<u8>, value: u32) {
+            bytes.extend_from_slice(&value.to_le_bytes());
+        }
+
+        let mut bytes = Vec::new();
+        let mut central = Vec::new();
+        for (name, contents) in entries {
+            let offset = u32::try_from(bytes.len()).expect("small test archive");
+            let name = name.as_bytes();
+            let size = u32::try_from(contents.len()).expect("small test entry");
+            let checksum = crc32fast::hash(contents);
+            push_u32(&mut bytes, 0x0403_4b50);
+            push_u16(&mut bytes, 20);
+            push_u16(&mut bytes, 0);
+            push_u16(&mut bytes, 0);
+            push_u16(&mut bytes, 0);
+            push_u16(&mut bytes, 0);
+            push_u32(&mut bytes, checksum);
+            push_u32(&mut bytes, size);
+            push_u32(&mut bytes, size);
+            push_u16(
+                &mut bytes,
+                u16::try_from(name.len()).expect("short test name"),
+            );
+            push_u16(&mut bytes, 0);
+            bytes.extend_from_slice(name);
+            bytes.extend_from_slice(contents);
+
+            push_u32(&mut central, 0x0201_4b50);
+            push_u16(&mut central, 20);
+            push_u16(&mut central, 20);
+            push_u16(&mut central, 0);
+            push_u16(&mut central, 0);
+            push_u16(&mut central, 0);
+            push_u16(&mut central, 0);
+            push_u32(&mut central, checksum);
+            push_u32(&mut central, size);
+            push_u32(&mut central, size);
+            push_u16(
+                &mut central,
+                u16::try_from(name.len()).expect("short test name"),
+            );
+            push_u16(&mut central, 0);
+            push_u16(&mut central, 0);
+            push_u16(&mut central, 0);
+            push_u16(&mut central, 0);
+            push_u32(&mut central, 0);
+            push_u32(&mut central, offset);
+            central.extend_from_slice(name);
+        }
+        let central_offset = u32::try_from(bytes.len()).expect("small test archive");
+        let central_size = u32::try_from(central.len()).expect("small test archive");
+        bytes.extend_from_slice(&central);
+        push_u32(&mut bytes, 0x0605_4b50);
+        push_u16(&mut bytes, 0);
+        push_u16(&mut bytes, 0);
+        let count = u16::try_from(entries.len()).expect("small test archive");
+        push_u16(&mut bytes, count);
+        push_u16(&mut bytes, count);
+        push_u32(&mut bytes, central_size);
+        push_u32(&mut bytes, central_offset);
+        push_u16(&mut bytes, 0);
+        bytes
+    }
 
     #[test]
     fn roundtrip_pack_and_materialize() {
@@ -364,6 +497,8 @@ mod tests {
                 source_roots: vec![source.path().join("domain")],
                 named_source_roots: vec![],
                 excludes: vec![],
+                timestamp: ArchiveTimestamp::default(),
+                compression: crate::pack::ArchiveCompression::default(),
             },
             &kpar_path,
         )
@@ -395,6 +530,30 @@ mod tests {
         }
         let bytes = fs::read(&path).expect("read");
         assert!(!is_kpar_archive(&bytes));
+    }
+
+    #[test]
+    fn open_rejects_path_like_project_identity() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("invalid-project.kpar");
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"../outside","version":"1.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            zip.write_all(br#"{"index":{},"created":"2025-03-13T00:00:00Z"}"#)
+                .expect("meta write");
+            zip.finish().expect("finish");
+        }
+
+        let error = open_kpar_path(&path).expect_err("path-like identity must be rejected");
+        assert!(matches!(error, KparError::InvalidArchive(_)));
     }
 
     #[test]
@@ -513,5 +672,120 @@ mod tests {
 
         let error = open_kpar_path(&path).expect_err("traversal member must be rejected");
         assert!(matches!(error, KparError::InvalidArchive(_)));
+    }
+
+    #[test]
+    fn duplicate_archive_entries_are_rejected_without_replacing_destination() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("duplicate.kpar");
+        fs::write(
+            &path,
+            stored_zip(&[
+                (PROJECT_FILE, br#"{"name":"Duplicate","version":"1.0.0"}"#),
+                (
+                    META_FILE,
+                    br#"{"index":{},"created":"2025-03-13T00:00:00Z"}"#,
+                ),
+                ("models/./Model.sysml", b"package First {}"),
+                ("models/Model.sysml", b"package Second {}"),
+            ]),
+        )
+        .expect("write duplicate archive");
+        let destination = source.path().join("existing");
+        fs::create_dir_all(&destination).expect("existing destination");
+        fs::write(destination.join("sentinel.txt"), "keep").expect("sentinel");
+
+        let error = materialize(&fs::read(&path).expect("read"), &destination)
+            .expect_err("duplicate archive entry must be rejected");
+
+        assert!(matches!(error, KparError::InvalidArchive(_)));
+        assert_eq!(
+            fs::read_to_string(destination.join("sentinel.txt")).expect("sentinel remains"),
+            "keep"
+        );
+    }
+
+    #[test]
+    fn checksum_failure_preserves_existing_destination() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("corrupt.kpar");
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"Corrupt","version":"1.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            zip.write_all(
+                br#"{"index":{"Model.sysml":"Model.sysml"},"created":"2025-03-13T00:00:00Z","checksum":{"Model.sysml":{"value":"not-a-sha256","algorithm":"SHA256"}}}"#,
+            )
+            .expect("meta write");
+            zip.start_file("Model.sysml", options)
+                .expect("source start");
+            zip.write_all(b"package Corrupt {}").expect("source write");
+            zip.finish().expect("finish");
+        }
+        let destination = source.path().join("existing");
+        fs::create_dir_all(&destination).expect("existing destination");
+        fs::write(destination.join("sentinel.txt"), "keep").expect("sentinel");
+
+        let error = materialize(&fs::read(&path).expect("read"), &destination)
+            .expect_err("checksum mismatch must be rejected");
+
+        assert!(matches!(error, KparError::ChecksumMismatch { .. }));
+        assert_eq!(
+            fs::read_to_string(destination.join("sentinel.txt")).expect("sentinel remains"),
+            "keep"
+        );
+    }
+
+    #[test]
+    fn materialize_refuses_to_replace_an_existing_destination() {
+        let source = tempdir().expect("tempdir");
+        let model = source.path().join("models/Example.sysml");
+        fs::create_dir_all(model.parent().expect("parent")).expect("create models");
+        fs::write(&model, "package Example {}").expect("write model");
+        let archive_path = source.path().join("example.kpar");
+        build_kpar(
+            &PackOptions {
+                project: Project {
+                    name: "example".to_string(),
+                    version: "1.0.0".to_string(),
+                    description: None,
+                    license: None,
+                    publisher: None,
+                    maintainer: vec![],
+                    website: None,
+                    topic: vec![],
+                    usage: vec![],
+                },
+                source_roots: vec![source.path().join("models")],
+                named_source_roots: vec![],
+                excludes: vec![],
+                timestamp: ArchiveTimestamp::default(),
+                compression: crate::pack::ArchiveCompression::default(),
+            },
+            &archive_path,
+        )
+        .expect("pack archive");
+        let destination = source.path().join("existing");
+        fs::create_dir_all(&destination).expect("existing destination");
+        fs::write(destination.join("sentinel.txt"), "keep").expect("sentinel");
+
+        let error = materialize(
+            &fs::read(&archive_path).expect("read archive"),
+            &destination,
+        )
+        .expect_err("materialization must not replace an existing directory");
+
+        assert!(matches!(error, KparError::InvalidArchive(_)));
+        assert_eq!(
+            fs::read_to_string(destination.join("sentinel.txt")).expect("sentinel remains"),
+            "keep"
+        );
     }
 }

@@ -529,7 +529,7 @@ fn canonicalize_lossy(path: &Path) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use kpar::pack::{build_kpar, PackOptions};
+    use kpar::pack::{build_kpar, ArchiveTimestamp, PackOptions};
     use kpar::schema::Project;
 
     fn minimal_stdlib_kpar_bytes(work: &Path) -> Vec<u8> {
@@ -557,6 +557,8 @@ mod tests {
             source_roots: vec![lib],
             named_source_roots: vec![],
             excludes: vec![],
+            timestamp: ArchiveTimestamp::default(),
+            compression: kpar::pack::ArchiveCompression::default(),
         };
         build_kpar(&options, &kpar_path).expect("pack kpar");
         fs::read(&kpar_path).expect("read kpar")
