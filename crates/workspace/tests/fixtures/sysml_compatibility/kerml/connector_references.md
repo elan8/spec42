@@ -3,7 +3,7 @@
 description=Connector definitions with references in ends
 type=kerml
 semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
+semantic_graph_skip_reason=KerML class and connector declarations are opaque parser fallback nodes; connector ends and reference targets are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml

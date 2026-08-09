@@ -3,7 +3,7 @@
 description=Feature with type annotation
 type=file
 semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
+semantic_graph_skip_reason=standalone KerML feature declarations are opaque parser fallback nodes; no structured feature target is available to semantic construction
 ~~~
 # SOURCE
 ~~~sysml

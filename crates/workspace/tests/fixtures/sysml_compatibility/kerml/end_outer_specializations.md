@@ -3,7 +3,7 @@
 description=Complex end members with outer specializations before feature keyword
 type=kerml
 semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
+semantic_graph_skip_reason=KerML association and outer-specialization declarations are opaque parser fallback nodes; end relationships are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml

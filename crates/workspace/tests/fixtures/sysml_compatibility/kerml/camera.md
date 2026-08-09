@@ -3,7 +3,7 @@
 description=KerML Behavior: Camera
 type=file
 semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
+semantic_graph_skip_reason=KerML class portions and successions are opaque parser fallback nodes; containment and succession endpoints are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml

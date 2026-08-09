@@ -3,7 +3,7 @@
 description=Bare redefines/subsets as shorthand features in KerML bodies
 type=kerml
 semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
+semantic_graph_skip_reason=KerML class bodies with shorthand redefinitions are opaque parser fallback nodes; feature values and redefinition targets are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml

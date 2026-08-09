@@ -15,6 +15,9 @@ const FIXTURES: &str = concat!(
     "/tests/fixtures/sysml_compatibility"
 );
 
+const GENERIC_SEMANTIC_GRAPH_SKIP_REASON: &str =
+    "strictly parsed non-empty source produced no typed semantic graph facts";
+
 #[test]
 fn every_rust_ignore_attribute_has_a_non_empty_reason() {
     let root = repository_root();
@@ -99,6 +102,7 @@ fn semantic_graph_skip_metadata_rejects_missing_or_stale_reasons() {
         "# META\n~~~ini\nsemantic_graph_skip_reason=known parser gap\n~~~\n",
         "# META\n~~~ini\nsemantic_graph=assert\nsemantic_graph_skip_reason=known parser gap\n~~~\n",
         "# META\n~~~ini\nsemantic_graph=unsupported\n~~~\n",
+        "# META\n~~~ini\nsemantic_graph=skip\nsemantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts\n~~~\n",
     ] {
         assert!(
             validate_semantic_graph_skip_metadata(invalid).is_err(),
@@ -267,7 +271,17 @@ fn validate_skip_metadata(metadata: &str, state_key: &str, reason_key: &str) -> 
     }
     match (graph_statuses.as_slice(), reasons.as_slice()) {
         ([], []) => Ok(()),
-        (["skip"], [reason]) if !reason.is_empty() => Ok(()),
+        (["skip"], [reason]) if !reason.is_empty() => {
+            if reason_key == "semantic_graph_skip_reason"
+                && *reason == GENERIC_SEMANTIC_GRAPH_SKIP_REASON
+            {
+                Err(format!(
+                    "{reason_key} must name the unavailable parser or semantic capability"
+                ))
+            } else {
+                Ok(())
+            }
+        }
         (["skip"], []) => Err(format!("{state_key}=skip requires {reason_key}")),
         (["skip"], [_]) => Err(format!("{reason_key} must be non-empty")),
         ([], [_]) => Err(format!("{reason_key} requires {state_key}=skip")),

@@ -3,7 +3,7 @@
 description=Permissive QN parsing: keywords used as specialization target names
 type=file
 semantic_graph=skip
-semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
+semantic_graph_skip_reason=standalone KerML step and feature declarations with keyword names are opaque parser fallback nodes; subsetting targets are unavailable as structured semantic inputs
 ~~~
 # SOURCE
 ~~~kerml
