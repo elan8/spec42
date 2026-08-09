@@ -25,6 +25,7 @@ fn add_node(
     let node = SemanticNode {
         id: id.clone(),
         element_kind: ElementKind::parse(element_kind),
+        declared_name: (!name.is_empty()).then(|| name.to_string()),
         name: name.to_string(),
         range: range(),
         attributes,

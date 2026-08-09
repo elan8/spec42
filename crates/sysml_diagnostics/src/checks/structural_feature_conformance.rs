@@ -268,6 +268,7 @@ mod tests {
         SemanticNode {
             id: NodeId::new(uri, name),
             element_kind: kind,
+            declared_name: Some(name.into()),
             name: name.into(),
             range: TextRange {
                 start: TextPosition {

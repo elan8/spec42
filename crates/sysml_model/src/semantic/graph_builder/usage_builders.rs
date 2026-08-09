@@ -28,7 +28,8 @@ use super::occurrence_body;
 use super::part_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::{
-    add_node_and_recurse, attach_feature_properties, effective_usage_name, qualified_name_for_node,
+    add_node_and_recurse, attach_declared_name, attach_feature_properties, effective_usage_name,
+    qualified_name_for_node,
 };
 
 /// Builds the `part`-usage node (and recurses into its body), wiring the typing edge. Used by
@@ -102,6 +103,7 @@ pub(super) fn materialize_part_usage(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, part_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
@@ -199,6 +201,7 @@ pub(super) fn materialize_attribute_usage(
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, attribute_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
@@ -369,6 +372,7 @@ pub(super) fn materialize_item_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, item_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {

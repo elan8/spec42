@@ -815,6 +815,11 @@ impl Drop for DeclaredExpression {
 pub struct SemanticNode {
     pub id: NodeId,
     pub element_kind: ElementKind,
+    /// Identifier text authored in the declaration, if any. This is distinct
+    /// from [`Self::name`], which is the effective name used for identity and
+    /// resolution (and may be inherited by an unnamed redefinition).
+    #[serde(default)]
+    pub declared_name: Option<String>,
     pub name: String,
     pub range: TextRange,
     pub attributes: HashMap<String, serde_json::Value>,

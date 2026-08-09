@@ -224,6 +224,7 @@ pub(super) fn add_node_and_recurse(
     let node = SemanticNode {
         id: node_id.clone(),
         element_kind: ElementKind::from(kind),
+        declared_name: (!name.is_empty()).then(|| name.clone()),
         name,
         range,
         attributes: attrs,
@@ -254,6 +255,17 @@ pub(super) fn add_node_and_recurse(
             .push(node_id);
     }
     g.invalidate_query_indexes();
+}
+
+/// Records the AST-authored name separately from the node's effective name.
+///
+/// Anonymous redefinitions inherit an effective name for identity and
+/// resolution, but must remain observably anonymous to consumers that need
+/// authored-vs-derived provenance.
+pub(super) fn attach_declared_name(g: &mut SemanticGraph, node_id: &NodeId, declared: &str) {
+    if let Some(node) = g.get_node_mut(node_id) {
+        node.declared_name = (!declared.trim().is_empty()).then(|| declared.to_string());
+    }
 }
 
 /// Records typed declaration modifiers on a semantic node.

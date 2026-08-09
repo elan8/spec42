@@ -13,6 +13,7 @@ fn port_nodes(uri: &Url, a_qn: &str, b_qn: &str) -> (SemanticGraph, NodeId, Node
         graph.insert_workspace_node(SemanticNode {
             id,
             element_kind: ElementKind::Port,
+            declared_name: Some(name.to_string()),
             name: name.to_string(),
             range,
             attributes: Default::default(),

@@ -6,7 +6,8 @@ use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
 use url::Url;
 
 use super::{
-    add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata, usage_builders,
+    add_node_and_recurse, attach_declared_name, expressions, qualified_name_for_node,
+    unit_metadata, usage_builders,
 };
 use crate::semantic::ast_util::{
     attach_membership_visibility, span_to_range, subsetting_target, typing_targets,
@@ -124,6 +125,7 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
+                attach_declared_name(g, &NodeId::new(uri, &qualified), &value.name);
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }

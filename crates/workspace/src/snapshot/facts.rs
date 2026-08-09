@@ -114,7 +114,7 @@ fn build_host_semantic_model_node(
             .map(|parent| parent.qualified_name.clone()),
         attributes,
         facts: HostElementFacts {
-            declared_name: (!node.name.is_empty()).then(|| node.name.clone()),
+            declared_name: node.declared_name.clone(),
             effective_name: node.name.clone(),
             owner_id: None,
             owning_membership_id: None,

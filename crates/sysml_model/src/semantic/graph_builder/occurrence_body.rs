@@ -16,7 +16,7 @@ use crate::semantic::relationships::add_typing_edge_if_exists;
 use super::expressions;
 use super::expressions::expression_to_debug_string;
 use super::part_usage;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{add_node_and_recurse, attach_declared_name, qualified_name_for_node};
 
 fn constraint_body_expression(body: &ConstraintDefBody) -> Option<String> {
     let ConstraintDefBody::Brace { elements } = body else {
@@ -85,6 +85,7 @@ pub(super) fn build_from_occurrence_body_element(
                 attrs,
                 Some(parent_id),
             );
+            attach_declared_name(g, &NodeId::new(uri, &qualified), &value.name);
             for target in typing_targets(value.typing.as_deref()) {
                 add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
             }
