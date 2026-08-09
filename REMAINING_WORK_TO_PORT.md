@@ -106,6 +106,18 @@ or diagnostic messages.
 - Add broader re-export, recursive-cycle, ambiguity, invalidation, and cached/full/incremental
   parity matrices as new import shapes become supported.
 
+## Cache and host rebuild parity
+
+- Add a cold-build/store/warm-load regression that compares universal standard-library
+  relationship identity, resolution status, and authored/implied provenance before and after the
+  library-graph cache boundary. The existing cache-key tests prove that standard-library root
+  classification changes cache identity; this drill must prove the loaded semantic result itself
+  is equivalent and that a generic-library classification cannot reuse the entry.
+- Add an LSP rebuild regression covering cold startup and live relinking with the same standard and
+  generic library roots. It must prove that only configured standard-library roots can satisfy
+  standard-library prerequisites and that both publication paths expose identical relationship
+  status and provenance.
+
 ## Compatibility corpus
 
 - Keep all discovered fixtures accounted for by the harness.
