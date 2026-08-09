@@ -48,9 +48,10 @@ pub use semantic::model::{
     DeclaredImportTarget, DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
     DeclaredMultiplicityBound, DeclaredMultiplicityBounds, DeclaredRelationshipFacts,
     DeclaredRelationshipTarget, DeclaredSemanticFacts, DerivedRelationshipResolution,
-    EffectiveFeatureOwnership, EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
-    ExpressionResultRole, FeatureOwnershipProvenance, FlowStatementDetail, ImpliedFeatureOwnership,
-    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance, NodeId,
+    EffectiveFeatureOwnership, EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind,
+    ExpressionResultId, ExpressionResultRole, FeatureOwnershipProvenance, FlowStatementDetail,
+    ImpliedFeatureOwnership, ImpliedFeatureValueBinding, ImpliedMultiplicity,
+    ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance, NodeId,
     RelationshipKind, RelationshipProvenance, SemanticEdge, SemanticNode, StandardLibraryElement,
     UniversalStandardLibraryRelationship, VisibilityKind,
 };
