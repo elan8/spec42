@@ -27,6 +27,9 @@ fn ownership_defaults_are_implied_only_for_supported_usages_in_type_bodies() {
   part packageMember;
   part def Container {
     part ordinaryPart;
+    part outer {
+      part nestedPart;
+    }
     attribute ordinaryAttribute;
     port ordinaryPort;
     item ordinaryItem;
@@ -42,6 +45,7 @@ fn ownership_defaults_are_implied_only_for_supported_usages_in_type_bodies() {
 
     for name in [
         "ordinaryPart",
+        "nestedPart",
         "ordinaryAttribute",
         "ordinaryPort",
         "ordinaryItem",

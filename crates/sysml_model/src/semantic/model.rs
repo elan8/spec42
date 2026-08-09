@@ -480,6 +480,60 @@ impl ElementKind {
                 | ElementKind::ConjugatedPortDefinition
         )
     }
+
+    /// Whether this usage kind has the contextual composite-by-default ownership rule.
+    ///
+    /// This is an exhaustive typed classifier rather than a string convention. The graph still
+    /// requires parser-backed feature properties before applying the default, so a kind whose
+    /// builder has not yet published ownership-relevant facts remains explicitly unsupported.
+    pub fn is_composite_by_default_usage(&self) -> bool {
+        matches!(
+            self,
+            ElementKind::Part
+                | ElementKind::Port
+                | ElementKind::Item
+                | ElementKind::Attribute
+                | ElementKind::Action
+                | ElementKind::State
+                | ElementKind::Requirement
+                | ElementKind::Case
+                | ElementKind::UseCase
+                | ElementKind::Concern
+                | ElementKind::Analysis
+                | ElementKind::Verification
+                | ElementKind::View
+                | ElementKind::Viewpoint
+                | ElementKind::Rendering
+                | ElementKind::Flow
+                | ElementKind::Allocation
+                | ElementKind::Connection
+                | ElementKind::Occurrence
+                | ElementKind::Calc
+                | ElementKind::Constraint
+        )
+    }
+
+    /// Whether this element can own features in a SysML Type context.
+    ///
+    /// Definitions and usages are both Types for this purpose. Namespace/package ownership is
+    /// deliberately excluded; callers also inspect a child's typed end/direction/ref facts.
+    pub fn is_type_context(&self) -> bool {
+        self.is_definition()
+            || self.is_composite_by_default_usage()
+            || matches!(
+                self,
+                ElementKind::Ref
+                    | ElementKind::Actor
+                    | ElementKind::Stakeholder
+                    | ElementKind::Individual
+                    | ElementKind::MetadataUsage
+                    | ElementKind::MetadataKeyword
+                    | ElementKind::Perform
+                    | ElementKind::Subject
+                    | ElementKind::VerifiedRequirement
+                    | ElementKind::IncludeUseCase
+            )
+    }
 }
 
 impl std::fmt::Display for ElementKind {

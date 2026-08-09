@@ -262,20 +262,11 @@ impl SemanticGraph {
     ///
     /// The rule is deliberately conservative until all feature kinds have a complete typed
     /// ownership contract: it applies only to the parser-backed ordinary usage kinds below when
-    /// directly owned by a SysML definition. Namespace/package members, end features, directed
+    /// directly owned by a SysML Type context (definition or usage). Namespace/package members, end features, directed
     /// parameters, and explicit `ref` declarations remain outside the default. Each condition is
     /// read from typed graph facts, never from display attributes or source text.
     fn has_implied_feature_ownership(&self, node: &SemanticNode) -> bool {
-        if !matches!(
-            node.element_kind,
-            ElementKind::Part
-                | ElementKind::Attribute
-                | ElementKind::Port
-                | ElementKind::Item
-                | ElementKind::Action
-                | ElementKind::State
-                | ElementKind::Occurrence
-        ) {
+        if !node.element_kind.is_composite_by_default_usage() {
             return false;
         }
 
@@ -293,7 +284,7 @@ impl SemanticGraph {
         node.parent_id
             .as_ref()
             .and_then(|owner_id| self.get_node(owner_id))
-            .is_some_and(|owner| owner.element_kind.is_definition())
+            .is_some_and(|owner| owner.element_kind.is_type_context())
     }
 
     fn nearest_featuring_type(&self, node: &SemanticNode) -> Option<NodeId> {
