@@ -493,7 +493,6 @@ fn render_derived_relationship_resolutions(
                     identities.node_id(target)
                 );
             }
-            DerivedRelationshipResolution::Unsupported => output.push_str("(status unsupported)"),
         }
         output.push_str(")\n");
     }

@@ -163,7 +163,8 @@ fn self_target_and_authored_equivalent_are_never_replaced_or_duplicated() {
         "package Parts { part def Part; }",
         SysmlDocumentSourceKind::StandardLibrary,
     );
-    let (self_graph, _) = build_and_link_graph(&[standard_library.clone()]).expect("graph");
+    let (self_graph, _) =
+        build_and_link_graph(std::slice::from_ref(&standard_library)).expect("graph");
     let self_target = self_graph
         .node_ids_for_qualified_name("Parts::Part")
         .and_then(|ids| ids.first())
@@ -204,6 +205,31 @@ fn self_target_and_authored_equivalent_are_never_replaced_or_duplicated() {
             ),
         )
         .is_empty());
+}
+
+#[test]
+fn replacing_a_standard_library_uri_revokes_its_canonical_provenance() {
+    let workspace = document(
+        "workspace.sysml",
+        "package Demo { part def Vehicle; }",
+        SysmlDocumentSourceKind::Workspace,
+    );
+    let standard_library = document(
+        "standard.sysml",
+        "package Parts { part def Part; }",
+        SysmlDocumentSourceKind::StandardLibrary,
+    );
+    let standard_uri = standard_library.uri.clone();
+    let (mut graph, _) = build_and_link_graph(&[workspace, standard_library]).expect("graph");
+    let replacement = sysml_v2_parser::parse_for_editor("package Parts { part def Part; }").root;
+    patch_graph_for_document(&mut graph, &standard_uri, Some(&replacement), true);
+
+    assert_eq!(
+        graph.universal_relationship_resolution_for(vehicle(&graph)),
+        DerivedRelationshipResolution::MissingPrerequisite {
+            target: StandardLibraryElement::PartsPart,
+        }
+    );
 }
 
 #[test]

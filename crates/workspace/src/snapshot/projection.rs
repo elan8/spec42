@@ -46,17 +46,12 @@ pub enum HostRelationshipMetaclass {
 
 /// Provenance adapted from the graph-owned relationship fact. `is_implied` remains as a
 /// compatibility convenience, but consumers needing rule identity use this typed field.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "camelCase")]
 pub enum HostRelationshipProvenance {
+    #[default]
     Authored,
     Implied(HostImpliedRelationshipRule),
-}
-
-impl Default for HostRelationshipProvenance {
-    fn default() -> Self {
-        Self::Authored
-    }
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]

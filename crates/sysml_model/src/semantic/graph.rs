@@ -814,6 +814,10 @@ impl SemanticGraphData {
 
     /// Removes all nodes (and their incident edges) for the given URI.
     pub fn remove_nodes_for_uri(&mut self, uri: &Url) {
+        // A URI alone is never durable evidence of standard-library provenance. Once its
+        // canonical document is removed, any replacement must be admitted again through the
+        // source-kind-aware build boundary before it can satisfy a universal relationship.
+        self.standard_library_uris.remove(uri);
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
             self.clear_import_lookup_cache();
             return;

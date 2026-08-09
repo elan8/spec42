@@ -984,7 +984,6 @@ pub enum DerivedRelationshipResolution {
     SelfTargetSuppressed {
         target: NodeId,
     },
-    Unsupported,
 }
 
 impl RelationshipKind {
