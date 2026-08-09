@@ -189,7 +189,7 @@ semantic.unresolved_name 'MassValue'
             )
           )
         )
-        (element (kind "constraint") (id (node (document "d0") (qualified-name "Constraint Assertions-2::massConstraint"))) (name "massConstraint") (declared-name "massConstraint") (declared (own-expression (expression (kind "binary") (operator "<=") (children (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "featureReference") (reference "partMasses"))))) (expression (kind "featureReference") (reference "massLimit")))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
+        (element (kind "constraint") (id (node (document "d0") (qualified-name "Constraint Assertions-2::massConstraint"))) (name "massConstraint") (declared-name "massConstraint") (declared (own-expression (expression (kind "binary") (operator "<=") (children (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "featureReference") (reference "partMasses"))))) (expression (kind "featureReference") (reference "massLimit")))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved"))))
       )
     )
   )
