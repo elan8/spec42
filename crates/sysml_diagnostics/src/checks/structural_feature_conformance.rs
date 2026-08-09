@@ -23,6 +23,13 @@ fn is_connection_like_definition(kind: &ElementKind) -> bool {
     )
 }
 
+/// Flow and allocation definitions are binary connection-like definitions.  General connection
+/// definitions, in contrast, may be n-ary, so their end cardinality is only constrained by the
+/// incomplete-pair check below.
+fn requires_exactly_two_ends(kind: &ElementKind) -> bool {
+    matches!(kind, ElementKind::FlowDef | ElementKind::AllocationDef)
+}
+
 /// A declaration that specializes another connection-like definition can inherit its ends. The
 /// current graph does not yet materialize an effective end closure, so the end-count rule must
 /// suppress rather than guess whenever an explicit specialization chain contains an end fact.
@@ -105,6 +112,31 @@ pub(crate) fn collect_structural_feature_conformance_diagnostics(
                     node.element_kind, node.name
                 ),
             ));
+        }
+
+        // SysML flow and allocation definitions are binary.  This deliberately covers only an
+        // authored excess of ends: zero authored ends may be a declaration completed by an
+        // effective/inherited closure which is not yet materialized by the graph, and one end is
+        // already reported by the narrower incomplete-pair diagnostic above.  Connection
+        // definitions remain n-ary-capable.
+        if requires_exactly_two_ends(&node.element_kind)
+            && !properties(node).is_some_and(|props| props.is_abstract)
+            && !inherits_any_positional_end(graph, node)
+        {
+            let end_count = graph.positional_end_features(node).len();
+            if end_count > 2 {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "invalid_binary_connection_like_end_count",
+                    format!(
+                        "{} '{}' declares {end_count} ends; binary definitions require exactly two.",
+                        node.element_kind, node.name
+                    ),
+                ));
+            }
         }
 
         let Some(props) = properties(node) else {
@@ -440,6 +472,52 @@ mod tests {
         assert!(reported
             .iter()
             .any(|message| message.contains("Incomplete")));
+    }
+
+    #[test]
+    fn rejects_only_excess_authored_ends_for_binary_connection_like_definitions() {
+        let uri = Url::parse("file:///binary-ends.sysml").unwrap();
+        let mut graph = SemanticGraph::new();
+        for (owner_name, kind) in [
+            ("Flow", ElementKind::FlowDef),
+            ("Allocation", ElementKind::AllocationDef),
+            ("Connection", ElementKind::ConnectionDef),
+        ] {
+            let owner = node(&uri, owner_name, kind, DeclaredFeatureProperties::default());
+            graph.insert_workspace_node(owner.clone());
+            for end_name in ["source", "target", "extra"] {
+                graph.insert_workspace_node(SemanticNode {
+                    parent_id: Some(owner.id.clone()),
+                    ..node(
+                        &uri,
+                        &format!("{owner_name}::{end_name}"),
+                        ElementKind::InterfaceEnd,
+                        DeclaredFeatureProperties {
+                            is_end: true,
+                            ..Default::default()
+                        },
+                    )
+                });
+            }
+        }
+
+        let messages: Vec<_> = collect_structural_feature_conformance_diagnostics(&graph, &uri)
+            .into_iter()
+            .filter(|diagnostic| diagnostic.code == "invalid_binary_connection_like_end_count")
+            .map(|diagnostic| diagnostic.message)
+            .collect();
+        assert_eq!(
+            messages.len(),
+            2,
+            "only flow/allocation definitions are binary"
+        );
+        assert!(messages.iter().any(|message| message.contains("Flow")));
+        assert!(messages
+            .iter()
+            .any(|message| message.contains("Allocation")));
+        assert!(messages
+            .iter()
+            .all(|message| !message.contains("Connection")));
     }
 
     #[test]

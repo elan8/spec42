@@ -116,6 +116,57 @@ fn connection_like_definition_ends_share_one_positional_graph_fact() {
 }
 
 #[test]
+fn binary_flow_and_allocation_definitions_reject_excess_authored_ends() {
+    let doc = workspace_doc(
+        "overfull_binary_ends.sysml",
+        r#"package P {
+  occurrence def Occurrence;
+  flow def OverfullFlow {
+    end feature source : Occurrence;
+    end feature target : Occurrence;
+    end feature extra : Occurrence;
+  }
+  allocation def OverfullAllocation {
+    end feature source : Occurrence;
+    end feature target : Occurrence;
+    end feature extra : Occurrence;
+  }
+  connection def NaryConnection {
+    end feature first : Occurrence;
+    end feature second : Occurrence;
+    end feature third : Occurrence;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+
+    for name in ["OverfullFlow", "OverfullAllocation", "NaryConnection"] {
+        let owner = graph
+            .nodes_named(name)
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| panic!("missing {name}"));
+        assert_eq!(
+            graph.positional_end_features(owner).len(),
+            3,
+            "the graph must preserve all authored ends for {name}"
+        );
+    }
+
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    let count = diagnostics
+        .iter()
+        .filter(|diagnostic| diagnostic.code == "invalid_binary_connection_like_end_count")
+        .count();
+    assert_eq!(count, 2, "only flow and allocation definitions are binary");
+    assert!(diagnostics.iter().all(|diagnostic| {
+        diagnostic.code != "invalid_binary_connection_like_end_count"
+            || !diagnostic.message.contains("NaryConnection")
+    }));
+}
+
+#[test]
 #[ignore = "SKIP S42-COMPAT-STRUCT-002: FlowPayload typing is represented, but no graph-backed payload-occurrence conformance rule is defined"]
 fn skip_flow_payload_occurrence_type_fixture() {
     let source = r#"

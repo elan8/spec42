@@ -165,6 +165,7 @@ Spec areas: 7.12-7.16, 8.3.12-8.3.16, 8.4.8-8.4.12.
 - Done: `binding_connector_incompatible` — binding ends with incompatible value types.
 - Done: `interface_end_invalid` — interface end missing/empty port type.
 - Done: `incomplete_connection_like_end_pair` — a connection-like definition declares one direct end without an inherited end fact.
+- Done: `invalid_binary_connection_like_end_count` — a flow or allocation definition declares more than two direct ends.
 - Done: `flow_direction_incompatible` — port feature direction mismatch (extends port compatibility).
 - Done: `flow_item_type_incompatible` — incompatible port definition pairing.
 - Done: `conjugated_port_inconsistent` — both connected ports share conjugation.
