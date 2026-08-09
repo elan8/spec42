@@ -284,13 +284,14 @@ jobs:
       - name: Check drone interconnection performance budgets
         run: node scripts/check-perf-budgets.mjs target/spec42-perf/drone-interconnection-performance.json
 
-  generator-exploratory:
-    name: Generator fuzzing and mutation (exploratory)
+  language-and-generator-exploratory:
+    name: Language and generator fuzzing (exploratory)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     # Informational, not a gate. Neither fuzzing nor a mutation score can gate a PR: they are
     # not reproducible from the same inputs twice, and required CI must be. What lasts from a
-    # run is a minimal input -- turn findings into deterministic regressions in
-    # crates/generator_api/tests/path_fuzz_corpus.rs and let those gate instead.
+    # run is a minimal input -- turn findings into deterministic regression
+    # inputs and let normal tests gate instead.
     #
     # Steps fail visibly rather than being swallowed by `|| true`: a missing tool or a broken
     # target should be obvious, and `continue-on-error` already keeps the job advisory.
@@ -320,6 +321,15 @@ jobs:
       - name: Fuzz ABI payload decoding
         run: cargo fuzz run abi_decode -- -max_total_time=300 -print_final_stats=1
 
+      - name: Fuzz pinned SysML parser
+        run: cargo fuzz run sysml_parser fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+
+      - name: Fuzz SysML semantic graph recovery
+        run: cargo fuzz run sysml_semantic_graph fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+
+      - name: Fuzz SysML formatter convergence
+        run: cargo fuzz run sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+
       - name: Mutation-test the transaction planner
         run: |
           cargo mutants --package server --file 'src/generation/plan.rs' \
@@ -329,7 +339,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: generator-exploratory
+          name: language-and-generator-exploratory
           if-no-files-found: ignore
           path: |
             fuzz/artifacts/**

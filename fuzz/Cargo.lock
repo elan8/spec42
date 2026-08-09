@@ -464,7 +464,7 @@ dependencies = [
 
 [[package]]
 name = "generator_api"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -752,7 +752,7 @@ dependencies = [
 
 [[package]]
 name = "kpar"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "chrono",
  "clap",
@@ -766,7 +766,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -1171,14 +1171,17 @@ name = "spec42-fuzz"
 version = "0.0.0"
 dependencies = [
  "generator_api",
+ "language_service",
  "libfuzzer-sys",
  "postcard",
  "spec42-generator-protocol",
+ "sysml-v2-parser",
+ "sysml_model",
 ]
 
 [[package]]
 name = "spec42-generator-protocol"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "postcard-schema",
  "serde",
@@ -1253,9 +1256,9 @@ dependencies = [
 
 [[package]]
 name = "sysml-v2-parser"
-version = "0.53.0"
+version = "0.54.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7151ec3dde21566673afeebb0d7fe29524d5bc77538ae1897e020a3796400f4e"
+checksum = "5db89688b6bab9dacbf8150e3f32f636decd36e34fcb8aaacbdb52fe281a9134"
 dependencies = [
  "log",
  "nom",
@@ -1266,7 +1269,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_diagnostics"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "serde_json",
  "sysml-v2-parser",
@@ -1276,7 +1279,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_model"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "ignore",
  "petgraph",
@@ -1737,7 +1740,7 @@ dependencies = [
 
 [[package]]
 name = "workspace"
-version = "0.49.0"
+version = "0.50.0"
 dependencies = [
  "bincode",
  "directories",
