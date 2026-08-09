@@ -118,12 +118,12 @@ semantic.unresolved_name 'breadth'
         (element (kind "import") (id (node (document "d0") (qualified-name "AliasTest::breadth"))) (name "breadth") (declared-name "breadth"))
         (element (kind "part") (id (node (document "d0") (qualified-name "AliasTest::p1"))) (name "p1") (declared-name "p1") (declared (properties (ordered false)))
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "AliasTest::p1::po1"))) (name "po1") (declared-name "po1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AliasTest::P1")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "AliasTest::p1::po1"))) (name "po1") (declared-name "po1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AliasTest::P1")))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "AliasTest::p2"))) (name "p2") (declared-name "p2") (declared (properties (ordered false)))
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "AliasTest::p2::pdest"))) (name "pdest") (declared-name "pdest") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AliasTest::P1")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "AliasTest::p2::pdest"))) (name "pdest") (declared-name "pdest") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AliasTest::P1")))))
           )
         )
       )

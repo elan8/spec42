@@ -176,7 +176,7 @@ semantic.invalid_allocation_end_count
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::Physical::assembly"))) (name "assembly") (declared-name "assembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Physical"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::Physical::assembly::element"))) (name "element") (declared-name "element") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Physical")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::Physical::assembly::element"))) (name "element") (declared-name "element") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Physical")))))
               )
             )
           )
@@ -185,14 +185,14 @@ semantic.invalid_allocation_end_count
         (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "AllocationTest::allocation2"))) (name "allocation2") (declared-name "allocation2"))
         (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::l"))) (name "l") (declared-name "l") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::l::component"))) (name "component") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Logical")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::l::component"))) (name "component") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Logical")))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::p"))) (name "p") (declared-name "p") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::p::assembly"))) (name "assembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Physical"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::p::assembly"))) (name "assembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Physical"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::p::assembly::element"))) (name "element") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Physical")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "AllocationTest::p::assembly::element"))) (name "element") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AllocationTest::Physical")))))
               )
             )
           )

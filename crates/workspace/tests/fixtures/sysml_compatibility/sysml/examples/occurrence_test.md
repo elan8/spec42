@@ -155,12 +155,12 @@ NIL
         )
         (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::o1"))) (name "o1") (declared-name "o1") (declared)
           (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::o1::o2"))) (name "o2") (declared-name "o2") (declared))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::o1::o2"))) (name "o2") (declared-name "o2") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
           )
         )
         (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ"))) (name "occ") (declared-name "occ") (declared)
           (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (name "o1") (declared-name "o1") (declared) (effective (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o1"))) (name "o1") (declared-name "o1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
             (element (kind "occurrence") (id (node (document "d0") (qualified-name "OccurrenceTest::occ::o2"))) (name "o2") (declared-name "o2") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "OccurrenceTest::Occ")))))
           )
         )

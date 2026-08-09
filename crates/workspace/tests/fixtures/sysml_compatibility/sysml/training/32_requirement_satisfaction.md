@@ -130,14 +130,14 @@ semantic.unresolved_name 'generateTorque'
         (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::Vehicle c1 Design Context"))) (name "Vehicle c1 Design Context") (declared-name "Vehicle c1 Design Context") (declared (properties (ordered false))))
         (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power"))) (name "provide power") (declared-name "provide power") (declared)
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (name "generate torque") (declared-name "generate torque") (declared))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::provide power::generate torque"))) (name "generate torque") (declared-name "generate torque") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1"))) (name "vehicle_c1") (declared-name "vehicle_c1") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (name "engine_v1") (declared-name "engine_v1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1"))) (name "engine_v1") (declared-name "engine_v1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
                 (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Satisfaction::vehicle_c1::engine_v1::provide power.generate torque"))) (name "provide power.generate torque") (declared-name "provide power.generate torque"))
               )
             )

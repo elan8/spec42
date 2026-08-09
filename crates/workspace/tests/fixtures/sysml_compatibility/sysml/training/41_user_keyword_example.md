@@ -154,7 +154,7 @@ semantic.unresolved_name 'severity'
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (name "battery") (declared-name "battery") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device"))))
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (name "power") (declared-name "power") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (name "power") (declared-name "power") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device")))))
               )
             )
           )

@@ -252,7 +252,7 @@ semantic.unresolved_name 'ScalarValues::Boolean'
         (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a"))) (name "a") (declared-name "a") (declared)
           (contains
             (element (kind "initial") (id (node (document "d0") (qualified-name "ActionTest::a::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::A")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a::b"))) (name "b") (declared-name "b") (declared) (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::A"))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a::b"))) (name "b") (declared-name "b") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ActionTest::A"))))
               (contains
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ActionTest::a::b::y"))) (name "y") (declared-name "y") (effective (featuring-type (node (document "d0") (qualified-name "ActionTest::A")))))
               )
@@ -267,14 +267,14 @@ semantic.unresolved_name 'ScalarValues::Boolean'
         )
         (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2"))) (name "a2") (declared-name "a2") (declared)
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::aa"))) (name "aa") (declared-name "aa") (declared)
+            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::aa"))) (name "aa") (declared-name "aa") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
                 (element (kind "part") (id (node (document "d0") (qualified-name "ActionTest::a2::aa::target"))) (name "target") (declared-name "target") (declared (properties (direction "out") (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
               )
             )
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ActionTest::a2::s"))) (name "s") (declared-name "s"))
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::snd"))) (name "snd") (declared-name "snd") (declared))
-            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::snd2"))) (name "snd2") (declared-name "snd2") (declared))
+            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::snd"))) (name "snd") (declared-name "snd") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::a2::snd2"))) (name "snd2") (declared-name "snd2") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
           )
         )
         (element (kind "action") (id (node (document "d0") (qualified-name "ActionTest::b"))) (name "b") (declared-name "b") (declared)

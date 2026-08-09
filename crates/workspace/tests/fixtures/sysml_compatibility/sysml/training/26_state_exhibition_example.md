@@ -83,8 +83,8 @@ semantic.unresolved_name 'VehicleController'
         (element (kind "import") (id (node (document "d0") (qualified-name "State Exhibition Example::*"))) (name "*") (declared-name "*"))
         (element (kind "part") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleController"))) (name "vehicleController") (declared-name "vehicleController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-            (element (kind "state") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared)
+            (element (kind "part") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleController"))) (name "vehicleController") (declared-name "vehicleController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::controller"))) (name "controller") (declared-name "controller"))
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::operatingVehicle"))) (name "operatingVehicle") (declared-name "operatingVehicle"))

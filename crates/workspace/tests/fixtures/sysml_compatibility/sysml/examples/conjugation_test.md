@@ -173,8 +173,8 @@ NIL
             )
             (element (kind "part") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p"))) (name "p") (declared-name "p") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1"))))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (name "p1") (declared-name "p1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1")))))
-                (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (name "p2") (declared-name "p2") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p1"))) (name "p1") (declared-name "p1") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "ConjugationTest::B1::p::p2"))) (name "p2") (declared-name "p2") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ConjugationTest::B1")))))
               )
             )
           )

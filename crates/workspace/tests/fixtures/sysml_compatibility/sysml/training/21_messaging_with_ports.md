@@ -195,8 +195,8 @@ NIL
         (element (kind "action def") (id (node (document "d0") (qualified-name "Messaging Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture"))
         (element (kind "part") (id (node (document "d0") (qualified-name "Messaging Example::camera"))) (name "camera") (declared-name "camera") (declared (properties (ordered false)))
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::camera::displayPort"))) (name "displayPort") (declared-name "displayPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared)
+            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::camera::displayPort"))) (name "displayPort") (declared-name "displayPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
                 (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus"))) (name "focus") (declared-name "focus") (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture"))))
                   (contains
@@ -213,12 +213,12 @@ NIL
                 )
               )
             )
-            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::camera::viewPort"))) (name "viewPort") (declared-name "viewPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::camera::viewPort"))) (name "viewPort") (declared-name "viewPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Messaging Example::screen"))) (name "screen") (declared-name "screen") (declared (properties (ordered false)))
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::screen::displayPort"))) (name "displayPort") (declared-name "displayPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Messaging Example::screen::displayPort"))) (name "displayPort") (declared-name "displayPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
           )
         )
       )

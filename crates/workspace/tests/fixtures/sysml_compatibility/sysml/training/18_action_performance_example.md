@@ -110,12 +110,12 @@ semantic.unresolved_name 'takePhoto::shoot'
         (element (kind "part def") (id (node (document "d0") (qualified-name "Action Performance Example::Imager"))) (name "Imager") (declared-name "Imager") (declared))
         (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera"))) (name "camera") (declared-name "camera") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (name "f") (declared-name "f") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Camera"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera::f"))) (name "f") (declared-name "f") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Camera"))))
               (contains
                 (element (kind "action") (id (node (document "d0") (qualified-name "Action Performance Example::camera::f::takePhoto.focus"))) (name "takePhoto.focus") (declared-name "takePhoto.focus") (effective (featuring-type (node (document "d0") (qualified-name "Action Performance Example::AutoFocus")))))
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (name "i") (declared-name "i") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Camera"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Action Performance Example::camera::i"))) (name "i") (declared-name "i") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Camera"))))
               (contains
                 (element (kind "action") (id (node (document "d0") (qualified-name "Action Performance Example::camera::i::takePhoto.shoot"))) (name "takePhoto.shoot") (declared-name "takePhoto.shoot") (effective (featuring-type (node (document "d0") (qualified-name "Action Performance Example::Imager")))))
               )

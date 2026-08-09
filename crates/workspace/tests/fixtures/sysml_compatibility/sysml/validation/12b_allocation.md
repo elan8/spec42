@@ -130,7 +130,7 @@ NIL
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared)
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared))
+                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
               )
             )
             (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (ordered false)))
@@ -144,7 +144,7 @@ NIL
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
                   (contains
                     (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque"))
                   )

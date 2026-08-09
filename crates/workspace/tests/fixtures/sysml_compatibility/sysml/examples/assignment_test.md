@@ -262,7 +262,7 @@ semantic.unresolved_name 'c::incr'
           (contains
             (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign"))) (name "assign") (declared-name "assign"))
             (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign#assign"))) (name "assign") (declared-name "assign"))
-            (element (kind "state") (id (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (name "counting") (declared-name "counting") (declared))
+            (element (kind "state") (id (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (name "counting") (declared-name "counting") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
           )
         )
       )

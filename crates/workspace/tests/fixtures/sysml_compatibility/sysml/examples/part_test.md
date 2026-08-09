@@ -244,7 +244,7 @@ semantic.unresolved_name 'p4'
             (element (kind "part") (id (node (document "d0") (qualified-name "PartTest::B::a"))) (name "a") (declared-name "a") (declared (properties (abstract true) (ordered false)) (multiplicity (lower 1) (upper 2) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "PartTest::B::a1"))) (name "a1") (declared-name "a1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "PartTest::B"))))
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "PartTest::B::a1::aa"))) (name "aa") (declared-name "aa") (declared) (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "PartTest::B::a1::aa"))) (name "aa") (declared-name "aa") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
               )
             )
             (element (kind "action") (id (node (document "d0") (qualified-name "PartTest::B::a2"))) (name "a2") (declared-name "a2") (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
@@ -254,7 +254,7 @@ semantic.unresolved_name 'p4'
             (element (kind "exhibit state") (id (node (document "d0") (qualified-name "PartTest::B::s2"))) (name "s2") (declared-name "s2") (effective (featuring-type (node (document "d0") (qualified-name "PartTest::B")))))
             (element (kind "port") (id (node (document "d0") (qualified-name "PartTest::B::x"))) (name "x") (declared-name "x") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "PartTest::B"))))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "PartTest::B::x::p"))) (name "p") (declared-name "p") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "PartTest::C::~C")))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "PartTest::B::x::p"))) (name "p") (declared-name "p") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "PartTest::C::~C")))))
               )
             )
           )

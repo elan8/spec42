@@ -244,7 +244,7 @@ semantic.unresolved_name 'ISQ::torque'
             )
             (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared)
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared))
+                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
               )
             )
             (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (ordered false)))
@@ -266,7 +266,7 @@ semantic.unresolved_name 'ISQ::torque'
             (element (kind "part def") (id (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::PowerTrain"))) (name "PowerTrain") (declared-name "PowerTrain") (declared))
             (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::PowerTrain"))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::PowerTrain"))))
                   (contains
                     (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::powerTrain::engine::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "12b-Allocation-1::PhysicalModel::PowerTrain")))))
                   )

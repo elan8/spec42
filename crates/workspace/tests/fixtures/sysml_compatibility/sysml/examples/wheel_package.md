@@ -394,12 +394,12 @@ semantic.unresolved_name 'length'
             (element (kind "connection") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::_connection"))) (name "_connection") (declared-name "_connection") (effective (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelAssembly")))))
             (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t"))) (name "t") (declared-name "t") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (name "bead") (declared-name "bead") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Tire")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::t::bead"))) (name "bead") (declared-name "bead") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Tire")))))
               )
             )
             (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w"))) (name "w") (declared-name "w") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::WheelAssembly"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (name "rim") (declared-name "rim") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Wheel Package::WheelAssembly::w::rim"))) (name "rim") (declared-name "rim") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Wheel Package::Wheel")))))
               )
             )
           )

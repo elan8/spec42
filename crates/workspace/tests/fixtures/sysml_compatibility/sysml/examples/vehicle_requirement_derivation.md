@@ -194,17 +194,17 @@ semantic.unresolved_name 'ISQ::mass'
         (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (name "engineMassRequirement") (declared-name "engineMassRequirement"))
         (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis"))) (name "chassis") (declared-name "chassis") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis"))) (name "chassis") (declared-name "chassis") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::engine::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
               )
             )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
           )
         )
         (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement"))

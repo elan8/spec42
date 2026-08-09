@@ -185,7 +185,7 @@ NIL
                 (element (kind "item") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::Shoot")))))
               )
             )
-            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::trigger"))) (name "trigger") (declared-name "trigger") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Messaging Example::takePicture::trigger"))) (name "trigger") (declared-name "trigger") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Messaging Example::TakePicture")))))
           )
         )
       )

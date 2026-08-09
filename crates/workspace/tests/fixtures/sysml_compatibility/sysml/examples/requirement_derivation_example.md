@@ -187,8 +187,8 @@ semantic.feature_typing_kind_mismatch
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system"))) (name "system") (declared-name "system") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub1"))) (name "sub1") (declared-name "sub1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivationExample::System")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub2"))) (name "sub2") (declared-name "sub2") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivationExample::System")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub1"))) (name "sub1") (declared-name "sub1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivationExample::System")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "RequirementDerivationExample::system::sub2"))) (name "sub2") (declared-name "sub2") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "RequirementDerivationExample::System")))))
           )
         )
       )

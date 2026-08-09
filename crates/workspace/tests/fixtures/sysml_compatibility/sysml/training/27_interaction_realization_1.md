@@ -278,26 +278,26 @@ semantic.unresolved_name 'fuelCommandMessage'
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::driver"))) (name "driver") (declared-name "driver") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::driver::driverBehavior.sendSetSpeed"))) (name "driverBehavior.sendSetSpeed") (declared-name "driverBehavior.sendSetSpeed") (declared))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::driver::driverBehavior.sendSetSpeed"))) (name "driverBehavior.sendSetSpeed") (declared-name "driverBehavior.sendSetSpeed") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
               )
             )
             (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController"))) (name "cruiseController") (declared-name "cruiseController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController"))) (name "cruiseController") (declared-name "cruiseController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
                   (contains
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.receiveSensedSpeed"))) (name "controllerBehavior.receiveSensedSpeed") (declared-name "controllerBehavior.receiveSensedSpeed") (declared))
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.receiveSetSpeed"))) (name "controllerBehavior.receiveSetSpeed") (declared-name "controllerBehavior.receiveSetSpeed") (declared))
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.sendFuelCommand"))) (name "controllerBehavior.sendFuelCommand") (declared-name "controllerBehavior.sendFuelCommand") (declared))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.receiveSensedSpeed"))) (name "controllerBehavior.receiveSensedSpeed") (declared-name "controllerBehavior.receiveSensedSpeed") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.receiveSetSpeed"))) (name "controllerBehavior.receiveSetSpeed") (declared-name "controllerBehavior.receiveSetSpeed") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::cruiseController::controllerBehavior.sendFuelCommand"))) (name "controllerBehavior.sendFuelCommand") (declared-name "controllerBehavior.sendFuelCommand") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
                   (contains
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::engine::engineBehavior.receiveFuelCommand"))) (name "engineBehavior.receiveFuelCommand") (declared-name "engineBehavior.receiveFuelCommand") (declared))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::engine::engineBehavior.receiveFuelCommand"))) (name "engineBehavior.receiveFuelCommand") (declared-name "engineBehavior.receiveFuelCommand") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::speedometer"))) (name "speedometer") (declared-name "speedometer") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::speedometer"))) (name "speedometer") (declared-name "speedometer") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
                   (contains
-                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::speedometer::speedometerBehavior.sendSensedSpeed"))) (name "speedometerBehavior.sendSensedSpeed") (declared-name "speedometerBehavior.sendSensedSpeed") (declared))
+                    (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-1::cruiseControlInteraction_a::vehicle::speedometer::speedometerBehavior.sendSensedSpeed"))) (name "speedometerBehavior.sendSensedSpeed") (declared-name "speedometerBehavior.sendSensedSpeed") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
                   )
                 )
               )
@@ -306,40 +306,40 @@ semantic.unresolved_name 'fuelCommandMessage'
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a"))) (name "driver_a") (declared-name "driver_a") (declared (properties (ordered false)))
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior"))) (name "driverBehavior") (declared-name "driverBehavior") (declared)
+            (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior"))) (name "driverBehavior") (declared-name "driverBehavior") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior::sendSetSpeed"))) (name "sendSetSpeed") (declared-name "sendSetSpeed") (declared))
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::driver_a::driverBehavior::sendSetSpeed"))) (name "sendSetSpeed") (declared-name "sendSetSpeed") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
               )
             )
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a"))) (name "vehicle_a") (declared-name "vehicle_a") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a"))) (name "cruiseController_a") (declared-name "cruiseController_a") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a"))) (name "cruiseController_a") (declared-name "cruiseController_a") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior"))) (name "controllerBehavior") (declared-name "controllerBehavior") (declared)
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior"))) (name "controllerBehavior") (declared-name "controllerBehavior") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
                     (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSensedSpeed"))) (name "receiveSensedSpeed") (declared-name "receiveSensedSpeed"))
-                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSetSpeed"))) (name "receiveSetSpeed") (declared-name "receiveSetSpeed") (declared))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::receiveSetSpeed"))) (name "receiveSetSpeed") (declared-name "receiveSetSpeed") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
                     (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::cruiseController_a::controllerBehavior::sendFuelCommand"))) (name "sendFuelCommand") (declared-name "sendFuelCommand"))
                   )
                 )
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a"))) (name "engine_a") (declared-name "engine_a") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a"))) (name "engine_a") (declared-name "engine_a") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior"))) (name "engineBehavior") (declared-name "engineBehavior") (declared)
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior"))) (name "engineBehavior") (declared-name "engineBehavior") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior::receiveFuelCommand"))) (name "receiveFuelCommand") (declared-name "receiveFuelCommand") (declared))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::engine_a::engineBehavior::receiveFuelCommand"))) (name "receiveFuelCommand") (declared-name "receiveFuelCommand") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
                   )
                 )
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a"))) (name "speedometer_a") (declared-name "speedometer_a") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a"))) (name "speedometer_a") (declared-name "speedometer_a") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior"))) (name "speedometerBehavior") (declared-name "speedometerBehavior") (declared)
+                (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior"))) (name "speedometerBehavior") (declared-name "speedometerBehavior") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
-                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior::sendSensedSpeed"))) (name "sendSensedSpeed") (declared-name "sendSensedSpeed") (declared))
+                    (element (kind "action") (id (node (document "d0") (qualified-name "Interaction Realization-1::vehicle_a::speedometer_a::speedometerBehavior::sendSensedSpeed"))) (name "sendSensedSpeed") (declared-name "sendSensedSpeed") (declared) (effective (implied-feature-ownership (composite true) (reference false))))
                   )
                 )
               )

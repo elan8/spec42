@@ -133,7 +133,7 @@ NIL
             )
             (element (kind "occurrence") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership"))) (name "ownership") (declared-name "ownership") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle"))))
               (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven"))) (name "driven") (declared-name "driven") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle::ownership::driven"))) (name "driven") (declared-name "driven") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Time Slice and Snapshot Example::Vehicle")))))
               )
             )
           )

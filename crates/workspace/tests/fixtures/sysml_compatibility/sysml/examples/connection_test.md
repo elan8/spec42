@@ -288,9 +288,9 @@ parse.expected_usage_declaration
         (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::d4"))) (name "d4") (declared-name "d4") (declared (properties (ordered false))))
         (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p"))) (name "p") (declared-name "p") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x::x1"))) (name "x1") (declared-name "x1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "ConnectionTest::p::x::x1"))) (name "x1") (declared-name "x1") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
               )
             )
           )

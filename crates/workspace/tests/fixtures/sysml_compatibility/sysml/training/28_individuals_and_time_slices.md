@@ -134,14 +134,14 @@ semantic.unresolved_name 'driver'
       (contains
         (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::"))) (name "") (declared (properties (individual true)))
           (contains
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (name "aliceDriving") (declared-name "aliceDriving") (declared (properties (portion true) (portion-kind "timeslice")))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving"))) (name "aliceDriving") (declared-name "aliceDriving") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (name "") (declared (properties (portion true) (portion-kind "snapshot")))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
                     (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
                   )
                 )
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (name "") (declared (properties (portion true) (portion-kind "snapshot")))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
                     (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
                   )
@@ -149,7 +149,7 @@ semantic.unresolved_name 'driver'
                 (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (name "item") (declared-name "item") (declared (properties (individual true) (composite false) (reference true))))
               )
             )
-            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving"))) (name "bobDriving") (declared-name "bobDriving") (declared (properties (portion true) (portion-kind "timeslice")))
+            (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving"))) (name "bobDriving") (declared-name "bobDriving") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
                 (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))) (name "item") (declared-name "item") (declared (properties (individual true) (composite false) (reference true))))
               )

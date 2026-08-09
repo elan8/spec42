@@ -137,18 +137,18 @@ NIL
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle"))) (name "bigVehicle") (declared-name "bigVehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::bigVehicle::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
               )
             )
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle"))) (name "smallVehicle") (declared-name "smallVehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng"))) (name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Parts Example-1::smallVehicle::eng::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts Example-1::Vehicle")))))
               )
             )
           )

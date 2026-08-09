@@ -88,8 +88,8 @@ semantic.invalid_connection_end_count
         )
         (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared)
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (name "focus") (declared-name "focus") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (name "focus") (declared-name "focus") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false))))
           )
         )
       )

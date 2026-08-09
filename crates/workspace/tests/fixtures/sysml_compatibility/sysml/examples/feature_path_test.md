@@ -200,7 +200,7 @@ semantic.invalid_connection_end_count
             (element (kind "part") (id (node (document "d0") (qualified-name "Q::C::b"))) (name "b") (declared-name "b") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Q::C")))))
             (element (kind "part") (id (node (document "d0") (qualified-name "Q::C::c"))) (name "c") (declared-name "c") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Q::C"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Q::C::c::aa"))) (name "aa") (declared-name "aa") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Q::C")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Q::C::c::aa"))) (name "aa") (declared-name "aa") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Q::C")))))
               )
             )
           )
@@ -218,7 +218,7 @@ semantic.invalid_connection_end_count
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Q::e1"))) (name "e1") (declared-name "e1") (declared (properties (ordered false)))
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Q::e1::x"))) (name "x") (declared-name "x") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Q::e1::x"))) (name "x") (declared-name "x") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Q::f"))) (name "f") (declared-name "f") (declared (properties (ordered false))))

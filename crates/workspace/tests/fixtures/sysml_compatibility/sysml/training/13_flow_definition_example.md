@@ -124,8 +124,8 @@ semantic.unresolved_name 'Fuel'
         (element (kind "part def") (id (node (document "d0") (qualified-name "Flow Definition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
         (element (kind "part") (id (node (document "d0") (qualified-name "Flow Definition Example::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Definition Example::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Flow Definition Example::Vehicle")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Definition Example::vehicle::tankAssy"))) (name "tankAssy") (declared-name "tankAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Flow Definition Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Definition Example::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Flow Definition Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Flow Definition Example::vehicle::tankAssy"))) (name "tankAssy") (declared-name "tankAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Flow Definition Example::Vehicle")))))
           )
         )
       )

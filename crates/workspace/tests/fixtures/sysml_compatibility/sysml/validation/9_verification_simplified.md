@@ -463,19 +463,19 @@ semantic.unresolved_name 'VerdictKind'
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem"))) (name "massVerificationSystem") (declared-name "massVerificationSystem") (declared (properties (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem::scale"))) (name "scale") (declared-name "scale") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem"))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem::scale"))) (name "scale") (declared-name "scale") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem"))))
                   (contains
                     (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem::scale::vehicleMassTest.collectData"))) (name "vehicleMassTest.collectData") (declared-name "vehicleMassTest.collectData") (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::Scale")))))
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem::testOperator"))) (name "testOperator") (declared-name "testOperator") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem::testOperator"))) (name "testOperator") (declared-name "testOperator") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem")))))
                 (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem::vehicleMassTest"))) (name "vehicleMassTest") (declared-name "vehicleMassTest") (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem")))))
                 (element (kind "ref") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem::vehicleUnderTest"))) (name "vehicleUnderTest") (declared-name "vehicleUnderTest") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassVerificationSystem")))))
               )
             )
             (element (kind "occurrence") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::testSystem"))) (name "testSystem") (declared-name "testSystem") (declared (properties (individual true)))
               (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::testSystem::test1"))) (name "test1") (declared-name "test1") (declared (properties (portion true) (portion-kind "timeslice")))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::testSystem::test1"))) (name "test1") (declared-name "test1") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
                     (element (kind "occurrence") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::testSystem::test1::"))) (name "") (declared (properties (individual true) (composite false) (reference true)))
                       (contains
@@ -484,7 +484,7 @@ semantic.unresolved_name 'VerdictKind'
                     )
                   )
                 )
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::testSystem::test2"))) (name "test2") (declared-name "test2") (declared (properties (portion true) (portion-kind "timeslice")))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::testSystem::test2"))) (name "test2") (declared-name "test2") (declared (properties (portion true) (portion-kind "timeslice"))) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
                     (element (kind "occurrence") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::testSystem::test2::"))) (name "") (declared (properties (individual true) (composite false) (reference true)))
                       (contains
@@ -506,19 +506,19 @@ semantic.unresolved_name 'VerdictKind'
             )
             (element (kind "verification") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest"))) (name "vehicleMassTest") (declared-name "vehicleMassTest")
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::collectData"))) (name "collectData") (declared-name "collectData") (declared) (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest"))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::collectData"))) (name "collectData") (declared-name "collectData") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest"))))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::collectData::massMeasured"))) (name "massMeasured") (declared-name "massMeasured") (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest")))))
                     (element (kind "part") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::collectData::testVehicle"))) (name "testVehicle") (declared-name "testVehicle") (declared (properties (direction "in") (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "testVehicle") (children (expression (kind "featureReference") (reference "vehicleMassTest")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::collectData::testVehicle"))) (role feature-value))))
                   )
                 )
-                (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::evaluateData"))) (name "evaluateData") (declared-name "evaluateData") (declared) (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest"))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::evaluateData"))) (name "evaluateData") (declared-name "evaluateData") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest"))))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::evaluateData::massProcessed"))) (name "massProcessed") (declared-name "massProcessed") (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest")))))
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::evaluateData::verdict"))) (name "verdict") (declared-name "verdict") (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest")))))
                   )
                 )
-                (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::processData"))) (name "processData") (declared-name "processData") (declared) (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest"))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::processData"))) (name "processData") (declared-name "processData") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest"))))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::processData::massMeasured"))) (name "massMeasured") (declared-name "massMeasured") (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest")))))
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest::processData::massProcessed"))) (name "massProcessed") (declared-name "massProcessed") (effective (featuring-type (node (document "d0") (qualified-name "9-Verification-simplified::Definitions::MassTest")))))

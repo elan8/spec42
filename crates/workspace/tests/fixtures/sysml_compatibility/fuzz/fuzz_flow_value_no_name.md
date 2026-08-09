@@ -69,7 +69,7 @@ package P {
       (contains
         (element (kind "part") (id (node (document "d0") (qualified-name "P::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
           )
         )
       )

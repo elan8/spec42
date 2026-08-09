@@ -190,7 +190,7 @@ parse.expected_usage_declaration
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::V::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::V"))))
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (name "b") (declared-name "b") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::Q")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "VariabilityTest::V::x::b"))) (name "b") (declared-name "b") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "VariabilityTest::Q")))))
               )
             )
           )

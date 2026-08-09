@@ -151,12 +151,12 @@ semantic.unresolved_name 'ISQ::LengthValue'
       (contains
         (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared)

@@ -192,10 +192,10 @@ semantic.unresolved_name 'fuelCommand'
         (element (kind "item def") (id (node (document "d0") (qualified-name "Message Payload Example::SetSpeed"))) (name "SetSpeed") (declared-name "SetSpeed"))
         (element (kind "part") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1"))) (name "vehicle1") (declared-name "vehicle1") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (name "engineController") (declared-name "engineController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))) (name "engineController") (declared-name "engineController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (name "fuelCommandForwarded") (declared-name "fuelCommandForwarded") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
-                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (name "fuelCommandReceived") (declared-name "fuelCommandReceived") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandForwarded"))) (name "fuelCommandForwarded") (declared-name "fuelCommandForwarded") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
+                (element (kind "occurrence") (id (node (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController::fuelCommandReceived"))) (name "fuelCommandReceived") (declared-name "fuelCommandReceived") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Message Payload Example::EngineController")))))
               )
             )
           )
