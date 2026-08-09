@@ -16,18 +16,26 @@ def skip(message: str) -> int:
     return 0
 
 
+def unavailable(message: str, strict: bool) -> int:
+    if strict:
+        print(f"ERROR: {message}")
+        return 2
+    return skip(message)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--schema", type=Path, help="OMG JSON abstract-syntax schema")
+    parser.add_argument("--strict-input", action="store_true", help="fail instead of skipping an unavailable schema input")
     sub = parser.add_subparsers(dest="command", required=True)
     show = sub.add_parser("show", help="show a metaclass definition")
     show.add_argument("name")
     sub.add_parser("list", help="list metaclass names")
     args = parser.parse_args()
     if args.schema is None:
-        return skip("no schema supplied; pass --schema /path/to/SysML-abstract-syntax.json")
+        return unavailable("no schema supplied; pass --schema /path/to/SysML-abstract-syntax.json", args.strict_input)
     if not args.schema.is_file():
-        return skip(f"schema input is unavailable: {args.schema}")
+        return unavailable(f"schema input is unavailable: {args.schema}", args.strict_input)
     try:
         definitions = json.loads(args.schema.read_text(encoding="utf-8"))["$defs"]
     except (json.JSONDecodeError, KeyError) as error:
