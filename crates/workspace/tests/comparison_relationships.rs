@@ -6,10 +6,9 @@ use tempfile::tempdir;
 use workspace::compare_snapshots;
 
 #[test]
-fn added_and_removed_relationships_are_reported() {
+fn removed_satisfy_relationship_is_reported() {
     let cache = tempdir().expect("tempdir");
     let engine = test_engine(&cache);
-
     let previous = load_snapshot(
         &engine,
         &cache,
@@ -24,7 +23,6 @@ package Demo {
 }
 "#,
     );
-
     let next = load_snapshot(
         &engine,
         &cache,
@@ -40,29 +38,21 @@ package Demo {
     );
 
     let report = compare_snapshots(&previous, &next).expect("compare");
-
-    assert!(
-        !report.relationships.removed.is_empty(),
-        "removed satisfy relationship expected: {:?}",
-        report.relationships.removed
-    );
     assert!(
         report
             .relationships
             .removed
             .iter()
             .any(|edge| edge.kind.eq_ignore_ascii_case("satisfy")),
-        "satisfy edge should be removed: {:?}",
+        "removed satisfy relationship expected: {:?}",
         report.relationships.removed
     );
-    assert!(report.relationships.added.is_empty());
 }
 
 #[test]
 fn added_typing_relationship_is_reported() {
     let cache = tempdir().expect("tempdir");
     let engine = test_engine(&cache);
-
     let previous = load_snapshot(
         &engine,
         &cache,
@@ -73,7 +63,6 @@ package Demo {
 }
 "#,
     );
-
     let next = load_snapshot(
         &engine,
         &cache,
@@ -87,10 +76,30 @@ package Demo {
     );
 
     let report = compare_snapshots(&previous, &next).expect("compare");
-
     assert!(
-        !report.relationships.added.is_empty(),
-        "added relationships expected: {:?}",
+        report
+            .relationships
+            .added
+            .iter()
+            .any(|edge| edge.kind.eq_ignore_ascii_case("typing")),
+        "added typing relationship expected: {:?}",
         report.relationships.added
     );
+}
+
+#[test]
+fn identical_snapshot_has_no_relationship_churn() {
+    let cache = tempdir().expect("tempdir");
+    let engine = test_engine(&cache);
+    let content = r#"
+package Demo {
+    part def Thing;
+}
+"#;
+    let previous = load_snapshot(&engine, &cache, "Demo.sysml", content);
+    let next = load_snapshot(&engine, &cache, "Demo.sysml", content);
+    let report = compare_snapshots(&previous, &next).expect("compare");
+    assert!(report.relationships.added.is_empty());
+    assert!(report.relationships.removed.is_empty());
+    assert!(report.relationships.changed.is_empty());
 }

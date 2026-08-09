@@ -2,15 +2,35 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
-use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
+use sysml_diagnostics::{DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic};
+use sysml_model::TextRange;
 
+use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::snapshot::HostValidationReport;
 
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct HostDiagnosticIdentity {
     pub uri: String,
     pub code: String,
     pub severity: String,
+    pub message: String,
+    /// Primary source evidence. `None` represents an older persisted report
+    /// whose schema intentionally omitted this field.
+    #[serde(default)]
+    pub range: Option<TextRange>,
+    /// The diagnostic producer is semantic provenance, distinct from its
+    /// human-readable message.
+    #[serde(default)]
+    pub source: String,
+    /// Related diagnostic provenance is part of the typed diagnostic contract.
+    #[serde(default)]
+    pub related_information: Vec<HostDiagnosticRelatedInformation>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct HostDiagnosticRelatedInformation {
+    pub uri: String,
+    pub range: TextRange,
     pub message: String,
 }
 
@@ -28,9 +48,9 @@ pub struct HostDiagnosticComparison {
 pub(crate) fn compare_diagnostics(
     previous: &HostValidationReport,
     next: &HostValidationReport,
-) -> HostDiagnosticComparison {
-    let previous_by_uri = diagnostics_by_uri(previous);
-    let next_by_uri = diagnostics_by_uri(next);
+) -> WorkspaceResult<HostDiagnosticComparison> {
+    let previous_by_uri = diagnostics_by_uri(previous)?;
+    let next_by_uri = diagnostics_by_uri(next)?;
 
     let mut all_uris: BTreeMap<String, ()> = BTreeMap::new();
     for uri in previous_by_uri.keys() {
@@ -59,21 +79,35 @@ pub(crate) fn compare_diagnostics(
         }
     }
 
-    HostDiagnosticComparison { by_document }
+    Ok(HostDiagnosticComparison { by_document })
 }
 
 fn diagnostics_by_uri(
     report: &HostValidationReport,
-) -> BTreeMap<String, BTreeSet<HostDiagnosticIdentity>> {
+) -> WorkspaceResult<BTreeMap<String, BTreeSet<HostDiagnosticIdentity>>> {
     let mut by_uri = BTreeMap::new();
     for document in &report.documents {
         let mut identities = BTreeSet::new();
         for diagnostic in &document.diagnostics {
-            identities.insert(diagnostic_identity(diagnostic));
+            let identity = diagnostic_identity(diagnostic);
+            if !identities.insert(identity.clone()) {
+                return Err(WorkspaceError::duplicate_comparison_identity(
+                    "diagnostic",
+                    format!(
+                        "{}:{}:{}:{}",
+                        identity.uri, identity.code, identity.severity, identity.message
+                    ),
+                ));
+            }
         }
-        by_uri.insert(document.uri.clone(), identities);
+        if by_uri.insert(document.uri.clone(), identities).is_some() {
+            return Err(WorkspaceError::duplicate_comparison_identity(
+                "diagnostic_document",
+                &document.uri,
+            ));
+        }
     }
-    by_uri
+    Ok(by_uri)
 }
 
 fn diagnostic_identity(diagnostic: &SemanticDiagnostic) -> HostDiagnosticIdentity {
@@ -82,7 +116,87 @@ fn diagnostic_identity(diagnostic: &SemanticDiagnostic) -> HostDiagnosticIdentit
         code: diagnostic.code.clone(),
         severity: severity_label(diagnostic.severity).to_string(),
         message: diagnostic.message.clone(),
+        range: Some(diagnostic.range),
+        source: diagnostic.source.clone(),
+        related_information: canonical_related_information(&diagnostic.related_information),
     }
+}
+
+fn canonical_related_information(
+    related: &[DiagnosticRelatedInfo],
+) -> Vec<HostDiagnosticRelatedInformation> {
+    let mut result = related
+        .iter()
+        .map(|information| HostDiagnosticRelatedInformation {
+            uri: information.uri.to_string(),
+            range: information.range,
+            message: information.message.clone(),
+        })
+        .collect::<Vec<_>>();
+    result.sort_by(compare_related_information);
+    result
+}
+
+fn compare_related_information(
+    left: &HostDiagnosticRelatedInformation,
+    right: &HostDiagnosticRelatedInformation,
+) -> std::cmp::Ordering {
+    left.uri
+        .cmp(&right.uri)
+        .then_with(|| left.range.start.line.cmp(&right.range.start.line))
+        .then_with(|| left.range.start.character.cmp(&right.range.start.character))
+        .then_with(|| left.range.end.line.cmp(&right.range.end.line))
+        .then_with(|| left.range.end.character.cmp(&right.range.end.character))
+        .then_with(|| left.message.cmp(&right.message))
+}
+
+impl PartialOrd for HostDiagnosticIdentity {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for HostDiagnosticIdentity {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.uri
+            .cmp(&other.uri)
+            .then_with(|| self.code.cmp(&other.code))
+            .then_with(|| self.severity.cmp(&other.severity))
+            .then_with(|| self.message.cmp(&other.message))
+            .then_with(|| compare_ranges(&self.range, &other.range))
+            .then_with(|| self.source.cmp(&other.source))
+            .then_with(|| {
+                compare_related_lists(&self.related_information, &other.related_information)
+            })
+    }
+}
+
+fn compare_ranges(left: &Option<TextRange>, right: &Option<TextRange>) -> std::cmp::Ordering {
+    match (left, right) {
+        (None, None) => std::cmp::Ordering::Equal,
+        (None, Some(_)) => std::cmp::Ordering::Less,
+        (Some(_), None) => std::cmp::Ordering::Greater,
+        (Some(left), Some(right)) => left
+            .start
+            .line
+            .cmp(&right.start.line)
+            .then_with(|| left.start.character.cmp(&right.start.character))
+            .then_with(|| left.end.line.cmp(&right.end.line))
+            .then_with(|| left.end.character.cmp(&right.end.character)),
+    }
+}
+
+fn compare_related_lists(
+    left: &[HostDiagnosticRelatedInformation],
+    right: &[HostDiagnosticRelatedInformation],
+) -> std::cmp::Ordering {
+    for (left, right) in left.iter().zip(right) {
+        let ordering = compare_related_information(left, right);
+        if ordering != std::cmp::Ordering::Equal {
+            return ordering;
+        }
+    }
+    left.len().cmp(&right.len())
 }
 
 fn severity_label(severity: DiagnosticSeverity) -> &'static str {
@@ -91,5 +205,85 @@ fn severity_label(severity: DiagnosticSeverity) -> &'static str {
         DiagnosticSeverity::Warning => "warning",
         DiagnosticSeverity::Information => "information",
         DiagnosticSeverity::Hint => "hint",
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::snapshot::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
+    use sysml_model::{TextPosition, TextRange};
+    use url::Url;
+
+    fn report(diagnostic: SemanticDiagnostic) -> HostValidationReport {
+        HostValidationReport {
+            workspace_root: None,
+            resolved_library_paths: Vec::new(),
+            documents: vec![HostValidatedDocument {
+                uri: diagnostic.uri.to_string(),
+                diagnostics: vec![diagnostic],
+            }],
+            summary: HostValidationSummary::default(),
+        }
+    }
+
+    fn diagnostic(source: &str) -> SemanticDiagnostic {
+        SemanticDiagnostic {
+            uri: Url::parse("file:///demo.sysml").expect("uri"),
+            range: TextRange::new(TextPosition::new(1, 0), TextPosition::new(1, 1)),
+            severity: DiagnosticSeverity::Warning,
+            source: source.to_string(),
+            code: "semantic.example".to_string(),
+            message: "example".to_string(),
+            related_information: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn diagnostic_provenance_and_primary_range_are_compared() {
+        let previous = report(diagnostic("parser"));
+        let mut shifted = diagnostic("parser");
+        shifted.range = TextRange::new(TextPosition::new(9, 0), TextPosition::new(9, 1));
+        let shifted_comparison = compare_diagnostics(&previous, &report(shifted)).expect("compare");
+        assert_eq!(
+            shifted_comparison.by_document["file:///demo.sysml"]
+                .introduced
+                .len(),
+            1
+        );
+        assert_eq!(
+            shifted_comparison.by_document["file:///demo.sysml"]
+                .resolved
+                .len(),
+            1
+        );
+
+        let comparison =
+            compare_diagnostics(&previous, &report(diagnostic("semantic"))).expect("compare");
+        let document = comparison
+            .by_document
+            .get("file:///demo.sysml")
+            .expect("changed document");
+        assert_eq!(document.introduced.len(), 1);
+        assert_eq!(document.resolved.len(), 1);
+    }
+
+    #[test]
+    fn rejects_duplicate_diagnostic_identity() {
+        let duplicate = diagnostic("semantic");
+        let error = compare_diagnostics(
+            &report(duplicate.clone()),
+            &HostValidationReport {
+                workspace_root: None,
+                resolved_library_paths: Vec::new(),
+                documents: vec![HostValidatedDocument {
+                    uri: duplicate.uri.to_string(),
+                    diagnostics: vec![duplicate.clone(), duplicate],
+                }],
+                summary: HostValidationSummary::default(),
+            },
+        )
+        .expect_err("duplicate diagnostics must not be collapsed");
+        assert_eq!(error.code(), "duplicate_comparison_identity");
     }
 }

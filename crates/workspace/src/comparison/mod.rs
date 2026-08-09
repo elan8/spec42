@@ -2,6 +2,7 @@
 
 mod diagnostics;
 mod elements;
+mod facts;
 mod identity;
 mod relationships;
 mod views;
@@ -9,13 +10,18 @@ mod views;
 use std::time::SystemTime;
 
 pub use diagnostics::{
-    HostDiagnosticComparison, HostDiagnosticIdentity, HostDocumentDiagnosticComparison,
+    HostDiagnosticComparison, HostDiagnosticIdentity, HostDiagnosticRelatedInformation,
+    HostDocumentDiagnosticComparison,
 };
 pub use elements::{
     HostElementChange, HostElementComparison, HostElementFieldChange, HostElementIdentity,
 };
+pub use facts::{HostDerivedFactComparison, HostSemanticFactChange, HostSemanticFactComparison};
 pub use identity::IdentityPreservationStatus;
-pub use relationships::{HostRelationshipComparison, HostRelationshipIdentity};
+pub use relationships::{
+    HostRelationshipChange, HostRelationshipComparison, HostRelationshipFieldChange,
+    HostRelationshipIdentity,
+};
 pub use views::{
     HostViewCatalogChange, HostViewCatalogEntry, HostViewCatalogFieldChange, HostViewComparison,
     HostViewPayloadChange,
@@ -36,6 +42,9 @@ pub struct SemanticComparisonReport {
     pub elements: HostElementComparison,
     pub relationships: HostRelationshipComparison,
     pub diagnostics: HostDiagnosticComparison,
+    /// Addressable multiplicity, expression, feature-value, and connector-end facts.
+    #[serde(default)]
+    pub facts: HostDerivedFactComparison,
     pub views: HostViewComparison,
 }
 
@@ -50,12 +59,14 @@ pub fn compare_snapshots(
         identity::assess_identity_preservation(&previous_artifact, &next_artifact);
 
     let elements =
-        elements::compare_elements(previous.semantic_projection(), next.semantic_projection());
+        elements::compare_elements(previous.semantic_projection(), next.semantic_projection())?;
     let relationships = relationships::compare_relationships(
         previous.semantic_projection(),
         next.semantic_projection(),
-    );
-    let diagnostics = diagnostics::compare_diagnostics(previous.validation(), next.validation());
+    )?;
+    let diagnostics = diagnostics::compare_diagnostics(previous.validation(), next.validation())?;
+    let facts =
+        facts::compare_derived_facts(previous.semantic_projection(), next.semantic_projection())?;
     let views = views::compare_views(previous, next)?;
 
     Ok(SemanticComparisonReport {
@@ -67,6 +78,7 @@ pub fn compare_snapshots(
         elements,
         relationships,
         diagnostics,
+        facts,
         views,
     })
 }
