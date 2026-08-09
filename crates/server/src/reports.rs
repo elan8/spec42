@@ -4,7 +4,7 @@ use std::path::Path;
 use lsp_server::{ValidatedDocument, ValidationReport, ValidationSummary};
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString};
 
-use crate::cli::OutputFormat;
+use crate::{cli::OutputFormat, diagnostic_catalog};
 
 pub fn emit_validation_report(
     report: &ValidationReport,
@@ -215,6 +215,17 @@ fn print_text_report(report: &ValidationReport) {
 }
 
 fn sarif_report(report: &ValidationReport) -> serde_json::Value {
+    let rule_ids = report
+        .documents
+        .iter()
+        .flat_map(|document| document.diagnostics.iter())
+        .filter_map(|diagnostic| diagnostic.code.as_ref().map(number_or_string_label))
+        .collect::<BTreeSet<_>>();
+    let rules = rule_ids
+        .iter()
+        .filter_map(|rule_id| diagnostic_catalog::lookup(rule_id))
+        .map(sarif_rule)
+        .collect::<Vec<_>>();
     let results = report
         .documents
         .iter()
@@ -251,12 +262,33 @@ fn sarif_report(report: &ValidationReport) -> serde_json::Value {
             "tool": {
                 "driver": {
                     "name": "spec42",
-                    "informationUri": "https://github.com/elan8/spec42"
+                    "informationUri": "https://github.com/elan8/spec42",
+                    "rules": rules
                 }
             },
             "results": results
         }]
     })
+}
+
+fn sarif_rule(entry: &diagnostic_catalog::DiagnosticCatalogEntry) -> serde_json::Value {
+    serde_json::json!({
+        "id": entry.code,
+        "name": entry.code,
+        "shortDescription": { "text": entry.meaning },
+        "help": { "text": entry.typical_fix },
+        "defaultConfiguration": { "level": sarif_catalog_level(entry.severity) },
+        "properties": { "spec42Alignment": diagnostic_catalog::alignment(entry.code) }
+    })
+}
+
+fn sarif_catalog_level(severity: &str) -> &'static str {
+    match severity {
+        "error" => "error",
+        "warning" => "warning",
+        "information" | "hint" => "note",
+        _ => "warning",
+    }
 }
 
 fn junit_report(report: &ValidationReport) -> String {
@@ -399,6 +431,23 @@ mod tests {
             result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"],
             "file:///model.sysml"
         );
+    }
+
+    #[test]
+    fn sarif_includes_metadata_for_cataloged_rules() {
+        let mut report = sample_report();
+        report.documents[0].diagnostics[0].code = Some(NumberOrString::String(
+            "unresolved_type_reference".to_string(),
+        ));
+
+        let sarif = sarif_report(&report);
+        let rule = &sarif["runs"][0]["tool"]["driver"]["rules"][0];
+        let entry = diagnostic_catalog::lookup("unresolved_type_reference").expect("catalog");
+        assert_eq!(rule["id"], entry.code);
+        assert_eq!(rule["shortDescription"]["text"], entry.meaning);
+        assert_eq!(rule["help"]["text"], entry.typical_fix);
+        assert_eq!(rule["defaultConfiguration"]["level"], "warning");
+        assert_eq!(rule["properties"]["spec42Alignment"], "spec_constraint");
     }
 
     #[test]
