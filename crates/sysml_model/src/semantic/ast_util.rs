@@ -33,9 +33,16 @@ pub fn definition_prefix_flags(prefix: Option<&DefinitionPrefix>) -> (bool, bool
     }
 }
 
-/// Composite ownership defaults for ordinary (non-`ref`) feature usages.
-fn composite_usage_ownership() -> (Option<bool>, Option<bool>) {
-    (Some(true), Some(false))
+/// Parser-backed ownership facts for an explicit `ref` usage.
+///
+/// An ordinary usage does not author either half of the ownership pair. Its composite default is
+/// contextual and is therefore published later as an effective graph fact, after containment is
+/// complete. Keeping it out of this AST adapter preserves the distinction between what appeared
+/// in the source and what SysML supplies by default.
+fn usage_ownership_from_ref_flag(is_reference: bool) -> (Option<bool>, Option<bool>) {
+    is_reference
+        .then_some((Some(false), Some(true)))
+        .unwrap_or((None, None))
 }
 
 /// Attaches the explicit `private`/`protected`/`public` visibility prefix from a member's
@@ -64,7 +71,7 @@ pub fn part_usage_feature_properties(
     usage: &sysml_v2_parser::ast::PartUsage,
 ) -> DeclaredFeatureProperties {
     let (is_abstract, is_variation) = definition_prefix_flags(usage.usage_prefix.as_ref());
-    let (is_composite, is_reference) = composite_usage_ownership();
+    let (is_composite, is_reference) = usage_ownership_from_ref_flag(usage.is_reference);
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract,
@@ -87,7 +94,6 @@ pub fn part_usage_feature_properties(
 pub fn attribute_usage_feature_properties(
     usage: &sysml_v2_parser::ast::AttributeUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract: false,
@@ -96,8 +102,8 @@ pub fn attribute_usage_feature_properties(
         is_derived: usage.is_derived,
         is_constant: usage.is_constant,
         is_end: usage.is_end,
-        is_composite,
-        is_reference,
+        is_composite: None,
+        is_reference: None,
         is_conjugated: false,
         is_ordered: Some(usage.ordered),
         is_unique: Some(!usage.nonunique),
@@ -110,7 +116,6 @@ pub fn attribute_usage_feature_properties(
 pub fn port_usage_feature_properties(
     usage: &sysml_v2_parser::ast::PortUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
     let conjugated = usage
         .type_name
         .as_deref()
@@ -123,22 +128,13 @@ pub fn port_usage_feature_properties(
         is_derived: usage.is_derived,
         is_constant: usage.is_constant,
         is_end: false,
-        is_composite,
-        is_reference,
+        is_composite: None,
+        is_reference: None,
         is_conjugated: conjugated,
         is_ordered: None,
         is_unique: None,
         is_portion: false,
         portion_kind: None,
-    }
-}
-
-/// Ownership for an `action` / `state` usage: `ref` keywords flip composite → reference.
-fn usage_ownership_from_ref_flag(is_reference: bool) -> (Option<bool>, Option<bool>) {
-    if is_reference {
-        (Some(false), Some(true))
-    } else {
-        composite_usage_ownership()
     }
 }
 
@@ -192,7 +188,6 @@ pub fn state_usage_feature_properties(
 pub fn item_usage_feature_properties(
     usage: &sysml_v2_parser::ast::ItemUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
     DeclaredFeatureProperties {
         direction: usage.direction.map(direction_name).map(str::to_owned),
         is_abstract: false,
@@ -201,8 +196,8 @@ pub fn item_usage_feature_properties(
         is_derived: false,
         is_constant: false,
         is_end: false,
-        is_composite,
-        is_reference,
+        is_composite: None,
+        is_reference: None,
         is_conjugated: false,
         is_ordered: None,
         is_unique: None,

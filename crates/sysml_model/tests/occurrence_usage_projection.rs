@@ -70,6 +70,10 @@ fn occurrence_usage_projects_authored_modifiers_and_reference_ownership() {
         .as_ref()
         .expect("declared individual properties");
     assert!(selected_properties.is_individual);
-    assert_eq!(selected_properties.is_reference, Some(false));
-    assert_eq!(selected_properties.is_composite, Some(true));
+    assert!(selected_properties.is_reference.is_none());
+    assert!(selected_properties.is_composite.is_none());
+    assert!(
+        graph.effective_feature_ownership_for(selected).is_none(),
+        "a package member has namespace ownership, so it must not receive the type-body default"
+    );
 }

@@ -43,11 +43,13 @@ pub use semantic::library_loader::{
     LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
-    ConnectStatementDetail, DeclaredExpression, DeclaredMultiplicity, DeclaredMultiplicityBound,
-    DeclaredMultiplicityBounds, DeclaredRelationshipFacts, DeclaredRelationshipTarget,
+    ConnectStatementDetail, DeclaredExpression, DeclaredFeatureProperties, DeclaredMultiplicity,
+    DeclaredMultiplicityBound, DeclaredMultiplicityBounds, DeclaredRelationshipFacts,
+    DeclaredRelationshipTarget, DeclaredSemanticFacts, EffectiveFeatureOwnership,
     EffectiveSemanticFacts, ElementKind, ExpressionResultId, ExpressionResultRole,
-    FlowStatementDetail, ImpliedFeatureValueBinding, ImpliedMultiplicity, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    FeatureOwnershipProvenance, FlowStatementDetail, ImpliedFeatureOwnership,
+    ImpliedFeatureValueBinding, ImpliedMultiplicity, NodeId, RelationshipKind, SemanticEdge,
+    SemanticNode,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,

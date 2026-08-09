@@ -322,6 +322,13 @@ fn render_effective_facts(
         }
         output.push(')');
     }
+    if let Some(ownership) = facts.implied_feature_ownership {
+        let _ = write!(
+            output,
+            " (implied-feature-ownership (composite {}) (reference {}))",
+            ownership.is_composite, ownership.is_reference
+        );
+    }
     if let Some(featuring_type) = &facts.featuring_type {
         let _ = write!(
             output,
@@ -640,7 +647,7 @@ mod tests {
     (element (kind "package") (id (node (document "d0") (qualified-name "P"))) (name "P") (declared-name "P")
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "P::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "P::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "P::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))))
       )
     )
   )

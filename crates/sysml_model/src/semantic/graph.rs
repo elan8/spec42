@@ -13,7 +13,8 @@ use url::Url;
 
 use crate::semantic::model::{
     node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
-    EffectiveSemanticFacts, ElementKind, ExpressionResultId, ExpressionResultRole,
+    EffectiveFeatureOwnership, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
+    ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
     ImpliedFeatureValueBinding, ImpliedMultiplicity, NodeId, RelationshipKind, SemanticEdge,
     SemanticNode,
 };
@@ -140,6 +141,34 @@ impl SemanticGraph {
         self.effective_facts_by_node_id.get(&node.id)
     }
 
+    /// Returns a feature's ownership after applying its parser-backed modifier or the one
+    /// contextual SysML default published at the semantic barrier.
+    ///
+    /// The source fact stays in [`DeclaredFeatureProperties`](crate::semantic::model::DeclaredFeatureProperties).
+    /// Consumers must use this query for ownership semantics rather than treating an absent
+    /// authored modifier as a negative result.
+    pub fn effective_feature_ownership_for(
+        &self,
+        node: &SemanticNode,
+    ) -> Option<EffectiveFeatureOwnership> {
+        let declared = node.declared_facts.feature_properties.as_ref()?;
+        if declared.is_composite.is_some() || declared.is_reference.is_some() {
+            return Some(EffectiveFeatureOwnership {
+                is_composite: declared.is_composite.unwrap_or(false),
+                is_reference: declared.is_reference.unwrap_or(false),
+                provenance: FeatureOwnershipProvenance::Authored,
+            });
+        }
+
+        self.effective_facts_for(node)
+            .and_then(|facts| facts.implied_feature_ownership)
+            .map(|ownership| EffectiveFeatureOwnership {
+                is_composite: ownership.is_composite,
+                is_reference: ownership.is_reference,
+                provenance: FeatureOwnershipProvenance::Implied,
+            })
+    }
+
     /// Publish all derived effective facts after relationship linking has settled.
     ///
     /// This is intentionally a graph-level publication rather than a collection of consumer
@@ -165,6 +194,12 @@ impl SemanticGraph {
                         is_ordered: false,
                         is_unique: None,
                     });
+            let implied_feature_ownership =
+                self.has_implied_feature_ownership(node)
+                    .then_some(ImpliedFeatureOwnership {
+                        is_composite: true,
+                        is_reference: false,
+                    });
             let featuring_type = self.nearest_featuring_type(node);
             let implied_feature_value_binding = node
                 .declared_facts
@@ -182,6 +217,7 @@ impl SemanticGraph {
                 implied_multiplicity,
                 featuring_type,
                 implied_feature_value_binding,
+                implied_feature_ownership,
             };
             if facts != EffectiveSemanticFacts::default() {
                 effective_facts_by_node_id.insert(node.id.clone(), facts);
@@ -220,6 +256,44 @@ impl SemanticGraph {
 
         self.outgoing_targets_by_kind(node, RelationshipKind::Subsetting)
             .is_empty()
+    }
+
+    /// Whether an ordinary owned usage receives SysML's contextual composite ownership default.
+    ///
+    /// The rule is deliberately conservative until all feature kinds have a complete typed
+    /// ownership contract: it applies only to the parser-backed ordinary usage kinds below when
+    /// directly owned by a SysML definition. Namespace/package members, end features, directed
+    /// parameters, and explicit `ref` declarations remain outside the default. Each condition is
+    /// read from typed graph facts, never from display attributes or source text.
+    fn has_implied_feature_ownership(&self, node: &SemanticNode) -> bool {
+        if !matches!(
+            node.element_kind,
+            ElementKind::Part
+                | ElementKind::Attribute
+                | ElementKind::Port
+                | ElementKind::Item
+                | ElementKind::Action
+                | ElementKind::State
+                | ElementKind::Occurrence
+        ) {
+            return false;
+        }
+
+        let Some(properties) = node.declared_facts.feature_properties.as_ref() else {
+            return false;
+        };
+        if properties.is_composite.is_some()
+            || properties.is_reference.is_some()
+            || properties.is_end
+            || properties.direction.is_some()
+        {
+            return false;
+        }
+
+        node.parent_id
+            .as_ref()
+            .and_then(|owner_id| self.get_node(owner_id))
+            .is_some_and(|owner| owner.element_kind.is_definition())
     }
 
     fn nearest_featuring_type(&self, node: &SemanticNode) -> Option<NodeId> {

@@ -1,9 +1,11 @@
 //! Implied semantic contracts published separately from their authored source facts.
 
 use sysml_model::{
-    build_semantic_graph_from_documents, ElementKind, ExpressionResultRole, SysmlDocument,
-    SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, DeclaredFeatureProperties, DeclaredSemanticFacts,
+    ElementKind, ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership, NodeId,
+    SemanticGraph, SemanticNode, SysmlDocument, SysmlDocumentSourceKind, TextPosition, TextRange,
 };
+use url::Url;
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -15,6 +17,150 @@ fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
         None,
     )
     .expect("workspace document")
+}
+
+#[test]
+fn ownership_defaults_are_implied_only_for_supported_usages_in_type_bodies() {
+    let document = workspace_doc(
+        "implied_ownership_scope.sysml",
+        r#"package P {
+  part packageMember;
+  part def Container {
+    part ordinaryPart;
+    attribute ordinaryAttribute;
+    port ordinaryPort;
+    item ordinaryItem;
+    action ordinaryAction;
+    state ordinaryState;
+    occurrence ordinaryOccurrence;
+    ref part explicitReference;
+    end attribute endFeature;
+  }
+}"#,
+    );
+    let (graph, _) = build_semantic_graph_from_documents(&[document.clone()]).expect("graph");
+
+    for name in [
+        "ordinaryPart",
+        "ordinaryAttribute",
+        "ordinaryPort",
+        "ordinaryItem",
+        "ordinaryAction",
+        "ordinaryState",
+        "ordinaryOccurrence",
+    ] {
+        let node = graph
+            .nodes_named(name)
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| panic!("missing ordinary usage {name}"));
+        let declared = node
+            .declared_facts
+            .feature_properties
+            .as_ref()
+            .expect("parser-backed feature properties");
+        assert!(
+            declared.is_composite.is_none() && declared.is_reference.is_none(),
+            "{name} must not turn an implied ownership default into an authored fact"
+        );
+        assert_eq!(
+            graph
+                .effective_facts_for(node)
+                .and_then(|facts| facts.implied_feature_ownership),
+            Some(ImpliedFeatureOwnership {
+                is_composite: true,
+                is_reference: false,
+            }),
+            "{name} should receive the supported contextual default"
+        );
+        assert_eq!(
+            graph
+                .effective_feature_ownership_for(node)
+                .map(|ownership| ownership.provenance),
+            Some(FeatureOwnershipProvenance::Implied),
+            "{name} must expose the default through the canonical ownership query"
+        );
+    }
+
+    let explicit_reference = graph
+        .nodes_named("explicitReference")
+        .into_iter()
+        .next()
+        .expect("explicit reference usage");
+    let declared_reference = explicit_reference
+        .declared_facts
+        .feature_properties
+        .as_ref()
+        .expect("parser-backed reference properties");
+    assert_eq!(declared_reference.is_composite, Some(false));
+    assert_eq!(declared_reference.is_reference, Some(true));
+    assert!(
+        graph
+            .effective_facts_for(explicit_reference)
+            .and_then(|facts| facts.implied_feature_ownership)
+            .is_none(),
+        "an explicit reference must not also receive an implied ownership default"
+    );
+    assert_eq!(
+        graph
+            .effective_feature_ownership_for(explicit_reference)
+            .map(|ownership| ownership.provenance),
+        Some(FeatureOwnershipProvenance::Authored)
+    );
+
+    for name in ["packageMember", "endFeature"] {
+        let node = graph
+            .nodes_named(name)
+            .into_iter()
+            .next()
+            .unwrap_or_else(|| panic!("missing excluded usage {name}"));
+        assert!(
+            graph.effective_feature_ownership_for(node).is_none(),
+            "{name} must not receive the ownership default outside its typed context"
+        );
+    }
+}
+
+#[test]
+fn directed_feature_does_not_receive_the_ownership_default() {
+    let uri = Url::parse("memory://ownership/directed.sysml").expect("URI");
+    let owner_id = NodeId::new(&uri, "P::Container");
+    let feature_id = NodeId::new(&uri, "P::Container::input");
+    let range = TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 0));
+    let mut graph = SemanticGraph::new();
+    graph.insert_workspace_node(SemanticNode {
+        id: owner_id.clone(),
+        element_kind: ElementKind::PartDef,
+        declared_name: Some("Container".into()),
+        name: "Container".into(),
+        range,
+        attributes: Default::default(),
+        declared_facts: Default::default(),
+        parent_id: None,
+    });
+    graph.insert_workspace_node(SemanticNode {
+        id: feature_id.clone(),
+        element_kind: ElementKind::Attribute,
+        declared_name: Some("input".into()),
+        name: "input".into(),
+        range,
+        attributes: Default::default(),
+        declared_facts: DeclaredSemanticFacts {
+            feature_properties: Some(DeclaredFeatureProperties {
+                direction: Some("in".into()),
+                ..Default::default()
+            }),
+            ..Default::default()
+        },
+        parent_id: Some(owner_id),
+    });
+    graph.refresh_effective_facts();
+
+    let feature = graph.get_node(&feature_id).expect("directed feature");
+    assert!(
+        graph.effective_feature_ownership_for(feature).is_none(),
+        "directed parameters are outside the composite ownership default"
+    );
 }
 
 #[test]

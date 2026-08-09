@@ -794,6 +794,12 @@ pub struct EffectiveSemanticFacts {
     /// The implied binding from an authored `=` FeatureValue to its addressable expression result.
     #[serde(default)]
     pub implied_feature_value_binding: Option<ImpliedFeatureValueBinding>,
+    /// The ownership established by SysML's contextual default for an ordinary feature usage.
+    ///
+    /// This is present only when no ownership modifier was authored. Explicit `ref` remains in
+    /// [`DeclaredFeatureProperties`] so source provenance is never replaced by this default.
+    #[serde(default)]
+    pub implied_feature_ownership: Option<ImpliedFeatureOwnership>,
 }
 
 /// An effective multiplicity with no source range because it was not authored.
@@ -803,6 +809,33 @@ pub struct ImpliedMultiplicity {
     pub upper: Option<u32>,
     pub is_ordered: bool,
     pub is_unique: Option<bool>,
+}
+
+/// SysML's contextual composite ownership default for an ordinary feature usage.
+///
+/// It has no source range because neither `composite` nor `non-reference` was authored. The
+/// semantic graph computes it only after containment is complete; consumers must obtain the
+/// combined result through [`SemanticGraph::effective_feature_ownership_for`].
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ImpliedFeatureOwnership {
+    pub is_composite: bool,
+    pub is_reference: bool,
+}
+
+/// The canonical effective ownership of a feature after applying its authored modifier or the
+/// contextual SysML default.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct EffectiveFeatureOwnership {
+    pub is_composite: bool,
+    pub is_reference: bool,
+    pub provenance: FeatureOwnershipProvenance,
+}
+
+/// Records whether effective feature ownership was written in the source or implied by context.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FeatureOwnershipProvenance {
+    Authored,
+    Implied,
 }
 
 /// Stable, graph-neutral identity of an expression result owned by a semantic element.
@@ -826,8 +859,9 @@ pub struct ImpliedFeatureValueBinding {
 
 /// Explicit feature/definition modifiers from the textual declaration.
 ///
-/// Composite/reference ownership is inferred from ordinary usage vs `RefDecl`
-/// materialization (`ElementKind::Ref`). Conjugation is set when a type
+/// Composite/reference ownership is retained only when a parser-backed modifier
+/// such as `ref` was authored. Contextual composite ownership is published
+/// separately in [`EffectiveSemanticFacts`]. Conjugation is set when a type
 /// reference is prefixed with `~`. Portion/time-varying semantics remain
 /// omitted until the parser exposes them as typed fields.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
