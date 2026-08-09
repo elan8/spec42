@@ -41,7 +41,8 @@ fn ownership_defaults_are_implied_only_for_supported_usages_in_type_bodies() {
   }
 }"#,
     );
-    let (graph, _) = build_semantic_graph_from_documents(&[document.clone()]).expect("graph");
+    let (graph, _) =
+        build_semantic_graph_from_documents(std::slice::from_ref(&document)).expect("graph");
 
     for name in [
         "ordinaryPart",
