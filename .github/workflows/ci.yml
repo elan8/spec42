@@ -45,6 +45,9 @@ jobs:
       - name: Extension versions match Cargo workspace
         run: node scripts/sync-workspace-version.mjs --check
 
+      - name: SysML reference tooling smoke checks
+        run: python3 -m unittest tools/sysml_reference/test_tools.py
+
       - name: Prepare SysML stdlib bundle
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")

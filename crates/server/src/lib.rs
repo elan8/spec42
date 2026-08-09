@@ -14,6 +14,7 @@ pub mod kpar_libraries;
 pub mod library_bundle;
 pub mod library_status_rpc;
 pub mod reports;
+pub mod starter_workspace;
 pub mod stdlib;
 pub mod sysand;
 
@@ -22,8 +23,8 @@ use std::sync::Arc;
 
 use ai_tools::{perform_explain_diagnostic, perform_model_summary};
 use cli::{
-    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs, LibrariesCommand,
-    ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
+    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs, InitArgs,
+    LibrariesCommand, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
@@ -180,6 +181,7 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         None => run_lsp(&cli).await,
         Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
+        Some(Command::Init(args)) => run_init(&cli, args),
         Some(Command::Generate(args)) => generation::run_generate(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
         Some(Command::ExplainDiagnostic(args)) => run_explain_diagnostic(&cli, args),
@@ -189,6 +191,34 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Libraries { command }) => run_libraries(&cli, command),
         Some(Command::Diagrams { command }) => run_diagrams(&cli, command),
     }
+}
+
+fn run_init(cli: &Cli, args: &InitArgs) -> Result<ExitCode, String> {
+    let scaffold = starter_workspace::scaffold(&args.path)?;
+    let validation_args = CheckArgs {
+        path: scaffold.root.clone(),
+        workspace_root: Some(scaffold.root.clone()),
+        format: OutputFormat::Text,
+        warnings_as_errors: false,
+        baseline: None,
+        strict_diagnostics: false,
+    };
+    let report = perform_check(cli, &validation_args)?;
+    if report.summary.error_count > 0 {
+        let _ = emit_validation_report(&report, OutputFormat::Text);
+        return Err(format!(
+            "starter workspace was created at {} but failed validation with {} error(s)",
+            scaffold.root.display(),
+            report.summary.error_count
+        ));
+    }
+
+    println!(
+        "Created starter SysML v2 workspace at {} ({} files; validation passed).",
+        scaffold.root.display(),
+        scaffold.files_written
+    );
+    Ok(ExitCode::SUCCESS)
 }
 
 async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {

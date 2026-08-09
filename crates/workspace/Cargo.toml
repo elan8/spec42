@@ -123,6 +123,10 @@ path = "tests/deferred_validation.rs"
 name = "robot_vacuum_performance"
 path = "tests/robot_vacuum_performance.rs"
 
+[[test]]
+name = "sysml_compatibility_corpus"
+path = "tests/sysml_compatibility_corpus.rs"
+
 [[example]]
 name = "profile_robot_vacuum"
 path = "examples/profile_robot_vacuum.rs"

@@ -1,0 +1,182 @@
+# META
+~~~ini
+description=KerML Packet: Packets
+type=file
+~~~
+# SOURCE
+~~~kerml
+private import ScalarValues::*;
+private import Time::DateTime;
+package Packets {
+	
+	feature 'packet header' { }
+	
+	feature 'packet data field' {	
+		feature 'packet secondary header' redefines 'packet header';
+		feature 'user data field';
+	}
+	
+	class 'Data Packet' { 
+		feature 'packet primary header' redefines 'packet header' {
+			feature 'packet version number': Integer;
+			feature 'packet identification': String;
+			feature 'packet data length': Integer;
+		}
+		feature redefines 'packet data field';
+	}
+	
+	class 'Thermal Data Packet' specializes 'Data Packet' {
+		feature 'packet data field' redefines Packets::'packet data field'{
+			feature 'packet secondary header' redefines 'packet header' {
+				feature 'packet timestamp': DateTime;
+				feature 'telemetry packet type': String;
+			}
+			
+			feature 'user data field' redefines Packets::'packet data field'::'user data field' {
+				feature timestamp: DateTime;
+				feature temperature: Real;
+			}
+		}
+	}
+	
+}
+~~~
+# TOKENS
+~~~zig
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPackage,Ident,OpenCurly,
+KwFeature,UnrestrictedName,OpenCurly,CloseCurly,
+KwFeature,UnrestrictedName,OpenCurly,
+KwFeature,UnrestrictedName,KwRedefines,UnrestrictedName,Semicolon,
+KwFeature,UnrestrictedName,Semicolon,
+CloseCurly,
+KwClass,UnrestrictedName,OpenCurly,
+KwFeature,UnrestrictedName,KwRedefines,UnrestrictedName,OpenCurly,
+KwFeature,UnrestrictedName,Colon,Ident,Semicolon,
+KwFeature,UnrestrictedName,Colon,Ident,Semicolon,
+KwFeature,UnrestrictedName,Colon,Ident,Semicolon,
+CloseCurly,
+KwFeature,KwRedefines,UnrestrictedName,Semicolon,
+CloseCurly,
+KwClass,UnrestrictedName,KwSpecializes,UnrestrictedName,OpenCurly,
+KwFeature,UnrestrictedName,KwRedefines,Ident,ColonColon,UnrestrictedName,OpenCurly,
+KwFeature,UnrestrictedName,KwRedefines,UnrestrictedName,OpenCurly,
+KwFeature,UnrestrictedName,Colon,Ident,Semicolon,
+KwFeature,UnrestrictedName,Colon,Ident,Semicolon,
+CloseCurly,
+KwFeature,UnrestrictedName,KwRedefines,Ident,ColonColon,UnrestrictedName,ColonColon,UnrestrictedName,OpenCurly,
+KwFeature,Ident,Colon,Ident,Semicolon,
+KwFeature,Ident,Colon,Ident,Semicolon,
+CloseCurly,
+CloseCurly,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (import_decl private 'ScalarValues::*')
+  (import_decl private 'Time::DateTime')
+  (package_def 'Packets'
+    (feature_def ''packet header'')
+    (feature_def ''packet data field''
+      (feature_def ''packet secondary header'' :>> ''packet header'')
+      (feature_def ''user data field''))
+    (class_def ''Data Packet''
+      (feature_def ''packet primary header'' :>> ''packet header''
+        (feature_def ''packet version number'' : 'Integer')
+        (feature_def ''packet identification'' : 'String')
+        (feature_def ''packet data length'' : 'Integer'))
+      (feature_def :>> ''packet data field''))
+    (class_def ''Thermal Data Packet'' :> ''Data Packet''
+      (feature_def ''packet data field'' :>> 'Packets::'packet data field''
+        (feature_def ''packet secondary header'' :>> ''packet header''
+          (feature_def ''packet timestamp'' : 'DateTime')
+          (feature_def ''telemetry packet type'' : 'String'))
+        (feature_def ''user data field'' :>> 'Packets::'packet data field'::'user data field''
+          (feature_def 'timestamp' : 'DateTime')
+          (feature_def 'temperature' : 'Real'))))))
+~~~
+# FORMAT
+~~~sysml
+private import ScalarValues::*;
+private import Time::DateTime;
+package Packets {
+    feature 'packet header' { }
+
+    feature 'packet data field' {
+        feature 'packet secondary header' redefines 'packet header';
+        feature 'user data field';
+    }
+
+    class 'Data Packet' {
+        feature 'packet primary header' redefines 'packet header' {
+            feature 'packet version number' : Integer;
+            feature 'packet identification' : String;
+            feature 'packet data length' : Integer;
+        }
+        feature redefines 'packet data field';
+    }
+
+    class 'Thermal Data Packet' specializes 'Data Packet' {
+        feature 'packet data field' redefines Packets::'packet data field' {
+            feature 'packet secondary header' redefines 'packet header' {
+                feature 'packet timestamp' : DateTime;
+                feature 'telemetry packet type' : String;
+            }
+
+            feature 'user data field' redefines Packets::'packet data field'::'user data field' {
+                feature timestamp : DateTime;
+                feature temperature : Real;
+            }
+        }
+    }
+}
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'Integer'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'String'
+semantic.unresolved_name 'DateTime'
+semantic.unresolved_name 'Real'
+~~~
+# SMG
+~~~
+(model
+  (namespace
+    (namespace_import private -> 'ScalarValues'[unresolved])
+    (membership_import private -> 'Time::DateTime'[unresolved])
+    (package 'Packets'
+      (feature_def 'packet header')
+      (feature_def 'packet data field'
+        (feature_def 'packet secondary header' :>> 'Packets::packet header'[feature_def])
+        (feature_def 'user data field'))
+      (class_def 'Data Packet'
+        (feature_def 'packet primary header' :>> 'Packets::packet header'[feature_def]
+          (feature_def 'packet version number' : 'Integer'[unresolved])
+          (feature_def 'packet identification' : 'String'[unresolved])
+          (feature_def 'packet data length' : 'Integer'[unresolved]))
+        (feature_def :>> 'Packets::packet data field'[feature_def]))
+      (class_def 'Thermal Data Packet' :> 'Packets::Data Packet'[class_def]
+        (feature_def 'packet data field' :>> 'Packets::packet data field'[feature_def]
+          (feature_def 'packet secondary header' :>> 'Packets::packet header'[feature_def]
+            (feature_def 'packet timestamp' : 'DateTime'[unresolved])
+            (feature_def 'telemetry packet type' : 'String'[unresolved]))
+          (feature_def 'user data field' :>> 'Packets::packet data field::user data field'[feature_def]
+            (feature_def 'timestamp' : 'DateTime'[unresolved])
+            (feature_def 'temperature' : 'Real'[unresolved])))))))
+~~~

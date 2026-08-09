@@ -31,6 +31,8 @@ pub struct Cli {
 pub enum Command {
     Lsp,
     Check(CheckArgs),
+    /// Scaffold a validated starter SysML v2 workspace. Existing files are never overwritten.
+    Init(InitArgs),
     /// Run a sandboxed WebAssembly plugin against a resolved semantic model.
     Generate(GenerateArgs),
     Doctor(DoctorArgs),
@@ -119,6 +121,12 @@ pub struct CheckArgs {
         help = "Legacy check mode: skip semantic diagnostics after parse errors and suppress shadowed unresolved warnings"
     )]
     pub strict_diagnostics: bool,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct InitArgs {
+    /// New or empty directory that will contain the starter workspace.
+    pub path: PathBuf,
 }
 
 #[derive(Debug, Clone, Args)]
@@ -308,6 +316,15 @@ mod tests {
                 assert_eq!(args.baseline, Some(PathBuf::from("baseline.json")));
             }
             other => panic!("expected check command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn init_command_requires_a_target_directory() {
+        let cli = Cli::parse_from(["spec42", "init", "starter-model"]);
+        match cli.command {
+            Some(Command::Init(args)) => assert_eq!(args.path, PathBuf::from("starter-model")),
+            other => panic!("expected init command, got {other:?}"),
         }
     }
 

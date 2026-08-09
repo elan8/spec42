@@ -1,0 +1,6 @@
+{
+  "$defs": {
+    "PartUsage": { "type": "object" },
+    "RequirementUsage": { "type": "object" }
+  }
+}

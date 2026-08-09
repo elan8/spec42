@@ -82,6 +82,7 @@ the zero-unexpected-warning gate (`robot_vacuum_snapshot`).
 | Surface | Status |
 |---------|--------|
 | `spec42 check` (text/JSON/SARIF/JUnit, baseline, warnings-as-errors) | complete |
+| `spec42 init <directory>` (validated, no-overwrite starter workspace) | complete |
 | `spec42 doctor` | complete |
 | `spec42 diagrams export` (JSON + SVG via shared renderer) | complete |
 | `spec42 explain-diagnostic` | complete |

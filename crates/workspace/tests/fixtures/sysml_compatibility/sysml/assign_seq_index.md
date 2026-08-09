@@ -1,0 +1,62 @@
+# META
+~~~ini
+description=Assign node with sequence indexing operator #()
+type=file
+~~~
+# SOURCE
+~~~sysml
+package AssignTest {
+    action def A {
+        assign x := seq#(i);
+        assign 'var' := data#(idx);
+        assign a.b := items#(0);
+    }
+}
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
+# TOKENS
+~~~zig
+KwPackage,Ident,OpenCurly,
+KwAction,KwDef,Ident,OpenCurly,
+KwAssign,Ident,ColonEq,Ident,Hash,OpenParen,Ident,CloseParen,Semicolon,
+KwAssign,UnrestrictedName,ColonEq,Ident,Hash,OpenParen,Ident,CloseParen,Semicolon,
+KwAssign,Ident,Dot,Ident,ColonEq,Ident,Hash,OpenParen,DecimalValue,CloseParen,Semicolon,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def 'AssignTest'
+    (action_def 'A'
+      (assign_node)
+      (assign_node)
+      (assign_node))))
+~~~
+# FORMAT
+~~~sysml
+package AssignTest {
+    action def A {
+        assign x := seq#(i);
+        assign 'var' := data#(idx);
+        assign a.b := items#(0);
+    }
+}
+~~~
+# SMG
+~~~
+(model
+  (namespace
+    (package 'AssignTest'
+      (action_def 'A'
+        (assignment_action_usage)
+        (assignment_action_usage)
+        (assignment_action_usage)))))
+~~~

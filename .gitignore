@@ -18,3 +18,4 @@ tmp/
 third_party/
 crates/kernel/tests/output/*
 perf.data
+__pycache__/

@@ -1,0 +1,197 @@
+# META
+~~~ini
+description=SysML Training 27 (Occurrences): Interaction Example-2
+type=file
+~~~
+# SOURCE
+~~~sysml
+package 'Interaction Example-2' {
+	private import 'Event Occurrence Example'::*;
+	
+	item def SetSpeed;
+	item def SensedSpeed;
+	item def FuelCommand;
+	
+	occurrence def CruiseControlInteraction {
+		
+		ref part driver : Driver {
+			event setSpeedMessage.sourceEvent;
+		}
+		
+		ref part vehicle : Vehicle {
+			part cruiseController : CruiseController {
+				event setSpeedMessage.targetEvent;		
+				then event sensedSpeedMessage.targetEvent;		
+				then event fuelCommandMessage.sourceEvent;
+			}
+			
+			part speedometer : Speedometer {
+				event sensedSpeedMessage.sourceEvent;
+			}
+			
+			part engine : Engine {
+				event fuelCommandMessage.targetEvent;
+			}
+		}
+		
+		message setSpeedMessage of SetSpeed;	
+		then message sensedSpeedMessage of SensedSpeed;
+		message fuelCommandMessage of FuelCommand;
+	}
+}
+~~~
+# TOKENS
+~~~zig
+KwPackage,UnrestrictedName,OpenCurly,
+KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
+KwItem,KwDef,Ident,Semicolon,
+KwItem,KwDef,Ident,Semicolon,
+KwItem,KwDef,Ident,Semicolon,
+KwOccurrence,KwDef,Ident,OpenCurly,
+KwRef,KwPart,Ident,Colon,Ident,OpenCurly,
+KwEvent,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwRef,KwPart,Ident,Colon,Ident,OpenCurly,
+KwPart,Ident,Colon,Ident,OpenCurly,
+KwEvent,Ident,Dot,Ident,Semicolon,
+KwThen,KwEvent,Ident,Dot,Ident,Semicolon,
+KwThen,KwEvent,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwPart,Ident,Colon,Ident,OpenCurly,
+KwEvent,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwPart,Ident,Colon,Ident,OpenCurly,
+KwEvent,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+CloseCurly,
+KwMessage,Ident,KwOf,Ident,Semicolon,
+KwThen,KwMessage,Ident,KwOf,Ident,Semicolon,
+KwMessage,Ident,KwOf,Ident,Semicolon,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def ''Interaction Example-2''
+    (import_decl private ''Event Occurrence Example'::*')
+    (item_def 'SetSpeed')
+    (item_def 'SensedSpeed')
+    (item_def 'FuelCommand')
+    (occurrence_def 'CruiseControlInteraction'
+      (part_usage ref 'driver' : 'Driver'
+        (malformed))
+      (part_usage ref 'vehicle' : 'Vehicle'
+        (part_usage 'cruiseController' : 'CruiseController'
+          (malformed)
+          (source_succession
+            (malformed))
+          (source_succession
+            (malformed)))
+        (part_usage 'speedometer' : 'Speedometer'
+          (malformed))
+        (part_usage 'engine' : 'Engine'
+          (malformed)))
+      (message_usage 'setSpeedMessage' : 'SetSpeed')
+      (source_succession
+        (message_usage 'sensedSpeedMessage' : 'SensedSpeed'))
+      (message_usage 'fuelCommandMessage' : 'FuelCommand'))))
+~~~
+# FORMAT
+~~~sysml
+package 'Interaction Example-2' {
+    private import 'Event Occurrence Example'::*;
+
+    item def SetSpeed;
+    item def SensedSpeed;
+    item def FuelCommand;
+
+    occurrence def CruiseControlInteraction {
+        ref part driver : Driver {
+            .sourceEvent;
+        }
+
+        ref part vehicle : Vehicle {
+            part cruiseController : CruiseController {
+                .targetEvent;
+                then event sensedSpeedMessage.targetEvent;
+                then event fuelCommandMessage.sourceEvent;
+            }
+
+            part speedometer : Speedometer {
+                .sourceEvent;
+            }
+
+            part engine : Engine {
+                .targetEvent;
+            }
+        }
+
+        message setSpeedMessage of SetSpeed;
+        then message sensedSpeedMessage of SensedSpeed;
+        message fuelCommandMessage of FuelCommand;
+    }
+}
+~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+semantic.feature_typing_kind_mismatch
+semantic.feature_typing_kind_mismatch
+semantic.feature_typing_kind_mismatch
+semantic.unresolved_name 'Driver'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'CruiseController'
+semantic.unresolved_name 'Speedometer'
+semantic.unresolved_name 'Engine'
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+parse.expected_semicolon_or_body
+semantic.feature_typing_kind_mismatch
+semantic.feature_typing_kind_mismatch
+semantic.feature_typing_kind_mismatch
+semantic.unresolved_name 'Driver'
+semantic.unresolved_name 'Vehicle'
+semantic.unresolved_name 'CruiseController'
+semantic.unresolved_name 'Speedometer'
+semantic.unresolved_name 'Engine'
+~~~
+# SMG
+~~~
+(model
+  (namespace
+    (package 'Interaction Example-2'
+      (namespace_import private -> 'Event Occurrence Example'[unresolved])
+      (item_def 'SetSpeed')
+      (item_def 'SensedSpeed')
+      (item_def 'FuelCommand')
+      (occurrence_def 'CruiseControlInteraction'
+        (part_usage reference 'driver' : 'Driver'[unresolved]
+          (not_implemented 'malformed'))
+        (part_usage reference 'vehicle' : 'Vehicle'[unresolved]
+          (part_usage composite 'cruiseController' : 'CruiseController'[unresolved]
+            (not_implemented 'malformed')
+            (source_succession
+              (not_implemented 'malformed'))
+            (source_succession
+              (not_implemented 'malformed')))
+          (part_usage composite 'speedometer' : 'Speedometer'[unresolved]
+            (not_implemented 'malformed'))
+          (part_usage composite 'engine' : 'Engine'[unresolved]
+            (not_implemented 'malformed')))
+        (flow_usage composite 'setSpeedMessage' : 'Interaction Example-2::SetSpeed'[item_def])
+        (source_succession
+          (flow_usage 'sensedSpeedMessage' : 'Interaction Example-2::SensedSpeed'[item_def]))
+        (flow_usage composite 'fuelCommandMessage' : 'Interaction Example-2::FuelCommand'[item_def])))))
+~~~

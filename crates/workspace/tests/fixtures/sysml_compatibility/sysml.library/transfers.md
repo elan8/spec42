@@ -1,0 +1,1153 @@
+# META
+~~~ini
+description=Standard Library: Kernel Libraries/Kernel Semantic Library/Transfers
+type=file
+~~~
+# SOURCE
+~~~kerml
+standard library package Transfers {
+    doc
+    /*
+     * This package defines the transfer interactions used to type flows.
+     */
+
+    private import Base::Anything;
+    private import Occurrences::*;
+    private import Links::*;
+    private import Objects::BinaryLinkObject;
+    private import Performances::Performance;
+    private import Performances::performances;
+    private import ScalarValues::Boolean;
+    private import ScalarValues::Natural;
+    private import SequenceFunctions::*;
+    
+    interaction Transfer specializes Performance, BinaryLink {
+        doc
+        /*
+         * A Transfer represents the transfer of a payload from the source of the interaction 
+         * to the target of the interaction.
+         */
+    
+        end feature source: Occurrence redefines BinaryLink::source {
+            doc
+            /*
+             * The entity whose output is the source of the payload to be transferred.
+             */
+        
+            feature sourceOutput: Anything[0..*];
+        }
+        
+        end feature target: Occurrence redefines BinaryLink::target {
+            doc
+            /*
+             * The entity whose input is the target of the payload to be transferred.
+             */
+        
+            feature targetInput: Anything[0..*];
+        }
+        
+        feature isInstant: Boolean[1] {
+            doc
+            /*
+             * If isInstance is true, then the transfer is instantaneous.
+             */
+        }
+        
+        feature payload: Anything[1..*] {
+            doc
+            /*
+             * The things that are to be transferred.
+             */
+        }
+        
+        feature payloadNum: Natural [1] = size(payload);
+        
+        private instantNum: Natural[1] = if isInstant? 1 else 0;
+        private binding instant[instantNum] of [0..1] startShot = [0..1] endShot {
+            doc
+            /*
+             * If isInstant is true, then the start and end of the transfer happen at the same time.
+             */
+        }
+    }
+    
+    interaction MessageTransfer specializes Transfer {
+        doc
+        /*
+         * A MessageTransfer is a Transfer that does not specify where the payload is picked
+         * up and dropped off (see FlowTransfer). They are sent by SendPerformances and
+         * accepted by AcceptPerformances.
+         */
+    }
+     
+    interaction FlowTransfer specializes Transfer disjoint from MessageTransfer {
+        doc
+        /*
+         * A FlowTransfer is a Transfer identifying an output feature of the source from which
+         * to pick up a payload and an input feature of the target to which to drop it off. They can
+         * start when the payload is available at the source and move or copy it to the target.
+         */
+         
+        feature isMove: Boolean[1] default true {
+            doc
+            /*
+             * If isMove is true, then the entire payload leaves the source at the start
+             * of the transfer.
+             */
+        }
+        
+        feature isPush: Boolean[1] default true {
+            doc
+            /*
+             * If isPush is true, then the transfer begins when the payload is available
+             * at the source.
+             */
+        }
+        
+        connector sourceOutputLink: BinaryLinkObject[payloadNum] {
+            doc
+            /*
+             * The output of the payloads from the sourceOutput.
+             */
+        
+            end [1] feature transferSource references source;
+            end [payloadNum] feature transferPayload references payload subsets transferSource.sourceOutput;
+        }
+        
+        connector targetInputLink: BinaryLinkObject[payloadNum] {
+            doc
+            /*
+             * The input of the payload to the targetInput.
+             */
+        
+            end [1] feature transferTarget references target;
+            end [payloadNum] feature transferPayload references payload subsets transferTarget.targetInput;
+        }
+        
+        private connector sending: HappensDuring[payloadNum] from [1] startShot to [payloadNum] sourceOutputLink {
+          doc
+            /*
+             * The start of the transfer happens during the output of each of the payloads from the
+             * source. 
+             */
+        }
+        
+        private connector moving: HappensWhile[0..*] from [0..*] sourceOutputLink.endShot to [0..1] startShot {
+            doc
+            /*
+             * If isMove is true, then all payloads leave the source at the start
+             * of the transfer.
+             */
+        }
+        private inv { isMove implies size(moving) == size(sourceOutputLink) }
+        
+        private connector pushing: HappensWhile[0..*] from [0..*] sourceOutputLink.startShot to [0..1] startShot {
+            doc
+            /*
+             * If isPush is true, then the transfer begins when the payloads are available
+             * at the source.
+             */
+        }
+        private inv { isPush implies size(pushing) == size(sourceOutputLink) }
+        
+        private connector delivering: HappensWhile[payloadNum] from [payloadNum] targetInputLink.startShot to [1] endShot {
+            doc
+            /*
+             * The input of each of the payloads to the target starts at the end of the transfer.
+             */
+        }
+    }
+    
+    interaction TransferBefore specializes Transfer, HappensBefore intersects Transfer, HappensBefore {
+        doc
+        /*
+         * TransferBefore is a specialization of Transfer in which the source happens before
+         * the transfer, which happens before the target.
+         */
+    
+        end feature source: Occurrence redefines Transfer::source, HappensBefore::earlierOccurrence;
+        end feature target: Occurrence redefines Transfer::target, HappensBefore::laterOccurrence;
+        
+        feature self: TransferBefore redefines Performance::self;
+        
+        private succession source then self;
+        private succession self then target;
+    }
+    
+    interaction FlowTransferBefore specializes TransferBefore, FlowTransfer intersects FlowTransfer, TransferBefore {
+        doc
+        /*
+         * FlowTransferBefore is a FlowTransfer that is also a TransferBefore. 
+         */
+         
+        end feature source: Occurrence redefines Transfer::source, TransferBefore::source;
+        end feature target: Occurrence redefines Transfer::target, TransferBefore::target;         
+    }
+    
+    abstract step transfers: Transfer[0..*] nonunique subsets performances, binaryLinks {
+        doc
+        /*
+         * transfers is a specialization of performances and binaryLinks restricted to type 
+         * Transfer.
+         */
+    
+        end feature source: Occurrence redefines Transfer::source, binaryLinks::source;
+        end feature target: Occurrence redefines Transfer::target, binaryLinks::target;
+    }
+    
+    abstract step messageTransfers: MessageTransfer[0..*] nonunique subsets transfers {
+        doc
+        /*
+         * messageTransfers is a specialization of transfers restricted to type MessageTransfers.
+         */
+        
+        end feature source: Occurrence redefines MessageTransfer::source, transfers::source;
+        end feature target: Occurrence redefines MessageTransfer::target, transfers::target;      
+    }
+    
+    abstract flow flowTransfers: FlowTransfer[0..*] nonunique subsets transfers {
+        doc
+        /*
+         * flowTransfers is a specialization of transfers restricted to type FlowTransfers.
+         * It is the default subsetting for non-succession flows.
+         */
+         
+        end feature source: Occurrence redefines FlowTransfer::source, transfers::source;
+        end feature target: Occurrence redefines FlowTransfer::target, transfers::target;
+    }
+      
+    abstract flow transfersBefore: TransferBefore[0..*] nonunique subsets transfers, happensBeforeLinks
+        intersects transfers, happensBeforeLinks {
+        doc
+        /*
+         * transfersBefore is a specialization of transfers and happensBeforeLinks restricted to
+         * type TransferBefore.
+         */
+    
+        end feature source: Occurrence redefines TransferBefore::source, transfers::source, happensBeforeLinks::earlierOccurrence;
+        end feature target: Occurrence redefines TransferBefore::target, transfers::target, happensBeforeLinks::laterOccurrence;
+    }
+    
+    abstract flow flowTransfersBefore: FlowTransferBefore[0..*] nonunique subsets flowTransfers, transfersBefore
+        intersects flowTransfers, transfersBefore {
+        doc
+        /*
+         * flowTransfersBefore is a specialization of flowTransfers and transfersBefore that is restricted
+         * to type FlowTransferBefore. IT is the default subsetting for succession flows.
+         */
+    
+        end feature source: Occurrence redefines FlowTransferBefore::source, flowTransfers::source, transfersBefore::source;
+        end feature target: Occurrence redefines FlowTransferBefore::target, flowTransfers::target, transfersBefore::target;
+    }
+
+    behavior SendPerformance specializes Performance  {
+        doc
+        /*
+         * SendPerformances are Performance that require an outgoingTransferFromSelf 
+         * from a designated sender Occurrence carrying a given payload, optionally to a designated receiver.
+         */
+    
+        in feature payload [0..*];
+        in feature sender: Occurrence[1] default this;
+        in feature receiver: Occurrence[0..1];
+        feature sentTransfer: MessageTransfer [1] subsets sender.outgoingTransfersFromSelf {
+            feature redefines payload = SendPerformance::payload;
+        }
+        binding [0..1] receiver.incomingTransfersToSelf = [1] sentTransfer;
+
+        succession self then sentTransfer;
+    }
+    
+    behavior AcceptPerformance specializes Performance {
+        doc
+        /*
+         * AcceptPerformance is a performance that requires an incomingTransferToSelf
+         * of a desigated receiver Occurrence, providing its payload as output.
+         */
+        inout feature payload[0..*];
+        in feature receiver: Occurrence[1] default this;
+        feature acceptedTransfer: MessageTransfer[1] subsets receiver.incomingTransfersToSelf;
+        succession acceptedTransfer then self.endShot;
+        
+        binding payload = acceptedTransfer.payload;
+    }
+
+    abstract step sendPerformances: SendPerformance[0..*] nonunique subsets performances {
+        doc
+        /*
+         * sendPerformances is a specialization of performances for SendPerformances.
+         */
+    }
+        
+    abstract step acceptPerformances: AcceptPerformance[0..*] nonunique subsets performances {
+        doc
+        /*
+         * acceptPerformances is a specialization of performances for AcceptPerformances.
+         */
+    }
+}
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::laterOccurrence'
+semantic.unresolved_name 'Performance::self'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::source'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::target'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::laterOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'sender::outgoingTransfersFromSelf'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'receiver::incomingTransfersToSelf'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'performances'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'BinaryLink'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::source'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'BinaryLink::target'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Natural'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'BinaryLinkObject'
+semantic.unresolved_name 'HappensDuring'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensWhile'
+semantic.unresolved_name 'HappensBefore'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'HappensBefore::laterOccurrence'
+semantic.unresolved_name 'Performance::self'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'binaryLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::source'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'binaryLinks::target'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::earlierOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'happensBeforeLinks::laterOccurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'sender::outgoingTransfersFromSelf'
+semantic.unresolved_name 'Performance'
+semantic.unresolved_name 'Occurrence'
+semantic.unresolved_name 'receiver::incomingTransfersToSelf'
+semantic.unresolved_name 'performances'
+semantic.unresolved_name 'performances'
+~~~
+# TOKENS
+~~~zig
+KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwInteraction,Ident,KwSpecializes,Ident,Comma,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
+CloseCurly,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
+CloseCurly,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Eq,Ident,OpenParen,Ident,CloseParen,Semicolon,
+KwPrivate,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Eq,KwIf,Ident,Question,DecimalValue,KwElse,DecimalValue,Semicolon,
+KwPrivate,KwBinding,Ident,OpenSquare,Ident,CloseSquare,KwOf,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Ident,Eq,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+CloseCurly,
+KwInteraction,Ident,KwSpecializes,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwInteraction,Ident,KwSpecializes,Ident,KwDisjoint,KwFrom,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,KwTrue,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,KwTrue,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwConnector,Ident,Colon,Ident,OpenSquare,Ident,CloseSquare,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,OpenSquare,DecimalValue,CloseSquare,KwFeature,Ident,KwReferences,Ident,Semicolon,
+KwEnd,OpenSquare,Ident,CloseSquare,KwFeature,Ident,KwReferences,Ident,KwSubsets,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwConnector,Ident,Colon,Ident,OpenSquare,Ident,CloseSquare,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,OpenSquare,DecimalValue,CloseSquare,KwFeature,Ident,KwReferences,Ident,Semicolon,
+KwEnd,OpenSquare,Ident,CloseSquare,KwFeature,Ident,KwReferences,Ident,KwSubsets,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwPrivate,KwConnector,Ident,Colon,Ident,OpenSquare,Ident,CloseSquare,KwFrom,OpenSquare,DecimalValue,CloseSquare,Ident,KwTo,OpenSquare,Ident,CloseSquare,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwPrivate,KwConnector,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwFrom,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Ident,Dot,Ident,KwTo,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwPrivate,KwInv,OpenCurly,Ident,KwImplies,Ident,OpenParen,Ident,CloseParen,EqEq,Ident,OpenParen,Ident,CloseParen,CloseCurly,
+KwPrivate,KwConnector,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwFrom,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Ident,Dot,Ident,KwTo,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwPrivate,KwInv,OpenCurly,Ident,KwImplies,Ident,OpenParen,Ident,CloseParen,EqEq,Ident,OpenParen,Ident,CloseParen,CloseCurly,
+KwPrivate,KwConnector,Ident,Colon,Ident,OpenSquare,Ident,CloseSquare,KwFrom,OpenSquare,Ident,CloseSquare,Ident,Dot,Ident,KwTo,OpenSquare,DecimalValue,CloseSquare,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+CloseCurly,
+KwInteraction,Ident,KwSpecializes,Ident,Comma,Ident,KwIntersects,Ident,Comma,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwSuccession,Ident,KwThen,Ident,Semicolon,
+KwPrivate,KwSuccession,Ident,KwThen,Ident,Semicolon,
+CloseCurly,
+KwInteraction,Ident,KwSpecializes,Ident,Comma,Ident,KwIntersects,Ident,Comma,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwStep,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,Comma,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwStep,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwFlow,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwFlow,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,Comma,Ident,
+KwIntersects,Ident,Comma,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwFlow,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,Comma,Ident,
+KwIntersects,Ident,Comma,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+KwBehavior,Ident,KwSpecializes,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwIn,KwFeature,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
+KwIn,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,Ident,Semicolon,
+KwIn,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwSubsets,Ident,Dot,Ident,OpenCurly,
+KwFeature,KwRedefines,Ident,Eq,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+KwBinding,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Ident,Dot,Ident,Eq,OpenSquare,DecimalValue,CloseSquare,Ident,Semicolon,
+KwSuccession,Ident,KwThen,Ident,Semicolon,
+CloseCurly,
+KwBehavior,Ident,KwSpecializes,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwInout,KwFeature,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
+KwIn,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwDefault,Ident,Semicolon,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwSubsets,Ident,Dot,Ident,Semicolon,
+KwSuccession,Ident,KwThen,Ident,Dot,Ident,Semicolon,
+KwBinding,Ident,Eq,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwStep,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwAbstract,KwStep,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (standard_library_package_def 'Transfers'
+    (documentation)
+    (import_decl private 'Base::Anything')
+    (import_decl private 'Occurrences::*')
+    (import_decl private 'Links::*')
+    (import_decl private 'Objects::BinaryLinkObject')
+    (import_decl private 'Performances::Performance')
+    (import_decl private 'Performances::performances')
+    (import_decl private 'ScalarValues::Boolean')
+    (import_decl private 'ScalarValues::Natural')
+    (import_decl private 'SequenceFunctions::*')
+    (interaction_def
+      (documentation)
+      (feature_def end 'source' : 'Occurrence' :>> 'BinaryLink::source'
+        (documentation)
+        (feature_def 'sourceOutput' : 'Anything' multiplicity))
+      (feature_def end 'target' : 'Occurrence' :>> 'BinaryLink::target'
+        (documentation)
+        (feature_def 'targetInput' : 'Anything' multiplicity))
+      (feature_def 'isInstant' : 'Boolean' multiplicity
+        (documentation))
+      (feature_def 'payload' : 'Anything' multiplicity
+        (documentation))
+      (feature_def 'payloadNum' : 'Natural' multiplicity value)
+      (feature_def private 'instantNum' : 'Natural' multiplicity value)
+      (binding_connector private 'instant' multiplicity
+        (connector_end)
+        (connector_end)
+        (documentation)))
+    (interaction_def
+      (documentation))
+    (interaction_def
+      (documentation)
+      (feature_def 'isMove' : 'Boolean' multiplicity value
+        (documentation))
+      (feature_def 'isPush' : 'Boolean' multiplicity value
+        (documentation))
+      (connector_def 'sourceOutputLink' : 'BinaryLinkObject' multiplicity
+        (documentation)
+        (feature_def end 'transferSource' multiplicity references 'source')
+        (feature_def end 'transferPayload' multiplicity references 'payload' :> 'transferSource.sourceOutput'))
+      (connector_def 'targetInputLink' : 'BinaryLinkObject' multiplicity
+        (documentation)
+        (feature_def end 'transferTarget' multiplicity references 'target')
+        (feature_def end 'transferPayload' multiplicity references 'payload' :> 'transferTarget.targetInput'))
+      (connector_def private 'sending' : 'HappensDuring' multiplicity
+        (connector_end)
+        (connector_end)
+        (documentation))
+      (connector_def private 'moving' : 'HappensWhile' multiplicity
+        (connector_end)
+        (connector_end)
+        (documentation))
+      (invariant_def
+        (result_expr_member))
+      (connector_def private 'pushing' : 'HappensWhile' multiplicity
+        (connector_end)
+        (connector_end)
+        (documentation))
+      (invariant_def
+        (result_expr_member))
+      (connector_def private 'delivering' : 'HappensWhile' multiplicity
+        (connector_end)
+        (connector_end)
+        (documentation)))
+    (interaction_def
+      (documentation)
+      (feature_def end 'source' : 'Occurrence' :>> 'Transfer::source', 'HappensBefore::earlierOccurrence')
+      (feature_def end 'target' : 'Occurrence' :>> 'Transfer::target', 'HappensBefore::laterOccurrence')
+      (feature_def 'self' : 'TransferBefore' :>> 'Performance::self')
+      (succession_def private
+        (connector_end)
+        (connector_end))
+      (succession_def private
+        (connector_end)
+        (connector_end)))
+    (interaction_def
+      (documentation)
+      (feature_def end 'source' : 'Occurrence' :>> 'Transfer::source', 'TransferBefore::source')
+      (feature_def end 'target' : 'Occurrence' :>> 'Transfer::target', 'TransferBefore::target'))
+    (step_def
+      (documentation)
+      (feature_def end 'source' : 'Occurrence' :>> 'Transfer::source', 'binaryLinks::source')
+      (feature_def end 'target' : 'Occurrence' :>> 'Transfer::target', 'binaryLinks::target'))
+    (step_def
+      (documentation)
+      (feature_def end 'source' : 'Occurrence' :>> 'MessageTransfer::source', 'transfers::source')
+      (feature_def end 'target' : 'Occurrence' :>> 'MessageTransfer::target', 'transfers::target'))
+    (flow_usage 'FlowTransfer' subsets 'transfers' 'flowTransfers' multiplicity
+      (documentation)
+      (interface_end end 'source' : 'Occurrence' :>> 'FlowTransfer::source', 'transfers::source')
+      (interface_end end 'target' : 'Occurrence' :>> 'FlowTransfer::target', 'transfers::target'))
+    (flow_usage 'TransferBefore' subsets 'transfers', 'happensBeforeLinks' 'transfersBefore' multiplicity
+      (documentation)
+      (interface_end end 'source' : 'Occurrence' :>> 'TransferBefore::source', 'transfers::source', 'happensBeforeLinks::earlierOccurrence')
+      (interface_end end 'target' : 'Occurrence' :>> 'TransferBefore::target', 'transfers::target', 'happensBeforeLinks::laterOccurrence'))
+    (flow_usage 'FlowTransferBefore' subsets 'flowTransfers', 'transfersBefore' 'flowTransfersBefore' multiplicity
+      (documentation)
+      (interface_end end 'source' : 'Occurrence' :>> 'FlowTransferBefore::source', 'flowTransfers::source', 'transfersBefore::source')
+      (interface_end end 'target' : 'Occurrence' :>> 'FlowTransferBefore::target', 'flowTransfers::target', 'transfersBefore::target'))
+    (behavior_def
+      (documentation)
+      (feature_def in 'payload' multiplicity)
+      (feature_def in 'sender' : 'Occurrence' multiplicity value)
+      (feature_def in 'receiver' : 'Occurrence' multiplicity)
+      (feature_def 'sentTransfer' : 'MessageTransfer' multiplicity :> 'sender.outgoingTransfersFromSelf'
+        (feature_def :>> 'payload' value))
+      (binding_connector multiplicity
+        (connector_end)
+        (connector_end))
+      (succession_def
+        (connector_end)
+        (connector_end)))
+    (behavior_def
+      (documentation)
+      (feature_def inout 'payload' multiplicity)
+      (feature_def in 'receiver' : 'Occurrence' multiplicity value)
+      (feature_def 'acceptedTransfer' : 'MessageTransfer' multiplicity :> 'receiver.incomingTransfersToSelf')
+      (succession_def
+        (connector_end)
+        (connector_end))
+      (binding_connector
+        (connector_end)
+        (connector_end)))
+    (step_def
+      (documentation))
+    (step_def
+      (documentation))))
+~~~
+# FORMAT
+~~~sysml
+standard library package Transfers {
+    doc /*
+     * This package defines the transfer interactions used to type flows.
+     */
+
+    private import Base::Anything;
+    private import Occurrences::*;
+    private import Links::*;
+    private import Objects::BinaryLinkObject;
+    private import Performances::Performance;
+    private import Performances::performances;
+    private import ScalarValues::Boolean;
+    private import ScalarValues::Natural;
+    private import SequenceFunctions::*;
+
+    interaction Transfer specializes Performance, BinaryLink {
+        doc
+        /*
+         * A Transfer represents the transfer of a payload from the source of the interaction 
+         * to the target of the interaction.
+         */
+    
+        end feature source: Occurrence redefines BinaryLink::source {
+            doc
+            /*
+             * The entity whose output is the source of the payload to be transferred.
+             */
+        
+            feature sourceOutput: Anything[0..*];
+        }
+        
+        end feature target: Occurrence redefines BinaryLink::target {
+            doc
+            /*
+             * The entity whose input is the target of the payload to be transferred.
+             */
+        
+            feature targetInput: Anything[0..*];
+        }
+        
+        feature isInstant: Boolean[1] {
+            doc
+            /*
+             * If isInstance is true, then the transfer is instantaneous.
+             */
+        }
+        
+        feature payload: Anything[1..*] {
+            doc
+            /*
+             * The things that are to be transferred.
+             */
+        }
+        
+        feature payloadNum: Natural [1] = size(payload);
+        
+        private instantNum: Natural[1] = if isInstant? 1 else 0;
+        private binding instant[instantNum] of [0..1] startShot = [0..1] endShot {
+            doc
+            /*
+             * If isInstant is true, then the start and end of the transfer happen at the same time.
+             */
+        }
+    }
+
+    interaction MessageTransfer specializes Transfer {
+        doc
+        /*
+         * A MessageTransfer is a Transfer that does not specify where the payload is picked
+         * up and dropped off (see FlowTransfer). They are sent by SendPerformances and
+         * accepted by AcceptPerformances.
+         */
+    }
+
+    interaction FlowTransfer specializes Transfer disjoint from MessageTransfer {
+        doc
+        /*
+         * A FlowTransfer is a Transfer identifying an output feature of the source from which
+         * to pick up a payload and an input feature of the target to which to drop it off. They can
+         * start when the payload is available at the source and move or copy it to the target.
+         */
+         
+        feature isMove: Boolean[1] default true {
+            doc
+            /*
+             * If isMove is true, then the entire payload leaves the source at the start
+             * of the transfer.
+             */
+        }
+        
+        feature isPush: Boolean[1] default true {
+            doc
+            /*
+             * If isPush is true, then the transfer begins when the payload is available
+             * at the source.
+             */
+        }
+        
+        connector sourceOutputLink: BinaryLinkObject[payloadNum] {
+            doc
+            /*
+             * The output of the payloads from the sourceOutput.
+             */
+        
+            end [1] feature transferSource references source;
+            end [payloadNum] feature transferPayload references payload subsets transferSource.sourceOutput;
+        }
+        
+        connector targetInputLink: BinaryLinkObject[payloadNum] {
+            doc
+            /*
+             * The input of the payload to the targetInput.
+             */
+        
+            end [1] feature transferTarget references target;
+            end [payloadNum] feature transferPayload references payload subsets transferTarget.targetInput;
+        }
+        
+        private connector sending: HappensDuring[payloadNum] from [1] startShot to [payloadNum] sourceOutputLink {
+          doc
+            /*
+             * The start of the transfer happens during the output of each of the payloads from the
+             * source. 
+             */
+        }
+        
+        private connector moving: HappensWhile[0..*] from [0..*] sourceOutputLink.endShot to [0..1] startShot {
+            doc
+            /*
+             * If isMove is true, then all payloads leave the source at the start
+             * of the transfer.
+             */
+        }
+        private inv { isMove implies size(moving) == size(sourceOutputLink) }
+        
+        private connector pushing: HappensWhile[0..*] from [0..*] sourceOutputLink.startShot to [0..1] startShot {
+            doc
+            /*
+             * If isPush is true, then the transfer begins when the payloads are available
+             * at the source.
+             */
+        }
+        private inv { isPush implies size(pushing) == size(sourceOutputLink) }
+        
+        private connector delivering: HappensWhile[payloadNum] from [payloadNum] targetInputLink.startShot to [1] endShot {
+            doc
+            /*
+             * The input of each of the payloads to the target starts at the end of the transfer.
+             */
+        }
+    }
+
+    interaction TransferBefore specializes Transfer, HappensBefore intersects Transfer, HappensBefore {
+        doc
+        /*
+         * TransferBefore is a specialization of Transfer in which the source happens before
+         * the transfer, which happens before the target.
+         */
+    
+        end feature source: Occurrence redefines Transfer::source, HappensBefore::earlierOccurrence;
+        end feature target: Occurrence redefines Transfer::target, HappensBefore::laterOccurrence;
+        
+        feature self: TransferBefore redefines Performance::self;
+        
+        private succession source then self;
+        private succession self then target;
+    }
+
+    interaction FlowTransferBefore specializes TransferBefore, FlowTransfer intersects FlowTransfer, TransferBefore {
+        doc
+        /*
+         * FlowTransferBefore is a FlowTransfer that is also a TransferBefore. 
+         */
+         
+        end feature source: Occurrence redefines Transfer::source, TransferBefore::source;
+        end feature target: Occurrence redefines Transfer::target, TransferBefore::target;         
+    }
+
+    abstract step transfers: Transfer[0..*] nonunique subsets performances, binaryLinks {
+        doc
+        /*
+         * transfers is a specialization of performances and binaryLinks restricted to type 
+         * Transfer.
+         */
+    
+        end feature source: Occurrence redefines Transfer::source, binaryLinks::source;
+        end feature target: Occurrence redefines Transfer::target, binaryLinks::target;
+    }
+
+    abstract step messageTransfers: MessageTransfer[0..*] nonunique subsets transfers {
+        doc
+        /*
+         * messageTransfers is a specialization of transfers restricted to type MessageTransfers.
+         */
+        
+        end feature source: Occurrence redefines MessageTransfer::source, transfers::source;
+        end feature target: Occurrence redefines MessageTransfer::target, transfers::target;      
+    }
+
+    abstract flow flowTransfers : FlowTransfer subsets transfers [0..*] {
+        doc /*
+         * flowTransfers is a specialization of transfers restricted to type FlowTransfers.
+         * It is the default subsetting for non-succession flows.
+         */
+        end source : Occurrence redefines FlowTransfer::source, transfers::source;
+        end target : Occurrence redefines FlowTransfer::target, transfers::target;
+    }
+
+    abstract flow transfersBefore : TransferBefore subsets transfers, happensBeforeLinks [0..*] {
+        doc /*
+         * transfersBefore is a specialization of transfers and happensBeforeLinks restricted to
+         * type TransferBefore.
+         */
+        end source : Occurrence redefines TransferBefore::source, transfers::source, happensBeforeLinks::earlierOccurrence;
+        end target : Occurrence redefines TransferBefore::target, transfers::target, happensBeforeLinks::laterOccurrence;
+    }
+
+    abstract flow flowTransfersBefore : FlowTransferBefore subsets flowTransfers, transfersBefore [0..*] {
+        doc /*
+         * flowTransfersBefore is a specialization of flowTransfers and transfersBefore that is restricted
+         * to type FlowTransferBefore. IT is the default subsetting for succession flows.
+         */
+        end source : Occurrence redefines FlowTransferBefore::source, flowTransfers::source, transfersBefore::source;
+        end target : Occurrence redefines FlowTransferBefore::target, flowTransfers::target, transfersBefore::target;
+    }
+
+    behavior SendPerformance specializes Performance {
+        doc /*
+         * SendPerformances are Performance that require an outgoingTransferFromSelf 
+         * from a designated sender Occurrence carrying a given payload, optionally to a designated receiver.
+         */
+
+        in feature payload[0..*];
+        in feature sender : Occurrence [1] default = this;
+        in feature receiver : Occurrence [0..1];
+        feature sentTransfer : MessageTransfer [1] subsets sender.outgoingTransfersFromSelf {
+            feature redefines payload = SendPerformance::payload;
+        }
+        binding [0..1] receiver.incomingTransfersToSelf = [1] sentTransfer;
+
+        succession self then sentTransfer;
+    }
+
+    behavior AcceptPerformance specializes Performance {
+        doc /*
+         * AcceptPerformance is a performance that requires an incomingTransferToSelf
+         * of a desigated receiver Occurrence, providing its payload as output.
+         */
+        inout feature payload[0..*];
+        in feature receiver : Occurrence [1] default = this;
+        feature acceptedTransfer : MessageTransfer [1] subsets receiver.incomingTransfersToSelf;
+        succession acceptedTransfer then self.endShot;
+
+        binding payload = acceptedTransfer.payload;
+    }
+
+    abstract step sendPerformances: SendPerformance[0..*] nonunique subsets performances {
+        doc
+        /*
+         * sendPerformances is a specialization of performances for SendPerformances.
+         */
+    }
+
+    abstract step acceptPerformances: AcceptPerformance[0..*] nonunique subsets performances {
+        doc
+        /*
+         * acceptPerformances is a specialization of performances for AcceptPerformances.
+         */
+    }
+}
+~~~
+# SMG
+~~~
+(model
+  (namespace
+    (library_package 'Transfers'
+      (documentation)
+      (membership_import private -> 'Base::Anything'[unresolved])
+      (namespace_import private -> 'Occurrences'[unresolved])
+      (namespace_import private -> 'Links'[unresolved])
+      (membership_import private -> 'Objects::BinaryLinkObject'[unresolved])
+      (membership_import private -> 'Performances::Performance'[unresolved])
+      (membership_import private -> 'Performances::performances'[unresolved])
+      (membership_import private -> 'ScalarValues::Boolean'[unresolved])
+      (membership_import private -> 'ScalarValues::Natural'[unresolved])
+      (namespace_import private -> 'SequenceFunctions'[unresolved])
+      (interaction_def 'Transfer' :> 'Performance'[unresolved] :> 'BinaryLink'[unresolved]
+        (documentation)
+        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'BinaryLink::source'[unresolved]
+          (documentation)
+          (feature_def 'sourceOutput' : 'Anything'[unresolved]
+            (multiplicity_range [0..*])))
+        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'BinaryLink::target'[unresolved]
+          (documentation)
+          (feature_def 'targetInput' : 'Anything'[unresolved]
+            (multiplicity_range [0..*])))
+        (feature_def 'isInstant' : 'Boolean'[unresolved]
+          (multiplicity_range [1])
+          (documentation))
+        (feature_def 'payload' : 'Anything'[unresolved]
+          (multiplicity_range [1..*])
+          (documentation))
+        (feature_def 'payloadNum' : 'Natural'[unresolved]
+          (multiplicity_range [1])
+          (feature_value (=)))
+        (feature_def 'instantNum' : 'Natural'[unresolved]
+          (multiplicity_range [1])
+          (feature_value (=)))
+        (binding_connector_def 'instant'
+          (multiplicity_range [?])
+          (connector_end 'startShot')
+          (connector_end 'endShot')
+          (documentation)))
+      (interaction_def 'MessageTransfer' :> 'Transfers::Transfer'[interaction_def]
+        (documentation))
+      (interaction_def 'FlowTransfer' :> 'Transfers::Transfer'[interaction_def]
+        (disjoining_decl)
+        (documentation)
+        (feature_def 'isMove' : 'Boolean'[unresolved]
+          (multiplicity_range [1])
+          (feature_value (default =))
+          (documentation))
+        (feature_def 'isPush' : 'Boolean'[unresolved]
+          (multiplicity_range [1])
+          (feature_value (default =))
+          (documentation))
+        (connector_def 'sourceOutputLink' : 'BinaryLinkObject'[unresolved]
+          (multiplicity_range [?])
+          (documentation)
+          (feature_def end 'transferSource' :> 'Transfers::Transfer::source'[feature_def]
+            (multiplicity_range [1]))
+          (feature_def end 'transferPayload' :> 'Transfers::Transfer::payload'[feature_def] :> 'Transfers::Transfer::source::sourceOutput'[feature_def]
+            (multiplicity_range [?])))
+        (connector_def 'targetInputLink' : 'BinaryLinkObject'[unresolved]
+          (multiplicity_range [?])
+          (documentation)
+          (feature_def end 'transferTarget' :> 'Transfers::Transfer::target'[feature_def]
+            (multiplicity_range [1]))
+          (feature_def end 'transferPayload' :> 'Transfers::Transfer::payload'[feature_def] :> 'Transfers::Transfer::target::targetInput'[feature_def]
+            (multiplicity_range [?])))
+        (connector_def 'sending' : 'HappensDuring'[unresolved]
+          (multiplicity_range [?])
+          (connector_end 'startShot')
+          (connector_end 'sourceOutputLink')
+          (documentation))
+        (connector_def 'moving' : 'HappensWhile'[unresolved]
+          (multiplicity_range [0..*])
+          (connector_end 'sourceOutputLink.endShot')
+          (connector_end 'startShot')
+          (documentation))
+        (invariant_def
+          (result_expr_membership))
+        (connector_def 'pushing' : 'HappensWhile'[unresolved]
+          (multiplicity_range [0..*])
+          (connector_end 'sourceOutputLink.startShot')
+          (connector_end 'startShot')
+          (documentation))
+        (invariant_def
+          (result_expr_membership))
+        (connector_def 'delivering' : 'HappensWhile'[unresolved]
+          (multiplicity_range [?])
+          (connector_end 'targetInputLink.startShot')
+          (connector_end 'endShot')
+          (documentation)))
+      (interaction_def 'TransferBefore' :> 'Transfers::Transfer'[interaction_def] :> 'HappensBefore'[unresolved]
+        (intersecting)
+        (intersecting)
+        (documentation)
+        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'HappensBefore::earlierOccurrence'[unresolved])
+        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'HappensBefore::laterOccurrence'[unresolved])
+        (feature_def 'self' : 'Transfers::TransferBefore'[interaction_def] :>> 'Performance::self'[unresolved])
+        (succession_def
+          (connector_end 'source')
+          (connector_end 'self'))
+        (succession_def
+          (connector_end 'self')
+          (connector_end 'target')))
+      (interaction_def 'FlowTransferBefore' :> 'Transfers::TransferBefore'[interaction_def] :> 'Transfers::FlowTransfer'[interaction_def]
+        (intersecting)
+        (intersecting)
+        (documentation)
+        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'Transfers::TransferBefore::source'[feature_def])
+        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'Transfers::TransferBefore::target'[feature_def]))
+      (step_def abstract 'transfers' : 'Transfers::Transfer'[interaction_def] :> 'performances'[unresolved] :> 'binaryLinks'[unresolved]
+        (multiplicity_range [0..*])
+        (documentation)
+        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'binaryLinks::source'[unresolved])
+        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'binaryLinks::target'[unresolved]))
+      (step_def abstract 'messageTransfers' : 'Transfers::MessageTransfer'[interaction_def] :> 'Transfers::transfers'[step_def]
+        (multiplicity_range [0..*])
+        (documentation)
+        (feature_def end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'Transfers::transfers::source'[feature_def])
+        (feature_def end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'Transfers::transfers::target'[feature_def]))
+      (flow_usage abstract 'flowTransfers' : 'Transfers::FlowTransfer'[interaction_def] :> 'Transfers::transfers'[step_def]
+        (multiplicity_range [0..*])
+        (documentation)
+        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::source'[feature_def] :>> 'Transfers::transfers::source'[feature_def])
+        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::Transfer::target'[feature_def] :>> 'Transfers::transfers::target'[feature_def]))
+      (flow_usage abstract 'transfersBefore' : 'Transfers::TransferBefore'[interaction_def] :> 'Transfers::transfers'[step_def] :> 'happensBeforeLinks'[unresolved]
+        (multiplicity_range [0..*])
+        (documentation)
+        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::TransferBefore::source'[feature_def] :>> 'Transfers::transfers::source'[feature_def] :>> 'happensBeforeLinks::earlierOccurrence'[unresolved])
+        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::TransferBefore::target'[feature_def] :>> 'Transfers::transfers::target'[feature_def] :>> 'happensBeforeLinks::laterOccurrence'[unresolved]))
+      (flow_usage abstract 'flowTransfersBefore' : 'Transfers::FlowTransferBefore'[interaction_def] :> 'Transfers::flowTransfers'[flow_usage] :> 'Transfers::transfersBefore'[flow_usage]
+        (multiplicity_range [0..*])
+        (documentation)
+        (port_usage end 'source' : 'Occurrence'[unresolved] :>> 'Transfers::FlowTransferBefore::source'[feature_def] :>> 'Transfers::flowTransfers::source'[port_usage] :>> 'Transfers::transfersBefore::source'[port_usage])
+        (port_usage end 'target' : 'Occurrence'[unresolved] :>> 'Transfers::FlowTransferBefore::target'[feature_def] :>> 'Transfers::flowTransfers::target'[port_usage] :>> 'Transfers::transfersBefore::target'[port_usage]))
+      (behavior_def 'SendPerformance' :> 'Performance'[unresolved]
+        (documentation)
+        (feature_def in 'payload'
+          (multiplicity_range [0..*]))
+        (feature_def in 'sender' : 'Occurrence'[unresolved]
+          (multiplicity_range [1])
+          (feature_value (default =)))
+        (feature_def in 'receiver' : 'Occurrence'[unresolved]
+          (multiplicity_range [0..1]))
+        (feature_def 'sentTransfer' : 'Transfers::MessageTransfer'[interaction_def] :> 'sender::outgoingTransfersFromSelf'[unresolved]
+          (multiplicity_range [1])
+          (feature_def :>> 'Transfers::Transfer::payload'[feature_def]
+            (feature_value (=))))
+        (binding_connector_def
+          (multiplicity_range [0..1])
+          (connector_end 'receiver.incomingTransfersToSelf')
+          (connector_end 'sentTransfer'))
+        (succession_def
+          (connector_end 'self')
+          (connector_end 'sentTransfer')))
+      (behavior_def 'AcceptPerformance' :> 'Performance'[unresolved]
+        (documentation)
+        (feature_def inout 'payload'
+          (multiplicity_range [0..*]))
+        (feature_def in 'receiver' : 'Occurrence'[unresolved]
+          (multiplicity_range [1])
+          (feature_value (default =)))
+        (feature_def 'acceptedTransfer' : 'Transfers::MessageTransfer'[interaction_def] :> 'receiver::incomingTransfersToSelf'[unresolved]
+          (multiplicity_range [1]))
+        (succession_def
+          (connector_end 'acceptedTransfer')
+          (connector_end 'self.endShot'))
+        (binding_connector_def
+          (connector_end 'payload')
+          (connector_end 'acceptedTransfer.payload')))
+      (step_def abstract 'sendPerformances' : 'Transfers::SendPerformance'[behavior_def] :> 'performances'[unresolved]
+        (multiplicity_range [0..*])
+        (documentation))
+      (step_def abstract 'acceptPerformances' : 'Transfers::AcceptPerformance'[behavior_def] :> 'performances'[unresolved]
+        (multiplicity_range [0..*])
+        (documentation)))))
+~~~

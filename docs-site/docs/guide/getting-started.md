@@ -36,6 +36,16 @@ package MyFirstModel {
 }
 ```
 
+### Start a multi-file workspace from the CLI
+
+If you use the Spec42 CLI, create a validated starter workspace with:
+
+```bash
+spec42 init my-model
+```
+
+`my-model` must be a new or empty directory. Spec42 never overwrites files during initialization and runs its normal semantic check before reporting success. The starter includes definitions, a baseline configuration, requirements, and a small domain-type library.
+
 ## Exploring your model
 
 After opening a SysML workspace, the **Spec42** sidebar gives you four main tools:

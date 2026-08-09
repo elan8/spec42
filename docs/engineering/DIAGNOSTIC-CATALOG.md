@@ -57,6 +57,11 @@ Owned by `sysml-v2-parser` and surfaced as source `sysml`.
 - `invalid_redefines_reference`: empty or self-referential redefines target.
 - `implicit_redefinition_without_operator`: inherited feature receives a value without explicit `:>>` / redefinition.
 - `inherited_attribute_value_type_mismatch`: inherited enum-typed attribute is assigned an incompatible string literal.
+- `redefinition_end_mismatch`: a redefinition of an end must also be an end feature.
+- `redefinition_direction_mismatch`: explicit directions differ across a redefinition.
+- `subsetting_uniqueness_mismatch`: a non-unique feature subsets an explicitly unique feature.
+- `end_feature_has_direction` / `end_feature_invalid_restrictions`: end feature modifiers violate KerML §8.3.3.3.1.
+- `invalid_variation_member_kind`: a typed variant's usage kind does not match its variation.
 
 ### Relationships and viewpoints
 
