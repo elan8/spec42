@@ -861,6 +861,18 @@ semantic.unresolved_name 'actualFuelEconomy'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 71 3) (end 71 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 81 3) (end 81 54))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 127 4) (end 127 53))

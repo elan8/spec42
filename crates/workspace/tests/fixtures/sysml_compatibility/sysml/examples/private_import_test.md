@@ -198,7 +198,7 @@ semantic.unresolved_name 'A'
         (severity warning)
         (code "invalid_qualified_name_segment")
         (source "semantic")
-        (range (start 8 1) (end 8 15))
+        (range (start 8 9) (end 8 14))
       )
       (diagnostic
         (severity warning)

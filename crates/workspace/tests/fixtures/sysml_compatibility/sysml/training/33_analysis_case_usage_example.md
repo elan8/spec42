@@ -213,7 +213,7 @@ semantic.unresolved_name 'fuelEconomy_highway'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 22 2) (end 22 189))
+        (range (start 22 20) (end 22 27))
       )
       (diagnostic
         (severity warning)

@@ -255,6 +255,12 @@ semantic.unresolved_name 'Person'
       )
       (diagnostic
         (severity warning)
+        (code "ambiguous_name_reference")
+        (source "semantic")
+        (range (start 22 3) (end 22 95))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 38 2) (end 38 28))

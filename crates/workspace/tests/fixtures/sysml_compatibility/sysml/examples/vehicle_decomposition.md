@@ -307,10 +307,22 @@ NIL
   (document "sysml/examples/vehicle_decomposition.md"
     (diagnostics
       (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 8 3) (end 8 44))
+      )
+      (diagnostic
         (severity error)
         (code "redefinition_featuring_type_incompatible")
         (source "semantic")
         (range (start 10 4) (end 10 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 14 3) (end 14 34))
       )
       (diagnostic
         (severity warning)

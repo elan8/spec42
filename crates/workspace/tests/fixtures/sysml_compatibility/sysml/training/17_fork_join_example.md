@@ -303,6 +303,18 @@ semantic.unresolved_name 'Real'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 30) (end 7 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 56) (end 8 86))
+      )
+      (diagnostic
+        (severity warning)
         (code "succession_endpoint_invalid")
         (source "semantic")
         (range (start 31 2) (end 31 81))

@@ -964,6 +964,12 @@ semantic.unresolved_name 'TemperatureValue'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 31 35) (end 31 62))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 44 2) (end 44 32))
@@ -979,6 +985,12 @@ semantic.unresolved_name 'TemperatureValue'
         (code "unconnected_port")
         (source "semantic")
         (range (start 189 3) (end 189 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 190 4) (end 190 24))
       )
       (diagnostic
         (severity warning)
@@ -1000,13 +1012,13 @@ semantic.unresolved_name 'TemperatureValue'
       )
       (diagnostic
         (severity warning)
-        (code "incompatible_subset_redefine_kind")
+        (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 210 3) (end 210 257))
       )
       (diagnostic
         (severity warning)
-        (code "incompatible_subset_redefine_kind")
+        (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 230 4) (end 230 75))
       )

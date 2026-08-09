@@ -282,7 +282,7 @@ semantic.unresolved_name 'mass'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 6 1) (end 6 47))
+        (range (start 6 26) (end 6 33))
       )
       (diagnostic
         (severity warning)

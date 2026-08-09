@@ -480,6 +480,18 @@ semantic.unresolved_name 'length'
         (range (start 20 2) (end 20 38))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 23 3) (end 23 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 26 3) (end 26 33))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_connection_def_body_element")
         (source "sysml")

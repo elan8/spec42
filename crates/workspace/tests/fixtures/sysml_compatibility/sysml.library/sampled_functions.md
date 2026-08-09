@@ -581,6 +581,18 @@ standard library package SampledFunctions {
         (source "semantic")
         (range (start 37 2) (end 37 59))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 72 2) (end 72 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 73 2) (end 73 35))
+      )
     )
   )
 )

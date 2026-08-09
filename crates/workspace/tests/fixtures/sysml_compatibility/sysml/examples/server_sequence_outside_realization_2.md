@@ -600,7 +600,7 @@ semantic.unresolved_name 'consumer'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 68 1) (end 68 1193))
+        (range (start 68 22) (end 68 36))
       )
       (diagnostic
         (severity error)

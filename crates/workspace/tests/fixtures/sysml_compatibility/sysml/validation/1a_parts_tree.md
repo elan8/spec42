@@ -521,7 +521,19 @@ semantic.unresolved_name 'ScalarValues::Real'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 38 3) (end 38 180))
+      )
+      (diagnostic
+        (severity warning)
         (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 81 3) (end 81 120))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 81 3) (end 81 120))
       )

@@ -371,9 +371,11 @@ pub fn resolve_cross_document_edges_for_uri(
                     .map(|target| target.id.clone())
                     .or_else(|| {
                         subject
-                            .attributes
-                            .get("subjectType")
-                            .and_then(|value| value.as_str())
+                            .declared_facts
+                            .relationships
+                            .typing
+                            .first()
+                            .map(|target| target.reference.as_str())
                             .and_then(|type_ref| {
                                 resolve_type_reference_targets(
                                     g,

@@ -323,6 +323,12 @@ semantic.unresolved_name 'done'
         (range (start 17 16) (end 17 39))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 17 16) (end 17 39))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_occurrence_body_element")
         (source "sysml")
@@ -350,11 +356,23 @@ semantic.unresolved_name 'done'
         (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
+        (range (start 21 16) (end 21 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
         (range (start 34 21) (end 34 85))
       )
       (diagnostic
         (severity warning)
         (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 35 16) (end 35 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 35 16) (end 35 39))
       )

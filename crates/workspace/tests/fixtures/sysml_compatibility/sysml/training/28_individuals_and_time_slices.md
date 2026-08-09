@@ -219,7 +219,19 @@ semantic.unresolved_name 'driver'
         (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
+        (range (start 12 4) (end 12 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
         (range (start 15 12) (end 15 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 16 4) (end 16 22))
       )
       (diagnostic
         (severity warning)

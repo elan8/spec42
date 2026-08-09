@@ -188,8 +188,8 @@ semantic.unresolved_name 'mass'
         (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car"))) (name "car") (declared-name "car") (declared (properties (composite true) (reference false) (ordered false)))
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::carParts"))) (name "carParts") (declared-name "carParts") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower unbounded) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "VehicleMasses::car::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
             (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleMasses::car::vin"))) (name "vin") (declared-name "vin") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleMasses::CarPart")))))
           )
         )
@@ -199,6 +199,8 @@ semantic.unresolved_name 'mass'
   (relationships
     (redefinition (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car::vin"))) (to (node (document "d0") (qualified-name "VehicleMasses::CarPart::serialNumber"))))
     (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::c"))) (to (node (document "d0") (qualified-name "VehicleMasses::car"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car::engine"))) (to (node (document "d0") (qualified-name "VehicleMasses::car::carParts"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car::transmission"))) (to (node (document "d0") (qualified-name "VehicleMasses::car::carParts"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car"))) (to (node (document "d0") (qualified-name "VehicleMasses::CarPart"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "VehicleMasses::car::carParts"))) (to (node (document "d0") (qualified-name "VehicleMasses::CarPart"))))
   )

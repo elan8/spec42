@@ -378,6 +378,8 @@ standard library package Parts {
     (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::performedActions::_documentation"))) (to (node (document "d0") (qualified-name "Parts::Part::performedActions"))))
     (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::_documentation"))) (to (node (document "d0") (qualified-name "Parts"))))
     (annotation (status resolved) (from (node (document "d0") (qualified-name "Parts::parts::_documentation"))) (to (node (document "d0") (qualified-name "Parts::parts"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::exhibitedStates"))) (to (node (document "d0") (qualified-name "Parts::Part::performedActions"))))
+    (subsetting (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::ownedStates"))) (to (node (document "d0") (qualified-name "Parts::Part::ownedActions"))))
     (subsetting (status resolved) (from (node (document "d0") (qualified-name "Parts::parts"))) (to (node (document "d0") (qualified-name "Parts::items"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::done"))) (to (node (document "d0") (qualified-name "Parts::Part"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "Parts::Part::start"))) (to (node (document "d0") (qualified-name "Parts::Part"))))

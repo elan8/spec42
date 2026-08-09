@@ -178,13 +178,13 @@ semantic.unresolved_name 'eng::engineFuelPort'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 14 2) (end 14 35))
+        (range (start 14 18) (end 14 34))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 15 2) (end 15 20))
+        (range (start 15 13) (end 15 19))
       )
       (diagnostic
         (severity error)

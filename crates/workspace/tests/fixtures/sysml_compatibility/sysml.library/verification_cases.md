@@ -469,6 +469,12 @@ standard library package VerificationCases {
         (source "semantic")
         (range (start 34 6) (end 34 218))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 76 2) (end 76 35))
+      )
     )
   )
 )

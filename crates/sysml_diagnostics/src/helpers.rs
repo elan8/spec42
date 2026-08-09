@@ -316,8 +316,18 @@ pub(super) fn port_compatibility_mismatch(
     src: &SemanticNode,
     tgt: &SemanticNode,
 ) -> Option<String> {
-    let src_type = src.attributes.get("portType").and_then(|v| v.as_str())?;
-    let tgt_type = tgt.attributes.get("portType").and_then(|v| v.as_str())?;
+    let src_type = src
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())?;
+    let tgt_type = tgt
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())?;
 
     let (src_base, src_conj) = parse_port_type(src_type);
     let (tgt_base, tgt_conj) = parse_port_type(tgt_type);
@@ -407,8 +417,12 @@ fn port_feature_from_child(child: &SemanticNode) -> Option<PortFeature> {
         .and_then(|v| v.as_str())
         .and_then(parse_feature_direction)?;
     let type_ref = match child.element_kind {
-        ElementKind::InOutParameter => child.attributes.get("parameterType")?.as_str()?,
-        ElementKind::Item => child.attributes.get("itemType")?.as_str()?,
+        ElementKind::InOutParameter | ElementKind::Item => child
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.as_str())?,
         _ => return None,
     };
     Some(PortFeature {

@@ -7,10 +7,14 @@ use sysml_v2_parser::ast::{RootElement, SubsettingRelationship, TypingRelationsh
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_targets};
+use crate::semantic::ast_util::{
+    declared_subsetting_targets, declared_typing_targets, span_to_range, subsetting_target,
+    typing_targets,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
-    DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    DeclaredFeatureProperties, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 use crate::semantic::relationships::add_semantic_edge_once;
 
@@ -330,8 +334,37 @@ pub(super) fn attach_declared_relationship_targets<'a>(
     for target in targets {
         node.declared_facts
             .relationships
+            .record_reference(&kind, target);
+    }
+}
+
+fn attach_declared_relationship_target_facts(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    kind: RelationshipKind,
+    targets: impl IntoIterator<Item = DeclaredRelationshipTarget>,
+) {
+    let Some(node) = g.get_node_mut(node_id) else {
+        return;
+    };
+    for target in targets {
+        node.declared_facts
+            .relationships
             .record_target(&kind, target);
     }
+}
+
+pub(super) fn attach_declared_typing_relationship(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    typing: Option<&TypingRelationship>,
+) {
+    attach_declared_relationship_target_facts(
+        g,
+        node_id,
+        RelationshipKind::Typing,
+        declared_typing_targets(typing),
+    );
 }
 
 /// Records all four parser-owned subsetting-family clauses for a declaration.
@@ -349,11 +382,11 @@ pub(super) fn attach_declared_subsetting_family(
         (RelationshipKind::ReferenceSubsetting, references),
         (RelationshipKind::CrossSubsetting, crosses),
     ] {
-        attach_declared_relationship_targets(
+        attach_declared_relationship_target_facts(
             g,
             node_id,
             kind,
-            crate::semantic::ast_util::subsetting_targets(relationship),
+            declared_subsetting_targets(relationship),
         );
     }
 }
@@ -431,11 +464,11 @@ pub(super) fn wire_def_specialization_edge(
     specializes: Option<&TypingRelationship>,
 ) {
     let node_id = NodeId::new(uri, qualified);
-    attach_declared_relationship_targets(
+    attach_declared_relationship_target_facts(
         g,
         &node_id,
         RelationshipKind::Specializes,
-        typing_targets(specializes),
+        declared_typing_targets(specializes),
     );
     for target in typing_targets(specializes) {
         crate::semantic::relationships::add_specializes_edge_if_exists(

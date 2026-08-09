@@ -732,16 +732,20 @@ pub struct DeclaredRelationshipTarget {
     /// The authored relationship target, before resolution or effective-name
     /// derivation. This is never a display or projection attribute.
     pub reference: String,
+    /// Exact parser span for the authored target. `None` is explicit only for
+    /// parser fields that do not expose a target node/span.
+    #[serde(default)]
+    pub range: Option<TextRange>,
 }
 
 impl DeclaredRelationshipFacts {
     /// Records one parser-authored target under its relationship kind.
     /// Returns `false` for relationship kinds not owned by this fact contract.
-    pub fn record_target(&mut self, kind: &RelationshipKind, reference: &str) -> bool {
-        let reference = reference.trim();
-        if reference.is_empty() {
-            return true;
-        }
+    pub fn record_target(
+        &mut self,
+        kind: &RelationshipKind,
+        target: DeclaredRelationshipTarget,
+    ) -> bool {
         let targets = match kind {
             RelationshipKind::Typing => &mut self.typing,
             RelationshipKind::Specializes => &mut self.specializes,
@@ -751,13 +755,20 @@ impl DeclaredRelationshipFacts {
             RelationshipKind::CrossSubsetting => &mut self.cross_subsetting,
             _ => return false,
         };
-        let target = DeclaredRelationshipTarget {
-            reference: reference.to_string(),
-        };
-        if !targets.iter().any(|existing| existing == &target) {
-            targets.push(target);
-        }
+        // Repeated authored clauses are distinct source facts even when they
+        // ultimately publish one deduplicated semantic edge.
+        targets.push(target);
         true
+    }
+
+    pub fn record_reference(&mut self, kind: &RelationshipKind, reference: &str) -> bool {
+        self.record_target(
+            kind,
+            DeclaredRelationshipTarget {
+                reference: reference.trim().to_string(),
+                range: None,
+            },
+        )
     }
 }
 

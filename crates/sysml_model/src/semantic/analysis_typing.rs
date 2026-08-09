@@ -118,10 +118,11 @@ pub(crate) fn typed_requirement_definition_scope_prefixes(
         };
         prefixes.push(current.id.qualified_name.clone());
         let Some(specializes_ref) = current
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
+            .declared_facts
+            .relationships
+            .specializes
+            .first()
+            .map(|target| target.reference.as_str())
             .filter(|value| !value.is_empty())
         else {
             break;
@@ -273,10 +274,11 @@ pub(crate) fn typed_case_definition_scope_prefixes(
         };
         prefixes.push(current.id.qualified_name.clone());
         let Some(specializes_ref) = current
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
+            .declared_facts
+            .relationships
+            .specializes
+            .first()
+            .map(|target| target.reference.as_str())
             .filter(|value| !value.is_empty())
         else {
             break;
@@ -350,10 +352,11 @@ pub(crate) fn inherited_case_result_qualified(
     loop {
         let specializes_ref = graph
             .get_node(&current_id)?
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
+            .declared_facts
+            .relationships
+            .specializes
+            .first()
+            .map(|target| target.reference.as_str())
             .filter(|value| !value.is_empty())?;
         if !seen.insert(current_id.clone()) {
             return None;
@@ -412,10 +415,11 @@ pub(crate) fn inherited_case_expression(
     loop {
         let specializes_ref = graph
             .get_node(&current_id)?
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
+            .declared_facts
+            .relationships
+            .specializes
+            .first()
+            .map(|target| target.reference.as_str())
             .filter(|value| !value.is_empty())?;
         if !seen.insert(current_id.clone()) {
             return None;

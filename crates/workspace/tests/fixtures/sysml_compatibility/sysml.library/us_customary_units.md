@@ -3888,19 +3888,7 @@ standard library package <USCU> USCustomaryUnits {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 94 4) (end 94 187))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 94 58) (end 94 185))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 94 58) (end 94 185))
       )
@@ -4248,19 +4236,7 @@ standard library package <USCU> USCustomaryUnits {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 123 4) (end 123 187))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 123 58) (end 123 185))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 123 58) (end 123 185))
       )
@@ -4386,19 +4362,7 @@ standard library package <USCU> USCustomaryUnits {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 135 4) (end 135 156))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 135 52) (end 135 154))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 135 52) (end 135 154))
       )

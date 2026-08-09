@@ -121,7 +121,7 @@ NIL
         (severity warning)
         (code "invalid_qualified_name_segment")
         (source "semantic")
-        (range (start 10 2) (end 10 17))
+        (range (start 10 10) (end 10 16))
       )
     )
   )

@@ -231,12 +231,6 @@ semantic.unresolved_name 'columnView'
         (range (start 16 2) (end 16 59))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 16 2) (end 16 59))
-      )
-      (diagnostic
         (severity information)
         (code "view_expose_empty")
         (source "semantic")

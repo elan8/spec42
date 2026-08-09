@@ -262,10 +262,11 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
         }
 
         let redefines_target = node
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.trim())
             .filter(|value| !value.is_empty())
             .map(str::to_string);
         if let Some(trimmed) = redefines_target {

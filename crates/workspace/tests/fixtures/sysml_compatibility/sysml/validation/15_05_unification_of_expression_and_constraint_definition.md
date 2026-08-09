@@ -303,7 +303,7 @@ semantic.unresolved_name 'LengthValue'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 37 2) (end 37 24))
+        (range (start 37 15) (end 37 20))
       )
       (diagnostic
         (severity warning)

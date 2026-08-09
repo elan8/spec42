@@ -52,9 +52,11 @@ pub fn unit_type_for_quantity_value<'a>(
             // A redefinition's explicitly declared type is more specific than an inherited
             // typing edge. Standard quantity values use `attribute :>> mRef: PowerUnit`, etc.
             if let Some(type_ref) = child
-                .attributes
-                .get("attributeType")
-                .and_then(|v| v.as_str())
+                .declared_facts
+                .relationships
+                .typing
+                .first()
+                .map(|target| target.reference.as_str())
             {
                 if is_unit_type_name(type_ref) {
                     if let Some(unit) = graph.nodes_named(type_ref).into_iter().next() {
@@ -70,9 +72,11 @@ pub fn unit_type_for_quantity_value<'a>(
         }
     }
     quantity_node
-        .attributes
-        .get("attributeType")
-        .and_then(|v| v.as_str())
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())
         .and_then(|type_ref| {
             quantity_value_to_unit_type_name(type_ref)
                 .and_then(|unit_name| graph.nodes_named(&unit_name).into_iter().next())

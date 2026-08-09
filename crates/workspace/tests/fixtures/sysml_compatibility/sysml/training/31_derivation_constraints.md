@@ -178,7 +178,7 @@ semantic.unresolved_name 'ForceValue'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 4 1) (end 4 149))
+        (range (start 4 17) (end 4 24))
       )
       (diagnostic
         (severity warning)
@@ -190,7 +190,7 @@ semantic.unresolved_name 'ForceValue'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 9 1) (end 9 112))
+        (range (start 9 17) (end 9 24))
       )
       (diagnostic
         (severity warning)

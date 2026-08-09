@@ -874,7 +874,7 @@ semantic.unresolved_name 'severity'
             )
             (element (kind "metadata def") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::CauseMetadata"))) (name "CauseMetadata") (declared-name "CauseMetadata")
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::CauseMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::CauseMetadata")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::CauseMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::CauseMetadata")))))
               )
             )
             (element (kind "metadata def") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::ControllingMeasureMetadata"))) (name "ControllingMeasureMetadata") (declared-name "ControllingMeasureMetadata")
@@ -884,14 +884,14 @@ semantic.unresolved_name 'severity'
             )
             (element (kind "metadata def") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata"))) (name "EffectMetadata") (declared-name "EffectMetadata")
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata")))))
               )
             )
             (element (kind "metadata def") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata"))) (name "FMEAItemMetadata") (declared-name "FMEAItemMetadata")
               (contains
                 (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::annotatedElement"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata")))))
                 (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::annotatedElement#attribute"))) (name "annotatedElement") (declared-name "annotatedElement") (effective (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata")))))
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata")))))
               )
             )
             (element (kind "metadata def") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEARequirementMetadata"))) (name "FMEARequirementMetadata") (declared-name "FMEARequirementMetadata")
@@ -902,7 +902,7 @@ semantic.unresolved_name 'severity'
             )
             (element (kind "metadata def") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FailureModeMetadata"))) (name "FailureModeMetadata") (declared-name "FailureModeMetadata")
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FailureModeMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FailureModeMetadata")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FailureModeMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FailureModeMetadata")))))
               )
             )
             (element (kind "metadata def") (id (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::MitigationMetadata"))) (name "MitigationMetadata") (declared-name "MitigationMetadata")
@@ -1079,12 +1079,8 @@ semantic.unresolved_name 'severity'
     (specializes (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::MitigationMetadata"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::ControllingMeasureMetadata"))))
     (specializes (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::PreventionMetadata"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::ControllingMeasureMetadata"))))
     (specializes (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose Meter in Use"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose FMEA Item"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::CauseMetadata::baseType"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::SituationMetadata::baseType"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata::baseType"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::SituationMetadata::baseType"))))
     (subsetting (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::annotatedElement"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::annotatedElement#attribute"))))
     (subsetting (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::annotatedElement#attribute"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::annotatedElement"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata::baseType"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::SituationMetadata::baseType"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::FailureModeMetadata::baseType"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEAMetadata::SituationMetadata::baseType"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::cause"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEALibrary::Situation"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEALibrary::Causation::effect"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEALibrary::Situation"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "14c-Language-Extensions::FMEALibrary::ControllingMeasure::req"))) (to (node (document "d0") (qualified-name "14c-Language-Extensions::FMEALibrary::FMEARequirement"))))
@@ -1185,7 +1181,7 @@ semantic.unresolved_name 'severity'
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_specializes_reference")
+        (code "invalid_qualified_name_segment")
         (source "semantic")
         (range (start 37 2) (end 37 129))
       )
@@ -1359,6 +1355,12 @@ semantic.unresolved_name 'severity'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 165 4) (end 165 23))
+      )
+      (diagnostic
+        (severity warning)
         (code "metadata_keyword_unresolved")
         (source "semantic")
         (range (start 168 3) (end 168 14))
@@ -1386,6 +1388,12 @@ semantic.unresolved_name 'severity'
         (code "connection_endpoint_not_port")
         (source "semantic")
         (range (start 170 23) (end 170 83))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 171 4) (end 171 25))
       )
       (diagnostic
         (severity warning)
@@ -1434,6 +1442,12 @@ semantic.unresolved_name 'severity'
         (code "connection_endpoint_not_port")
         (source "semantic")
         (range (start 180 22) (end 180 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 181 4) (end 181 26))
       )
       (diagnostic
         (severity warning)

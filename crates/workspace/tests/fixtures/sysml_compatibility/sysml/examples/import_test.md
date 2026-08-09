@@ -158,7 +158,7 @@ NIL
         (severity warning)
         (code "invalid_qualified_name_segment")
         (source "semantic")
-        (range (start 5 8) (end 5 32))
+        (range (start 5 19) (end 5 31))
       )
       (diagnostic
         (severity warning)

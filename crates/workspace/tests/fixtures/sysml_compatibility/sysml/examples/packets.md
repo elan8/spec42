@@ -187,7 +187,7 @@ semantic.unresolved_name 'Real'
     )
   )
   (relationships
-    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (to (node (document "d0") (qualified-name "Packets::Data Packet::packet data field"))))
+    (redefinition (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet::packet data field"))) (to (node (document "d0") (qualified-name "Packets::packet data field"))))
     (specializes (status resolved) (from (node (document "d0") (qualified-name "Packets::Thermal Data Packet"))) (to (node (document "d0") (qualified-name "Packets::Data Packet"))))
   )
   (pending-relationships
@@ -230,6 +230,12 @@ semantic.unresolved_name 'Real'
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 17 2) (end 17 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 21 2) (end 21 406))
       )
     )
   )

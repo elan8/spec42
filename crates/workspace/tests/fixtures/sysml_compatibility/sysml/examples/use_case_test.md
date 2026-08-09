@@ -232,6 +232,12 @@ semantic.invalid_membership_owning_type
         (source "sysml")
         (range (start 34 2) (end 34 23))
       )
+      (diagnostic
+        (severity warning)
+        (code "ambiguous_name_reference")
+        (source "semantic")
+        (range (start 38 5) (end 38 15))
+      )
     )
   )
 )

@@ -713,9 +713,21 @@ standard library package Flows {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 94 8) (end 94 87))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 94 8) (end 94 87))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 95 8) (end 95 87))
       )
       (diagnostic
         (severity warning)
@@ -725,9 +737,21 @@ standard library package Flows {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 112 8) (end 112 100))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 112 8) (end 112 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 113 8) (end 113 100))
       )
       (diagnostic
         (severity warning)
@@ -737,9 +761,21 @@ standard library package Flows {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 122 8) (end 122 113))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 122 8) (end 122 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 123 8) (end 123 113))
       )
       (diagnostic
         (severity warning)

@@ -198,8 +198,6 @@ NIL
     (connection (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::P"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))))
     (connection (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::P"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))))
     (portConjugation (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::P::~P"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))))
-    (referenceSubsetting (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))) (to (node (document "d0") (qualified-name "ConjugationTest::A::p1"))))
-    (referenceSubsetting (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))) (to (node (document "d0") (qualified-name "ConjugationTest::A::p2"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::A::p1"))) (to (node (document "d0") (qualified-name "ConjugationTest::P"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::A::p2"))) (to (node (document "d0") (qualified-name "ConjugationTest::P::~P"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "ConjugationTest::B1::a"))) (to (node (document "d0") (qualified-name "ConjugationTest::A"))))

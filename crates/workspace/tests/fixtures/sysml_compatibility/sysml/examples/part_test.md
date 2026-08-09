@@ -311,7 +311,7 @@ semantic.unresolved_name 'p4'
         (severity warning)
         (code "invalid_qualified_name_segment")
         (source "semantic")
-        (range (start 9 2) (end 9 32))
+        (range (start 9 10) (end 9 31))
       )
       (diagnostic
         (severity error)

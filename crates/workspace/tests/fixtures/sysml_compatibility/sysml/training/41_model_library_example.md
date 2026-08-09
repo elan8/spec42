@@ -244,7 +244,7 @@ semantic.unresolved_name 'Occurrences::HappensBefore'
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_specializes_reference")
+        (code "invalid_qualified_name_segment")
         (source "semantic")
         (range (start 20 1) (end 20 136))
       )

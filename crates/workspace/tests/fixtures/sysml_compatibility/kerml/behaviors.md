@@ -142,6 +142,12 @@ semantic.feature_typing_kind_mismatch
 (fixture-diagnostics
   (document "kerml/behaviors.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 25) (end 19 26))
+      )
     )
   )
 )

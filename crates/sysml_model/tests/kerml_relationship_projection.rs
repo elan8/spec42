@@ -4,6 +4,7 @@
 //! deliberately assert the relationship kind and resolved identities, rather than source-text
 //! labels, so authored spelling does not become a competing semantic representation.
 
+use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
     build_semantic_graph_from_documents, patch_graph_for_document, ElementKind, NodeId,
     RelationshipKind, SemanticGraph, SysmlDocument, SysmlDocumentSourceKind,
@@ -255,6 +256,58 @@ fn cross_document_subsetting_family_uses_declared_facts_after_incremental_relink
             kind,
         );
     }
+}
+
+#[test]
+fn duplicate_authored_targets_retain_order_spans_while_edges_deduplicate() {
+    let doc = workspace_doc(
+        "duplicate_targets.sysml",
+        r#"package P {
+  part def Base;
+  part def Derived :> Base, Base;
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+    let derived = graph
+        .get_node(&NodeId::new(&uri, "P::Derived"))
+        .expect("Derived definition");
+    let targets = &derived.declared_facts.relationships.specializes;
+    assert_eq!(
+        targets.len(),
+        2,
+        "every authored target must remain observable"
+    );
+    assert_eq!(targets[0].reference, "Base");
+    assert_eq!(targets[1].reference, "Base");
+    assert!(targets.iter().all(|target| target.range.is_some()));
+    assert_eq!(
+        graph
+            .outgoing_targets_by_kind(derived, RelationshipKind::Specializes)
+            .len(),
+        1,
+        "edge publication remains deduplicated independently of authored facts"
+    );
+}
+
+#[test]
+fn unresolved_typing_diagnostic_uses_the_parser_target_span() {
+    let doc = workspace_doc(
+        "target_range.sysml",
+        "package P {\n  part missing : Missing;\n}",
+    );
+    let uri = doc.uri.clone();
+    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+    let missing = graph
+        .get_node(&NodeId::new(&uri, "P::missing"))
+        .expect("missing part");
+    let target_range = missing.declared_facts.relationships.typing[0]
+        .range
+        .expect("parser target range");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(diagnostics.iter().any(|diagnostic| {
+        diagnostic.code == "unresolved_type_reference" && diagnostic.range == target_range
+    }));
 }
 
 #[test]

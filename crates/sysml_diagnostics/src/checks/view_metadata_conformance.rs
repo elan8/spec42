@@ -76,9 +76,11 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             continue;
         }
         if let Some(view_type) = node
-            .attributes
-            .get("viewType")
-            .and_then(|value| value.as_str())
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.as_str())
         {
             if is_non_standard_explicit_view_type(view_type) {
                 let key = format!(
@@ -288,11 +290,14 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             continue;
         }
         let allowed = [ElementKind::RenderingDef, ElementKind::Rendering];
-        let type_ref = node
-            .attributes
-            .get("renderingType")
-            .and_then(|v| v.as_str());
-        let Some(type_ref) = type_ref.map(str::trim).filter(|value| !value.is_empty()) else {
+        let Some(type_ref) = node
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.trim())
+            .filter(|value| !value.is_empty())
+        else {
             continue;
         };
         if resolve_type_target_in_workspace(graph, node, type_ref, &allowed).is_some() {
@@ -320,10 +325,11 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             continue;
         }
         if node
-            .attributes
-            .get("metadataType")
-            .and_then(|v| v.as_str())
-            .is_some_and(|value| !value.trim().is_empty())
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .is_some_and(|target| !target.reference.trim().is_empty())
         {
             continue;
         }
@@ -750,24 +756,22 @@ fn annotated_element_restriction_type(
         return None;
     }
     let is_annotated_element_restriction = child
-        .attributes
-        .get("redefines")
-        .and_then(|v| v.as_str())
-        .is_some_and(|r| r.contains("annotatedElement"))
-        || child
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|v| v.as_str())
-            .is_some_and(|r| r.contains("annotatedElement"))
+        .declared_facts
+        .relationships
+        .redefinition
+        .iter()
+        .chain(child.declared_facts.relationships.subsetting.iter())
+        .any(|target| target.reference.contains("annotatedElement"))
         || child.name == "annotatedElement";
     if !is_annotated_element_restriction {
         return None;
     }
     child
-        .attributes
-        .get("attributeType")
-        .and_then(|v| v.as_str())
-        .map(str::to_string)
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.clone())
 }
 
 fn expose_target_entry_range(

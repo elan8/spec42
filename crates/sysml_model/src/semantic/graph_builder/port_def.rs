@@ -19,7 +19,7 @@ use super::attribute_body;
 use super::expressions;
 use super::{
     add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
-    attach_feature_properties, qualified_name_for_node,
+    attach_declared_typing_relationship, attach_feature_properties, qualified_name_for_node,
 };
 
 fn build_in_out_decl(
@@ -204,6 +204,11 @@ pub(super) fn build_from_port_def_body_element(
                 range,
                 attrs,
                 Some(parent_id),
+            );
+            attach_declared_typing_relationship(
+                g,
+                &NodeId::new(uri, &qualified),
+                n.typing.as_deref(),
             );
             for target in typing_targets(n.typing.as_deref()) {
                 add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);

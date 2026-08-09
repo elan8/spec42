@@ -499,7 +499,7 @@ semantic.unresolved_name 'fuelCommandMessage'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 3 1) (end 3 82))
+        (range (start 3 17) (end 3 23))
       )
       (diagnostic
         (severity information)
@@ -511,7 +511,13 @@ semantic.unresolved_name 'fuelCommandMessage'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 14 1) (end 14 870))
+        (range (start 5 3) (end 5 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 18) (end 14 25))
       )
       (diagnostic
         (severity information)
@@ -523,7 +529,13 @@ semantic.unresolved_name 'fuelCommandMessage'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 21 2) (end 21 237))
+        (range (start 16 3) (end 16 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 21 28) (end 21 44))
       )
       (diagnostic
         (severity information)
@@ -532,10 +544,22 @@ semantic.unresolved_name 'fuelCommandMessage'
         (range (start 22 3) (end 22 55))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 23 4) (end 23 27))
+      )
+      (diagnostic
         (severity information)
         (code "unconnected_port")
         (source "semantic")
         (range (start 25 3) (end 25 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 26 4) (end 26 33))
       )
       (diagnostic
         (severity information)
@@ -547,7 +571,19 @@ semantic.unresolved_name 'fuelCommandMessage'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 36 2) (end 36 106))
+        (range (start 29 4) (end 29 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 33 26) (end 33 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 36 23) (end 36 34))
       )
       (diagnostic
         (severity information)
@@ -559,13 +595,31 @@ semantic.unresolved_name 'fuelCommandMessage'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 45 2) (end 45 95))
+        (range (start 38 4) (end 38 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 42 26) (end 42 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 45 18) (end 45 24))
       )
       (diagnostic
         (severity information)
         (code "unconnected_port")
         (source "semantic")
         (range (start 46 3) (end 46 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 47 4) (end 47 33))
       )
       (diagnostic
         (severity warning)

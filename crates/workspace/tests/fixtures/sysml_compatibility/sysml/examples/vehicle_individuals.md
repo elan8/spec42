@@ -630,6 +630,12 @@ semantic.unresolved_name 'rightFrontWheel'
         (range (start 36 2) (end 36 25))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 45 7) (end 45 49))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_part_usage_body_element")
         (source "sysml")
@@ -640,6 +646,12 @@ semantic.unresolved_name 'rightFrontWheel'
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 57 16) (end 57 86))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 58 8) (end 58 50))
       )
       (diagnostic
         (severity warning)

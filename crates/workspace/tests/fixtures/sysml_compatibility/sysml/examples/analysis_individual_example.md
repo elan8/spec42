@@ -635,6 +635,12 @@ semantic.unresolved_name 'PowerValue'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 51 3) (end 51 28))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 70 2) (end 70 45))

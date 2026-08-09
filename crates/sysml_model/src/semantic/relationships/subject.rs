@@ -160,9 +160,11 @@ pub(crate) fn link_case_subject_relationships(g: &mut SemanticGraph) {
             .filter(|child| child.element_kind == ElementKind::Subject)
             .filter_map(|child| {
                 child
-                    .attributes
-                    .get("subjectType")
-                    .and_then(|value| value.as_str())
+                    .declared_facts
+                    .relationships
+                    .typing
+                    .first()
+                    .map(|target| target.reference.as_str())
                     .map(str::to_string)
             })
             .collect();

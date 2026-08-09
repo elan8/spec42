@@ -4354,7 +4354,7 @@ standard library package ShapeItems {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_specializes_reference")
+        (code "invalid_qualified_name_segment")
         (source "semantic")
         (range (start 58 1) (end 58 430))
       )
@@ -4438,7 +4438,7 @@ standard library package ShapeItems {
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_specializes_reference")
+        (code "invalid_qualified_name_segment")
         (source "semantic")
         (range (start 229 1) (end 229 141))
       )

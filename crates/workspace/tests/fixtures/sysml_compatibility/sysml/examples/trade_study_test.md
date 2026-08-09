@@ -172,6 +172,12 @@ semantic.unresolved_name 'Real'
         (source "semantic")
         (range (start 10 2) (end 10 32))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 14 3) (end 14 17))
+      )
     )
   )
 )

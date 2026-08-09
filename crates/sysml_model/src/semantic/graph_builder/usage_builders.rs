@@ -29,7 +29,8 @@ use super::part_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::{
     add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
-    attach_feature_properties, effective_usage_name, qualified_name_for_node,
+    attach_declared_typing_relationship, attach_feature_properties, effective_usage_name,
+    qualified_name_for_node,
 };
 
 /// Builds the `part`-usage node (and recurses into its body), wiring the typing edge. Used by
@@ -103,6 +104,7 @@ pub(super) fn materialize_part_usage(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
     attach_declared_subsetting_family(
         g,
         &node_id,
@@ -211,6 +213,7 @@ pub(super) fn materialize_attribute_usage(
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
     attach_declared_subsetting_family(
         g,
         &node_id,

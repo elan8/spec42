@@ -286,10 +286,11 @@ fn effective_typing_or_specializes_target_ids(
         return direct;
     }
     let Some(redefines) = owner
-        .attributes
-        .get("redefines")
-        .and_then(|value| value.as_str())
-        .map(str::trim)
+        .declared_facts
+        .relationships
+        .redefinition
+        .first()
+        .map(|target| target.reference.as_str())
         .filter(|value| !value.is_empty())
     else {
         return Vec::new();
@@ -814,7 +815,12 @@ mod tests {
             .find(|node| node.element_kind == ElementKind::EnumDef && node.name == "BaseEnum")
             .expect("BaseEnum def");
         assert_eq!(
-            child.attributes.get("specializes").and_then(|v| v.as_str()),
+            child
+                .declared_facts
+                .relationships
+                .specializes
+                .first()
+                .map(|target| target.reference.as_str()),
             Some("BaseEnum")
         );
         assert!(

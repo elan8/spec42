@@ -4,7 +4,9 @@ use sysml_v2_parser::ast::{UseCaseDefBody, UseCaseDefBodyElement};
 use url::Url;
 
 use super::use_case;
-use super::{add_node_and_recurse, expressions, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_typing_relationship, expressions, qualified_name_for_node,
+};
 use crate::semantic::analysis_typing::{
     inherited_case_expression, inherited_case_result_qualified, strip_analysis_return_body,
 };
@@ -290,6 +292,11 @@ pub(super) fn build_from_analysis_body(
                     span_to_range(&attribute.span),
                     attrs,
                     Some(parent_id),
+                );
+                attach_declared_typing_relationship(
+                    g,
+                    &NodeId::new(uri, &qualified),
+                    value.typing.as_deref(),
                 );
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);

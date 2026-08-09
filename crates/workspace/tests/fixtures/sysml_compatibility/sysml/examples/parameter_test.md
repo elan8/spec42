@@ -129,6 +129,18 @@ semantic.unresolved_name 'ScalarValues::Integer'
 (fixture-diagnostics
   (document "sysml/examples/parameter_test.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "invalid_qualified_name_segment")
+        (source "semantic")
+        (range (start 8 24) (end 8 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_qualified_name_segment")
+        (source "semantic")
+        (range (start 8 54) (end 8 86))
+      )
     )
   )
 )

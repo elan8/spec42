@@ -172,7 +172,7 @@ semantic.unresolved_name 'EngineChoices'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 9 2) (end 9 33))
+        (range (start 9 16) (end 9 29))
       )
       (diagnostic
         (severity warning)

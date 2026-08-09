@@ -1179,10 +1179,40 @@ standard library package Time {
         (range (start 21 4) (end 21 37))
       )
       (diagnostic
-        (severity error)
-        (code "specialization_cycle")
+        (severity warning)
+        (code "invalid_qualified_name_segment")
         (source "semantic")
         (range (start 30 1) (end 30 208))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 47 2) (end 47 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 48 2) (end 48 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 59 2) (end 59 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 60 2) (end 60 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 61 2) (end 61 34))
       )
       (diagnostic
         (severity warning)

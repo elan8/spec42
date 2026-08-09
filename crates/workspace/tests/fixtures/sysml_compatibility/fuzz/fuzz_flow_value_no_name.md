@@ -92,13 +92,13 @@ package P {
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 1 4) (end 1 166))
+        (range (start 1 19) (end 1 26))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 2 8) (end 2 26))
+        (range (start 2 19) (end 2 25))
       )
       (diagnostic
         (severity error)

@@ -415,6 +415,42 @@ NIL
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 22 16) (end 22 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 23 16) (end 23 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 24 16) (end 24 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 25 16) (end 25 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 29 16) (end 29 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 30 16) (end 30 32))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 43 8) (end 43 53))

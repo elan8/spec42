@@ -1357,7 +1357,7 @@ semantic.unresolved_name 'elements'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 13 4) (end 13 155))
+        (range (start 13 22) (end 13 33))
       )
       (diagnostic
         (severity warning)
@@ -1417,7 +1417,7 @@ semantic.unresolved_name 'elements'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 113 4) (end 113 6345))
+        (range (start 113 22) (end 113 33))
       )
       (diagnostic
         (severity warning)

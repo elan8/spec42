@@ -368,6 +368,36 @@ semantic.unresolved_name 'getOutput'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
+        (range (start 7 35) (end 7 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 36) (end 11 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 35) (end 15 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 19 45) (end 19 60))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 26 38) (end 26 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
         (range (start 33 12) (end 33 567))
       )
       (diagnostic

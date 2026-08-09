@@ -32,11 +32,17 @@ pub(crate) fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) 
         }
         map
     };
+    let redefinition_targets: HashMap<&str, &str> = graph
+        .edges
+        .iter()
+        .filter(|edge| edge.rel_type.eq_ignore_ascii_case("redefinition"))
+        .map(|edge| (edge.source.as_str(), edge.target.as_str()))
+        .collect();
 
     let detail_ids: HashSet<&str> = graph
         .nodes
         .iter()
-        .filter(|node| is_general_view_inline_detail(node))
+        .filter(|node| is_general_view_inline_detail(node, &redefinition_targets))
         .map(|node| node.id.as_str())
         .collect();
 
@@ -63,6 +69,7 @@ pub(crate) fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) 
             &children_by_parent,
             &node_by_id,
             &typing_targets,
+            &redefinition_targets,
             node.attributes
                 .get("requirementConstraints")
                 .and_then(|value| value.as_array()),
@@ -73,6 +80,7 @@ pub(crate) fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) 
             &node_by_id,
             &typing_targets,
             &specialization_targets,
+            &redefinition_targets,
             &direct_details,
         );
 
@@ -118,7 +126,10 @@ pub(crate) fn fold_general_view_leaf_details_into_owners(graph: &SysmlGraphDto) 
     }
 }
 
-pub(crate) fn is_general_view_inline_detail(node: &GraphNodeDto) -> bool {
+pub(crate) fn is_general_view_inline_detail(
+    node: &GraphNodeDto,
+    redefinition_targets: &HashMap<&str, &str>,
+) -> bool {
     let lower = node.element_type.to_lowercase();
     is_port_like(&lower)
         || is_attribute_like(&lower)
@@ -131,7 +142,7 @@ pub(crate) fn is_general_view_inline_detail(node: &GraphNodeDto) -> bool {
         || is_documentation_or_comment(&lower)
         // Anonymous redefinition stubs like `part :>> engines[5] = (...)` should not
         // surface as standalone structure nodes in General View.
-        || is_anonymous_redefinition_stub(node)
+        || is_anonymous_redefinition_stub(node, redefinition_targets)
 }
 
 pub(crate) fn is_documentation_or_comment(element_type: &str) -> bool {
@@ -139,8 +150,11 @@ pub(crate) fn is_documentation_or_comment(element_type: &str) -> bool {
     lower == "documentation" || lower == "comment"
 }
 
-pub(crate) fn is_anonymous_redefinition_stub(node: &GraphNodeDto) -> bool {
-    node.name.trim().is_empty() && node.attributes.contains_key("redefines")
+pub(crate) fn is_anonymous_redefinition_stub(
+    node: &GraphNodeDto,
+    redefinition_targets: &HashMap<&str, &str>,
+) -> bool {
+    node.name.trim().is_empty() && redefinition_targets.contains_key(node.id.as_str())
 }
 
 #[derive(Default)]
@@ -157,6 +171,7 @@ pub(crate) fn collect_direct_general_view_details(
     children_by_parent: &HashMap<&str, Vec<&GraphNodeDto>>,
     node_by_id: &HashMap<&str, &GraphNodeDto>,
     typing_targets: &HashMap<&str, &str>,
+    redefinition_targets: &HashMap<&str, &str>,
     requirement_constraints: Option<&Vec<Value>>,
 ) -> GeneralViewDetails {
     let mut details = GeneralViewDetails::default();
@@ -164,17 +179,25 @@ pub(crate) fn collect_direct_general_view_details(
     if let Some(children) = children_by_parent.get(owner_id) {
         for child in children {
             if is_port_like(&child.element_type) {
-                if let Some(item) =
-                    build_general_view_detail_item(child, node_by_id, typing_targets, None)
-                {
+                if let Some(item) = build_general_view_detail_item(
+                    child,
+                    node_by_id,
+                    typing_targets,
+                    redefinition_targets,
+                    None,
+                ) {
                     details.ports.push(item);
                 }
                 continue;
             }
             if is_attribute_like(&child.element_type) {
-                if let Some(item) =
-                    build_general_view_detail_item(child, node_by_id, typing_targets, None)
-                {
+                if let Some(item) = build_general_view_detail_item(
+                    child,
+                    node_by_id,
+                    typing_targets,
+                    redefinition_targets,
+                    None,
+                ) {
                     if let Some(name) = item.get("name").and_then(|value| value.as_str()) {
                         details.attribute_names.insert(name.to_lowercase());
                     }
@@ -182,10 +205,14 @@ pub(crate) fn collect_direct_general_view_details(
                 }
                 continue;
             }
-            if is_part_compartment_item(child) {
-                if let Some(item) =
-                    build_general_view_detail_item(child, node_by_id, typing_targets, None)
-                {
+            if is_part_compartment_item(child, redefinition_targets) {
+                if let Some(item) = build_general_view_detail_item(
+                    child,
+                    node_by_id,
+                    typing_targets,
+                    redefinition_targets,
+                    None,
+                ) {
                     if let Some(name) = item.get("name").and_then(|value| value.as_str()) {
                         details.part_names.insert(name.to_lowercase());
                     }
@@ -218,6 +245,7 @@ pub(crate) fn collect_inherited_general_view_details(
     node_by_id: &HashMap<&str, &GraphNodeDto>,
     typing_targets: &HashMap<&str, &str>,
     specialization_targets: &HashMap<&str, Vec<&str>>,
+    redefinition_targets: &HashMap<&str, &str>,
     direct_details: &GeneralViewDetails,
 ) -> GeneralViewDetails {
     let mut details = GeneralViewDetails::default();
@@ -248,6 +276,7 @@ pub(crate) fn collect_inherited_general_view_details(
                     child,
                     node_by_id,
                     typing_targets,
+                    redefinition_targets,
                     declared_in.clone(),
                 ) {
                     let Some(name) = item.get("name").and_then(|value| value.as_str()) else {
@@ -263,11 +292,12 @@ pub(crate) fn collect_inherited_general_view_details(
                 }
                 continue;
             }
-            if is_part_compartment_item(child) {
+            if is_part_compartment_item(child, redefinition_targets) {
                 if let Some(item) = build_general_view_detail_item(
                     child,
                     node_by_id,
                     typing_targets,
+                    redefinition_targets,
                     declared_in.clone(),
                 ) {
                     let Some(name) = item.get("name").and_then(|value| value.as_str()) else {
@@ -288,13 +318,16 @@ pub(crate) fn collect_inherited_general_view_details(
     details
 }
 
-pub(crate) fn is_part_compartment_item(node: &GraphNodeDto) -> bool {
+pub(crate) fn is_part_compartment_item(
+    node: &GraphNodeDto,
+    redefinition_targets: &HashMap<&str, &str>,
+) -> bool {
     let lower = node.element_type.to_lowercase();
     if !lower.contains("part") || is_port_like(&lower) {
         return false;
     }
     if node.name.trim().is_empty() {
-        return node.attributes.contains_key("redefines");
+        return redefinition_targets.contains_key(node.id.as_str());
     }
     true
 }
@@ -303,10 +336,11 @@ pub(crate) fn build_general_view_detail_item(
     detail: &GraphNodeDto,
     node_by_id: &HashMap<&str, &GraphNodeDto>,
     typing_targets: &HashMap<&str, &str>,
+    redefinition_targets: &HashMap<&str, &str>,
     declared_in: Option<String>,
 ) -> Option<Value> {
-    let name = general_view_detail_name(detail)?;
-    let type_name = detail_type_name(detail, node_by_id, typing_targets);
+    let name = general_view_detail_name(detail, node_by_id, redefinition_targets)?;
+    let type_name = detail_type_name(detail, node_by_id, typing_targets, redefinition_targets);
     let value_text = detail_value_text(detail);
     let multiplicity = detail_multiplicity(detail);
     let direction = detail_direction(detail);
@@ -383,17 +417,22 @@ pub(crate) fn detail_subsets_short_name(detail: &GraphNodeDto) -> Option<String>
     short_name_of_qualified_attribute(detail, "subsetsFeature")
 }
 
-pub(crate) fn general_view_detail_name(detail: &GraphNodeDto) -> Option<String> {
+pub(crate) fn general_view_detail_name(
+    detail: &GraphNodeDto,
+    node_by_id: &HashMap<&str, &GraphNodeDto>,
+    redefinition_targets: &HashMap<&str, &str>,
+) -> Option<String> {
     let explicit_name = detail.name.trim();
     if !explicit_name.is_empty() {
         return Some(explicit_name.to_string());
     }
-    if is_attribute_like(&detail.element_type) || is_part_compartment_item(detail) {
-        return detail
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str())
-            .map(|value| value.split("::").last().unwrap_or(value).to_string());
+    if is_attribute_like(&detail.element_type)
+        || is_part_compartment_item(detail, redefinition_targets)
+    {
+        return redefinition_targets
+            .get(detail.id.as_str())
+            .and_then(|target_id| node_by_id.get(target_id))
+            .map(|target| target.name.clone());
     }
     None
 }
@@ -402,6 +441,7 @@ pub(crate) fn detail_type_name(
     detail: &GraphNodeDto,
     node_by_id: &HashMap<&str, &GraphNodeDto>,
     typing_targets: &HashMap<&str, &str>,
+    redefinition_targets: &HashMap<&str, &str>,
 ) -> Option<String> {
     typing_targets
         .get(detail.id.as_str())
@@ -413,7 +453,7 @@ pub(crate) fn detail_type_name(
                     .attributes
                     .get("portType")
                     .and_then(|value| value.as_str())
-            } else if is_part_compartment_item(detail) {
+            } else if is_part_compartment_item(detail, redefinition_targets) {
                 detail
                     .attributes
                     .get("partType")

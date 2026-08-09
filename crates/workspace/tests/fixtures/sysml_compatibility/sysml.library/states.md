@@ -553,6 +553,18 @@ standard library package States {
         (range (start 79 1) (end 79 569))
       )
       (diagnostic
+        (severity warning)
+        (code "invalid_qualified_name_segment")
+        (source "semantic")
+        (range (start 86 2) (end 86 139))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 89 2) (end 89 22))
+      )
+      (diagnostic
         (severity error)
         (code "unresolved_pending_expression_relationship")
         (source "semantic")

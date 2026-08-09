@@ -367,8 +367,6 @@ semantic.unresolved_name 'ISQ::LengthValue'
     (annotation (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::_documentation"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal"))))
     (specializes (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::Diameter"))))
     (specializes (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::SeverityEnum"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionLevel::associatedColor"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::ConditionColor"))))
-    (typing (status resolved) (from (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (to (node (document "d0") (qualified-name "15.10-Primitive Data Types::DiameterChoice"))))
   )
   (pending-relationships
   )
@@ -395,31 +393,13 @@ semantic.unresolved_name 'ISQ::LengthValue'
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 15 1) (end 15 144))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 19 1) (end 19 131))
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 26 1) (end 26 175))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_redefines_target")
-        (source "semantic")
-        (range (start 31 2) (end 31 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 31 2) (end 31 29))
       )
@@ -446,12 +426,6 @@ semantic.unresolved_name 'ISQ::LengthValue'
         (code "incompatible_specializes_kind")
         (source "semantic")
         (range (start 68 1) (end 68 237))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 80 1) (end 80 44))
       )
       (diagnostic
         (severity warning)

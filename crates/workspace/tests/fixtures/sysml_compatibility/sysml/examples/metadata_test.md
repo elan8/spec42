@@ -215,7 +215,7 @@ semantic.unresolved_name 'SysML::Usage'
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unresolved_specializes_reference")
+        (code "invalid_qualified_name_segment")
         (source "semantic")
         (range (start 5 12) (end 5 193))
       )

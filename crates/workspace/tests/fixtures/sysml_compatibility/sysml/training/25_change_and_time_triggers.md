@@ -306,6 +306,12 @@ semantic.unresolved_name 'TemperatureValue'
         (source "semantic")
         (range (start 11 2) (end 11 46))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 27) (end 16 55))
+      )
     )
   )
 )

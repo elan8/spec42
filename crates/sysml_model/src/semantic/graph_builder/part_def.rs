@@ -20,8 +20,8 @@ use super::port_def::materialize_port_usage;
 use super::state;
 use super::usage_builders;
 use super::{
-    add_node_and_recurse, attach_feature_properties, qualified_name_for_node,
-    resolve_addressable_name,
+    add_node_and_recurse, attach_declared_typing_relationship, attach_feature_properties,
+    qualified_name_for_node, resolve_addressable_name,
 };
 
 pub(super) fn build_from_part_def_body_element(
@@ -59,6 +59,7 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
+            attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
             attach_feature_properties(
                 g,
                 &node_id,

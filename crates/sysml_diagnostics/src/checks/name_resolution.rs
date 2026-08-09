@@ -4,8 +4,8 @@ use url::Url;
 
 use crate::checks::import_resolution::has_import_in_scope;
 use crate::helpers::{
-    declared_specializes_refs, declared_type_ref, diag, diagnostic_range, is_builtin_type_ref,
-    is_synthetic, normalize_declared_type_ref, unresolved_type_diagnostic_range,
+    declared_specializes_refs, diag, diagnostic_range, is_builtin_type_ref, is_synthetic,
+    normalize_declared_type_ref, unresolved_type_diagnostic_range,
 };
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
@@ -239,9 +239,11 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if is_synthetic(node) {
             continue;
         }
-        let Some(type_ref) = declared_type_ref(node) else {
+        let Some(type_target) = node.declared_facts.relationships.typing.first() else {
             continue;
         };
+        let type_ref = type_target.reference.as_str();
+        let target_range = type_target.range;
         let normalized_type_ref = normalize_declared_type_ref(type_ref);
         if is_builtin_type_ref(&normalized_type_ref) {
             continue;
@@ -254,7 +256,8 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if let Some((segment, reason)) = invalid_qualified_name_segment(graph, type_ref) {
             let key = format!("{}|{}|{}", node.id.qualified_name, type_ref, segment);
             if invalid_qn_seen.insert(key) {
-                let range = unresolved_type_diagnostic_range(node, type_ref)
+                let range = target_range
+                    .or_else(|| unresolved_type_diagnostic_range(node, type_ref))
                     .unwrap_or_else(|| diagnostic_range(graph, node, None));
                 diagnostics.push(diag(
                     uri,
@@ -312,7 +315,8 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if is_ambiguous_simple_name(graph, node, lookup_name) {
             let key = format!("{}|{}", node.id.qualified_name, lookup_name);
             if ambiguous_seen.insert(key) {
-                let range = unresolved_type_diagnostic_range(node, type_ref)
+                let range = target_range
+                    .or_else(|| unresolved_type_diagnostic_range(node, type_ref))
                     .unwrap_or_else(|| diagnostic_range(graph, node, None));
                 diagnostics.push(diag(
                     uri,
@@ -329,7 +333,8 @@ pub(crate) fn collect_name_resolution_diagnostics(
             continue;
         }
 
-        let Some(range) = unresolved_type_diagnostic_range(node, type_ref) else {
+        let Some(range) = target_range.or_else(|| unresolved_type_diagnostic_range(node, type_ref))
+        else {
             continue;
         };
         let key = format!(
@@ -345,13 +350,7 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if !unresolved_seen.insert(key) {
             continue;
         }
-        let is_ref_usage = node
-            .attributes
-            .get("refType")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())
-            .is_some();
+        let is_ref_usage = node.element_kind == sysml_model::ElementKind::Ref;
         let (code, message) = if is_ref_usage {
             (
                 "unresolved_ref_type_reference",

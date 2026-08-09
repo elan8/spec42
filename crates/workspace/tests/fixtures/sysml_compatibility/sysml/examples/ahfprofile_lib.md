@@ -536,12 +536,12 @@ semantic.unresolved_name 'baseType'
         (element (kind "import") (id (node (document "d0") (qualified-name "AHFProfileMetadata::*"))) (name "*") (declared-name "*"))
         (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata"))) (name "IDDMetadata") (declared-name "IDDMetadata")
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata")))))
           )
         )
         (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata"))) (name "LocalCloudsDDMetadata") (declared-name "LocalCloudsDDMetadata")
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata")))))
           )
         )
         (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata"))) (name "LocalCloudsMetadata") (declared-name "LocalCloudsMetadata")
@@ -551,7 +551,7 @@ semantic.unresolved_name 'baseType'
         )
         (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata"))) (name "SDDDMetadata") (declared-name "SDDDMetadata")
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata")))))
           )
         )
         (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata"))) (name "SDMetadata") (declared-name "SDMetadata")
@@ -562,7 +562,7 @@ semantic.unresolved_name 'baseType'
         (element (kind "import") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SemanticMetadata"))) (name "SemanticMetadata") (declared-name "SemanticMetadata"))
         (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata"))) (name "SysDDMetadata") (declared-name "SysDDMetadata")
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata::baseType"))) (name "baseType") (declared-name "baseType") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata")))))
           )
         )
         (element (kind "metadata def") (id (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata"))) (name "SysDMetadata") (declared-name "SysDMetadata")
@@ -620,10 +620,6 @@ semantic.unresolved_name 'baseType'
     (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata"))))
     (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_sd"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SD"))))
     (specializes (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::global_sddd"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SDDD"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::IDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata::baseType"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::LocalCloudsMetadata::baseType"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SDDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SDMetadata::baseType"))))
-    (subsetting (status resolved) (from (node (document "d0") (qualified-name "AHFProfileMetadata::SysDDMetadata::baseType"))) (to (node (document "d0") (qualified-name "AHFProfileMetadata::SysDMetadata::baseType"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDD::systems"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysDD"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::LocalCloudDesign::systems"))) (to (node (document "d0") (qualified-name "AHFProfileLib::SysD"))))
     (typing (status resolved) (from (node (document "d0") (qualified-name "AHFProfileLib::SDDD::idds"))) (to (node (document "d0") (qualified-name "AHFProfileLib::IDD"))))

@@ -189,13 +189,13 @@ semantic.unresolved_name 'generateTorque'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 8 1) (end 8 183))
+        (range (start 8 19) (end 8 26))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 11 2) (end 11 119))
+        (range (start 11 18) (end 11 24))
       )
       (diagnostic
         (severity warning)

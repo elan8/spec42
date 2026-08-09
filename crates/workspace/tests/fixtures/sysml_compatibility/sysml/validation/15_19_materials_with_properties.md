@@ -551,6 +551,12 @@ semantic.unresolved_name 'DimensionOneValue'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 52 8) (end 52 64))
+      )
+      (diagnostic
+        (severity warning)
         (code "incompatible_specializes_kind")
         (source "semantic")
         (range (start 55 4) (end 55 110))
@@ -558,6 +564,12 @@ semantic.unresolved_name 'DimensionOneValue'
       (diagnostic
         (severity warning)
         (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 56 8) (end 56 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 56 8) (end 56 64))
       )

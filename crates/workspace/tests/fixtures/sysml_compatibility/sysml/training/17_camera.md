@@ -173,7 +173,7 @@ semantic.unresolved_name 'Picture'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 9 2) (end 9 27))
+        (range (start 9 16) (end 9 23))
       )
       (diagnostic
         (severity error)

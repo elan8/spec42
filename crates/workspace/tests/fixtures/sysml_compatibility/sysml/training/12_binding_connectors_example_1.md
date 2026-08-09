@@ -195,7 +195,7 @@ semantic.unresolved_name 'Fuel'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 8 2) (end 8 424))
+        (range (start 8 14) (end 8 30))
       )
       (diagnostic
         (severity warning)

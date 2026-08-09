@@ -19,7 +19,8 @@ pub use crate::semantic::kinds::{
     ANNOTATED_ELEMENT_TARGET_KINDS, SPECIALIZES_TARGET_KINDS, TYPING_TARGET_KINDS,
 };
 use crate::semantic::model::{
-    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    ConnectStatementDetail, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type, ResolveResult,
@@ -105,9 +106,31 @@ fn record_declared_relationship_target(
     let Some(node) = g.get_node_mut(source_id) else {
         return;
     };
-    node.declared_facts
-        .relationships
-        .record_target(&kind, reference);
+    let has_spanned_parser_facts = match kind {
+        RelationshipKind::Typing => node
+            .declared_facts
+            .relationships
+            .typing
+            .iter()
+            .any(|target| target.range.is_some()),
+        RelationshipKind::Specializes => node
+            .declared_facts
+            .relationships
+            .specializes
+            .iter()
+            .any(|target| target.range.is_some()),
+        _ => false,
+    };
+    if has_spanned_parser_facts {
+        return;
+    }
+    node.declared_facts.relationships.record_target(
+        &kind,
+        DeclaredRelationshipTarget {
+            reference: reference.to_string(),
+            range: None,
+        },
+    );
 }
 
 /// Resolve a subsetting-family attribute value to a target node id.

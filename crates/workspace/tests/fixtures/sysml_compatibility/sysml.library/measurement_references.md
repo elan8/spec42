@@ -2165,6 +2165,12 @@ standard library package MeasurementReferences {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 349 2) (end 349 98))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 360 2) (end 360 35))

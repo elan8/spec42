@@ -338,6 +338,12 @@ semantic.unresolved_name 'ISQ::torque'
         (source "semantic")
         (range (start 1 1) (end 1 22))
       )
+      (diagnostic
+        (severity warning)
+        (code "invalid_qualified_name_segment")
+        (source "semantic")
+        (range (start 16 30) (end 16 56))
+      )
     )
   )
 )

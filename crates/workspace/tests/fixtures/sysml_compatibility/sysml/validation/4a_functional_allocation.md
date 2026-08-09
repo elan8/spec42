@@ -607,6 +607,12 @@ semantic.unresolved_name 'Torque'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 3) (end 9 23))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 35 2) (end 35 398))
@@ -619,9 +625,21 @@ semantic.unresolved_name 'Torque'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 37 4) (end 37 24))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 49 3) (end 49 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 50 4) (end 50 29))
       )
       (diagnostic
         (severity warning)
@@ -637,9 +655,21 @@ semantic.unresolved_name 'Torque'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 56 4) (end 56 38))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 64 3) (end 64 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 65 4) (end 65 35))
       )
       (diagnostic
         (severity warning)
@@ -655,9 +685,21 @@ semantic.unresolved_name 'Torque'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 71 4) (end 71 34))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 79 3) (end 79 64))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 80 4) (end 80 33))
       )
       (diagnostic
         (severity warning)
@@ -670,6 +712,12 @@ semantic.unresolved_name 'Torque'
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 85 3) (end 85 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 86 4) (end 86 32))
       )
       (diagnostic
         (severity warning)
@@ -691,6 +739,12 @@ semantic.unresolved_name 'Torque'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 98 6) (end 98 30))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 101 4) (end 101 104))
@@ -700,6 +754,12 @@ semantic.unresolved_name 'Torque'
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 102 5) (end 102 69))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 103 6) (end 103 30))
       )
     )
   )

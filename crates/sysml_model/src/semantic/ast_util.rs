@@ -6,6 +6,7 @@ use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, Folde
 use crate::semantic::model::{
     DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties,
     DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredMultiplicity,
+    DeclaredRelationshipTarget,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
@@ -302,6 +303,22 @@ pub fn typing_targets(relationship: Option<&TypingRelationship>) -> Vec<&str> {
     })
 }
 
+/// Parser-owned typing/specialization targets with exact target spans.
+pub fn declared_typing_targets(
+    relationship: Option<&TypingRelationship>,
+) -> Vec<DeclaredRelationshipTarget> {
+    relationship.map_or_else(Vec::new, |relationship| {
+        relationship
+            .target
+            .iter()
+            .map(|target| DeclaredRelationshipTarget {
+                reference: target.value.to_display_string(),
+                range: Some(span_to_range(&target.span)),
+            })
+            .collect()
+    })
+}
+
 /// Returns the complete source-level feature chain of a typed typing or
 /// specialization relationship. Resolution and dependency-closure consumers
 /// must use this form: reducing `OtherPkg::Base` to `Base` loses the package
@@ -327,6 +344,22 @@ pub fn subsetting_targets(relationship: Option<&SubsettingRelationship>) -> Vec<
             .target
             .iter()
             .filter_map(|target| target.value.local_name())
+            .collect()
+    })
+}
+
+/// Parser-owned subsetting-family targets with exact target spans.
+pub fn declared_subsetting_targets(
+    relationship: Option<&SubsettingRelationship>,
+) -> Vec<DeclaredRelationshipTarget> {
+    relationship.map_or_else(Vec::new, |relationship| {
+        relationship
+            .target
+            .iter()
+            .map(|target| DeclaredRelationshipTarget {
+                reference: target.value.to_display_string(),
+                range: Some(span_to_range(&target.span)),
+            })
             .collect()
     })
 }

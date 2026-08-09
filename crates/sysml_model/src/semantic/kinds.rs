@@ -282,17 +282,18 @@ pub fn is_requirement(element_kind: &ElementKind) -> bool {
 }
 
 pub fn is_metadata_restriction_attribute(node: &SemanticNode) -> bool {
-    node.attributes.contains_key("subsetsFeature") || is_known_metadata_redefine(node)
+    !node.declared_facts.relationships.subsetting.is_empty() || is_known_metadata_redefine(node)
 }
 
 /// Feature names that may appear in metadata def restriction shorthand (`:>` / `:>>`).
 pub const METADATA_RESTRICTION_FEATURE_NAMES: &[&str] = &["annotatedElement", "baseType"];
 
 pub fn is_known_metadata_redefine(node: &SemanticNode) -> bool {
-    node.attributes
-        .get("redefines")
-        .and_then(|value| value.as_str())
-        .is_some_and(|feature| METADATA_RESTRICTION_FEATURE_NAMES.contains(&feature))
+    node.declared_facts
+        .relationships
+        .redefinition
+        .iter()
+        .any(|target| METADATA_RESTRICTION_FEATURE_NAMES.contains(&target.reference.as_str()))
 }
 
 pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> bool {
@@ -330,16 +331,18 @@ pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
 pub fn is_semantic_metadata_base_type_redefine(owner: &SemanticNode, node: &SemanticNode) -> bool {
     node.name == "baseType"
         && node
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str())
-            == Some("baseType")
+            .declared_facts
+            .relationships
+            .redefinition
+            .iter()
+            .any(|target| target.reference == "baseType")
         && owner.element_kind == ElementKind::MetadataDef
         && owner
-            .attributes
-            .get("specializes")
-            .and_then(|value| value.as_str())
-            .is_some_and(|value| value.contains("SemanticMetadata"))
+            .declared_facts
+            .relationships
+            .specializes
+            .iter()
+            .any(|target| target.reference.contains("SemanticMetadata"))
 }
 
 pub fn is_compatible_kind(target_kind: &ElementKind, allowed: &[ElementKind]) -> bool {

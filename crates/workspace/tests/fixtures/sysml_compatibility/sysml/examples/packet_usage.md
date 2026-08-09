@@ -136,19 +136,19 @@ semantic.unresolved_name 'Real'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 4 1) (end 4 37))
+        (range (start 4 15) (end 4 36))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 5 1) (end 5 37))
+        (range (start 5 15) (end 5 36))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 6 1) (end 6 193))
+        (range (start 6 15) (end 6 36))
       )
       (diagnostic
         (severity warning)

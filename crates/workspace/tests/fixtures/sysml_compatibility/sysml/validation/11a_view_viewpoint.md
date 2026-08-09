@@ -350,12 +350,6 @@ semantic.unresolved_name 'ISQ::mass'
         (source "semantic")
         (range (start 49 4) (end 49 65))
       )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_type_reference")
-        (source "semantic")
-        (range (start 49 4) (end 49 65))
-      )
     )
   )
 )

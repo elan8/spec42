@@ -803,10 +803,34 @@ semantic.unresolved_name 'deliver_message'
         (range (start 2 1) (end 2 39))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 3) (end 8 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 3) (end 12 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 3) (end 13 29))
+      )
+      (diagnostic
         (severity information)
         (code "unconnected_port")
         (source "semantic")
         (range (start 30 3) (end 30 74))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 31 4) (end 31 24))
       )
       (diagnostic
         (severity information)
@@ -815,10 +839,28 @@ semantic.unresolved_name 'deliver_message'
         (range (start 48 3) (end 48 72))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 49 4) (end 49 23))
+      )
+      (diagnostic
         (severity information)
         (code "unconnected_port")
         (source "semantic")
         (range (start 51 3) (end 51 101))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 52 4) (end 52 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 53 4) (end 53 24))
       )
       (diagnostic
         (severity error)
@@ -836,7 +878,19 @@ semantic.unresolved_name 'deliver_message'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 116 1) (end 116 1355))
+        (range (start 97 4) (end 97 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 98 4) (end 98 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 116 22) (end 116 36))
       )
       (diagnostic
         (severity warning)

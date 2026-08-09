@@ -177,6 +177,12 @@ semantic.unresolved_name 'TradeStudy'
         (source "semantic")
         (range (start 16 4) (end 16 194))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 21 8) (end 21 40))
+      )
     )
   )
 )

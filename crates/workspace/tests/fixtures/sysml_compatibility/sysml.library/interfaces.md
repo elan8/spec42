@@ -447,6 +447,18 @@ standard library package Interfaces {
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 25 8) (end 25 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 26 8) (end 26 27))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 32 4) (end 32 1084))
@@ -461,7 +473,7 @@ standard library package Interfaces {
         (severity warning)
         (code "unresolved_ref_type_reference")
         (source "semantic")
-        (range (start 44 8) (end 44 536))
+        (range (start 44 34) (end 44 39))
       )
       (diagnostic
         (severity warning)

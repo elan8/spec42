@@ -202,6 +202,18 @@ semantic.unresolved_name 'Real'
         (range (start 6 1) (end 6 18))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 29) (end 8 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 24) (end 9 41))
+      )
+      (diagnostic
         (severity error)
         (code "recovered_action_body_element")
         (source "sysml")

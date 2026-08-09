@@ -74,6 +74,12 @@ package P {
 (fixture-diagnostics
   (document "fuzz/fuzz_named_argument.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1 17) (end 1 26))
+      )
     )
   )
 )

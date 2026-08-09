@@ -167,13 +167,13 @@ semantic.unresolved_name 'Fuel'
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 12 2) (end 12 35))
+        (range (start 12 18) (end 12 34))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
-        (range (start 13 2) (end 13 20))
+        (range (start 13 13) (end 13 19))
       )
       (diagnostic
         (severity error)

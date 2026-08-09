@@ -145,6 +145,12 @@ semantic.unresolved_name 'Real'
         (range (start 4 5) (end 4 23))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 2) (end 13 17))
+      )
+      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "sysml")

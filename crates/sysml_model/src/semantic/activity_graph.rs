@@ -57,9 +57,11 @@ fn control_kind_from_graph_node(node: &SemanticNode) -> Option<&'static str> {
         ElementKind::Assign => Some("assign"),
         ElementKind::ForLoop => Some("for-loop"),
         ElementKind::Action | ElementKind::Perform => node
-            .attributes
-            .get("actionType")
-            .and_then(|value| value.as_str())
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.as_str())
             .and_then(control_state_type),
         _ => None,
     }

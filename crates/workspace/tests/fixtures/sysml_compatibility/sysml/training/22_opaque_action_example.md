@@ -118,6 +118,12 @@ semantic.unresolved_name 'ScalarValues::Boolean'
         (range (start 3 2) (end 3 42))
       )
       (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 2) (end 7 25))
+      )
+      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "sysml")

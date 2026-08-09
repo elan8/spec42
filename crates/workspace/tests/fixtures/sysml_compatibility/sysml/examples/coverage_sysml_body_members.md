@@ -203,6 +203,12 @@ part def Outer {
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
+        (range (start 10 4) (end 10 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
         (range (start 12 15) (end 12 38))
       )
       (diagnostic

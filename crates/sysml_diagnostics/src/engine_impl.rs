@@ -179,8 +179,8 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
             && node.element_kind == sysml_model::ElementKind::Port
             && !is_synthetic(node)
             && is_declaration_port(graph, node)
-            && !node.attributes.contains_key("redefines")
-            && !node.attributes.contains_key("subsetsFeature")
+            && node.declared_facts.relationships.redefinition.is_empty()
+            && node.declared_facts.relationships.subsetting.is_empty()
             && port_anchor_key(node)
                 .as_ref()
                 .is_some_and(|key| !connected_port_keys.contains(key))
@@ -443,7 +443,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         if node.element_kind != sysml_model::ElementKind::Allocation {
             continue;
         }
-        if node.attributes.contains_key("allocationType")
+        if !node.declared_facts.relationships.typing.is_empty()
             && graph
                 .outgoing_targets_by_kind(node, RelationshipKind::Typing)
                 .iter()

@@ -210,6 +210,18 @@ semantic.unresolved_name 'MassValue'
         (source "sysml")
         (range (start 13 2) (end 13 35))
       )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 2) (end 17 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 18 2) (end 18 49))
+      )
     )
   )
 )

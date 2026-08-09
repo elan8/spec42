@@ -562,6 +562,30 @@ semantic.unresolved_name 'done'
       )
       (diagnostic
         (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 23 36) (end 23 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 23 68) (end 23 94))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 23 95) (end 23 114))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 24 6) (end 24 62))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_redefines_target")
         (source "semantic")
         (range (start 61 9) (end 61 78))
@@ -594,7 +618,7 @@ semantic.unresolved_name 'done'
         (severity warning)
         (code "invalid_qualified_name_segment")
         (source "semantic")
-        (range (start 85 9) (end 85 1076))
+        (range (start 85 28) (end 85 81))
       )
       (diagnostic
         (severity error)

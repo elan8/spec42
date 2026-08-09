@@ -22,8 +22,8 @@ use super::expressions;
 use super::payload::insert_action_payload_attrs;
 use super::state;
 use super::{
-    add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node,
-    resolve_addressable_name,
+    add_node_and_recurse, attach_declared_typing_relationship, attach_feature_properties,
+    qualified_name, qualified_name_for_node, resolve_addressable_name,
 };
 
 struct ThenActionChain {
@@ -541,6 +541,7 @@ fn add_default_reference_usage(
         attrs,
         Some(parent_id),
     );
+    attach_declared_typing_relationship(g, &NodeId::new(uri, &qualified), value.typing.as_deref());
     for target in targets {
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }

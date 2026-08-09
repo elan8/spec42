@@ -332,9 +332,11 @@ fn collect_inherited_ports(
                     .and_then(|v| v.as_str())
                     .map(String::from),
                 port_type: child
-                    .attributes
-                    .get("portType")
-                    .and_then(|v| v.as_str())
+                    .declared_facts
+                    .relationships
+                    .typing
+                    .first()
+                    .map(|target| target.reference.as_str())
                     .map(String::from),
                 multiplicity: port_multiplicity_label(graph, child),
                 parent_path: parent_path.to_string(),
