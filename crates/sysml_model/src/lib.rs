@@ -30,7 +30,8 @@ pub use semantic::ibd::{
     merge_ibd_payloads_for_workspace_finalize, IbdDataDto,
 };
 pub use semantic::import_resolution::{
-    resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
+    resolve_import_target, resolve_imported_node_ids_for_simple_name,
+    resolve_type_reference_targets, ImportTargetResolution,
 };
 pub use semantic::interconnection_elk::build_elk_graph_from_scene;
 pub use semantic::interconnection_projection::{

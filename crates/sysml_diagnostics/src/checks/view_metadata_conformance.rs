@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::checks::import_resolution::{import_target, import_target_resolves};
+use crate::checks::import_resolution::import_target;
 use crate::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
@@ -15,7 +15,10 @@ use sysml_model::semantic::relationships::{
 };
 use sysml_model::semantic::standard_views::is_non_standard_explicit_view_type;
 use sysml_model::semantic::text_span::TextRange;
-use sysml_model::{element_type_matches_all_filters, parse_filter_text, FilterExpr, SemanticGraph};
+use sysml_model::{
+    element_type_matches_all_filters, parse_filter_text, resolve_import_target, FilterExpr,
+    ImportTargetResolution, SemanticGraph,
+};
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
     "feature",
@@ -374,7 +377,10 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             {
                 continue;
             }
-            if import_target_resolves(graph, node) {
+            if matches!(
+                resolve_import_target(graph, node),
+                ImportTargetResolution::Resolved { .. }
+            ) {
                 continue;
             }
             let Some(target) = import_target(node) else {

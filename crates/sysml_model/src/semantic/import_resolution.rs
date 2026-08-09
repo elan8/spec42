@@ -5,6 +5,18 @@ use crate::semantic::kinds::{self, element_kind_allowed, is_namespace};
 use crate::semantic::model::{
     node_matches_simple_name, ElementKind, ImportShape, NodeId, SemanticNode, VisibilityKind,
 };
+
+/// Canonical result of resolving an authored import target. The authored spelling and range stay
+/// in [`DeclaredImportFacts`](crate::semantic::model::DeclaredImportFacts); this result contains
+/// only semantic identity/status and has deterministic candidate ordering.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ImportTargetResolution {
+    NotApplicable,
+    Resolved { target: NodeId },
+    Unresolved,
+    Ambiguous { candidates: Vec<NodeId> },
+    UnsupportedFiltered,
+}
 use crate::semantic::resolution::naming::{
     normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates_with_kind,
 };
@@ -586,56 +598,66 @@ pub fn has_import_in_scope(graph: &SemanticGraph, context_node: &SemanticNode) -
 }
 
 /// Whether an import node's target resolves using the same rules as graph linking.
-pub fn import_target_resolves(graph: &SemanticGraph, import_node: &SemanticNode) -> bool {
+pub fn resolve_import_target(
+    graph: &SemanticGraph,
+    import_node: &SemanticNode,
+) -> ImportTargetResolution {
     let Some(target) = import_target(import_node) else {
-        return false;
+        return ImportTargetResolution::NotApplicable;
     };
-
-    if matches!(import_shape(import_node), Some(ImportShape::Namespace)) {
-        return import_namespace_target_candidates(graph, import_node, target)
-            .iter()
-            .any(|candidate| {
-                namespace_node_ids_for_qualified_name(graph, candidate)
-                    .into_iter()
-                    .any(|namespace_id| {
-                        graph
-                            .get_node(&namespace_id)
-                            .map(|node| is_namespace(&node.element_kind))
-                            .unwrap_or(false)
-                    })
-            });
+    let Some(shape) = import_shape(import_node) else {
+        return ImportTargetResolution::NotApplicable;
+    };
+    if shape == ImportShape::FilteredNamespace {
+        return ImportTargetResolution::UnsupportedFiltered;
     }
 
-    if !matches!(import_shape(import_node), Some(ImportShape::Membership)) {
-        return false;
-    }
-
-    let membership_target = normalized_membership_target(target);
-    if !exact_named_members_or_disambiguated(graph, &membership_target).is_empty() {
-        return true;
-    }
-
-    for candidate in import_namespace_target_candidates(graph, import_node, &membership_target) {
-        if !exact_named_members_or_disambiguated(graph, &candidate).is_empty() {
-            return true;
+    let mut matches = Vec::new();
+    match shape {
+        ImportShape::Namespace => {
+            for candidate in import_namespace_target_candidates(graph, import_node, target) {
+                matches.extend(namespace_node_ids_for_qualified_name(graph, &candidate));
+                // Preserve a resolved non-namespace identity so the diagnostic layer can report
+                // a kind mismatch rather than incorrectly calling it unresolved.
+                matches.extend(exact_named_members(graph, &candidate));
+            }
         }
-        if let Some((namespace_target, member_name)) = candidate.rsplit_once("::") {
-            let mut stack = HashSet::new();
-            for namespace_id in namespace_node_ids_for_qualified_name(graph, namespace_target) {
-                if !exported_members_named_from_namespace(
-                    graph,
-                    &namespace_id,
-                    member_name,
-                    true,
-                    &mut stack,
-                )
-                .is_empty()
-                {
-                    return true;
+        ImportShape::Membership => {
+            let normalized = normalized_membership_target(target);
+            for candidate in import_namespace_target_candidates(graph, import_node, &normalized) {
+                matches.extend(exact_named_members_or_disambiguated(graph, &candidate));
+                if let Some((namespace_target, member_name)) = candidate.rsplit_once("::") {
+                    let mut stack = HashSet::new();
+                    for namespace_id in
+                        namespace_node_ids_for_qualified_name(graph, namespace_target)
+                    {
+                        matches.extend(exported_members_named_from_namespace(
+                            graph,
+                            &namespace_id,
+                            member_name,
+                            true,
+                            &mut stack,
+                        ));
+                    }
                 }
             }
         }
+        ImportShape::FilteredNamespace => unreachable!("handled above"),
     }
-
-    false
+    let mut matches = dedupe_node_ids(matches);
+    matches.sort_by(|left, right| {
+        left.uri
+            .as_str()
+            .cmp(right.uri.as_str())
+            .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+    });
+    match matches.len() {
+        0 => ImportTargetResolution::Unresolved,
+        1 => ImportTargetResolution::Resolved {
+            target: matches.remove(0),
+        },
+        _ => ImportTargetResolution::Ambiguous {
+            candidates: matches,
+        },
+    }
 }

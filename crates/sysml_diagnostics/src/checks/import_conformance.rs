@@ -2,66 +2,14 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::checks::import_resolution::{
-    import_target, import_target_resolves, is_expose, is_import_all, is_recursive_import,
-};
+use crate::checks::import_resolution::{import_target, is_import_all, is_recursive_import};
 use crate::helpers::{
     condition_expression_is_boolean, diag, diagnostic_range, reference_token_range,
 };
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
 use sysml_model::semantic::kinds::is_namespace;
-use sysml_model::{resolve_expose_target, ExposeTargetResolution, SemanticGraph};
-
-fn import_target_is_resolved(
-    graph: &SemanticGraph,
-    uri: &Url,
-    node: &sysml_model::SemanticNode,
-    target: &str,
-) -> bool {
-    if is_expose(node) {
-        return matches!(
-            resolve_expose_target(
-                graph,
-                Some(uri),
-                node.parent_id
-                    .as_ref()
-                    .map(|parent| parent.qualified_name.as_str()),
-                target,
-            ),
-            ExposeTargetResolution::Resolved(_)
-        );
-    }
-    import_target_resolves(graph, node)
-}
-
-fn normalized_namespace_target(target: &str) -> String {
-    target
-        .trim()
-        .trim_end_matches("::**")
-        .trim_end_matches("::*")
-        .trim()
-        .to_string()
-}
-
-fn resolve_import_target_kind(
-    graph: &SemanticGraph,
-    import_node: &sysml_model::SemanticNode,
-) -> Option<sysml_model::ElementKind> {
-    let target = import_target(import_node)?;
-    let lookup = if is_import_all(import_node) {
-        normalized_namespace_target(target)
-    } else {
-        target.trim().trim_end_matches("::**").trim().to_string()
-    };
-    graph
-        .nodes_by_uri
-        .values()
-        .flatten()
-        .find(|id| id.qualified_name == lookup)
-        .and_then(|id| graph.get_node(id))
-        .map(|node| node.element_kind.clone())
-}
+use sysml_model::{resolve_import_target, ImportTargetResolution, SemanticGraph};
 
 pub(crate) fn collect_import_conformance_diagnostics(
     graph: &SemanticGraph,
@@ -80,7 +28,26 @@ pub(crate) fn collect_import_conformance_diagnostics(
         let range = reference_token_range(node, target)
             .unwrap_or_else(|| diagnostic_range(graph, node, None));
 
-        if !import_target_is_resolved(graph, uri, node, target) {
+        let resolution = resolve_import_target(graph, node);
+        if matches!(resolution, ImportTargetResolution::UnsupportedFiltered) {
+            let key = format!("unsupported-filter|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    range,
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "unsupported_filtered_import",
+                    "Filtered namespace imports are parsed but not semantically supported."
+                        .to_string(),
+                ));
+            }
+            continue;
+        }
+        if matches!(
+            resolution,
+            ImportTargetResolution::Unresolved | ImportTargetResolution::NotApplicable
+        ) {
             let key = format!("unresolved|{}", target);
             if seen.insert(key) {
                 diagnostics.push(diag(
@@ -97,31 +64,56 @@ pub(crate) fn collect_import_conformance_diagnostics(
             }
             continue;
         }
+        if let ImportTargetResolution::Ambiguous { candidates } = resolution {
+            let key = format!("ambiguous|{}", node.id.qualified_name);
+            if seen.insert(key) {
+                diagnostics.push(diag(
+                    uri,
+                    range,
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "ambiguous_import_target",
+                    format!(
+                        "Imported package/member '{}' is ambiguous across {} semantic targets.",
+                        target,
+                        candidates.len()
+                    ),
+                ));
+            }
+            continue;
+        }
 
-        if let Some(resolved_kind) = resolve_import_target_kind(graph, node) {
-            if is_import_all(node) && !is_namespace(&resolved_kind) {
-                let key = format!("kind|{}", node.id.qualified_name);
-                if seen.insert(key) {
-                    diagnostics.push(diag(
-                        uri,
-                        range,
-                        DiagnosticSeverity::Warning,
-                        "semantic",
-                        "import_kind_mismatch",
-                        format!(
+        if let ImportTargetResolution::Resolved {
+            target: resolved_id,
+        } = resolution
+        {
+            let resolved_kind = graph
+                .get_node(&resolved_id)
+                .map(|node| node.element_kind.clone());
+            if let Some(resolved_kind) = resolved_kind {
+                if is_import_all(node) && !is_namespace(&resolved_kind) {
+                    let key = format!("kind|{}", node.id.qualified_name);
+                    if seen.insert(key) {
+                        diagnostics.push(diag(
+                            uri,
+                            range,
+                            DiagnosticSeverity::Warning,
+                            "semantic",
+                            "import_kind_mismatch",
+                            format!(
                             "Namespace import '{}' targets '{}' which is a '{}', not a namespace.",
                             target, target, resolved_kind
                         ),
-                    ));
+                        ));
+                    }
                 }
-            }
-            if !is_import_all(node)
-                && is_namespace(&resolved_kind)
-                && (target.contains("::*") || target.ends_with("::**"))
-            {
-                let key = format!("membership|{}", node.id.qualified_name);
-                if seen.insert(key) {
-                    diagnostics.push(diag(
+                if !is_import_all(node)
+                    && is_namespace(&resolved_kind)
+                    && (target.contains("::*") || target.ends_with("::**"))
+                {
+                    let key = format!("membership|{}", node.id.qualified_name);
+                    if seen.insert(key) {
+                        diagnostics.push(diag(
                         uri,
                         range,
                         DiagnosticSeverity::Warning,
@@ -132,22 +124,23 @@ pub(crate) fn collect_import_conformance_diagnostics(
                             target, target
                         ),
                     ));
+                    }
                 }
-            }
-            if is_recursive_import(node) && !is_namespace(&resolved_kind) {
-                let key = format!("recursive|{}", node.id.qualified_name);
-                if seen.insert(key) {
-                    diagnostics.push(diag(
-                        uri,
-                        range,
-                        DiagnosticSeverity::Warning,
-                        "semantic",
-                        "invalid_recursive_import",
-                        format!(
-                            "Recursive import '{}' targets '{}', which is not a namespace.",
-                            target, resolved_kind
-                        ),
-                    ));
+                if is_recursive_import(node) && !is_namespace(&resolved_kind) {
+                    let key = format!("recursive|{}", node.id.qualified_name);
+                    if seen.insert(key) {
+                        diagnostics.push(diag(
+                            uri,
+                            range,
+                            DiagnosticSeverity::Warning,
+                            "semantic",
+                            "invalid_recursive_import",
+                            format!(
+                                "Recursive import '{}' targets '{}', which is not a namespace.",
+                                target, resolved_kind
+                            ),
+                        ));
+                    }
                 }
             }
         }
