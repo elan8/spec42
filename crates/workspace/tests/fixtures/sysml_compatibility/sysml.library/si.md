@@ -2759,19 +2759,19 @@ standard library package SI {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 9 4) (end 9 44))
+        (range (start 9 19) (end 9 40))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 10 4) (end 10 25))
+        (range (start 10 18) (end 10 21))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 11 4) (end 11 32))
+        (range (start 11 18) (end 11 28))
       )
       (diagnostic
         (severity warning)

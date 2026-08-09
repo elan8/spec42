@@ -145,7 +145,7 @@ semantic.unresolved_name 'Vehicle'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 45))
+        (range (start 1 16) (end 1 41))
       )
       (diagnostic
         (severity warning)

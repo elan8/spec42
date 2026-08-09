@@ -177,13 +177,13 @@ semantic.unresolved_name 'generateTorque'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 45))
+        (range (start 1 16) (end 1 41))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 40))
+        (range (start 2 16) (end 2 36))
       )
       (diagnostic
         (severity warning)

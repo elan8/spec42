@@ -272,7 +272,7 @@ semantic.unresolved_name 'Boolean'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 38))
+        (range (start 1 16) (end 1 37))
       )
       (diagnostic
         (severity warning)
@@ -314,7 +314,7 @@ semantic.unresolved_name 'Boolean'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 27 2) (end 27 28))
+        (range (start 27 16) (end 27 23))
       )
     )
   )

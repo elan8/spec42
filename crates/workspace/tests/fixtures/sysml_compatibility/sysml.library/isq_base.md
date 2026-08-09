@@ -966,19 +966,19 @@ standard library package ISQBase {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 10 4) (end 10 38))
+        (range (start 10 19) (end 10 37))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 11 4) (end 11 33))
+        (range (start 11 19) (end 11 29))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 12 4) (end 12 44))
+        (range (start 12 19) (end 12 40))
       )
       (diagnostic
         (severity warning)

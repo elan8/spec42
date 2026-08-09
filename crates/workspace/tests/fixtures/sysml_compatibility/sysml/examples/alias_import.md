@@ -107,7 +107,7 @@ NIL
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 5) (end 8 37))
+        (range (start 8 20) (end 8 36))
       )
       (diagnostic
         (severity warning)

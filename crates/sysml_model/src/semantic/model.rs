@@ -834,10 +834,18 @@ impl Default for DeclaredMembershipKind {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DeclaredImportFacts {
     pub target: DeclaredImportTarget,
+    /// Grammar production that authored this import-shaped membership. `Expose` has its own
+    /// scope/expansion contract and must not inherit `Import` defaults.
+    pub origin: ImportOrigin,
     pub shape: ImportShape,
     pub recursive: bool,
-    #[serde(default)]
-    pub is_expose: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum ImportOrigin {
+    Import,
+    Expose,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]

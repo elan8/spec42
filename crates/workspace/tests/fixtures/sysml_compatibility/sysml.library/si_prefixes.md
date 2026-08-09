@@ -720,7 +720,7 @@ standard library package SIPrefixes {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 1) (end 6 41))
+        (range (start 6 16) (end 6 37))
       )
       (diagnostic
         (severity warning)

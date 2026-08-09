@@ -257,19 +257,19 @@ semantic.unresolved_name 'DimensionOneValue'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 4) (end 1 44))
+        (range (start 1 19) (end 1 40))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 4) (end 2 25))
+        (range (start 2 19) (end 2 21))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 4) (end 3 36))
+        (range (start 3 19) (end 3 32))
       )
       (diagnostic
         (severity warning)

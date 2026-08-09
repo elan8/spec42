@@ -405,19 +405,19 @@ standard library package DataFunctions {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 32))
+        (range (start 7 16) (end 7 31))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 1) (end 8 38))
+        (range (start 8 16) (end 8 37))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 9 1) (end 9 41))
+        (range (start 9 16) (end 9 40))
       )
       (diagnostic
         (severity warning)

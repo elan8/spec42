@@ -276,13 +276,13 @@ standard library package Links {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 4) (end 6 34))
+        (range (start 6 19) (end 6 33))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 4) (end 7 32))
+        (range (start 7 19) (end 7 31))
       )
       (diagnostic
         (severity warning)

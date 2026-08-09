@@ -419,7 +419,7 @@ standard library package RiskMetadata {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 1) (end 6 35))
+        (range (start 6 16) (end 6 34))
       )
       (diagnostic
         (severity warning)

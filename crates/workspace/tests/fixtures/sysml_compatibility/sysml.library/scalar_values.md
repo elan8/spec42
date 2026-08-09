@@ -138,7 +138,7 @@ standard library package ScalarValues {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 4) (end 7 35))
+        (range (start 7 19) (end 7 34))
       )
     )
   )

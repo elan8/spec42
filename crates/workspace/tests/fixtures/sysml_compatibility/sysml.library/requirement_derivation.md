@@ -227,13 +227,13 @@ standard library package RequirementDerivation {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 40))
+        (range (start 3 15) (end 3 36))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 4 1) (end 4 46))
+        (range (start 4 16) (end 4 45))
       )
       (diagnostic
         (severity warning)

@@ -276,7 +276,7 @@ semantic.unresolved_name 'mass'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 58))
+        (range (start 1 16) (end 1 54))
       )
       (diagnostic
         (severity warning)

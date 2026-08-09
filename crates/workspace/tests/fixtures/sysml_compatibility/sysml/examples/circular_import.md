@@ -180,13 +180,13 @@ NIL
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 2) (end 3 22))
+        (range (start 3 16) (end 3 18))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 2) (end 7 22))
+        (range (start 7 16) (end 7 18))
       )
       (diagnostic
         (severity warning)

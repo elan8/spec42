@@ -225,7 +225,7 @@ standard library package TrigFunctions {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 5 4) (end 5 37))
+        (range (start 5 18) (end 5 36))
       )
     )
   )

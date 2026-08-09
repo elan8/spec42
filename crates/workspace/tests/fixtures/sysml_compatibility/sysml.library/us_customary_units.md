@@ -3164,19 +3164,19 @@ standard library package <USCU> USCustomaryUnits {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 4) (end 8 44))
+        (range (start 8 19) (end 8 40))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 9 4) (end 9 25))
+        (range (start 9 18) (end 9 21))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 10 4) (end 10 25))
+        (range (start 10 19) (end 10 21))
       )
       (diagnostic
         (severity warning)

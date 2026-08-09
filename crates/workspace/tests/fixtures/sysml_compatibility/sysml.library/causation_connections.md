@@ -353,19 +353,19 @@ standard library package CausationConnections {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 43))
+        (range (start 7 16) (end 7 42))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 1) (end 8 40))
+        (range (start 8 16) (end 8 39))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 9 1) (end 9 48))
+        (range (start 9 16) (end 9 47))
       )
       (diagnostic
         (severity warning)

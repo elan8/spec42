@@ -62,11 +62,12 @@ pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
     HostConnectorEnd, HostContext, HostElementFacts, HostExpression, HostExpressionArgument,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostImportShape, HostMembershipFacts, HostMembershipKind, HostMembershipVisibilityProvenance,
-    HostMultiplicity, HostPipelinePhase, HostRelationshipMetaclass, HostResourceLimits,
-    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
-    HostValidatedDocument, HostValidationReport, HostValidationSummary, HostVisibilityKind,
-    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
+    HostImportOrigin, HostImportShape, HostMembershipFacts, HostMembershipKind,
+    HostMembershipVisibilityProvenance, HostMultiplicity, HostPipelinePhase,
+    HostRelationshipMetaclass, HostResourceLimits, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
+    HostValidationReport, HostValidationSummary, HostVisibilityKind, HostWorkspaceSnapshot,
+    Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};
 pub use view_cache::{

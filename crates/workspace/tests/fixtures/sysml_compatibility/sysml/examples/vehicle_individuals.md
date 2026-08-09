@@ -537,19 +537,19 @@ semantic.unresolved_name 'rightFrontWheel'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 33))
+        (range (start 1 16) (end 1 29))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 31))
+        (range (start 2 16) (end 2 30))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 23))
+        (range (start 3 16) (end 3 22))
       )
       (diagnostic
         (severity warning)
@@ -609,13 +609,13 @@ semantic.unresolved_name 'rightFrontWheel'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 32 2) (end 32 41))
+        (range (start 32 16) (end 32 37))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 33 2) (end 33 48))
+        (range (start 33 17) (end 33 47))
       )
       (diagnostic
         (severity warning)
@@ -657,7 +657,7 @@ semantic.unresolved_name 'rightFrontWheel'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 65 2) (end 65 39))
+        (range (start 65 16) (end 65 35))
       )
       (diagnostic
         (severity warning)

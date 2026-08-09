@@ -377,11 +377,15 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             {
                 continue;
             }
-            if matches!(
-                resolve_import_target(graph, node),
-                ImportTargetResolution::Resolved { .. }
-            ) {
-                continue;
+            match resolve_import_target(graph, node) {
+                ImportTargetResolution::Resolved { .. } => continue,
+                // Import conformance owns exact ambiguity, unsupported-filter, and malformed
+                // import diagnostics. This viewpoint rule adds only the distinct unresolved
+                // reference diagnostic rather than collapsing typed resolution states.
+                ImportTargetResolution::Ambiguous { .. }
+                | ImportTargetResolution::UnsupportedFiltered
+                | ImportTargetResolution::NotApplicable => continue,
+                ImportTargetResolution::Unresolved => {}
             }
             let Some(target) = import_target(node) else {
                 continue;

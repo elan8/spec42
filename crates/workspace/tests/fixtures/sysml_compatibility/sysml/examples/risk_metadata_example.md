@@ -138,13 +138,13 @@ semantic.unresolved_name 'Risk'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 32))
+        (range (start 1 16) (end 1 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 33))
+        (range (start 2 16) (end 2 29))
       )
       (diagnostic
         (severity warning)

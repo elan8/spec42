@@ -860,13 +860,13 @@ semantic.unresolved_name 'deliver_message'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 37))
+        (range (start 1 16) (end 1 36))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 46))
+        (range (start 2 16) (end 2 42))
       )
       (diagnostic
         (severity warning)

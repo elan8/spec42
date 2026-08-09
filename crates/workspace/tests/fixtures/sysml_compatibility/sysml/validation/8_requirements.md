@@ -928,19 +928,19 @@ semantic.unresolved_name 'drivePwrPort'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 35))
+        (range (start 1 16) (end 1 34))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 23))
+        (range (start 2 16) (end 2 19))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 22))
+        (range (start 3 16) (end 3 18))
       )
       (diagnostic
         (severity warning)
@@ -964,7 +964,7 @@ semantic.unresolved_name 'drivePwrPort'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 35 2) (end 35 41))
+        (range (start 35 16) (end 35 37))
       )
       (diagnostic
         (severity warning)

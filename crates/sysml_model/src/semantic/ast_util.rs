@@ -7,7 +7,7 @@ use crate::semantic::model::{
     DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties,
     DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredImportFacts, DeclaredImportTarget,
     DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
-    DeclaredRelationshipTarget, ImportShape, VisibilityKind,
+    DeclaredRelationshipTarget, ImportOrigin, ImportShape, VisibilityKind,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
@@ -97,9 +97,9 @@ pub fn declared_import_membership_facts(import: &Node<Import>) -> DeclaredMember
                 reference: value.target.clone(),
                 range: Some(span_to_range(&value.target_span)),
             },
+            origin: ImportOrigin::Import,
             shape,
             recursive: value.is_recursive,
-            is_expose: false,
         }),
     }
 }
@@ -117,13 +117,13 @@ pub fn declared_expose_membership_facts(expose: &Node<ExposeMember>) -> Declared
                 reference: value.target.clone(),
                 range: None,
             },
+            origin: ImportOrigin::Expose,
             shape: if value.is_import_all {
                 ImportShape::Namespace
             } else {
                 ImportShape::Membership
             },
             recursive: value.is_recursive,
-            is_expose: true,
         }),
     }
 }

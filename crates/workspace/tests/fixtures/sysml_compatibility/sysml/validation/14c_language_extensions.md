@@ -1111,7 +1111,7 @@ semantic.unresolved_name 'severity'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 32))
+        (range (start 1 16) (end 1 28))
       )
       (diagnostic
         (severity warning)
@@ -1225,13 +1225,13 @@ semantic.unresolved_name 'severity'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 77 2) (end 77 47))
+        (range (start 77 17) (end 77 46))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 78 2) (end 78 32))
+        (range (start 78 17) (end 78 28))
       )
       (diagnostic
         (severity warning)
@@ -1267,7 +1267,7 @@ semantic.unresolved_name 'severity'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 142 2) (end 142 33))
+        (range (start 142 17) (end 142 29))
       )
       (diagnostic
         (severity warning)

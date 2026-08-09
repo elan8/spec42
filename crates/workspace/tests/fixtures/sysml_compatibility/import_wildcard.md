@@ -49,16 +49,16 @@ NIL
   (document "import_wildcard.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 0 0) (end 0 23))
-      )
-      (diagnostic
         (severity information)
         (code "missing_library_context")
         (source "semantic")
         (range (start 0 0) (end 0 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 0 7) (end 0 19))
       )
     )
   )

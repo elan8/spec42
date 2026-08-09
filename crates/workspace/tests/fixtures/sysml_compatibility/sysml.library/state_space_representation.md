@@ -634,19 +634,19 @@ standard library package StateSpaceRepresentation {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 4) (end 7 38))
+        (range (start 7 19) (end 7 37))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 4) (end 8 51))
+        (range (start 8 19) (end 8 50))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 9 4) (end 9 41))
+        (range (start 9 19) (end 9 37))
       )
       (diagnostic
         (severity warning)

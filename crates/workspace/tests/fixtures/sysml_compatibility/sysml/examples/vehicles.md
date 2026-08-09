@@ -219,13 +219,13 @@ semantic.unresolved_name 'mass'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 32))
+        (range (start 1 16) (end 1 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 30))
+        (range (start 2 16) (end 2 26))
       )
       (diagnostic
         (severity warning)
@@ -243,7 +243,7 @@ semantic.unresolved_name 'mass'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 23 1) (end 23 22))
+        (range (start 23 16) (end 23 18))
       )
       (diagnostic
         (severity error)

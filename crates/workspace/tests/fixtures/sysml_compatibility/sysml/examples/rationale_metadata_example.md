@@ -151,7 +151,7 @@ semantic.unresolved_name 'TradeStudy'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 44))
+        (range (start 1 16) (end 1 43))
       )
       (diagnostic
         (severity information)
@@ -169,7 +169,7 @@ semantic.unresolved_name 'TradeStudy'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 15 4) (end 15 35))
+        (range (start 15 19) (end 15 31))
       )
       (diagnostic
         (severity warning)

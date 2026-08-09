@@ -437,19 +437,19 @@ semantic.unresolved_name 'done'
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "ambiguous_name_reference")
+        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 32 2) (end 32 171))
       )
       (diagnostic
         (severity warning)
-        (code "ambiguous_name_reference")
+        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 39 3) (end 39 369))
       )
       (diagnostic
         (severity warning)
-        (code "ambiguous_name_reference")
+        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 54 2) (end 54 170))
       )

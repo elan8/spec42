@@ -386,7 +386,7 @@ standard library package ScalarFunctions {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 1) (end 6 31))
+        (range (start 6 15) (end 6 27))
       )
       (diagnostic
         (severity warning)

@@ -388,19 +388,19 @@ standard library package CauseAndEffect {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 39))
+        (range (start 3 15) (end 3 35))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 4 1) (end 4 32))
+        (range (start 4 16) (end 4 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 5 1) (end 5 46))
+        (range (start 5 16) (end 5 45))
       )
       (diagnostic
         (severity warning)

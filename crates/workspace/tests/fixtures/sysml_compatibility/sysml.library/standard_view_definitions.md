@@ -397,7 +397,7 @@ standard library package StandardViewDefinitions {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 4 4) (end 4 27))
+        (range (start 4 18) (end 4 23))
       )
     )
   )

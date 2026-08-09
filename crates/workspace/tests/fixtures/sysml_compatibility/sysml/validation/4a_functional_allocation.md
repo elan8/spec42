@@ -585,19 +585,19 @@ semantic.unresolved_name 'Torque'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 46))
+        (range (start 1 16) (end 1 42))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 50))
+        (range (start 2 16) (end 2 46))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 67))
+        (range (start 3 16) (end 3 63))
       )
       (diagnostic
         (severity warning)

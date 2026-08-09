@@ -149,14 +149,23 @@ impl SemanticGraph {
     }
 
     /// Returns the authored membership visibility or the parser-documented contextual default:
-    /// public for members of a package, private for nested members. The source fact remains
-    /// absent when no prefix was written, so consumers can preserve provenance instead of
-    /// mistaking the default for authored source.
+    /// public for members of a package, private for nested members. KerML `Import` defaults to
+    /// private regardless of owner. `Expose` has a distinct scope/expansion contract, so this
+    /// query returns `None` rather than fabricating an import visibility for it. The source fact
+    /// remains absent when no prefix was written, so consumers can preserve provenance instead
+    /// of mistaking the default for authored source.
     pub fn effective_membership_visibility_for(
         &self,
         node: &SemanticNode,
     ) -> Option<EffectiveMembershipVisibility> {
         let membership = node.declared_facts.membership.as_ref()?;
+        if membership
+            .import
+            .as_ref()
+            .is_some_and(|import| import.origin == crate::semantic::model::ImportOrigin::Expose)
+        {
+            return None;
+        }
         Some(match membership.visibility {
             Some(value) => EffectiveMembershipVisibility {
                 value,

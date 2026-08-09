@@ -439,7 +439,7 @@ semantic.unresolved_name 'length'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 1) (end 6 23))
+        (range (start 6 16) (end 6 19))
       )
       (diagnostic
         (severity error)

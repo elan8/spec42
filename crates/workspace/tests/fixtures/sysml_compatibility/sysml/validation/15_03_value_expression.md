@@ -193,13 +193,13 @@ semantic.unresolved_name 'LengthValue'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 4) (end 1 25))
+        (range (start 1 19) (end 1 21))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 4) (end 2 39))
+        (range (start 2 19) (end 2 35))
       )
       (diagnostic
         (severity warning)

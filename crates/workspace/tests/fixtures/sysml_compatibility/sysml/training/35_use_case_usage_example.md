@@ -245,7 +245,7 @@ semantic.unresolved_name 'Person'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 49))
+        (range (start 2 16) (end 2 45))
       )
       (diagnostic
         (severity warning)
@@ -255,7 +255,7 @@ semantic.unresolved_name 'Person'
       )
       (diagnostic
         (severity warning)
-        (code "ambiguous_name_reference")
+        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 22 3) (end 22 95))
       )

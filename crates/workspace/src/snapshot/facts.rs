@@ -12,9 +12,10 @@ use super::discovery::path_to_file_url;
 use super::projection::{
     HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostImportShape, HostMembershipFacts, HostMembershipKind, HostMembershipVisibilityProvenance,
-    HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection, HostVisibilityKind,
+    HostImportOrigin, HostImportShape, HostMembershipFacts, HostMembershipKind,
+    HostMembershipVisibilityProvenance, HostMultiplicity, HostRelationshipMetaclass,
+    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
+    HostVisibilityKind,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -160,40 +161,37 @@ fn build_host_semantic_model_node(
                     },
                 },
             ),
-            membership: node
-                .declared_facts
-                .membership
-                .as_ref()
-                .and_then(|membership| {
-                    graph
-                        .effective_membership_visibility_for(node)
-                        .map(|effective| HostMembershipFacts {
-                            declared_kind: host_declared_membership_kind(membership.kind),
-                            authored_visibility: membership.visibility.map(host_visibility_kind),
-                            effective_visibility: host_visibility_kind(effective.value),
-                            visibility_provenance: match effective.provenance {
-                                sysml_model::MembershipVisibilityProvenance::Authored => {
-                                    HostMembershipVisibilityProvenance::Authored
-                                }
-                                sysml_model::MembershipVisibilityProvenance::Implied => {
-                                    HostMembershipVisibilityProvenance::Implied
-                                }
-                            },
-                            import_shape: membership.import.as_ref().map(|import| {
-                                match import.shape {
-                                    sysml_model::ImportShape::Membership => {
-                                        HostImportShape::Membership
-                                    }
-                                    sysml_model::ImportShape::Namespace => {
-                                        HostImportShape::Namespace
-                                    }
-                                    sysml_model::ImportShape::FilteredNamespace => {
-                                        HostImportShape::FilteredNamespace
-                                    }
-                                }
-                            }),
-                        })
-                }),
+            membership: node.declared_facts.membership.as_ref().map(|membership| {
+                let effective = graph.effective_membership_visibility_for(node);
+                HostMembershipFacts {
+                    declared_kind: host_declared_membership_kind(membership.kind),
+                    authored_visibility: membership.visibility.map(host_visibility_kind),
+                    effective_visibility: effective
+                        .map(|effective| host_visibility_kind(effective.value)),
+                    visibility_provenance: effective.map(|effective| match effective.provenance {
+                        sysml_model::MembershipVisibilityProvenance::Authored => {
+                            HostMembershipVisibilityProvenance::Authored
+                        }
+                        sysml_model::MembershipVisibilityProvenance::Implied => {
+                            HostMembershipVisibilityProvenance::Implied
+                        }
+                    }),
+                    import_shape: membership.import.as_ref().map(|import| match import.shape {
+                        sysml_model::ImportShape::Membership => HostImportShape::Membership,
+                        sysml_model::ImportShape::Namespace => HostImportShape::Namespace,
+                        sysml_model::ImportShape::FilteredNamespace => {
+                            HostImportShape::FilteredNamespace
+                        }
+                    }),
+                    import_origin: membership
+                        .import
+                        .as_ref()
+                        .map(|import| match import.origin {
+                            sysml_model::ImportOrigin::Import => HostImportOrigin::Import,
+                            sysml_model::ImportOrigin::Expose => HostImportOrigin::Expose,
+                        }),
+                }
+            }),
             content_expression_id: None,
         },
     }
@@ -881,7 +879,10 @@ fn membership_kind(
             _ => HostMembershipKind::FeatureMembership,
         },
         kind if kind.is_definition() => HostMembershipKind::OwningMembership,
-        ElementKind::Package | ElementKind::KermlDecl | ElementKind::Filter => {
+        ElementKind::Package
+        | ElementKind::KermlDecl
+        | ElementKind::ClassifierDecl
+        | ElementKind::Filter => {
             HostMembershipKind::OwningMembership
         }
         ElementKind::Part

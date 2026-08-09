@@ -98,7 +98,7 @@ semantic.unresolved_name 'Metaobject'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 40))
+        (range (start 7 16) (end 7 39))
       )
     )
   )

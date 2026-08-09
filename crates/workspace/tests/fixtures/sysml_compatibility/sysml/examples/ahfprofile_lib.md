@@ -646,7 +646,7 @@ semantic.unresolved_name 'baseType'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 32))
+        (range (start 2 16) (end 2 28))
       )
       (diagnostic
         (severity warning)
@@ -658,7 +658,7 @@ semantic.unresolved_name 'baseType'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 69 1) (end 69 46))
+        (range (start 69 16) (end 69 45))
       )
       (diagnostic
         (severity warning)

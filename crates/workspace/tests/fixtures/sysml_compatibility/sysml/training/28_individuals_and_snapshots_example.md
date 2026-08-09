@@ -161,7 +161,7 @@ semantic.unresolved_name 'acceleratorPosition'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 44))
+        (range (start 1 15) (end 1 40))
       )
       (diagnostic
         (severity warning)

@@ -546,19 +546,19 @@ semantic.unresolved_name 'done'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 48))
+        (range (start 1 16) (end 1 47))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 57))
+        (range (start 2 16) (end 2 56))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 23))
+        (range (start 3 16) (end 3 19))
       )
       (diagnostic
         (severity warning)

@@ -409,13 +409,13 @@ standard library package NumericalFunctions {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 1) (end 6 31))
+        (range (start 6 15) (end 6 27))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 41))
+        (range (start 7 16) (end 7 40))
       )
       (diagnostic
         (severity warning)

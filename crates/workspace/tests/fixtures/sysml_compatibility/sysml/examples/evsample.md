@@ -1460,13 +1460,13 @@ semantic.unresolved_name 'ISQ::electricPotential'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 4) (end 2 25))
+        (range (start 2 19) (end 2 21))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 4) (end 3 47))
+        (range (start 3 19) (end 3 43))
       )
       (diagnostic
         (severity warning)

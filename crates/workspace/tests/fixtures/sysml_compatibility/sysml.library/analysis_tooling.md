@@ -167,7 +167,7 @@ standard library package AnalysisTooling {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 32))
+        (range (start 7 16) (end 7 28))
       )
     )
   )

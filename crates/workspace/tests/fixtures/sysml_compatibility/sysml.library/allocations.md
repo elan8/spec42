@@ -159,13 +159,13 @@ standard library package Allocations {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 31))
+        (range (start 7 16) (end 7 30))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 1) (end 8 31))
+        (range (start 8 16) (end 8 27))
       )
       (diagnostic
         (severity warning)

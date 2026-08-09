@@ -948,13 +948,13 @@ semantic.unresolved_name 'TemperatureValue'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 32))
+        (range (start 1 16) (end 1 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 23))
+        (range (start 2 16) (end 2 19))
       )
       (diagnostic
         (severity warning)
@@ -966,7 +966,7 @@ semantic.unresolved_name 'TemperatureValue'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 46 2) (end 46 32))
+        (range (start 46 17) (end 46 28))
       )
       (diagnostic
         (severity warning)

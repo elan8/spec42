@@ -362,7 +362,7 @@ semantic.unresolved_name 'getOutput'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 4) (end 3 47))
+        (range (start 3 19) (end 3 43))
       )
       (diagnostic
         (severity warning)

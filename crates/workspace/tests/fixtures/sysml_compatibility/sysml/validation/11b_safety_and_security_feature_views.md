@@ -426,13 +426,13 @@ semantic.unresolved_name 'Boolean'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 0 0) (end 0 24))
+        (range (start 0 15) (end 0 20))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 32))
+        (range (start 2 16) (end 2 28))
       )
       (diagnostic
         (severity warning)
@@ -444,7 +444,7 @@ semantic.unresolved_name 'Boolean'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 12 2) (end 12 41))
+        (range (start 12 16) (end 12 37))
       )
       (diagnostic
         (severity information)
@@ -468,25 +468,19 @@ semantic.unresolved_name 'Boolean'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 47 2) (end 47 36))
+        (range (start 47 17) (end 47 32))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 48 2) (end 48 36))
+        (range (start 48 17) (end 48 35))
       )
       (diagnostic
         (severity warning)
         (code "view_type_non_standard")
         (source "semantic")
         (range (start 50 2) (end 50 76))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_import_target")
-        (source "semantic")
-        (range (start 55 6) (end 55 28))
       )
       (diagnostic
         (severity warning)

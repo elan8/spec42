@@ -250,13 +250,13 @@ standard library package UseCases {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 1) (end 6 28))
+        (range (start 6 16) (end 6 27))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 29))
+        (range (start 7 16) (end 7 28))
       )
       (diagnostic
         (severity warning)

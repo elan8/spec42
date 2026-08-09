@@ -246,7 +246,7 @@ semantic.unresolved_name 'ISQ::length'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 37))
+        (range (start 1 16) (end 1 33))
       )
       (diagnostic
         (severity warning)

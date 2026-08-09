@@ -799,19 +799,19 @@ semantic.unresolved_name 'Real'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 35))
+        (range (start 1 16) (end 1 34))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 31))
+        (range (start 2 16) (end 2 30))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 23))
+        (range (start 3 16) (end 3 19))
       )
       (diagnostic
         (severity warning)
@@ -871,7 +871,7 @@ semantic.unresolved_name 'Real'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 40 2) (end 40 39))
+        (range (start 40 17) (end 40 35))
       )
       (diagnostic
         (severity warning)
@@ -1015,13 +1015,13 @@ semantic.unresolved_name 'Real'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 83 2) (end 83 45))
+        (range (start 83 17) (end 83 41))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 84 2) (end 84 27))
+        (range (start 84 17) (end 84 23))
       )
       (diagnostic
         (severity warning)

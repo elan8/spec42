@@ -111,10 +111,16 @@ pub struct HostMembershipFacts {
     pub declared_kind: HostMembershipKind,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub authored_visibility: Option<HostVisibilityKind>,
-    pub effective_visibility: HostVisibilityKind,
-    pub visibility_provenance: HostMembershipVisibilityProvenance,
+    /// `None` is explicit non-applicability for an `Expose` membership, whose scope expansion
+    /// uses the canonical expose resolver rather than Import visibility defaults.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub effective_visibility: Option<HostVisibilityKind>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub visibility_provenance: Option<HostMembershipVisibilityProvenance>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub import_shape: Option<HostImportShape>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub import_origin: Option<HostImportOrigin>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -131,6 +137,13 @@ pub enum HostImportShape {
     Membership,
     Namespace,
     FilteredNamespace,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostImportOrigin {
+    Import,
+    Expose,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]

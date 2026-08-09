@@ -400,7 +400,7 @@ semantic.unresolved_name 'ScalarValues::Real'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 23))
+        (range (start 1 16) (end 1 22))
       )
       (diagnostic
         (severity warning)
@@ -412,7 +412,7 @@ semantic.unresolved_name 'ScalarValues::Real'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 18 2) (end 18 32))
+        (range (start 18 17) (end 18 28))
       )
       (diagnostic
         (severity warning)

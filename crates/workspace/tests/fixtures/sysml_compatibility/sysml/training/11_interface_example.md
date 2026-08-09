@@ -142,7 +142,7 @@ semantic.unresolved_name 'eng::engineFuelPort'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 34))
+        (range (start 1 16) (end 1 30))
       )
       (diagnostic
         (severity warning)

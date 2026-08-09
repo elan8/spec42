@@ -100,7 +100,7 @@ semantic.unresolved_name 'Real'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 0 0) (end 0 31))
+        (range (start 0 15) (end 0 27))
       )
     )
   )

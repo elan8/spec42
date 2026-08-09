@@ -189,6 +189,26 @@ semantic.ambiguous_member 'r1'
   (document "sysml/examples/requirement_test.md"
     (diagnostics
       (diagnostic
+        (severity warning)
+        (code "ambiguous_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 17))
+        (related-information
+          (related
+            (uri "memory://compatibility-snapshot/sysml/examples/requirement_test.md/sysml/examples/requirement_test.md")
+            (range (start 18 1) (end 18 76))
+          )
+          (related
+            (uri "memory://compatibility-snapshot/sysml/examples/requirement_test.md/sysml/examples/requirement_test.md")
+            (range (start 20 10) (end 20 11))
+          )
+          (related
+            (uri "memory://compatibility-snapshot/sysml/examples/requirement_test.md/sysml/examples/requirement_test.md")
+            (range (start 21 17) (end 21 18))
+          )
+        )
+      )
+      (diagnostic
         (severity information)
         (code "untyped_part_usage")
         (source "sysml")

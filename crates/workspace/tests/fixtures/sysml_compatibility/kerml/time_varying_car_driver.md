@@ -528,7 +528,7 @@ semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 4) (end 1 35))
+        (range (start 1 19) (end 1 31))
       )
     )
   )

@@ -212,7 +212,7 @@ standard library package ParametersOfInterestMetadata {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 2) (end 7 47))
+        (range (start 7 17) (end 7 46))
       )
       (diagnostic
         (severity warning)

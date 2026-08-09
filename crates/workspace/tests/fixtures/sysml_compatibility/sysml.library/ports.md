@@ -241,13 +241,13 @@ standard library package Ports {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 4) (end 7 35))
+        (range (start 7 19) (end 7 34))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 4) (end 8 36))
+        (range (start 8 19) (end 8 35))
       )
       (diagnostic
         (severity warning)

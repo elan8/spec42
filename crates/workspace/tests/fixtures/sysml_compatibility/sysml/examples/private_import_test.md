@@ -192,7 +192,7 @@ semantic.unresolved_name 'A'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 5 2) (end 5 23))
+        (range (start 5 17) (end 5 19))
       )
       (diagnostic
         (severity warning)
@@ -204,7 +204,7 @@ semantic.unresolved_name 'A'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 27 2) (end 27 26))
+        (range (start 27 20) (end 27 22))
       )
     )
   )

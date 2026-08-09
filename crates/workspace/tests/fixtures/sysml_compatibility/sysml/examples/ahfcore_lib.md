@@ -286,19 +286,19 @@ semantic.unresolved_name 'ServiceMethod'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 33))
+        (range (start 2 16) (end 2 29))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 1) (end 3 32))
+        (range (start 3 16) (end 3 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 4 1) (end 4 38))
+        (range (start 4 16) (end 4 34))
       )
       (diagnostic
         (severity warning)

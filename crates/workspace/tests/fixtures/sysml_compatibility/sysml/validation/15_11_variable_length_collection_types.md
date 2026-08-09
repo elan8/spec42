@@ -242,13 +242,13 @@ semantic.unresolved_name 'dimensions'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 32))
+        (range (start 1 16) (end 1 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 2 1) (end 2 31))
+        (range (start 2 16) (end 2 27))
       )
       (diagnostic
         (severity warning)

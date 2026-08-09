@@ -790,7 +790,7 @@ semantic.unresolved_name 'diameter'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 64 2) (end 64 32))
+        (range (start 64 17) (end 64 28))
       )
       (diagnostic
         (severity warning)
@@ -856,7 +856,7 @@ semantic.unresolved_name 'diameter'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 149 2) (end 149 33))
+        (range (start 149 17) (end 149 29))
       )
       (diagnostic
         (severity warning)

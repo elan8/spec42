@@ -230,7 +230,7 @@ standard library package StringFunctions {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 7 1) (end 7 31))
+        (range (start 7 15) (end 7 27))
       )
       (diagnostic
         (severity warning)

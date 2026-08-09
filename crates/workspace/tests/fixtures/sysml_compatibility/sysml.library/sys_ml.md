@@ -2903,13 +2903,13 @@ standard library package SysML {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 6 1) (end 6 32))
+        (range (start 6 16) (end 6 28))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 10 2) (end 10 33))
+        (range (start 10 16) (end 10 29))
       )
       (diagnostic
         (severity warning)

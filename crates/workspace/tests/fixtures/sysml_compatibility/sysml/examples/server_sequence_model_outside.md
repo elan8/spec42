@@ -148,7 +148,7 @@ semantic.unresolved_name 'deliver_target_event'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 38))
+        (range (start 1 15) (end 1 34))
       )
       (diagnostic
         (severity warning)

@@ -318,7 +318,7 @@ semantic.unresolved_name 'ISQ::mass'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 3 2) (end 3 23))
+        (range (start 3 17) (end 3 19))
       )
       (diagnostic
         (severity warning)
@@ -342,7 +342,7 @@ semantic.unresolved_name 'ISQ::mass'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 32 2) (end 32 26))
+        (range (start 32 17) (end 32 22))
       )
       (diagnostic
         (severity warning)

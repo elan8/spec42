@@ -756,7 +756,7 @@ semantic.duplicate_name 'engineRqtChoice'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 4 1) (end 4 41))
+        (range (start 4 16) (end 4 40))
       )
       (diagnostic
         (severity information)

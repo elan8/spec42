@@ -668,7 +668,7 @@ fn api_metaclass(kind: &ElementKind) -> Metaclass {
         ElementKind::IndividualDef => Metaclass::IndividualDefinition,
         ElementKind::ConnectionDef => Metaclass::ConnectionDefinition,
         ElementKind::Alias => Metaclass::Alias,
-        ElementKind::KermlDecl => Metaclass::KermlDeclaration,
+        ElementKind::KermlDecl | ElementKind::ClassifierDecl => Metaclass::KermlDeclaration,
         ElementKind::Part => Metaclass::PartUsage,
         ElementKind::Port => Metaclass::PortUsage,
         ElementKind::Item => Metaclass::ItemUsage,

@@ -234,7 +234,7 @@ semantic.invalid_membership_owning_type
       )
       (diagnostic
         (severity warning)
-        (code "ambiguous_name_reference")
+        (code "unresolved_type_reference")
         (source "semantic")
         (range (start 38 5) (end 38 15))
       )

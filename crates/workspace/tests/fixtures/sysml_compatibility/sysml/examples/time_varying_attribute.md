@@ -284,7 +284,7 @@ semantic.unresolved_name 'done'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 4) (end 1 25))
+        (range (start 1 19) (end 1 24))
       )
       (diagnostic
         (severity warning)

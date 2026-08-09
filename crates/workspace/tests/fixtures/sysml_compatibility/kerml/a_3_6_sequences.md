@@ -318,19 +318,19 @@ semantic.unresolved_name 'timeEnclosedOccurrences'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 23 1) (end 23 25))
+        (range (start 23 16) (end 23 21))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 25 1) (end 25 40))
+        (range (start 25 16) (end 25 39))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 26 1) (end 26 43))
+        (range (start 26 16) (end 26 42))
       )
       (diagnostic
         (severity warning)

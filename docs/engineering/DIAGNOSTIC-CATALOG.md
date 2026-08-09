@@ -40,6 +40,9 @@ Owned by `sysml-v2-parser` and surfaced as source `sysml`.
 - `unresolved_type_reference`: usage or feature type reference does not resolve.
 - `unresolved_ref_type_reference`: `ref` type reference does not resolve.
 - `unresolved_import_target`: import target does not resolve to a known namespace/member.
+- `ambiguous_import_target`: import target resolves to multiple semantic candidates; related locations identify them in canonical order.
+- `unsupported_filtered_import`: filtered namespace import is parsed but has no semantic expansion yet.
+- `invalid_import_target`: import declaration has no applicable typed target-resolution shape.
 - `unresolved_specializes_reference`: specializes target does not resolve (includes `analysis def`, `verification def`, `metadata def`, and other case kinds via `SPECIALIZES_TARGET_KINDS`).
 - `unresolved_pending_relationship`: deferred cross-document relationship did not resolve after graph construction.
 - `unresolved_pending_expression_relationship`: deferred expression relationship did not resolve after graph construction.
@@ -127,6 +130,8 @@ Spec areas: 7.5, 8.3.5, 8.4.2.
 - Done: `invalid_qualified_name_segment` — intermediate qualified-name segment is not a namespace.
 - Done: `import_kind_mismatch` — namespace vs membership import target mismatch.
 - Done: `invalid_recursive_import` — recursive import targets a non-namespace.
+- Done: `ambiguous_import_target` — import target has deterministic related candidate identities.
+- Partial: `unsupported_filtered_import` — parser-recognized filtered namespace imports remain explicitly unsupported.
 - Removed: `visibility_violation` — previously warned on all `private import …::*`; private wildcard imports are valid for internal use in SysML v2.
 - Done: `invalid_import_filter` — import filter expression is not Boolean-valued.
 

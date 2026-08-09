@@ -30,7 +30,7 @@ pub use semantic::ibd::{
     merge_ibd_payloads_for_workspace_finalize, IbdDataDto,
 };
 pub use semantic::import_resolution::{
-    resolve_import_target, resolve_imported_node_ids_for_simple_name,
+    import_target_range, resolve_import_target, resolve_imported_node_ids_for_simple_name,
     resolve_type_reference_targets, ImportTargetResolution,
 };
 pub use semantic::interconnection_elk::build_elk_graph_from_scene;
@@ -50,8 +50,9 @@ pub use semantic::model::{
     DeclaredRelationshipTarget, DeclaredSemanticFacts, EffectiveFeatureOwnership,
     EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
     ExpressionResultRole, FeatureOwnershipProvenance, FlowStatementDetail, ImpliedFeatureOwnership,
-    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImportShape, MembershipVisibilityProvenance,
-    NodeId, RelationshipKind, SemanticEdge, SemanticNode, VisibilityKind,
+    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImportOrigin, ImportShape,
+    MembershipVisibilityProvenance, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    VisibilityKind,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,

@@ -3,7 +3,8 @@ use std::collections::HashSet;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::{self, element_kind_allowed, is_namespace};
 use crate::semantic::model::{
-    node_matches_simple_name, ElementKind, ImportShape, NodeId, SemanticNode, VisibilityKind,
+    node_matches_simple_name, ElementKind, ImportOrigin, ImportShape, NodeId, SemanticNode,
+    VisibilityKind,
 };
 
 /// Canonical result of resolving an authored import target. The authored spelling and range stay
@@ -20,6 +21,7 @@ pub enum ImportTargetResolution {
 use crate::semantic::resolution::naming::{
     normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates_with_kind,
 };
+use crate::semantic::text_span::TextRange;
 
 fn import_visibility(graph: &SemanticGraph, import: &SemanticNode) -> VisibilityKind {
     graph
@@ -38,6 +40,17 @@ pub fn import_target(import: &SemanticNode) -> Option<&str> {
         .target
         .reference;
     (!target.trim().is_empty()).then_some(target.as_str())
+}
+
+/// Parser-authored import target range. An `ExposeMember` currently lacks a target sub-span, so
+/// its enclosing declared membership range is the only source-faithful fallback.
+pub fn import_target_range(import: &SemanticNode) -> Option<TextRange> {
+    let membership = import.declared_facts.membership.as_ref()?;
+    membership
+        .import
+        .as_ref()
+        .and_then(|facts| facts.target.range)
+        .or(membership.range)
 }
 
 pub fn is_import_all(import: &SemanticNode) -> bool {
@@ -75,7 +88,7 @@ pub fn is_expose(import: &SemanticNode) -> bool {
         .membership
         .as_ref()
         .and_then(|membership| membership.import.as_ref())
-        .is_some_and(|import| import.is_expose)
+        .is_some_and(|import| import.origin == ImportOrigin::Expose)
 }
 
 /// Whether the parser authored the recursive import marker.
@@ -289,7 +302,7 @@ fn exported_members_named_from_namespace(
     for import in graph
         .children_of(namespace)
         .into_iter()
-        .filter(|child| child.element_kind == ElementKind::Import)
+        .filter(|child| child.element_kind == ElementKind::Import && !is_expose(child))
     {
         if exported_only && import_visibility(graph, import) != VisibilityKind::Public {
             continue;
@@ -602,6 +615,12 @@ pub fn resolve_import_target(
     graph: &SemanticGraph,
     import_node: &SemanticNode,
 ) -> ImportTargetResolution {
+    if is_expose(import_node) {
+        // Expose has its own canonical resolver because `::*`/`::**` are scope expansion,
+        // not namespace-import lookup. Keep that contract separate rather than treating an
+        // expose declaration as an import with invented visibility semantics.
+        return ImportTargetResolution::NotApplicable;
+    }
     let Some(target) = import_target(import_node) else {
         return ImportTargetResolution::NotApplicable;
     };

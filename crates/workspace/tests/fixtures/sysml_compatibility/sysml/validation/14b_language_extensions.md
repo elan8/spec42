@@ -288,13 +288,13 @@ NIL
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 11 3) (end 11 34))
+        (range (start 11 18) (end 11 30))
       )
       (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 24 3) (end 24 33))
+        (range (start 24 18) (end 24 29))
       )
       (diagnostic
         (severity information)

@@ -245,7 +245,7 @@ NIL
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 19 2) (end 19 33))
+        (range (start 19 17) (end 19 29))
       )
     )
   )

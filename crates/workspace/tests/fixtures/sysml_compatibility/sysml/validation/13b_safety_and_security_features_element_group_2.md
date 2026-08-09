@@ -355,7 +355,7 @@ semantic.unresolved_name 'Boolean'
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 1 1) (end 1 32))
+        (range (start 1 16) (end 1 28))
       )
       (diagnostic
         (severity warning)
@@ -383,9 +383,27 @@ semantic.unresolved_name 'Boolean'
       )
       (diagnostic
         (severity warning)
-        (code "unresolved_import_target")
+        (code "unsupported_filtered_import")
         (source "semantic")
-        (range (start 34 2) (end 34 37))
+        (range (start 34 16) (end 34 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 39 16) (end 39 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 44 16) (end 44 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_filtered_import")
+        (source "semantic")
+        (range (start 49 16) (end 49 23))
       )
     )
   )

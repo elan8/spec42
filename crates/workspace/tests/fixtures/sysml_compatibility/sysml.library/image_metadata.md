@@ -322,7 +322,7 @@ standard library package ImageMetadata {
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
-        (range (start 8 1) (end 8 37))
+        (range (start 8 16) (end 8 36))
       )
     )
   )
