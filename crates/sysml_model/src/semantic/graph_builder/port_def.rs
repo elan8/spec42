@@ -18,7 +18,8 @@ use crate::semantic::relationships::add_typing_edge_if_exists;
 use super::attribute_body;
 use super::expressions;
 use super::{
-    add_node_and_recurse, attach_declared_name, attach_feature_properties, qualified_name_for_node,
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
+    attach_feature_properties, qualified_name_for_node,
 };
 
 fn build_in_out_decl(
@@ -109,6 +110,16 @@ pub(super) fn materialize_port_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets
+            .as_ref()
+            .map(|(relationship, _)| &relationship.value),
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
+    );
     attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, port_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
@@ -238,6 +249,14 @@ pub(super) fn build_from_port_def_body_element(
                     Some(parent_id),
                 );
                 let node_id = NodeId::new(uri, &qualified);
+                attach_declared_subsetting_family(
+                    g,
+                    &node_id,
+                    n.subsets.as_deref(),
+                    n.redefines.as_deref(),
+                    n.references.as_deref(),
+                    n.crosses.as_deref(),
+                );
                 attach_declared_name(g, &node_id, &n.name);
                 attach_feature_properties(
                     g,

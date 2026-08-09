@@ -8,7 +8,9 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, typing_targets};
+use crate::semantic::ast_util::{
+    attach_membership_visibility, span_to_range, subsetting_target, typing_targets,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -16,7 +18,10 @@ use crate::semantic::relationships::add_typing_edge_if_exists;
 use super::expressions;
 use super::expressions::expression_to_debug_string;
 use super::part_usage;
-use super::{add_node_and_recurse, attach_declared_name, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
+    qualified_name_for_node,
+};
 
 fn constraint_body_expression(body: &ConstraintDefBody) -> Option<String> {
     let ConstraintDefBody::Brace { elements } = body else {
@@ -66,7 +71,7 @@ pub(super) fn build_from_occurrence_body_element(
                     serde_json::json!(typed_by.join(", ")),
                 );
             }
-            if let Some(ref r) = value.redefines {
+            if let Some(r) = subsetting_target(value.redefines.as_deref()) {
                 attrs.insert("redefines".to_string(), serde_json::json!(r));
             }
             if let Some(expr_node) = &value.value {
@@ -86,6 +91,14 @@ pub(super) fn build_from_occurrence_body_element(
                 Some(parent_id),
             );
             attach_declared_name(g, &NodeId::new(uri, &qualified), &value.name);
+            attach_declared_subsetting_family(
+                g,
+                &NodeId::new(uri, &qualified),
+                value.subsets.as_deref(),
+                value.redefines.as_deref(),
+                value.references.as_deref(),
+                value.crosses.as_deref(),
+            );
             for target in typing_targets(value.typing.as_deref()) {
                 add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
             }

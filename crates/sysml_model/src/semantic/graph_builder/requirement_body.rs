@@ -17,7 +17,10 @@ use crate::semantic::text_span::TextRange;
 
 use super::expressions::expression_to_debug_string;
 use super::metadata_keyword::add_metadata_keyword_node;
-use super::{add_node_and_recurse, attach_declared_name, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
+    qualified_name_for_node,
+};
 use crate::semantic::ast_util::identification_name;
 
 const REQUIREMENT_CONSTRAINTS_ATTR: &str = "requirementConstraints";
@@ -627,6 +630,14 @@ pub(super) fn walk_requirement_def_body(
                     Some(parent_id),
                 );
                 attach_declared_name(g, &NodeId::new(uri, &qualified), &attr_usage.value.name);
+                attach_declared_subsetting_family(
+                    g,
+                    &NodeId::new(uri, &qualified),
+                    attr_usage.value.subsets.as_deref(),
+                    attr_usage.value.redefines.as_deref(),
+                    attr_usage.value.references.as_deref(),
+                    attr_usage.value.crosses.as_deref(),
+                );
                 for target in
                     crate::semantic::ast_util::typing_targets(attr_usage.value.typing.as_deref())
                 {

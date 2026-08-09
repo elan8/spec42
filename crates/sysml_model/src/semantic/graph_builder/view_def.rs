@@ -221,6 +221,14 @@ fn add_view_column_node(
         attrs,
         Some(parent_id),
     );
+    super::attach_declared_subsetting_family(
+        g,
+        &NodeId::new(uri, &qualified),
+        None,
+        cv.redefines.as_deref(),
+        None,
+        None,
+    );
 }
 
 fn annotate_rendering_def_body(

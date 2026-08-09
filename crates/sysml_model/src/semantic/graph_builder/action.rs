@@ -735,6 +735,14 @@ fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::
 }
 
 fn attach_action_usage_facts(g: &mut SemanticGraph, node_id: &NodeId, usage: &ActionUsage) {
+    super::attach_declared_subsetting_family(
+        g,
+        node_id,
+        usage.subsets.as_deref(),
+        usage.redefines.as_deref(),
+        None,
+        None,
+    );
     attach_feature_properties(g, node_id, action_usage_feature_properties(usage));
     if let Some(multiplicity) = &usage.multiplicity {
         if let Some(node) = g.get_node_mut(node_id) {
@@ -792,6 +800,14 @@ pub(super) fn attach_state_usage_facts(
     node_id: &NodeId,
     usage: &StateUsage,
 ) {
+    super::attach_declared_subsetting_family(
+        g,
+        node_id,
+        usage.subsets.as_deref(),
+        usage.redefines.as_deref(),
+        None,
+        None,
+    );
     attach_feature_properties(g, node_id, state_usage_feature_properties(usage));
     if let Some(multiplicity) = &usage.multiplicity {
         if let Some(node) = g.get_node_mut(node_id) {
@@ -1324,6 +1340,21 @@ pub(super) fn materialize_action_def(
         attrs,
         parent_id,
     );
+    super::attach_declared_relationship_targets(
+        g,
+        &action_id,
+        RelationshipKind::Specializes,
+        spec_targets.iter().copied(),
+    );
+    for target in spec_targets {
+        crate::semantic::relationships::add_specializes_edge_if_exists(
+            g,
+            uri,
+            &qualified,
+            target,
+            container_prefix,
+        );
+    }
     if let ActionDefBody::Brace { elements } = &ad_node.body {
         build_from_action_def_body(elements, uri, Some(&qualified), &action_id, g);
     }

@@ -179,14 +179,19 @@ pub fn compute_static_dependency_targets(
             }
             continue;
         }
-        for key in TYPE_REFERENCE_ATTR_KEYS.iter().copied().chain([
-            "specializes",
-            "subjectType",
-            "verifiedRequirement",
-        ]) {
-            let Some(raw) = node.attributes.get(key).and_then(|value| value.as_str()) else {
-                continue;
-            };
+        for raw in node
+            .declared_facts
+            .relationships
+            .typing
+            .iter()
+            .chain(node.declared_facts.relationships.specializes.iter())
+            .map(|target| target.reference.as_str())
+            .chain(
+                ["subjectType", "verifiedRequirement"]
+                    .into_iter()
+                    .filter_map(|key| node.attributes.get(key).and_then(|value| value.as_str())),
+            )
+        {
             if let Some((prefix, _member)) = raw.rsplit_once("::") {
                 if !prefix.is_empty() {
                     prefixes.insert(prefix.to_string());
@@ -314,35 +319,28 @@ pub fn resolve_cross_document_edges_for_uri(
             .and_then(|pid| g.get_node(pid))
             .map(|p| p.id.qualified_name.clone());
 
-        // Typing relationships
-        for key in TYPE_REFERENCE_ATTR_KEYS {
-            if let Some(type_ref) = node.attributes.get(*key).and_then(|v| v.as_str()) {
-                if let Some(target_id) = resolve_typing_edge_cross_document_inner(
-                    g,
-                    node,
-                    type_ref,
-                    prefix.as_deref(),
-                    RelationshipKind::Typing,
-                ) {
-                    let dedupe_key = (node_id.clone(), target_id.clone(), "typing");
-                    if seen_edges.insert(dedupe_key) {
-                        resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Typing));
-                    }
+        // Parser-authored typing relationships.
+        for target in &node.declared_facts.relationships.typing {
+            if let Some(target_id) = resolve_typing_edge_cross_document_inner(
+                g,
+                node,
+                &target.reference,
+                prefix.as_deref(),
+                RelationshipKind::Typing,
+            ) {
+                let dedupe_key = (node_id.clone(), target_id.clone(), "typing");
+                if seen_edges.insert(dedupe_key) {
+                    resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Typing));
                 }
             }
         }
 
-        // Specializes relationships
-        let specializes_refs = node
-            .attributes
-            .get("specializes")
-            .map(specializes_refs_from_value)
-            .unwrap_or_default();
-        for specializes_ref in specializes_refs {
+        // Parser-authored specialization relationships.
+        for target in &node.declared_facts.relationships.specializes {
             if let Some(target_id) = resolve_typing_edge_cross_document_inner(
                 g,
                 node,
-                &specializes_ref,
+                &target.reference,
                 prefix.as_deref(),
                 RelationshipKind::Specializes,
             ) {

@@ -689,11 +689,76 @@ pub struct DeclaredSemanticFacts {
     /// Absent for packages and other non-feature/definition nodes.
     #[serde(default)]
     pub feature_properties: Option<DeclaredFeatureProperties>,
+    /// Authored relationship targets retained from the structured parser AST.
+    ///
+    /// These are the sole semantic input for typing, specialization, and the
+    /// subsetting family.  The display-oriented `attributes` map may project
+    /// them for hosts, but relationship linking must never reconstruct them
+    /// from that projection.
+    #[serde(default)]
+    pub relationships: DeclaredRelationshipFacts,
     /// Set when this node's own declared substance *is* an expression (e.g. a
     /// `TransitionGuard` child), as opposed to `feature_value`, which represents "this
     /// feature's value is X". Projected as `HostElementFacts::content_expression_id`.
     #[serde(default)]
     pub own_expression: Option<DeclaredExpression>,
+}
+
+/// Explicit relationship targets authored on a declaration.
+///
+/// Each list preserves source order and provenance. An empty list means that
+/// the relationship was not authored; it is intentionally distinct from an
+/// unresolved target, which remains represented by this fact while no edge is
+/// published for it.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredRelationshipFacts {
+    #[serde(default)]
+    pub typing: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub specializes: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub subsetting: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub redefinition: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub reference_subsetting: Vec<DeclaredRelationshipTarget>,
+    #[serde(default)]
+    pub cross_subsetting: Vec<DeclaredRelationshipTarget>,
+}
+
+/// A source-level reference carried by a structured parser relationship.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredRelationshipTarget {
+    /// The authored relationship target, before resolution or effective-name
+    /// derivation. This is never a display or projection attribute.
+    pub reference: String,
+}
+
+impl DeclaredRelationshipFacts {
+    /// Records one parser-authored target under its relationship kind.
+    /// Returns `false` for relationship kinds not owned by this fact contract.
+    pub fn record_target(&mut self, kind: &RelationshipKind, reference: &str) -> bool {
+        let reference = reference.trim();
+        if reference.is_empty() {
+            return true;
+        }
+        let targets = match kind {
+            RelationshipKind::Typing => &mut self.typing,
+            RelationshipKind::Specializes => &mut self.specializes,
+            RelationshipKind::Subsetting => &mut self.subsetting,
+            RelationshipKind::Redefinition => &mut self.redefinition,
+            RelationshipKind::ReferenceSubsetting => &mut self.reference_subsetting,
+            RelationshipKind::CrossSubsetting => &mut self.cross_subsetting,
+            _ => return false,
+        };
+        let target = DeclaredRelationshipTarget {
+            reference: reference.to_string(),
+        };
+        if !targets.iter().any(|existing| existing == &target) {
+            targets.push(target);
+        }
+        true
+    }
 }
 
 /// Derived semantic facts that are effective for a fully linked graph state.

@@ -5,8 +5,8 @@
 //! labels, so authored spelling does not become a competing semantic representation.
 
 use sysml_model::{
-    build_semantic_graph_from_documents, ElementKind, NodeId, RelationshipKind, SemanticGraph,
-    SysmlDocument, SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, patch_graph_for_document, ElementKind, NodeId,
+    RelationshipKind, SemanticGraph, SysmlDocument, SysmlDocumentSourceKind,
 };
 use url::Url;
 
@@ -38,6 +38,26 @@ fn assert_edge(
             .iter()
             .any(|(actual_target, actual_kind)| actual_target.id == target && *actual_kind == kind),
         "expected {kind:?} edge from {source:?} to {target:?}; actual edges: {outgoing:#?}"
+    );
+}
+
+fn assert_cross_document_edge(
+    graph: &SemanticGraph,
+    source_uri: &Url,
+    source: &str,
+    target_uri: &Url,
+    target: &str,
+    kind: RelationshipKind,
+) {
+    let source = NodeId::new(source_uri, source);
+    let target = NodeId::new(target_uri, target);
+    let source_node = graph.get_node(&source).expect("source node");
+    assert!(
+        graph
+            .outgoing_relationships(source_node)
+            .iter()
+            .any(|(actual_target, actual_kind)| actual_target.id == target && *actual_kind == kind),
+        "expected {kind:?} edge from {source:?} to {target:?}"
     );
 }
 
@@ -123,6 +143,118 @@ fn feature_typing_subsetting_and_redefinition_share_resolved_edge_projection() {
         "P::Base::redefinable",
         RelationshipKind::Redefinition,
     );
+
+    let narrowed = graph
+        .get_node(&NodeId::new(&uri, "P::Derived::narrowed"))
+        .expect("narrowed feature");
+    assert_eq!(
+        narrowed
+            .declared_facts
+            .relationships
+            .subsetting
+            .iter()
+            .map(|target| target.reference.as_str())
+            .collect::<Vec<_>>(),
+        ["subsettable"],
+        "the parser-authored target, not its display attribute, owns subsetting"
+    );
+    let replacement = graph
+        .get_node(&NodeId::new(&uri, "P::Derived::replacement"))
+        .expect("replacement feature");
+    assert_eq!(
+        replacement
+            .declared_facts
+            .relationships
+            .redefinition
+            .iter()
+            .map(|target| target.reference.as_str())
+            .collect::<Vec<_>>(),
+        ["redefinable"],
+        "the authored redefinition remains separate from its resolved edge"
+    );
+}
+
+#[test]
+fn cross_document_subsetting_family_uses_declared_facts_after_incremental_relink() {
+    let definitions = workspace_doc(
+        "shared.sysml",
+        r#"package Shared {
+  part def Scalar;
+  part def Base {
+    attribute member : Scalar;
+  }
+}"#,
+    );
+    let usage = workspace_doc(
+        "usage.sysml",
+        r#"package Usage {
+  import Shared::*;
+  part def Derived :> Base {
+    attribute subset : Scalar :> member;
+    attribute redefine : Scalar :>> member;
+    attribute reference : Scalar references member;
+    attribute cross : Scalar crosses member;
+    attribute unresolved : Missing;
+  }
+}"#,
+    );
+    let usage_uri = usage.uri.clone();
+    let definitions_uri = definitions.uri.clone();
+    let (mut graph, _) =
+        build_semantic_graph_from_documents(&[definitions.clone(), usage.clone()]).expect("graph");
+
+    for (source, kind) in [
+        ("Usage::Derived::subset", RelationshipKind::Subsetting),
+        ("Usage::Derived::redefine", RelationshipKind::Redefinition),
+        (
+            "Usage::Derived::reference",
+            RelationshipKind::ReferenceSubsetting,
+        ),
+        ("Usage::Derived::cross", RelationshipKind::CrossSubsetting),
+    ] {
+        assert_cross_document_edge(
+            &graph,
+            &usage_uri,
+            source,
+            &definitions_uri,
+            "Shared::Base::member",
+            kind,
+        );
+    }
+    let unresolved = graph
+        .get_node(&NodeId::new(&usage_uri, "Usage::Derived::unresolved"))
+        .expect("unresolved node");
+    assert_eq!(
+        unresolved.declared_facts.relationships.typing[0].reference, "Missing",
+        "unresolved parser-authored relationships remain explicit facts"
+    );
+    assert!(
+        graph
+            .outgoing_targets_by_kind(unresolved, RelationshipKind::Typing)
+            .is_empty(),
+        "an unresolved fact must not masquerade as a resolved edge"
+    );
+
+    let parsed = sysml_v2_parser::parse_for_editor(&usage.content).root;
+    patch_graph_for_document(&mut graph, &usage_uri, Some(&parsed), true);
+    for (source, kind) in [
+        ("Usage::Derived::subset", RelationshipKind::Subsetting),
+        ("Usage::Derived::redefine", RelationshipKind::Redefinition),
+        (
+            "Usage::Derived::reference",
+            RelationshipKind::ReferenceSubsetting,
+        ),
+        ("Usage::Derived::cross", RelationshipKind::CrossSubsetting),
+    ] {
+        assert_cross_document_edge(
+            &graph,
+            &usage_uri,
+            source,
+            &definitions_uri,
+            "Shared::Base::member",
+            kind,
+        );
+    }
 }
 
 #[test]

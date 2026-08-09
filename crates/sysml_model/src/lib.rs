@@ -44,9 +44,10 @@ pub use semantic::library_loader::{
 };
 pub use semantic::model::{
     ConnectStatementDetail, DeclaredExpression, DeclaredMultiplicity, DeclaredMultiplicityBound,
-    DeclaredMultiplicityBounds, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
-    ExpressionResultRole, FlowStatementDetail, ImpliedFeatureValueBinding, ImpliedMultiplicity,
-    NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    DeclaredMultiplicityBounds, DeclaredRelationshipFacts, DeclaredRelationshipTarget,
+    EffectiveSemanticFacts, ElementKind, ExpressionResultId, ExpressionResultRole,
+    FlowStatementDetail, ImpliedFeatureValueBinding, ImpliedMultiplicity, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,
@@ -66,7 +67,6 @@ pub use semantic::reference_resolution::{
 pub use semantic::relationships::{
     add_cross_document_edges_for_uri, link_workspace_derivations, link_workspace_relationships,
     resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
-    TYPE_REFERENCE_ATTR_KEYS,
 };
 pub use semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 pub use semantic::render_snapshot::{

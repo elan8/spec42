@@ -316,6 +316,48 @@ pub(super) fn attach_feature_properties(
     }
 }
 
+/// Records parser-authored relationship targets on the node that owns the
+/// declaration. Linking consumes these facts; `attributes` only projects them.
+pub(super) fn attach_declared_relationship_targets<'a>(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    kind: RelationshipKind,
+    targets: impl IntoIterator<Item = &'a str>,
+) {
+    let Some(node) = g.get_node_mut(node_id) else {
+        return;
+    };
+    for target in targets {
+        node.declared_facts
+            .relationships
+            .record_target(&kind, target);
+    }
+}
+
+/// Records all four parser-owned subsetting-family clauses for a declaration.
+pub(super) fn attach_declared_subsetting_family(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    subsets: Option<&SubsettingRelationship>,
+    redefines: Option<&SubsettingRelationship>,
+    references: Option<&SubsettingRelationship>,
+    crosses: Option<&SubsettingRelationship>,
+) {
+    for (kind, relationship) in [
+        (RelationshipKind::Subsetting, subsets),
+        (RelationshipKind::Redefinition, redefines),
+        (RelationshipKind::ReferenceSubsetting, references),
+        (RelationshipKind::CrossSubsetting, crosses),
+    ] {
+        attach_declared_relationship_targets(
+            g,
+            node_id,
+            kind,
+            crate::semantic::ast_util::subsetting_targets(relationship),
+        );
+    }
+}
+
 /// Attaches a `doc /* ... */` comment as an addressable Documentation child of the
 /// annotated element, wires an Annotation edge, and keeps the convenience `doc`
 /// attribute text on the annotated node (multiple docs join with a blank line).
@@ -388,6 +430,13 @@ pub(super) fn wire_def_specialization_edge(
     container_prefix: Option<&str>,
     specializes: Option<&TypingRelationship>,
 ) {
+    let node_id = NodeId::new(uri, qualified);
+    attach_declared_relationship_targets(
+        g,
+        &node_id,
+        RelationshipKind::Specializes,
+        typing_targets(specializes),
+    );
     for target in typing_targets(specializes) {
         crate::semantic::relationships::add_specializes_edge_if_exists(
             g,

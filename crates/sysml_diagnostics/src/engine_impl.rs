@@ -288,33 +288,33 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         diagnostics.len().saturating_sub(d7),
     ));
 
-    // 8) Redefines consistency, when the parser/graph captures a `redefines` attribute.
+    // 8) Redefines consistency, from parser-owned declared relationship facts.
     let t8 = Instant::now();
     let d8 = diagnostics.len();
     for node in &nodes {
-        let Some(redefines_raw) = node.attributes.get("redefines").and_then(|v| v.as_str()) else {
-            continue;
-        };
-        if redefines_raw.trim().is_empty() {
-            diagnostics.push(diag(
-                uri,
-                diagnostic_range(graph, node, None),
-                DiagnosticSeverity::Warning,
-                "semantic",
-                "invalid_redefines_reference",
-                format!("Element '{}' has an empty redefines target.", node.name),
-            ));
-            continue;
-        }
-        if redefines_raw.trim() == node.id.qualified_name {
-            diagnostics.push(diag(
-                uri,
-                diagnostic_range(graph, node, None),
-                DiagnosticSeverity::Warning,
-                "semantic",
-                "invalid_redefines_reference",
-                format!("Element '{}' cannot redefine itself.", node.name),
-            ));
+        for target in &node.declared_facts.relationships.redefinition {
+            let redefines_raw = target.reference.as_str();
+            if redefines_raw.trim().is_empty() {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "invalid_redefines_reference",
+                    format!("Element '{}' has an empty redefines target.", node.name),
+                ));
+                continue;
+            }
+            if redefines_raw.trim() == node.id.qualified_name {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "invalid_redefines_reference",
+                    format!("Element '{}' cannot redefine itself.", node.name),
+                ));
+            }
         }
     }
     section_timings.push((
@@ -330,7 +330,9 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         if node.element_kind == sysml_model::ElementKind::Ref {
             continue;
         }
-        if !node.attributes.contains_key("value") || node.attributes.contains_key("redefines") {
+        if !node.attributes.contains_key("value")
+            || !node.declared_facts.relationships.redefinition.is_empty()
+        {
             continue;
         }
         let Some(owner_id) = node.parent_id.as_ref() else {

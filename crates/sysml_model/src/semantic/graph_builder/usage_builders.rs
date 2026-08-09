@@ -28,8 +28,8 @@ use super::occurrence_body;
 use super::part_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::{
-    add_node_and_recurse, attach_declared_name, attach_feature_properties, effective_usage_name,
-    qualified_name_for_node,
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
+    attach_feature_properties, effective_usage_name, qualified_name_for_node,
 };
 
 /// Builds the `part`-usage node (and recurses into its body), wiring the typing edge. Used by
@@ -103,6 +103,16 @@ pub(super) fn materialize_part_usage(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets
+            .as_ref()
+            .map(|(relationship, _)| &relationship.value),
+        n.redefines.as_deref(),
+        None,
+        None,
+    );
     attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, part_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
@@ -201,6 +211,14 @@ pub(super) fn materialize_attribute_usage(
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets.as_deref(),
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
+    );
     attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, attribute_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
@@ -272,6 +290,14 @@ pub(super) fn materialize_occurrence_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets.as_deref(),
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
+    );
     attach_feature_properties(g, &node_id, occurrence_usage_feature_properties(&n.value));
     if let sysml_v2_parser::ast::OccurrenceUsageBody::Brace { elements } = &n.body {
         for child in elements {
@@ -324,6 +350,7 @@ pub(super) fn materialize_requirement_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(g, &node_id, n.subsets.as_deref(), None, None, None);
     walk_requirement_def_body(g, uri, container_prefix, &qualified, &node_id, &n.body);
     node_id
 }
@@ -372,6 +399,7 @@ pub(super) fn materialize_item_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(g, &node_id, None, n.redefines.as_deref(), None, None);
     attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, item_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
@@ -436,6 +464,14 @@ pub(super) fn materialize_connection_usage(
         add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets.as_deref(),
+        n.redefines.as_deref(),
+        None,
+        None,
+    );
 
     if let (Some(from), Some(to)) = (&n.connect_from, &n.connect_to) {
         let from_expr = connection_end_expression(from);

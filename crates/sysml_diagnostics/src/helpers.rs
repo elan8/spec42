@@ -513,39 +513,11 @@ pub(super) fn unresolved_type_diagnostic_range(
 }
 
 pub(super) fn declared_type_ref(node: &SemanticNode) -> Option<&str> {
-    [
-        "partType",
-        "refType",
-        "attributeType",
-        "portType",
-        "actionType",
-        "actorType",
-        "itemType",
-        "occurrenceType",
-        "flowType",
-        "allocationType",
-        "stateType",
-        "requirementType",
-        "useCaseType",
-        "concernType",
-        "viewType",
-        "viewpointType",
-        "renderingType",
-        "subjectType",
-        "analysisType",
-        "verificationType",
-        "connectionType",
-        "metadataType",
-        "objectiveType",
-    ]
-    .iter()
-    .find_map(|k| {
-        node.attributes
-            .get(*k)
-            .and_then(|v| v.as_str())
-            .map(str::trim)
-            .filter(|s| !s.is_empty())
-    })
+    node.declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())
 }
 
 pub(super) fn condition_expression_is_boolean(node: &SemanticNode, condition: &str) -> bool {
@@ -586,29 +558,12 @@ pub(super) fn is_boolean_literal_value(value: &str) -> bool {
 }
 
 pub(super) fn declared_specializes_refs(node: &SemanticNode) -> Vec<String> {
-    let Some(raw) = node.attributes.get("specializes") else {
-        return Vec::new();
-    };
-    match raw {
-        serde_json::Value::String(value) => value
-            .split(',')
-            .map(str::trim)
-            .filter(|item| !item.is_empty())
-            .map(ToOwned::to_owned)
-            .collect(),
-        serde_json::Value::Array(items) => items
-            .iter()
-            .filter_map(|item| item.as_str())
-            .flat_map(|item| {
-                item.split(',')
-                    .map(str::trim)
-                    .filter(|entry| !entry.is_empty())
-                    .map(ToOwned::to_owned)
-                    .collect::<Vec<_>>()
-            })
-            .collect(),
-        _ => Vec::new(),
-    }
+    node.declared_facts
+        .relationships
+        .specializes
+        .iter()
+        .map(|target| target.reference.clone())
+        .collect()
 }
 
 /// Validates only directly-known parser-backed multiplicity bounds.  Bounds

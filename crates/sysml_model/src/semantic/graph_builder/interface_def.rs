@@ -17,7 +17,10 @@ use crate::semantic::relationships::{
 };
 
 use super::expressions;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_subsetting_family, attach_feature_properties,
+    qualified_name_for_node,
+};
 use crate::semantic::resolution::resolve_expression_endpoint_qualified;
 
 pub(super) fn add_end_decl(
@@ -75,6 +78,14 @@ pub(super) fn add_end_decl(
             is_end: true,
             ..DeclaredFeatureProperties::default()
         },
+    );
+    attach_declared_subsetting_family(
+        g,
+        &NodeId::new(uri, &qualified),
+        None,
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
     );
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {

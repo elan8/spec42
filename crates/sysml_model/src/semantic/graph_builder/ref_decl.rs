@@ -15,7 +15,10 @@ use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_subsetting_family, attach_feature_properties,
+    qualified_name_for_node,
+};
 
 /// Options for context-specific follow-up after the shared ref node is created.
 #[derive(Debug, Clone, Copy, Default)]
@@ -61,6 +64,7 @@ pub(super) fn materialize_ref_decl(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(g, &node_id, None, n.redefines.as_deref(), None, None);
     attach_feature_properties(g, &node_id, ref_decl_feature_properties());
     if let Some(value) = &n.value {
         if let Some(node) = g.get_node_mut(&node_id) {
