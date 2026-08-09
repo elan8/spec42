@@ -709,6 +709,12 @@ fn api_metaclass(kind: &ElementKind) -> Metaclass {
         ElementKind::TransitionEffect => Metaclass::TransitionEffect,
         ElementKind::FinalState => Metaclass::FinalState,
         ElementKind::EnumeratedValue => Metaclass::EnumerationUsage,
+        // The textual grammar owns `first <target>;` through `InitialNodeMember`, a
+        // `FeatureMembership` whose member feature is an action step. The semantic graph
+        // preserves that authored marker with `ElementKind::Initial`, but its published SysML
+        // metaclass remains `ActionUsage`; there is no distinct InitialNodeUsage metaclass in
+        // this ABI.
+        ElementKind::Initial => Metaclass::ActionUsage,
         ElementKind::Binding => Metaclass::BindingConnectorUsage,
         ElementKind::Import => Metaclass::Import,
         ElementKind::Dependency => Metaclass::Dependency,
@@ -906,6 +912,15 @@ package P {
                 kind.as_str()
             );
         }
+    }
+
+    #[test]
+    fn standalone_initial_nodes_publish_as_action_usages() {
+        assert_eq!(
+            api_metaclass(&ElementKind::Initial),
+            Metaclass::ActionUsage,
+            "an initial node is the action-step member of an InitialNodeMember"
+        );
     }
 
     #[test]
