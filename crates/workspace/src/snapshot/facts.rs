@@ -11,9 +11,9 @@ use url::Url;
 use super::discovery::path_to_file_url;
 use super::projection::{
     HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
-    HostFeatureProperties, HostFeatureValue, HostMembershipKind, HostMultiplicity,
-    HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
-    HostSemanticProjection,
+    HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
+    HostMembershipKind, HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -145,6 +145,20 @@ fn build_host_semantic_model_node(
                     is_portion: properties.is_portion,
                     portion_kind: properties.portion_kind.clone(),
                 }),
+            effective_feature_ownership: graph.effective_feature_ownership_for(node).map(
+                |ownership| HostFeatureOwnership {
+                    is_composite: ownership.is_composite,
+                    is_reference: ownership.is_reference,
+                    provenance: match ownership.provenance {
+                        sysml_model::FeatureOwnershipProvenance::Authored => {
+                            HostFeatureOwnershipProvenance::Authored
+                        }
+                        sysml_model::FeatureOwnershipProvenance::Implied => {
+                            HostFeatureOwnershipProvenance::Implied
+                        }
+                    },
+                },
+            ),
             content_expression_id: None,
         },
     }
@@ -1436,7 +1450,7 @@ package Demo {
     }
 
     #[test]
-    fn projection_exposes_ref_ownership_and_composite_usage_defaults() {
+    fn projection_keeps_authored_and_implied_ownership_distinct() {
         let content = r#"
 package Demo {
     part def Tree;
@@ -1468,6 +1482,14 @@ package Demo {
             .expect("ref feature properties");
         assert_eq!(shared_props.is_reference, Some(true));
         assert_eq!(shared_props.is_composite, Some(false));
+        assert_eq!(
+            shared.facts.effective_feature_ownership,
+            Some(HostFeatureOwnership {
+                is_composite: false,
+                is_reference: true,
+                provenance: HostFeatureOwnershipProvenance::Authored,
+            })
+        );
         assert_eq!(shared.facts.element_type.as_deref(), Some("ReferenceUsage"));
         assert_eq!(
             projection
@@ -1492,8 +1514,16 @@ package Demo {
             .feature_properties
             .as_ref()
             .expect("part feature properties");
-        assert_eq!(local_props.is_composite, Some(true));
-        assert_eq!(local_props.is_reference, Some(false));
+        assert!(local_props.is_composite.is_none());
+        assert!(local_props.is_reference.is_none());
+        assert_eq!(
+            local.facts.effective_feature_ownership,
+            Some(HostFeatureOwnership {
+                is_composite: true,
+                is_reference: false,
+                provenance: HostFeatureOwnershipProvenance::Implied,
+            })
+        );
     }
 
     #[test]

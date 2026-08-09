@@ -19,9 +19,9 @@ pub use metadata::HostArtifactMetadata;
 pub use output::Spec42ProjectionOutput;
 pub use projection::{
     HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
-    HostFeatureProperties, HostFeatureValue, HostMembershipKind, HostMultiplicity,
-    HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
-    HostSemanticProjection,
+    HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
+    HostMembershipKind, HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection,
 };
 pub use request::{ValidationTiming, WorkspaceLoadRequest};
 pub use update::update_workspace_snapshot;

@@ -341,7 +341,7 @@ fn effective_typing_targets<'a>(
     Vec::new()
 }
 
-fn feature_modifiers(node: &SemanticNode) -> Vec<String> {
+fn feature_modifiers(semantic_graph: &SemanticGraph, node: &SemanticNode) -> Vec<String> {
     let Some(properties) = node.declared_facts.feature_properties.as_ref() else {
         return Vec::new();
     };
@@ -360,10 +360,12 @@ fn feature_modifiers(node: &SemanticNode) -> Vec<String> {
             modifiers.push(label.to_string());
         }
     }
-    if properties.is_reference == Some(true) {
-        modifiers.push("reference".to_string());
-    } else if properties.is_composite == Some(true) {
-        modifiers.push("composite".to_string());
+    if let Some(ownership) = semantic_graph.effective_feature_ownership_for(node) {
+        if ownership.is_reference {
+            modifiers.push("reference".to_string());
+        } else if ownership.is_composite {
+            modifiers.push("composite".to_string());
+        }
     }
     if properties.is_ordered == Some(true) {
         modifiers.push("ordered".to_string());
@@ -571,7 +573,7 @@ pub(crate) fn feature_inspector_element(
         documentation,
         multiplicity,
         direction,
-        modifiers: feature_modifiers(node),
+        modifiers: feature_modifiers(semantic_graph, node),
         attributes: node.attributes.clone(),
         typing: resolution(has_typing_intent(node), typing_targets),
         effective_typing: resolution(

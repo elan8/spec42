@@ -87,6 +87,11 @@ pub struct HostElementFacts {
     /// that retained typed parser properties.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub feature_properties: Option<HostFeatureProperties>,
+    /// Canonical ownership after applying an authored `ref` modifier or SysML's contextual
+    /// composite default. Kept separate from [`Self::feature_properties`] so clients can
+    /// distinguish a source fact from an implied semantic result.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub effective_feature_ownership: Option<HostFeatureOwnership>,
     /// Semantic ID of this element's own addressable `Expression` content (in
     /// [`HostSemanticProjection::expressions`]), when the element itself directly *is* an
     /// expression (for example a `TransitionGuard`) rather than merely having one attached via
@@ -127,6 +132,22 @@ pub struct HostFeatureProperties {
     pub is_portion: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub portion_kind: Option<String>,
+}
+
+/// Canonical feature ownership projected from the semantic graph's effective-facts publication.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostFeatureOwnership {
+    pub is_composite: bool,
+    pub is_reference: bool,
+    pub provenance: HostFeatureOwnershipProvenance,
+}
+
+/// Provenance of a projected effective ownership result.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostFeatureOwnershipProvenance {
+    Authored,
+    Implied,
 }
 
 /// A node in the semantic model — maps 1:1 to [`sysml_model::SemanticNode`].

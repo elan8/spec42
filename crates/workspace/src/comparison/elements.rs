@@ -166,7 +166,7 @@ mod tests {
     use std::collections::HashMap;
 
     use super::*;
-    use crate::snapshot::HostElementFacts;
+    use crate::snapshot::{HostElementFacts, HostFeatureOwnership, HostFeatureOwnershipProvenance};
     use sysml_model::{ElementKind, TextPosition, TextRange};
 
     fn node() -> HostSemanticModelNode {
@@ -207,6 +207,43 @@ mod tests {
         assert_eq!(comparison.changed.len(), 1);
         assert_eq!(comparison.changed[0].fields[0].field, "facts");
         assert!(comparison.changed[0].fields[0].previous.is_object());
+    }
+
+    #[test]
+    fn compares_effective_ownership_with_its_provenance() {
+        let previous_node = node();
+        let mut next_node = previous_node.clone();
+        next_node.facts.effective_feature_ownership = Some(HostFeatureOwnership {
+            is_composite: true,
+            is_reference: false,
+            provenance: HostFeatureOwnershipProvenance::Implied,
+        });
+
+        let comparison = compare_elements(
+            &HostSemanticProjection {
+                nodes: vec![previous_node],
+                ..HostSemanticProjection::default()
+            },
+            &HostSemanticProjection {
+                nodes: vec![next_node],
+                ..HostSemanticProjection::default()
+            },
+        )
+        .expect("compare");
+
+        let fact_change = comparison.changed[0]
+            .fields
+            .iter()
+            .find(|change| change.field == "facts")
+            .expect("typed facts change");
+        assert_eq!(
+            fact_change.next["effective_feature_ownership"],
+            serde_json::json!({
+                "is_composite": true,
+                "is_reference": false,
+                "provenance": "implied",
+            })
+        );
     }
 
     #[test]

@@ -61,11 +61,11 @@ pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_w
 pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
     HostConnectorEnd, HostContext, HostElementFacts, HostExpression, HostExpressionArgument,
-    HostFeatureProperties, HostFeatureValue, HostMembershipKind, HostMultiplicity,
-    HostPipelinePhase, HostRelationshipMetaclass, HostResourceLimits, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
-    HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, Spec42ProjectionOutput,
-    ValidationTiming, WorkspaceLoadRequest,
+    HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
+    HostMembershipKind, HostMultiplicity, HostPipelinePhase, HostRelationshipMetaclass,
+    HostResourceLimits, HostSemanticModelNode, HostSemanticModelRelationship,
+    HostSemanticProjection, HostValidatedDocument, HostValidationReport, HostValidationSummary,
+    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};
 pub use view_cache::{

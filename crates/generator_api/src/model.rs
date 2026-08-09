@@ -256,6 +256,10 @@ impl GeneratorModelView {
             .unwrap_or(&node.attributes);
         let properties = projected.and_then(|value| value.facts.feature_properties.as_ref());
         let declared_properties = node.declared_facts.feature_properties.as_ref();
+        let ownership = self
+            .snapshot
+            .semantic_graph()
+            .effective_feature_ownership_for(node);
         let multiplicity =
             node.declared_facts
                 .multiplicity
@@ -314,12 +318,8 @@ impl GeneratorModelView {
             conjugated: properties
                 .map(|value| value.is_conjugated)
                 .unwrap_or_else(|| declared_properties.is_some_and(|value| value.is_conjugated)),
-            composite: properties
-                .and_then(|value| value.is_composite)
-                .or_else(|| declared_properties.and_then(|value| value.is_composite)),
-            reference: properties
-                .and_then(|value| value.is_reference)
-                .or_else(|| declared_properties.and_then(|value| value.is_reference)),
+            composite: ownership.map(|value| value.is_composite),
+            reference: ownership.map(|value| value.is_reference),
             end: properties
                 .map(|value| value.is_end)
                 .unwrap_or_else(|| declared_properties.is_some_and(|value| value.is_end)),
