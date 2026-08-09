@@ -209,3 +209,42 @@ standard library package Constraints {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml.library/constraints.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 1) (end 8 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 1) (end 9 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 1) (end 10 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 12 1) (end 12 293))
+      )
+    )
+  )
+)
+~~~

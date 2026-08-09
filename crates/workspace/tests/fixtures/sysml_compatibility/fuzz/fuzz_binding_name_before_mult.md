@@ -52,3 +52,18 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_binding_name_before_mult.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 28))
+      )
+    )
+  )
+)
+~~~

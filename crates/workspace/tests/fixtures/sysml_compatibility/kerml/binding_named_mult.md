@@ -70,3 +70,18 @@ package BindingNamedMult {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/binding_named_mult.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 145))
+      )
+    )
+  )
+)
+~~~

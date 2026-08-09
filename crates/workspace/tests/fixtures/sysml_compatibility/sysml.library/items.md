@@ -615,3 +615,144 @@ standard library package Items {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml.library/items.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 1) (end 8 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 1) (end 9 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 1) (end 10 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 1) (end 11 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 1) (end 12 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 1) (end 13 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 1) (end 14 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 1) (end 15 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 1) (end 16 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 17 1) (end 17 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 18 1) (end 18 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 1) (end 19 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 20 1) (end 20 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 21 1) (end 21 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 23 1) (end 23 2898))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 30 2) (end 30 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 135 1) (end 135 310))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 135 1) (end 135 310))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 141 2) (end 141 81))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 142 2) (end 142 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 145 1) (end 145 126))
+      )
+    )
+  )
+)
+~~~

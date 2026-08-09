@@ -103,3 +103,30 @@ semantic.unresolved_name 'VehicleController'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/26_state_exhibition_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 1) (end 3 183))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 2) (end 5 45))
+      )
+    )
+  )
+)
+~~~

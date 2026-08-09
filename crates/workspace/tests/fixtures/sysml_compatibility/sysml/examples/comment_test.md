@@ -179,3 +179,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/comment_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 24 1) (end 24 92))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 31 1) (end 31 55))
+      )
+    )
+  )
+)
+~~~

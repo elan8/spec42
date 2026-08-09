@@ -197,3 +197,42 @@ semantic.unresolved_name 'ISQ::LengthValue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/36_variation_definitions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 1) (end 4 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 30 2) (end 30 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 31 2) (end 31 23))
+      )
+    )
+  )
+)
+~~~

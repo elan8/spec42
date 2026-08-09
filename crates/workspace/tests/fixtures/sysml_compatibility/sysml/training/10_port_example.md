@@ -167,3 +167,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/10_port_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

@@ -126,3 +126,12 @@ semantic.unresolved_name 'endShot'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/redefinition.md"
+    (diagnostics
+    )
+  )
+)
+~~~

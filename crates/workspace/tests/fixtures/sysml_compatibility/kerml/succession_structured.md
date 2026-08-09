@@ -89,3 +89,18 @@ package SuccessionStructured {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/succession_structured.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 5 4) (end 5 48))
+      )
+    )
+  )
+)
+~~~

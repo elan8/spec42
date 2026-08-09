@@ -97,3 +97,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/01_documentation_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

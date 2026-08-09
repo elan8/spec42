@@ -344,3 +344,60 @@ standard library package CausationConnections {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml.library/causation_connections.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 1) (end 8 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 1) (end 9 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 57 1) (end 57 146))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 61 1) (end 61 598))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 70 2) (end 70 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 74 2) (end 74 137))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 79 1) (end 79 145))
+      )
+    )
+  )
+)
+~~~

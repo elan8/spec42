@@ -168,3 +168,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/12b_allocation.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+    )
+  )
+)
+~~~

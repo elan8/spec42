@@ -451,3 +451,120 @@ standard library package States {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml.library/states.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 1) (end 8 52))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 9 1) (end 9 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 10 1) (end 10 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 1) (end 11 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 1) (end 12 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 13 1) (end 13 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 14 1) (end 14 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 1) (end 15 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 1) (end 16 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 18 1) (end 18 2048))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 18 1) (end 18 2048))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 18 1) (end 18 2048))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_initial_state")
+        (source "semantic")
+        (range (start 18 1) (end 18 2048))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 79 1) (end 79 569))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 79 1) (end 79 569))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 92 7) (end 92 14))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 93 7) (end 93 15))
+      )
+    )
+  )
+)
+~~~

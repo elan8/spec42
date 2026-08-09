@@ -939,3 +939,72 @@ semantic.unresolved_name 'TemperatureValue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/5_state_based_behavior_1a.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 46 2) (end 46 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "transition_guard_non_boolean")
+        (source "semantic")
+        (range (start 81 4) (end 81 675))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 190 3) (end 190 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 198 3) (end 198 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 199 3) (end 199 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 200 3) (end 200 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_subset_redefine_kind")
+        (source "semantic")
+        (range (start 212 3) (end 212 257))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_subset_redefine_kind")
+        (source "semantic")
+        (range (start 232 4) (end 232 75))
+      )
+    )
+  )
+)
+~~~

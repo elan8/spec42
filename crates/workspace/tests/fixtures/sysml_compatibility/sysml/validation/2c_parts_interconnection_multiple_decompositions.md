@@ -440,3 +440,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/2c_parts_interconnection_multiple_decompositions.md"
+    (diagnostics
+    )
+  )
+)
+~~~

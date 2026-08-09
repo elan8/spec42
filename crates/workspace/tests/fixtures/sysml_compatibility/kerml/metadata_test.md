@@ -256,3 +256,30 @@ semantic.unresolved_name 'cc'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/metadata_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 31 1) (end 31 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 31 1) (end 31 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 51 4) (end 51 7))
+      )
+    )
+  )
+)
+~~~

@@ -397,3 +397,126 @@ semantic.unresolved_name 'DimensionOneValue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/15_19a_materials_with_properties.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 1) (end 3 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 1) (end 4 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 4) (end 6 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 1) (end 10 470))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 8) (end 11 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 8) (end 12 100))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 13 8) (end 13 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 14 8) (end 14 102))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 17 4) (end 17 142))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 18 2) (end 18 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 18 2) (end 18 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 19 5) (end 19 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 47 4) (end 47 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 52 28) (end 52 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 53 30) (end 53 58))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 54 33) (end 54 61))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 66 8) (end 66 73))
+      )
+    )
+  )
+)
+~~~

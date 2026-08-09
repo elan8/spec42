@@ -180,3 +180,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/14_action_shorthand_example.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 13 3) (end 13 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 21 3) (end 21 43))
+      )
+    )
+  )
+)
+~~~

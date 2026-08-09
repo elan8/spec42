@@ -70,3 +70,12 @@ semantic.unresolved_name 'timeSlices'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/camera.md"
+    (diagnostics
+    )
+  )
+)
+~~~

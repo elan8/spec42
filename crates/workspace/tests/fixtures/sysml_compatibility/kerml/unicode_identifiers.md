@@ -68,3 +68,18 @@ semantic.unresolved_name 'Pkg::β'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/unicode_identifiers.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 2 4) (end 2 81))
+      )
+    )
+  )
+)
+~~~

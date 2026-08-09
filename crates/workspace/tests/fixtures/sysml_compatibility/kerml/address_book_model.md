@@ -89,3 +89,12 @@ semantic.unresolved_name 'String'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/address_book_model.md"
+    (diagnostics
+    )
+  )
+)
+~~~

@@ -490,3 +490,42 @@ semantic.unresolved_name 'ScalarValues::Real'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/1a_parts_tree.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 20 3) (end 20 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 26 2) (end 26 147))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 38 3) (end 38 180))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 81 3) (end 81 120))
+      )
+    )
+  )
+)
+~~~

@@ -190,3 +190,48 @@ semantic.unresolved_name 'ScalarValues::Boolean'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/structured_control_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 8 4) (end 8 43))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 10 4) (end 10 42))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 21 4) (end 21 18))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 23 2) (end 23 52))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 29 4) (end 29 20))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 31 2) (end 31 74))
+      )
+    )
+  )
+)
+~~~

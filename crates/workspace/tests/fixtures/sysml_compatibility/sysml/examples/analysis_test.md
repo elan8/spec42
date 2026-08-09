@@ -197,3 +197,42 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/analysis_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 3 2) (end 3 6))
+      )
+      (diagnostic
+        (severity warning)
+        (code "case_objective_binding_cardinality")
+        (source "semantic")
+        (range (start 12 1) (end 12 124))
+      )
+      (diagnostic
+        (severity warning)
+        (code "objective_binding_unresolved")
+        (source "semantic")
+        (range (start 15 2) (end 15 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "case_objective_binding_cardinality")
+        (source "semantic")
+        (range (start 22 1) (end 22 145))
+      )
+      (diagnostic
+        (severity warning)
+        (code "objective_binding_unresolved")
+        (source "semantic")
+        (range (start 25 2) (end 25 34))
+      )
+    )
+  )
+)
+~~~

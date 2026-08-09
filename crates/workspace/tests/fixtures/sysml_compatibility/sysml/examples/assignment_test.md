@@ -283,3 +283,42 @@ semantic.unresolved_name 'c::incr'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/assignment_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 2) (end 3 47))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 17 1) (end 17 351))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_initial_state")
+        (source "semantic")
+        (range (start 17 1) (end 17 351))
+      )
+    )
+  )
+)
+~~~

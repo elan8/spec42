@@ -201,3 +201,66 @@ semantic.unresolved_name 'Occurrences::HappensBefore'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/41_model_library_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 2) (end 9 31))
+      )
+      (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 12 21) (end 12 63))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 2) (end 15 29))
+      )
+      (diagnostic
+        (severity error)
+        (code "subsetting_type_incompatible")
+        (source "semantic")
+        (range (start 18 21) (end 18 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 20 1) (end 20 136))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 25 1) (end 25 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 28 13) (end 28 28))
+      )
+    )
+  )
+)
+~~~

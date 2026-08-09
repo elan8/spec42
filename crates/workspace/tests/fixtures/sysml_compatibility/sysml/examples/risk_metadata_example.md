@@ -129,3 +129,36 @@ semantic.unresolved_name 'Risk'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/risk_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_annotation_unresolved")
+        (source "semantic")
+        (range (start 5 8) (end 5 126))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_annotation_unresolved")
+        (source "semantic")
+        (range (start 10 8) (end 10 120))
+      )
+    )
+  )
+)
+~~~

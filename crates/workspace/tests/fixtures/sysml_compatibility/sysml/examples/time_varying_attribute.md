@@ -275,3 +275,90 @@ semantic.unresolved_name 'done'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/time_varying_attribute.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 4) (end 1 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 4 8) (end 4 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 11 8) (end 11 70))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 13 8) (end 13 71))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 15 18) (end 15 302))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 16 21) (end 16 127))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 17 16) (end 17 39))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_occurrence_body_element")
+        (source "sysml")
+        (range (start 18 16) (end 18 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 18 16) (end 18 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 20 21) (end 20 126))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 21 16) (end 21 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 34 21) (end 34 85))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 35 16) (end 35 39))
+      )
+    )
+  )
+)
+~~~

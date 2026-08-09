@@ -74,3 +74,22 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "Definitions.sysml"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 2 8) (end 2 44))
+      )
+    )
+  )
+  (document "Usage.sysml"
+    (diagnostics
+    )
+  )
+)
+~~~

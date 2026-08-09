@@ -190,3 +190,12 @@ package BehaviorCoverage {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/coverage_behaviors.md"
+    (diagnostics
+    )
+  )
+)
+~~~

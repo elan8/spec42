@@ -158,3 +158,18 @@ standard library package AnalysisTooling {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml.library/analysis_tooling.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 32))
+      )
+    )
+  )
+)
+~~~

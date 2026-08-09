@@ -242,3 +242,36 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/21_messaging_with_ports.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 14 2) (end 14 19))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 18 2) (end 18 16))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 19 2) (end 19 19))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 25 4) (end 25 34))
+      )
+    )
+  )
+)
+~~~

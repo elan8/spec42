@@ -186,3 +186,54 @@ semantic.unresolved_name 'fuelEconomy_highway'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/33_analysis_case_usage_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 2) (end 9 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 2) (end 10 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 22 2) (end 22 189))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 25 3) (end 25 67))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 26 3) (end 26 73))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_satisfy_source")
+        (source "semantic")
+        (range (start 29 10) (end 29 40))
+      )
+    )
+  )
+)
+~~~

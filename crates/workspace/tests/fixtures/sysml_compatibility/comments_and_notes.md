@@ -47,3 +47,24 @@ parse.unexpected_token
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "comments_and_notes.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 0 0) (end 0 23))
+      )
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 1 0) (end 1 1))
+      )
+    )
+  )
+)
+~~~

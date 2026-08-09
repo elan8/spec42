@@ -78,3 +78,24 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_crash_for_loop_multicomment.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 2 4) (end 2 109))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_closing_brace")
+        (source "sysml")
+        (range (start 8 0) (end 8 1))
+      )
+    )
+  )
+)
+~~~

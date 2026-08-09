@@ -150,3 +150,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/27_time_slice_and_snapshot_example.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_occurrence_body_element")
+        (source "sysml")
+        (range (start 15 3) (end 15 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 15 3) (end 15 33))
+      )
+    )
+  )
+)
+~~~

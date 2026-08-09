@@ -219,3 +219,12 @@ semantic.duplicate_name 'off'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/24_state_actions.md"
+    (diagnostics
+    )
+  )
+)
+~~~

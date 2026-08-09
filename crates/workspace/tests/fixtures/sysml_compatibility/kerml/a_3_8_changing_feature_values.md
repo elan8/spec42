@@ -925,3 +925,108 @@ semantic.unresolved_name 'objectToFinish::afterShip::timeCoincidentOccurrences'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/a_3_8_changing_feature_values.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 1) (end 6 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 72))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 75 1) (end 75 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 77 1) (end 77 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 78 1) (end 78 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 87 1) (end 87 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 100 1) (end 100 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 100 1) (end 100 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 102 1) (end 102 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 104 1) (end 104 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 109 1) (end 109 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 121 1) (end 121 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 128 1) (end 128 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 133 1) (end 133 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 140 1) (end 140 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 145 1) (end 145 8))
+      )
+    )
+  )
+)
+~~~

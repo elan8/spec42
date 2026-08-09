@@ -168,3 +168,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/05_redefinition_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

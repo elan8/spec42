@@ -54,3 +54,18 @@ parse.expected_close_curly
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "incomplete_part_unmatched_braces.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 2 13) (end 2 14))
+      )
+    )
+  )
+)
+~~~

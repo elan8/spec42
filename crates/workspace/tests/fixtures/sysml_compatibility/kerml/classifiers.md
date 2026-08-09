@@ -100,3 +100,18 @@ parse.unexpected_token
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/classifiers.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 4 1) (end 4 319))
+      )
+    )
+  )
+)
+~~~

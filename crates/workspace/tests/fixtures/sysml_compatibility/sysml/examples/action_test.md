@@ -319,3 +319,78 @@ semantic.unresolved_name 'ScalarValues::Boolean'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/action_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 16 2) (end 16 19))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 16 2) (end 16 19))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 24 3) (end 24 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 33 13) (end 33 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 33 13) (end 33 50))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 37 7) (end 37 8))
+      )
+    )
+  )
+)
+~~~

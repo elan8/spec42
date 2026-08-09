@@ -54,3 +54,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "parse_nested_package.md"
+    (diagnostics
+    )
+  )
+)
+~~~

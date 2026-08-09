@@ -6,6 +6,7 @@ use sysml_model::UnitRegistry;
 use super::engine_impl::{
     compute_semantic_diagnostics, compute_semantic_diagnostics_with_unit_registry,
 };
+use super::ordering::canonicalize_diagnostics;
 use super::types::{DiagnosticsOptions, SemanticDiagnostic};
 
 /// Collects semantic diagnostics from an already-built semantic graph.
@@ -17,7 +18,9 @@ pub fn collect_diagnostics_from_graph(
     uri: &Url,
     options: DiagnosticsOptions,
 ) -> Vec<SemanticDiagnostic> {
-    compute_semantic_diagnostics(graph, uri, options)
+    let mut diagnostics = compute_semantic_diagnostics(graph, uri, options);
+    canonicalize_diagnostics(&mut diagnostics);
+    diagnostics
 }
 
 /// Collects semantic diagnostics reusing a workspace-level [`UnitRegistry`].
@@ -27,12 +30,16 @@ pub fn collect_diagnostics_from_graph_with_unit_registry(
     options: DiagnosticsOptions,
     unit_registry: &UnitRegistry,
 ) -> Vec<SemanticDiagnostic> {
-    compute_semantic_diagnostics_with_unit_registry(graph, uri, options, unit_registry)
+    let mut diagnostics =
+        compute_semantic_diagnostics_with_unit_registry(graph, uri, options, unit_registry);
+    canonicalize_diagnostics(&mut diagnostics);
+    diagnostics
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::canonicalize_diagnostics;
     use crate::DiagnosticSeverity;
     use sysml_model::build_graph_from_doc;
 
@@ -57,6 +64,29 @@ mod tests {
             diagnostic.code == "implicit_redefinition_without_operator"
                 && diagnostic.severity == DiagnosticSeverity::Error
         }));
+    }
+
+    #[test]
+    fn graph_diagnostics_api_publishes_canonical_order() {
+        let input = r#"
+            package P {
+                part bad_first : MissingFirst;
+                part bad_second : MissingSecond;
+            }
+        "#;
+        let parsed = sysml_v2_parser::parse(input).expect("parse");
+        let uri = Url::parse("file:///test.sysml").expect("uri");
+        let graph = build_graph_from_doc(&parsed, &uri);
+
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        assert!(
+            diagnostics.len() >= 2,
+            "expected independently produced diagnostics, got {diagnostics:?}"
+        );
+        let mut canonical = diagnostics.clone();
+        canonicalize_diagnostics(&mut canonical);
+        assert_eq!(diagnostics, canonical);
     }
 
     #[test]

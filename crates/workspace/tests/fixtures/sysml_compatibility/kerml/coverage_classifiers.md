@@ -128,3 +128,12 @@ package ClassifierCoverage {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/coverage_classifiers.md"
+    (diagnostics
+    )
+  )
+)
+~~~

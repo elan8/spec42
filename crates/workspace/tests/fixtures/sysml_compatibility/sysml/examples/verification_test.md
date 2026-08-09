@@ -206,3 +206,18 @@ semantic.unresolved_name 'ScalarValues::Integer'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/verification_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 34 2) (end 34 77))
+      )
+    )
+  )
+)
+~~~

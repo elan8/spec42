@@ -235,3 +235,42 @@ semantic.unresolved_name 'presidentOfCountry::asPresident'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/john_individual_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 2) (end 8 40))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 10 2) (end 10 131))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 18 1) (end 18 163))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 18 1) (end 18 163))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 48 12) (end 48 325))
+      )
+    )
+  )
+)
+~~~

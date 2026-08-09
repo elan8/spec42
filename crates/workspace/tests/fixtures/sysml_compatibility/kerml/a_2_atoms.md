@@ -89,3 +89,18 @@ semantic.unresolved_name 'Metaobject'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/a_2_atoms.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 40))
+      )
+    )
+  )
+)
+~~~

@@ -169,3 +169,42 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/a_3_2_without_connectors.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 19 1) (end 19 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 22 1) (end 22 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 24 1) (end 24 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 29 1) (end 29 8))
+      )
+    )
+  )
+)
+~~~

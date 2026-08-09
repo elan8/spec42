@@ -159,3 +159,30 @@ semantic.unresolved_name 'ISQ::mass'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/mass_rollup.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 20 2) (end 20 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 20 2) (end 20 48))
+      )
+    )
+  )
+)
+~~~

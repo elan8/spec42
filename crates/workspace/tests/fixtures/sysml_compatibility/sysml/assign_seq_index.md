@@ -75,3 +75,12 @@ package AssignTest {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/assign_seq_index.md"
+    (diagnostics
+    )
+  )
+)
+~~~

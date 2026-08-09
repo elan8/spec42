@@ -149,3 +149,18 @@ semantic.duplicate_name 'off'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/23_state_definition_example_2.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 6 1) (end 6 225))
+      )
+    )
+  )
+)
+~~~

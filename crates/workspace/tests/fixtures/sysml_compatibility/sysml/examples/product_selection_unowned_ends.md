@@ -196,3 +196,18 @@ semantic.invalid_connection_end_count
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/product_selection_unowned_ends.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 17 1) (end 17 144))
+      )
+    )
+  )
+)
+~~~

@@ -133,3 +133,60 @@ semantic.unresolved_name 'eng::engineFuelPort'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/11_interface_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 2) (end 6 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 7 2) (end 7 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 2) (end 11 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 2) (end 12 20))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 15 20) (end 15 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 15 20) (end 15 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 15 20) (end 15 41))
+      )
+    )
+  )
+)
+~~~

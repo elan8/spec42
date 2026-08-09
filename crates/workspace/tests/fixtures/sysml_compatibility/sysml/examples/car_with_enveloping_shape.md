@@ -121,3 +121,66 @@ semantic.unresolved_name 'height'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/car_with_enveloping_shape.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 2) (end 10 133))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 11 3) (end 11 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 11 3) (end 11 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 12 3) (end 12 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 12 3) (end 12 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 13 3) (end 13 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 13 3) (end 13 26))
+      )
+    )
+  )
+)
+~~~

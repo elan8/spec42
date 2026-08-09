@@ -182,3 +182,24 @@ part def Outer {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/coverage_sysml_body_members.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 4 4) (end 4 40))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 22 4) (end 22 230))
+      )
+    )
+  )
+)
+~~~

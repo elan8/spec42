@@ -537,3 +537,108 @@ semantic.unresolved_name 'done'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/turbojet_stage_analysis.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 57))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 1) (end 3 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 61 9) (end 61 78))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 62 9) (end 62 84))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 63 9) (end 63 78))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 73 9) (end 73 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 74 9) (end 74 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_qualified_name_segment")
+        (source "semantic")
+        (range (start 85 9) (end 85 1076))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 87 10) (end 87 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 87 10) (end 87 66))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 88 15) (end 88 24))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 89 15) (end 89 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 90 15) (end 90 35))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 91 15) (end 91 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 101 13) (end 101 121))
+      )
+    )
+  )
+)
+~~~

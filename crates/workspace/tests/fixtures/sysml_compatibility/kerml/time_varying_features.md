@@ -341,3 +341,12 @@ semantic.unresolved_name 'CC1::t::t1::startShot'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/time_varying_features.md"
+    (diagnostics
+    )
+  )
+)
+~~~

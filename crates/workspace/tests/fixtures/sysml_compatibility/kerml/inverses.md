@@ -94,3 +94,18 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/inverses.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 10 1) (end 10 114))
+      )
+    )
+  )
+)
+~~~

@@ -192,3 +192,30 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/15_action_decomposition.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 14 3) (end 14 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 21 3) (end 21 16))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 22 3) (end 22 43))
+      )
+    )
+  )
+)
+~~~

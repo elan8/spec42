@@ -58,3 +58,18 @@ parse.unexpected_token
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "parse_malformed_recovery.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 1 4) (end 1 21))
+      )
+    )
+  )
+)
+~~~

@@ -278,3 +278,12 @@ semantic.unresolved_name 'ExtendedOccurrence::self'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/extended_occurrences.md"
+    (diagnostics
+    )
+  )
+)
+~~~

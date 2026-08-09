@@ -220,3 +220,12 @@ semantic.unresolved_name 'subobjects'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/scoping.md"
+    (diagnostics
+    )
+  )
+)
+~~~

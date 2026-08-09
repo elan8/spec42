@@ -107,3 +107,18 @@ package FeatureSubDeclCoverage {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/coverage_feature_subdecls.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 10 4) (end 10 110))
+      )
+    )
+  )
+)
+~~~

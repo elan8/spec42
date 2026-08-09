@@ -136,3 +136,30 @@ semantic.unresolved_name 'Vehicle'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/28_individuals_and_roles_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 5 1) (end 5 109))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 13 2) (end 13 201))
+      )
+    )
+  )
+)
+~~~

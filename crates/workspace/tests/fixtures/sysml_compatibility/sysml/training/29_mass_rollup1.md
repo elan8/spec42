@@ -130,3 +130,18 @@ semantic.unresolved_name 'ISQ::mass'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/29_mass_rollup1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 38))
+      )
+    )
+  )
+)
+~~~

@@ -316,3 +316,60 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/flashlight_example.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 15 3) (end 15 35))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 21 2) (end 21 136))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 26 3) (end 26 36))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 33 3) (end 33 30))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 36 3) (end 36 30))
+      )
+    )
+  )
+)
+~~~

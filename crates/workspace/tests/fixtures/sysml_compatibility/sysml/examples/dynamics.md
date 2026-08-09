@@ -523,3 +523,54 @@ semantic.unresolved_name 'LengthValue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/dynamics.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 23))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 63 2) (end 63 76))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 63 2) (end 63 76))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 74 7) (end 74 12))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 81 7) (end 81 12))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 88 7) (end 88 12))
+      )
+    )
+  )
+)
+~~~

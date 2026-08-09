@@ -142,3 +142,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/associations.md"
+    (diagnostics
+    )
+  )
+)
+~~~

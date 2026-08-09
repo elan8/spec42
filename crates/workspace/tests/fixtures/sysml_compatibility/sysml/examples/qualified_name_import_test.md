@@ -106,3 +106,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/qualified_name_import_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 3) (end 6 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_qualified_name_segment")
+        (source "semantic")
+        (range (start 10 2) (end 10 17))
+      )
+    )
+  )
+)
+~~~

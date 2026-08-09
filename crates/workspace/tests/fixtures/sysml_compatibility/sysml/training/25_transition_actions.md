@@ -250,3 +250,18 @@ semantic.unresolved_name 'ScalarValues::Boolean'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/25_transition_actions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "transition_guard_non_boolean")
+        (source "semantic")
+        (range (start 28 2) (end 28 132))
+      )
+    )
+  )
+)
+~~~

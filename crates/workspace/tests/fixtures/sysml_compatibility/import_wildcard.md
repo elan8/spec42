@@ -43,3 +43,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "import_wildcard.md"
+    (diagnostics
+    )
+  )
+)
+~~~

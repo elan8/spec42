@@ -186,3 +186,42 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/a_2_modeling_instances.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 16 1) (end 16 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 21 1) (end 21 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 23 1) (end 23 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 23 1) (end 23 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 33 1) (end 33 8))
+      )
+    )
+  )
+)
+~~~

@@ -225,3 +225,18 @@ part def Vehicle {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/coverage_sysml_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 8 4) (end 8 113))
+      )
+    )
+  )
+)
+~~~

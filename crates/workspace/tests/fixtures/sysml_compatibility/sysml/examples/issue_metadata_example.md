@@ -181,3 +181,42 @@ semantic.unresolved_name 'Issue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/issue_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_about_unresolved")
+        (source "semantic")
+        (range (start 5 4) (end 5 516))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 5 4) (end 5 516))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 20 8) (end 20 39))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 23 8) (end 23 38))
+      )
+    )
+  )
+)
+~~~

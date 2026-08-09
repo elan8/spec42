@@ -763,3 +763,126 @@ semantic.unresolved_name 'diameter'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/vehicle_variability_model.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 31 10) (end 31 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 36 7) (end 36 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 40 7) (end 40 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 64 2) (end 64 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 76 10) (end 76 31))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 77 10) (end 77 566))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 77 10) (end 77 566))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 102 11) (end 102 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 103 11) (end 103 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 112 10) (end 112 133))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 127 11) (end 127 50))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 128 11) (end 128 49))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 132 11) (end 132 51))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 133 11) (end 133 53))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 149 2) (end 149 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 154 9) (end 154 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 155 9) (end 155 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 156 9) (end 156 52))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 158 9) (end 158 218))
+      )
+    )
+  )
+)
+~~~

@@ -210,3 +210,30 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/21_messaging_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "accept_payload_incompatible")
+        (source "semantic")
+        (range (start 16 2) (end 16 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 19 3) (end 19 33))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 30 2) (end 30 48))
+      )
+    )
+  )
+)
+~~~

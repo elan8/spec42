@@ -751,3 +751,96 @@ semantic.unresolved_name 'portno'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/ahfnorway_topics.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 5 1) (end 5 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 1) (end 6 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 1) (end 7 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 1) (end 8 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 10 1) (end 10 10))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 10 10) (end 10 200))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 18 1) (end 18 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 18 12) (end 18 407))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 21 2) (end 21 148))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 27 2) (end 27 137))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 40 26) (end 40 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 44 31) (end 44 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 46 1) (end 46 10))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 46 10) (end 46 3522))
+      )
+    )
+  )
+)
+~~~

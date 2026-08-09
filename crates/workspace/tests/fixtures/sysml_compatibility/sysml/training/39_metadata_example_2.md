@@ -155,3 +155,24 @@ semantic.unresolved_name 'ToolVariable'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/39_metadata_example_2.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 3 2) (end 3 42))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 5 2) (end 5 114))
+      )
+    )
+  )
+)
+~~~

@@ -519,3 +519,18 @@ semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/time_varying_car_driver.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 4) (end 1 35))
+      )
+    )
+  )
+)
+~~~

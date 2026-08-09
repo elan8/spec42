@@ -80,3 +80,18 @@ package j {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_transition_comment_idempotence.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 10 97) (end 10 98))
+      )
+    )
+  )
+)
+~~~

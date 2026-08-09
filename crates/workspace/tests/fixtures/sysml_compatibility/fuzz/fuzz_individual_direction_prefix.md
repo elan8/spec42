@@ -44,3 +44,18 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_individual_direction_prefix.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 0 0) (end 0 17))
+      )
+    )
+  )
+)
+~~~

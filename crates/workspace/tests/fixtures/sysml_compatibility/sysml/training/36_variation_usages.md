@@ -145,3 +145,48 @@ semantic.unresolved_name 'EngineChoices'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/36_variation_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 43))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 5 1) (end 5 25))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 6 1) (end 6 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 2) (end 9 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 12 3) (end 12 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "invalid_variation_member_kind")
+        (source "semantic")
+        (range (start 13 3) (end 13 33))
+      )
+    )
+  )
+)
+~~~

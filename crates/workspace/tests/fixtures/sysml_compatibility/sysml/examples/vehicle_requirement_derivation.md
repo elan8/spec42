@@ -223,3 +223,18 @@ semantic.unresolved_name 'ISQ::mass'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/vehicle_requirement_derivation.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 41))
+      )
+    )
+  )
+)
+~~~

@@ -254,3 +254,12 @@ parse.expected_usage_declaration
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/3c_function_based_behavior_structure_mod_2.md"
+    (diagnostics
+    )
+  )
+)
+~~~

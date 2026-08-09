@@ -51,3 +51,30 @@ parse.expected_close_curly
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_doc_malformed_comment_body.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 0 0) (end 0 19))
+      )
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 1 4) (end 1 27))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_closing_brace")
+        (source "sysml")
+        (range (start 2 0) (end 2 1))
+      )
+    )
+  )
+)
+~~~

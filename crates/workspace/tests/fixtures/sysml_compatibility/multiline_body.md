@@ -54,3 +54,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "multiline_body.md"
+    (diagnostics
+    )
+  )
+)
+~~~

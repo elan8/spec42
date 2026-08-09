@@ -128,3 +128,54 @@ semantic.unresolved_name 'ScalarValues::Integer'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/multiplicity_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 1) (end 3 41))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 5 1) (end 5 11))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 8 1) (end 8 11))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 10 1) (end 10 11))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 11 1) (end 11 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 12 1) (end 12 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 15 2) (end 15 37))
+      )
+    )
+  )
+)
+~~~

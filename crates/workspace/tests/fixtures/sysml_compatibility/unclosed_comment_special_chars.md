@@ -43,3 +43,18 @@ tokenize.UnclosedRegularComment
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "unclosed_comment_special_chars.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 0 0) (end 0 17))
+      )
+    )
+  )
+)
+~~~

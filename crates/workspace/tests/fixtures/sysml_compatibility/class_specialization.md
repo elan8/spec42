@@ -44,3 +44,12 @@ semantic.unresolved_name 'A'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "class_specialization.md"
+    (diagnostics
+    )
+  )
+)
+~~~

@@ -430,3 +430,12 @@ semantic.unresolved_name 'done'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/18_use_case.md"
+    (diagnostics
+    )
+  )
+)
+~~~

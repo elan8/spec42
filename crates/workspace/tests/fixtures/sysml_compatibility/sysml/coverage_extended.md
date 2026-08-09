@@ -114,3 +114,108 @@ package ExtendedExamples {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/coverage_extended.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 1 4) (end 1 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 1 15) (end 1 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 15))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 2 4) (end 2 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 2 15) (end 2 40))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 3 4) (end 3 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 4 4) (end 4 55))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 5 4) (end 5 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 5 15) (end 5 43))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 6 4) (end 6 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 6 15) (end 6 31))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 7 4) (end 7 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 7 15) (end 7 26))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 8 4) (end 8 15))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 8 15) (end 8 29))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 9 4) (end 9 32))
+      )
+    )
+  )
+)
+~~~

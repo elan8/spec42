@@ -58,3 +58,12 @@ feature f2 subsets do, step;
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/subsets_keyword_names.md"
+    (diagnostics
+    )
+  )
+)
+~~~

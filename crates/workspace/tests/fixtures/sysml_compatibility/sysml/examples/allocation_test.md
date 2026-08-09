@@ -219,3 +219,30 @@ semantic.invalid_allocation_end_count
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/allocation_test.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 2 2) (end 2 17))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 7 3) (end 7 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 16 3) (end 16 20))
+      )
+    )
+  )
+)
+~~~

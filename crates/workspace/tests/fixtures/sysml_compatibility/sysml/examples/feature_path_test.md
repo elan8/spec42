@@ -244,3 +244,12 @@ semantic.invalid_connection_end_count
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/feature_path_test.md"
+    (diagnostics
+    )
+  )
+)
+~~~

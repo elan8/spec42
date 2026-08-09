@@ -195,3 +195,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/35_use_case_definition_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

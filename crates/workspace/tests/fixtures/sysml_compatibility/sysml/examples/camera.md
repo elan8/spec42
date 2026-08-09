@@ -103,3 +103,18 @@ semantic.unresolved_name 'takePicture::shoot'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/camera.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 3 1) (end 3 65))
+      )
+    )
+  )
+)
+~~~

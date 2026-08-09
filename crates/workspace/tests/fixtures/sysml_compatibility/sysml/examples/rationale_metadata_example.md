@@ -142,3 +142,42 @@ semantic.unresolved_name 'TradeStudy'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/rationale_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 44))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 6 4) (end 6 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 4) (end 10 214))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 15 4) (end 15 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 4) (end 16 194))
+      )
+    )
+  )
+)
+~~~

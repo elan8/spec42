@@ -137,3 +137,18 @@ package ExpressionCoverage {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/coverage_expressions.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 15 34) (end 15 195))
+      )
+    )
+  )
+)
+~~~

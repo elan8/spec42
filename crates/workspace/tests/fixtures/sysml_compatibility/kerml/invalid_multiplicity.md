@@ -66,3 +66,12 @@ package InvalidMult {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/invalid_multiplicity.md"
+    (diagnostics
+    )
+  )
+)
+~~~

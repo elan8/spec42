@@ -116,3 +116,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/04_subsetting_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

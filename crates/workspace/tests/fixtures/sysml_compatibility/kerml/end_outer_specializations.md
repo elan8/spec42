@@ -137,3 +137,12 @@ assoc JustOutsideOf specializes OutsideOf {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/end_outer_specializations.md"
+    (diagnostics
+    )
+  )
+)
+~~~

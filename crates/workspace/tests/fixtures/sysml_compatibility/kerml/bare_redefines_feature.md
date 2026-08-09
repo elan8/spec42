@@ -78,3 +78,12 @@ class A {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/bare_redefines_feature.md"
+    (diagnostics
+    )
+  )
+)
+~~~

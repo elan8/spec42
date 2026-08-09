@@ -572,3 +572,72 @@ semantic.unresolved_name 'VerdictKind'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/9_verification_simplified.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 23 2) (end 23 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 24 2) (end 24 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 26 2) (end 26 54))
+      )
+      (diagnostic
+        (severity warning)
+        (code "case_subject_missing")
+        (source "semantic")
+        (range (start 28 2) (end 28 137))
+      )
+      (diagnostic
+        (severity warning)
+        (code "objective_binding_unresolved")
+        (source "semantic")
+        (range (start 29 3) (end 29 103))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 43 3) (end 43 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 101 5) (end 101 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unknown_unit_symbol")
+        (source "semantic")
+        (range (start 107 5) (end 107 30))
+      )
+    )
+  )
+)
+~~~

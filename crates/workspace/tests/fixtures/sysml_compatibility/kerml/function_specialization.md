@@ -104,3 +104,12 @@ package FuncSpec {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/function_specialization.md"
+    (diagnostics
+    )
+  )
+)
+~~~

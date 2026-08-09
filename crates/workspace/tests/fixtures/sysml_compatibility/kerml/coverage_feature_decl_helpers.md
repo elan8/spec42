@@ -84,3 +84,12 @@ package FeatureDeclCoverage {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/coverage_feature_decl_helpers.md"
+    (diagnostics
+    )
+  )
+)
+~~~

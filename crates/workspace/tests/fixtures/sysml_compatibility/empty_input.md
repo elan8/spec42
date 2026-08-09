@@ -40,3 +40,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "empty_input.md"
+    (diagnostics
+    )
+  )
+)
+~~~

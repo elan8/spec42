@@ -152,3 +152,54 @@ semantic.duplicate_name 'test x'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/decision_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 4 1) (end 4 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 4 1) (end 4 22))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 6 1) (end 6 14))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 8 1) (end 8 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 8 1) (end 8 18))
+      )
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 16 1) (end 16 49))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 20 2) (end 20 26))
+      )
+    )
+  )
+)
+~~~

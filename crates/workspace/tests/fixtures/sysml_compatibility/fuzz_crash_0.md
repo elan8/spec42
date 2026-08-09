@@ -121,3 +121,18 @@ semantic.unresolved_name 'ISQ::mass'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_crash_0.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 22 20) (end 22 21))
+      )
+    )
+  )
+)
+~~~

@@ -162,3 +162,66 @@ semantic.unresolved_name 'generateTorque'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/32_requirement_satisfaction.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_relationship")
+        (source "semantic")
+        (range (start 0 0) (end 0 0))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 8 1) (end 8 183))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 2) (end 11 119))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 12 3) (end 12 23))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 19 2) (end 19 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_satisfy_source")
+        (source "semantic")
+        (range (start 21 10) (end 21 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_satisfy_source")
+        (source "semantic")
+        (range (start 22 10) (end 22 29))
+      )
+    )
+  )
+)
+~~~

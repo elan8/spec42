@@ -214,3 +214,36 @@ semantic.feature_typing_kind_mismatch
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/requirement_derivation_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_satisfy_source")
+        (source "semantic")
+        (range (start 26 22) (end 26 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_satisfy_source")
+        (source "semantic")
+        (range (start 27 22) (end 27 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_satisfy_source")
+        (source "semantic")
+        (range (start 28 22) (end 28 37))
+      )
+    )
+  )
+)
+~~~

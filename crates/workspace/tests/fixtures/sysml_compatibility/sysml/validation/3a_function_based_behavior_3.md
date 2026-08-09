@@ -412,3 +412,24 @@ semantic.invalid_connection_end_count
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/3a_function_based_behavior_3.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "accept_payload_incompatible")
+        (source "semantic")
+        (range (start 35 4) (end 35 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "accept_payload_incompatible")
+        (source "semantic")
+        (range (start 67 4) (end 67 45))
+      )
+    )
+  )
+)
+~~~

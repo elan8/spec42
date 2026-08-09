@@ -84,3 +84,12 @@ class A {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/connector_references.md"
+    (diagnostics
+    )
+  )
+)
+~~~

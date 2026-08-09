@@ -541,3 +541,12 @@ semantic.unresolved_name 'Cart_Product'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/product_selection_n_ary.md"
+    (diagnostics
+    )
+  )
+)
+~~~

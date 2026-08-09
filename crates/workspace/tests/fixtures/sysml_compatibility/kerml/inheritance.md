@@ -118,3 +118,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/inheritance.md"
+    (diagnostics
+    )
+  )
+)
+~~~

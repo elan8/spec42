@@ -98,3 +98,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/alias_import.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 8 5) (end 8 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 10 5) (end 10 24))
+      )
+    )
+  )
+)
+~~~

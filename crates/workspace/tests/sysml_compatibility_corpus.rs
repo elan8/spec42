@@ -8,7 +8,8 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
 
 use language_service::{format_document_text, FormatOptions};
-use sysml_model::{build_and_link_graph, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_diagnostics::{collect_document_diagnostics, render_diagnostics_sexpr};
+use sysml_model::{build_and_link_graph, SysmlDocument, SysmlDocumentSourceKind, UnitRegistry};
 
 const FIXTURES: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
@@ -31,6 +32,9 @@ struct Coverage {
     smg_exact_recovery: usize,
     smg_empty_recovery_skipped: usize,
     smg_empty_strict_skipped: usize,
+    diagnostics_exact_strict: usize,
+    diagnostics_exact_recovery: usize,
+    diagnostics_skipped: usize,
     formatter_idempotent: usize,
     formatter_exact_strict: usize,
     formatter_exact_recovery: usize,
@@ -175,6 +179,36 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
                         }
                     }
                 }
+                let unit_registry = UnitRegistry::from_graph(&graph);
+                let diagnostics = fixture_diagnostics_rendering(
+                    &graph,
+                    &unit_registry,
+                    &documents,
+                    &semantic_documents,
+                );
+                let expected = section(&fixture, "DIAGNOSTICS").unwrap_or_else(|| {
+                    panic!("{relative}: compatibility fixture is missing DIAGNOSTICS")
+                });
+                let diagnostics_skip = diagnostics_skip_reason(&fixture).unwrap_or_else(|error| {
+                    panic!("{relative}: malformed diagnostics skip: {error}")
+                });
+                match diagnostics_skip {
+                    Some(_) => panic!(
+                        "{relative}: diagnostics=skip is stale because the canonical diagnostics pipeline completed"
+                    ),
+                    None => {
+                        assert_eq!(
+                            diagnostics,
+                            expected,
+                            "{relative}: diagnostics golden changed; run `SPEC42_DIAGNOSTICS_FIXTURE='{relative}' cargo test -p workspace --no-default-features --test sysml_compatibility_corpus print_diagnostics_fixture -- --ignored --nocapture` to inspect the deterministic replacement"
+                        );
+                        if parser_accepts_all {
+                            coverage.diagnostics_exact_strict += 1;
+                        } else {
+                            coverage.diagnostics_exact_recovery += 1;
+                        }
+                    }
+                }
                 coverage.semantic_rendered += 1;
             }
             Ok(Err(error)) => coverage
@@ -264,6 +298,14 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
         "every fixture must have a Spec42 SMG golden or a concrete non-UTF-8 skip"
     );
     assert_eq!(
+        coverage.diagnostics_exact_strict
+            + coverage.diagnostics_exact_recovery
+            + coverage.diagnostics_skipped
+            + coverage.non_utf8_skipped,
+        coverage.snapshots,
+        "every fixture must have an exact Spec42 diagnostics golden or a concrete non-UTF-8 skip"
+    );
+    assert_eq!(
         coverage.formatter_exact_strict
             + coverage.formatter_exact_recovery
             + coverage.formatter_non_utf8_skipped,
@@ -271,7 +313,7 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
         "every fixture must have an exact Spec42 formatter golden or a concrete non-UTF-8 skip"
     );
     eprintln!(
-        "SysML compatibility coverage: snapshots={}; non_utf8_skipped={}; source_documents={}; parser_accepted={}; parser_skipped={}; semantic_completed={}; semantic_rendered={}; smg_exact_strict={}; smg_exact_recovery={}; smg_empty_recovery_skipped={}; smg_empty_strict_skipped={}; formatter_idempotent={}; formatter_exact_strict={}; formatter_exact_recovery={}; formatter_safety_strict_documents={}; formatter_safety_recovery_documents={}; formatter_non_utf8_skipped={}",
+        "SysML compatibility coverage: snapshots={}; non_utf8_skipped={}; source_documents={}; parser_accepted={}; parser_skipped={}; semantic_completed={}; semantic_rendered={}; smg_exact_strict={}; smg_exact_recovery={}; smg_empty_recovery_skipped={}; smg_empty_strict_skipped={}; diagnostics_exact_strict={}; diagnostics_exact_recovery={}; diagnostics_skipped={}; formatter_idempotent={}; formatter_exact_strict={}; formatter_exact_recovery={}; formatter_safety_strict_documents={}; formatter_safety_recovery_documents={}; formatter_non_utf8_skipped={}",
         coverage.snapshots,
         coverage.non_utf8_skipped,
         coverage.source_documents,
@@ -283,6 +325,9 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
         coverage.smg_exact_recovery,
         coverage.smg_empty_recovery_skipped,
         coverage.smg_empty_strict_skipped,
+        coverage.diagnostics_exact_strict,
+        coverage.diagnostics_exact_recovery,
+        coverage.diagnostics_skipped,
         coverage.formatter_idempotent,
         coverage.formatter_exact_strict,
         coverage.formatter_exact_recovery,
@@ -336,6 +381,24 @@ fn print_formatter_fixture() {
         })
         .collect::<Vec<_>>();
     print!("{}", format_documents_section(&formatted));
+}
+
+#[test]
+#[ignore = "prints one canonical diagnostics rendering for golden review"]
+fn print_diagnostics_fixture() {
+    let requested = std::env::var("SPEC42_DIAGNOSTICS_FIXTURE")
+        .expect("set SPEC42_DIAGNOSTICS_FIXTURE to a fixture path relative to the corpus root");
+    let path = Path::new(FIXTURES).join(&requested);
+    let fixture = String::from_utf8(fs::read(&path).expect("read snapshot fixture"))
+        .expect("requested fixture must be UTF-8");
+    let documents = source_documents(&fixture, &requested);
+    let semantic_documents = semantic_documents(&documents, &requested);
+    let (graph, _) = build_and_link_graph(&semantic_documents).expect("semantic graph");
+    let unit_registry = UnitRegistry::from_graph(&graph);
+    println!(
+        "{}",
+        fixture_diagnostics_rendering(&graph, &unit_registry, &documents, &semantic_documents)
+    );
 }
 
 #[test]
@@ -412,6 +475,80 @@ fn regenerate_formatter_sections() {
                 .unwrap_or_else(|| panic!("{relative}: fixture is missing an EXPECTED section"));
         fs::write(path, updated).expect("write fixture");
     }
+}
+
+#[test]
+#[ignore = "rewrites checked-in diagnostics sections after deliberate review"]
+fn regenerate_diagnostics_sections() {
+    for path in snapshot_paths(Path::new(FIXTURES)) {
+        let relative = path
+            .strip_prefix(FIXTURES)
+            .expect("fixture path")
+            .display()
+            .to_string();
+        let Ok(fixture) = String::from_utf8(fs::read(&path).expect("read snapshot fixture")) else {
+            continue;
+        };
+        let documents = source_documents(&fixture, &relative);
+        let semantic_documents = semantic_documents(&documents, &relative);
+        let (graph, _) = build_and_link_graph(&semantic_documents).expect("semantic graph");
+        let unit_registry = UnitRegistry::from_graph(&graph);
+        let rendering =
+            fixture_diagnostics_rendering(&graph, &unit_registry, &documents, &semantic_documents);
+        let metadata = updated_diagnostics_metadata(
+            section(&fixture, "META")
+                .unwrap_or_else(|| panic!("{relative}: fixture is missing META")),
+        );
+        let fixture = replace_section(&fixture, "META", &metadata)
+            .unwrap_or_else(|| panic!("{relative}: fixture is missing a META section"));
+        let updated = replace_or_append_section(&fixture, "DIAGNOSTICS", &rendering);
+        fs::write(path, updated).expect("write fixture");
+    }
+}
+
+fn semantic_documents(documents: &[SourceDocument], relative: &str) -> Vec<SysmlDocument> {
+    documents
+        .iter()
+        .map(|document| {
+            SysmlDocument::from_memory_path(
+                "compatibility-snapshot",
+                &format!("{relative}/{}", document.name),
+                document.text.clone(),
+                SysmlDocumentSourceKind::Workspace,
+                None,
+                None,
+            )
+            .expect("memory URI")
+        })
+        .collect()
+}
+
+fn fixture_diagnostics_rendering(
+    graph: &sysml_model::SemanticGraph,
+    unit_registry: &UnitRegistry,
+    documents: &[SourceDocument],
+    semantic_documents: &[SysmlDocument],
+) -> String {
+    let mut rendered = String::from("(fixture-diagnostics\n");
+    for (document, semantic_document) in documents.iter().zip(semantic_documents) {
+        let diagnostics = collect_document_diagnostics(
+            graph,
+            unit_registry,
+            false,
+            &semantic_document.uri,
+            &document.text,
+            false,
+        );
+        rendered.push_str(&format!("  (document {:?}\n", document.name));
+        for line in render_diagnostics_sexpr(&diagnostics).lines() {
+            rendered.push_str("    ");
+            rendered.push_str(line);
+            rendered.push('\n');
+        }
+        rendered.push_str("  )\n");
+    }
+    rendered.push(')');
+    rendered
 }
 
 fn options() -> FormatOptions {
@@ -542,6 +679,15 @@ fn replace_or_insert_format_section(fixture: &str, replacement: &str) -> Option<
     Some(updated)
 }
 
+fn replace_or_append_section(fixture: &str, name: &str, replacement: &str) -> String {
+    if let Some(updated) = replace_section(fixture, name, replacement) {
+        return updated;
+    }
+    let mut updated = fixture.trim_end().to_string();
+    updated.push_str(&format!("\n# {name}\n~~~sexpr\n{replacement}\n~~~\n"));
+    updated
+}
+
 fn format_documents_section(documents: &[SourceDocument]) -> String {
     assert!(
         !documents.is_empty(),
@@ -576,6 +722,10 @@ fn semantic_graph_skip_reason(fixture: &str) -> Result<Option<String>, String> {
 
 fn formatter_skip_reason(fixture: &str) -> Result<Option<String>, String> {
     skip_reason(fixture, "formatter", "formatter_skip_reason")
+}
+
+fn diagnostics_skip_reason(fixture: &str) -> Result<Option<String>, String> {
+    skip_reason(fixture, "diagnostics", "diagnostics_skip_reason")
 }
 
 fn skip_reason(fixture: &str, state_key: &str, reason_key: &str) -> Result<Option<String>, String> {
@@ -682,6 +832,16 @@ fn updated_semantic_graph_metadata(
         lines.push(format!("semantic_graph_skip_reason={reason}"));
     }
     lines.join("\n")
+}
+
+fn updated_diagnostics_metadata(metadata: String) -> String {
+    metadata
+        .lines()
+        .filter(|line| {
+            !line.starts_with("diagnostics=") && !line.starts_with("diagnostics_skip_reason=")
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 fn empty_semantic_graph() -> &'static str {

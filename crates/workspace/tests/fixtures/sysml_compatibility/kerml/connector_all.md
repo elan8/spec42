@@ -72,3 +72,18 @@ package ConnectorAll {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/connector_all.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 209))
+      )
+    )
+  )
+)
+~~~

@@ -75,3 +75,18 @@ package ion {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_unclosed_short_name.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 5 2) (end 5 25))
+      )
+    )
+  )
+)
+~~~

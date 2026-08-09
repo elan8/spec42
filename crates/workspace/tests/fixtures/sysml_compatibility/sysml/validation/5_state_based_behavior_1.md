@@ -933,3 +933,84 @@ semantic.unresolved_name 'TemperatureValue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/5_state_based_behavior_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 1) (end 3 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 12 3) (end 12 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 44 2) (end 44 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "transition_guard_non_boolean")
+        (source "semantic")
+        (range (start 80 4) (end 80 676))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 189 3) (end 189 51))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 197 3) (end 197 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 198 3) (end 198 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 199 3) (end 199 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_subset_redefine_kind")
+        (source "semantic")
+        (range (start 210 3) (end 210 257))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_subset_redefine_kind")
+        (source "semantic")
+        (range (start 230 4) (end 230 75))
+      )
+    )
+  )
+)
+~~~

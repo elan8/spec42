@@ -54,3 +54,12 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_featured_by_value.md"
+    (diagnostics
+    )
+  )
+)
+~~~

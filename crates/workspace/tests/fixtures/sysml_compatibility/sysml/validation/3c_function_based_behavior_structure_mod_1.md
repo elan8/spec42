@@ -277,3 +277,18 @@ semantic.unresolved_name 'OccurrenceFunctions::destroy'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/3c_function_based_behavior_structure_mod_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "invalid_qualified_name_segment")
+        (source "semantic")
+        (range (start 40 3) (end 40 155))
+      )
+    )
+  )
+)
+~~~

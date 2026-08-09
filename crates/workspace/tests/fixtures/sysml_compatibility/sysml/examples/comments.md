@@ -104,3 +104,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/comments.md"
+    (diagnostics
+    )
+  )
+)
+~~~

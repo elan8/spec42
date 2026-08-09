@@ -151,3 +151,60 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/11_interface_decomposition_example.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_interface_def_body_element")
+        (source "sysml")
+        (range (start 9 2) (end 9 92))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 9 2) (end 9 92))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 18 10) (end 18 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 18 10) (end 18 24))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 18 10) (end 18 24))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 19 10) (end 19 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 19 10) (end 19 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 19 10) (end 19 25))
+      )
+    )
+  )
+)
+~~~

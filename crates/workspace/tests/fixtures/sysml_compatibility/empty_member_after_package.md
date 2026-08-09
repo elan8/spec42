@@ -44,3 +44,18 @@ semantic.unresolved_name 'Real'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "empty_member_after_package.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 0 17) (end 0 34))
+      )
+    )
+  )
+)
+~~~

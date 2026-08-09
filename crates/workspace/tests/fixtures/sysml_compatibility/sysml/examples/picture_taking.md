@@ -109,3 +109,12 @@ semantic.invalid_connection_end_count
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/picture_taking.md"
+    (diagnostics
+    )
+  )
+)
+~~~

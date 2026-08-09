@@ -123,3 +123,42 @@ semantic.unresolved_name 'VerificationMethod'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/verification_metadata_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_annotation_unresolved")
+        (source "semantic")
+        (range (start 6 8) (end 6 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "objective_binding_unresolved")
+        (source "semantic")
+        (range (start 7 8) (end 7 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_annotation_unresolved")
+        (source "semantic")
+        (range (start 10 9) (end 10 47))
+      )
+    )
+  )
+)
+~~~

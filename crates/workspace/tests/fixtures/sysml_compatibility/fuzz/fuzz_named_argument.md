@@ -69,3 +69,12 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_named_argument.md"
+    (diagnostics
+    )
+  )
+)
+~~~

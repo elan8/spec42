@@ -122,3 +122,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/19_terminate_actions_example_2.md"
+    (diagnostics
+    )
+  )
+)
+~~~

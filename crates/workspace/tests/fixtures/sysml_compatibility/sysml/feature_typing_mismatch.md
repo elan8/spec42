@@ -49,3 +49,12 @@ part p : Foo;
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/feature_typing_mismatch.md"
+    (diagnostics
+    )
+  )
+)
+~~~

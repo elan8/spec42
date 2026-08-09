@@ -186,3 +186,84 @@ semantic.unresolved_name 'SysML::PartUsage'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/39_metadata_example_1.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "metadata_about_unresolved")
+        (source "semantic")
+        (range (start 8 1) (end 8 125))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_about_unresolved")
+        (source "semantic")
+        (range (start 8 1) (end 8 125))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_about_unresolved")
+        (source "semantic")
+        (range (start 8 1) (end 8 125))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_about_unresolved")
+        (source "semantic")
+        (range (start 13 1) (end 13 94))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_about_unresolved")
+        (source "semantic")
+        (range (start 13 1) (end 13 94))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 19 3) (end 19 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 20 3) (end 20 20))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 21 3) (end 21 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 22 3) (end 22 21))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 25 3) (end 25 13))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 26 3) (end 26 15))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 27 3) (end 27 21))
+      )
+    )
+  )
+)
+~~~

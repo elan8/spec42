@@ -91,3 +91,12 @@ semantic.unresolved_name 'Real'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/massed_things.md"
+    (diagnostics
+    )
+  )
+)
+~~~

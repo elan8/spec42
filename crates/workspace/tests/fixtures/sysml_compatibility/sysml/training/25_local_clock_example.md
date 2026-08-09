@@ -195,3 +195,30 @@ semantic.unresolved_name 'String'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/25_local_clock_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 7 2) (end 7 42))
+      )
+      (diagnostic
+        (severity warning)
+        (code "accept_payload_incompatible")
+        (source "semantic")
+        (range (start 21 3) (end 21 64))
+      )
+    )
+  )
+)
+~~~

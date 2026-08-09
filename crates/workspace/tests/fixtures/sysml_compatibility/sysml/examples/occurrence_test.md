@@ -179,3 +179,48 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/occurrence_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 5 2) (end 5 12))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 6 2) (end 6 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_occurrence_def_body_element")
+        (source "sysml")
+        (range (start 8 2) (end 8 33))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 15 2) (end 15 11))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 18 1) (end 18 68))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 18 1) (end 18 68))
+      )
+    )
+  )
+)
+~~~

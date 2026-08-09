@@ -137,3 +137,12 @@ semantic.feature_typing_kind_mismatch
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/behaviors.md"
+    (diagnostics
+    )
+  )
+)
+~~~

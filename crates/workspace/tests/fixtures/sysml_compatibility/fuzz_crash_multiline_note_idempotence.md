@@ -71,3 +71,24 @@ parse.expected_close_curly
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_crash_multiline_note_idempotence.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 3 1) (end 3 332))
+      )
+      (diagnostic
+        (severity error)
+        (code "missing_closing_brace")
+        (source "sysml")
+        (range (start 12 1) (end 12 2))
+      )
+    )
+  )
+)
+~~~

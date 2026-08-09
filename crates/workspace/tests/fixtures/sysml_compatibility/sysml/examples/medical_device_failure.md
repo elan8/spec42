@@ -140,3 +140,18 @@ parse.expected_usage_declaration
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/medical_device_failure.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 34))
+      )
+    )
+  )
+)
+~~~

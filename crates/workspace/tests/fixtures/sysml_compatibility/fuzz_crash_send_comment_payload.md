@@ -66,3 +66,24 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz_crash_send_comment_payload.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 2 4) (end 2 87))
+      )
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 4 2) (end 4 12))
+      )
+    )
+  )
+)
+~~~

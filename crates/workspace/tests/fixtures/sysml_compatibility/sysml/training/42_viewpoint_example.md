@@ -189,3 +189,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/42_viewpoint_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

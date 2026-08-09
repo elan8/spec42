@@ -44,3 +44,12 @@ semantic.unresolved_name 'Integer'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "feature_typing.md"
+    (diagnostics
+    )
+  )
+)
+~~~

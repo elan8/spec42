@@ -258,3 +258,24 @@ semantic.unresolved_name 'VerdictKind'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/34_verification_case_definition_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 6 1) (end 6 270))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 8 2) (end 8 32))
+      )
+    )
+  )
+)
+~~~

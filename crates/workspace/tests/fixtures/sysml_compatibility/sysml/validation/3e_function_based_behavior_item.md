@@ -284,3 +284,18 @@ semantic.invalid_connection_end_count
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/3e_function_based_behavior_item.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 48 8) (end 48 74))
+      )
+    )
+  )
+)
+~~~

@@ -186,3 +186,18 @@ semantic.unresolved_name 'Base::Anything'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/types.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 1 1) (end 1 947))
+      )
+    )
+  )
+)
+~~~

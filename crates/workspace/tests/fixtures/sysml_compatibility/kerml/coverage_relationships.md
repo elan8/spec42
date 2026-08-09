@@ -157,3 +157,18 @@ package RelationshipCoverage {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/coverage_relationships.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 1 4) (end 1 435))
+      )
+    )
+  )
+)
+~~~

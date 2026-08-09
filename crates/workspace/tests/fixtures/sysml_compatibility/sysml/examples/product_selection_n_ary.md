@@ -137,3 +137,30 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/product_selection_n_ary.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 15 2) (end 15 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 16 2) (end 16 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 17 2) (end 17 50))
+      )
+    )
+  )
+)
+~~~

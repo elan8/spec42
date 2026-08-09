@@ -171,3 +171,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/connectors.md"
+    (diagnostics
+    )
+  )
+)
+~~~

@@ -237,3 +237,54 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/product_selection_owned_ends.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 11 2) (end 11 56))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 18 2) (end 18 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 19 2) (end 19 62))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 22 1) (end 22 160))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 27 1) (end 27 187))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 28 2) (end 28 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "interface_end_invalid")
+        (source "semantic")
+        (range (start 29 2) (end 29 63))
+      )
+    )
+  )
+)
+~~~

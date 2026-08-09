@@ -148,3 +148,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/37_dependency_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

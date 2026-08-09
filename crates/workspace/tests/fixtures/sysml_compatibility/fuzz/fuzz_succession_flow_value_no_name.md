@@ -83,3 +83,12 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_succession_flow_value_no_name.md"
+    (diagnostics
+    )
+  )
+)
+~~~

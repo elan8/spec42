@@ -199,3 +199,12 @@ semantic.unresolved_name 'ScalarValues::Real'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/vehicle_definitions.md"
+    (diagnostics
+    )
+  )
+)
+~~~

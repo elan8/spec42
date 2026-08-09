@@ -108,3 +108,18 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/12a_dependency.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 13 1) (end 13 22))
+      )
+    )
+  )
+)
+~~~

@@ -139,3 +139,24 @@ abstract part def Container {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/coverage_abstract_defs.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 5 0) (end 5 39))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 15 4) (end 15 38))
+      )
+    )
+  )
+)
+~~~

@@ -178,3 +178,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/27_event_occurrence_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

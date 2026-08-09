@@ -188,3 +188,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/14_action_succession_example_1.md"
+    (diagnostics
+    )
+  )
+)
+~~~

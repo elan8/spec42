@@ -251,3 +251,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/09_connections_example.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 28 3) (end 28 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 28 3) (end 28 34))
+      )
+    )
+  )
+)
+~~~

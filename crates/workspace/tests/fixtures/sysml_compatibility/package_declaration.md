@@ -43,3 +43,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "package_declaration.md"
+    (diagnostics
+    )
+  )
+)
+~~~

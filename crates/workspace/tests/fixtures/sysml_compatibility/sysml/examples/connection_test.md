@@ -317,3 +317,138 @@ parse.expected_usage_declaration
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/connection_test.md"
+    (diagnostics
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 4 3) (end 4 11))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 9 2) (end 9 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 15 10) (end 15 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 15 10) (end 15 14))
+      )
+      (diagnostic
+        (severity error)
+        (code "unresolved_pending_expression_relationship")
+        (source "semantic")
+        (range (start 16 10) (end 16 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_connection_segment")
+        (source "semantic")
+        (range (start 16 10) (end 16 17))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 20 2) (end 20 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 20 2) (end 20 12))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 21 2) (end 21 14))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 21 2) (end 21 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 26 1) (end 26 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 27 1) (end 27 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 28 1) (end 28 9))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 29 1) (end 29 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incomplete_connection_like_end_pair")
+        (source "semantic")
+        (range (start 39 1) (end 39 73))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 40 2) (end 40 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 40 2) (end 40 12))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 41 2) (end 41 30))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 47 1) (end 47 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "incomplete_connection_like_end_pair")
+        (source "semantic")
+        (range (start 55 1) (end 55 82))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_connection_def_body_element")
+        (source "sysml")
+        (range (start 56 5) (end 56 48))
+      )
+    )
+  )
+)
+~~~

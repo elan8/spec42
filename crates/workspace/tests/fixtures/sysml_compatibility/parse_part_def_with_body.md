@@ -59,3 +59,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "parse_part_def_with_body.md"
+    (diagnostics
+    )
+  )
+)
+~~~

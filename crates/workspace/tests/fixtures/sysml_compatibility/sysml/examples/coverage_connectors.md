@@ -127,3 +127,18 @@ part def System {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/coverage_connectors.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 7 4) (end 7 143))
+      )
+    )
+  )
+)
+~~~

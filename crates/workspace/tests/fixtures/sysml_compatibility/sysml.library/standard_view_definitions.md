@@ -388,3 +388,18 @@ standard library package StandardViewDefinitions {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml.library/standard_view_definitions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 4) (end 4 27))
+      )
+    )
+  )
+)
+~~~

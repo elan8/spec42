@@ -224,3 +224,18 @@ parse.expected_semicolon_or_body
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/view_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_view_def_body_element")
+        (source "sysml")
+        (range (start 31 2) (end 31 38))
+      )
+    )
+  )
+)
+~~~

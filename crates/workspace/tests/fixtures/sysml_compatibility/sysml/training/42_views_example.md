@@ -183,3 +183,66 @@ semantic.unresolved_name 'columnView'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/42_views_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 1) (end 3 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "view_type_non_standard")
+        (source "semantic")
+        (range (start 10 1) (end 10 105))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 11 2) (end 11 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "view_expose_unresolved")
+        (source "semantic")
+        (range (start 11 2) (end 11 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 16 2) (end 16 59))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 2) (end 16 59))
+      )
+      (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 21 1) (end 21 302))
+      )
+    )
+  )
+)
+~~~

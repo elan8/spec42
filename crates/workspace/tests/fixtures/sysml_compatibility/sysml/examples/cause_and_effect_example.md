@@ -306,3 +306,186 @@ semantic.unresolved_name 'CausationMetadata'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/cause_and_effect_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 20 1) (end 20 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 24 1) (end 24 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 24 1) (end 24 17))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 24 17) (end 24 126))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 28 15) (end 28 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 28 15) (end 28 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 28 15) (end 28 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_endpoint_not_port")
+        (source "semantic")
+        (range (start 28 15) (end 28 17))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_context_invalid")
+        (source "semantic")
+        (range (start 29 4) (end 29 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_endpoint_not_port")
+        (source "semantic")
+        (range (start 29 4) (end 29 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_endpoint_not_port")
+        (source "semantic")
+        (range (start 30 4) (end 30 11))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 30 4) (end 30 11))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_endpoint_not_port")
+        (source "semantic")
+        (range (start 31 4) (end 31 13))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 40 1) (end 40 8))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 40 8) (end 40 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 41 1) (end 41 8))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 41 1) (end 41 8))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 41 8) (end 41 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 42 1) (end 42 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 42 9) (end 42 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 43 1) (end 43 9))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 43 1) (end 43 9))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "sysml")
+        (range (start 43 9) (end 43 27))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 45 1) (end 45 17))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 45 17) (end 45 66))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 47 1) (end 47 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 48 1) (end 48 12))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 48 1) (end 48 12))
+      )
+    )
+  )
+)
+~~~

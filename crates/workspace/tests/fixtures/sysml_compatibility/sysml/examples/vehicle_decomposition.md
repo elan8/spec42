@@ -301,3 +301,30 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/vehicle_decomposition.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 10 4) (end 10 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 45 2) (end 45 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 51 2) (end 51 29))
+      )
+    )
+  )
+)
+~~~

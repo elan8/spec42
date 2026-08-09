@@ -44,3 +44,18 @@ parse.expected_semicolon_or_body
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "empty_member_at_file_level.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "expected_keyword")
+        (source "sysml")
+        (range (start 0 0) (end 0 17))
+      )
+    )
+  )
+)
+~~~

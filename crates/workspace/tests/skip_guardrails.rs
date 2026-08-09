@@ -128,6 +128,27 @@ fn formatter_skip_metadata_rejects_missing_or_stale_reasons() {
     }
 }
 
+#[test]
+fn diagnostics_skip_metadata_rejects_missing_or_orphaned_reasons() {
+    assert!(validate_fixture_skip_metadata(
+        "# META\n~~~ini\ndiagnostics=skip\ndiagnostics_skip_reason=missing optional diagnostic capability\n~~~\n"
+    )
+    .is_ok());
+
+    for invalid in [
+        "# META\n~~~ini\ndiagnostics=skip\n~~~\n",
+        "# META\n~~~ini\ndiagnostics=skip\ndiagnostics_skip_reason=   \n~~~\n",
+        "# META\n~~~ini\ndiagnostics_skip_reason=known diagnostic gap\n~~~\n",
+        "# META\n~~~ini\ndiagnostics=assert\ndiagnostics_skip_reason=known diagnostic gap\n~~~\n",
+        "# META\n~~~ini\ndiagnostics=skip\ndiagnostics=skip\ndiagnostics_skip_reason=known diagnostic gap\n~~~\n",
+    ] {
+        assert!(
+            validate_fixture_skip_metadata(invalid).is_err(),
+            "invalid diagnostics skip metadata was accepted: {invalid}"
+        );
+    }
+}
+
 #[derive(Debug)]
 struct IgnoreViolation {
     line: usize,
@@ -209,7 +230,8 @@ fn visit_markdown(root: &Path, visit: &mut dyn FnMut(&Path)) {
 fn validate_fixture_skip_metadata(fixture: &str) -> Result<(), String> {
     let metadata = fenced_section(fixture, "META").ok_or("fixture is missing a META section")?;
     validate_skip_metadata(metadata, "semantic_graph", "semantic_graph_skip_reason")?;
-    validate_skip_metadata(metadata, "formatter", "formatter_skip_reason")
+    validate_skip_metadata(metadata, "formatter", "formatter_skip_reason")?;
+    validate_skip_metadata(metadata, "diagnostics", "diagnostics_skip_reason")
 }
 
 fn validate_semantic_graph_skip_metadata(fixture: &str) -> Result<(), String> {

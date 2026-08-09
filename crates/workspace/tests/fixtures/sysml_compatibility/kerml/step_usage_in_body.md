@@ -54,3 +54,12 @@ state def SD {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/step_usage_in_body.md"
+    (diagnostics
+    )
+  )
+)
+~~~

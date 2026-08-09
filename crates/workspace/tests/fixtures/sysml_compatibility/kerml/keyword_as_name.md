@@ -166,3 +166,12 @@ package KeywordAsName {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/keyword_as_name.md"
+    (diagnostics
+    )
+  )
+)
+~~~

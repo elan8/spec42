@@ -941,3 +941,66 @@ parse.expected_semicolon_or_body
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/2a_parts_interconnection.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "conjugated_port_inconsistent")
+        (source "semantic")
+        (range (start 48 3) (end 48 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "conjugated_port_inconsistent")
+        (source "semantic")
+        (range (start 48 3) (end 48 41))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_endpoint_not_port")
+        (source "semantic")
+        (range (start 86 3) (end 86 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "connection_endpoint_not_port")
+        (source "semantic")
+        (range (start 87 3) (end 87 32))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 146 5) (end 146 172))
+      )
+      (diagnostic
+        (severity warning)
+        (code "port_type_mismatch")
+        (source "semantic")
+        (range (start 168 12) (end 168 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "port_type_mismatch")
+        (source "semantic")
+        (range (start 169 12) (end 169 50))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 180 5) (end 180 43))
+      )
+      (diagnostic
+        (severity information)
+        (code "unconnected_port")
+        (source "semantic")
+        (range (start 185 5) (end 185 43))
+      )
+    )
+  )
+)
+~~~

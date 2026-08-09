@@ -124,3 +124,12 @@ semantic.unresolved_name 'ScalarValues::Integer'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/parameter_test.md"
+    (diagnostics
+    )
+  )
+)
+~~~

@@ -224,3 +224,18 @@ semantic.invalid_connection_end_count
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/control_node_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 12 1) (end 12 56))
+      )
+    )
+  )
+)
+~~~

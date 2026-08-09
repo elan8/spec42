@@ -208,3 +208,30 @@ semantic.unresolved_name 'SysML::Usage'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/metadata_test.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_specializes_reference")
+        (source "semantic")
+        (range (start 5 12) (end 5 193))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_package_body_element")
+        (source "sysml")
+        (range (start 32 1) (end 32 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "recovery_cascade_suppressed")
+        (source "sysml")
+        (range (start 32 1) (end 32 40))
+      )
+    )
+  )
+)
+~~~

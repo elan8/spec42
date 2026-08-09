@@ -67,3 +67,12 @@ semantic.unresolved_name 'ISQ::TorqueValue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/feature_inheritance.md"
+    (diagnostics
+    )
+  )
+)
+~~~

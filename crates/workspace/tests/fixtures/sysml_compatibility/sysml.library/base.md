@@ -316,3 +316,12 @@ standard library package Base {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml.library/base.md"
+    (diagnostics
+    )
+  )
+)
+~~~

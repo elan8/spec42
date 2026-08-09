@@ -103,3 +103,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/root_package_test.md"
+    (diagnostics
+    )
+  )
+)
+~~~

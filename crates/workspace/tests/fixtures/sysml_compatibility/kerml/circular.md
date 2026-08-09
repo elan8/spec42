@@ -97,3 +97,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/circular.md"
+    (diagnostics
+    )
+  )
+)
+~~~

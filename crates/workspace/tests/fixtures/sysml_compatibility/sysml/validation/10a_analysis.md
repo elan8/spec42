@@ -358,3 +358,78 @@ semantic.unresolved_name 'MassValue'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/10a_analysis.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 1) (end 1 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 1) (end 3 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_redefines_target")
+        (source "semantic")
+        (range (start 11 3) (end 11 167))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 3) (end 11 167))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 37 2) (end 37 45))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 40 3) (end 40 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "case_objective_binding_cardinality")
+        (source "semantic")
+        (range (start 44 2) (end 44 187))
+      )
+      (diagnostic
+        (severity warning)
+        (code "objective_binding_unresolved")
+        (source "semantic")
+        (range (start 46 3) (end 46 86))
+      )
+      (diagnostic
+        (severity warning)
+        (code "case_objective_binding_cardinality")
+        (source "semantic")
+        (range (start 54 2) (end 54 337))
+      )
+      (diagnostic
+        (severity warning)
+        (code "objective_binding_unresolved")
+        (source "semantic")
+        (range (start 56 3) (end 56 37))
+      )
+    )
+  )
+)
+~~~

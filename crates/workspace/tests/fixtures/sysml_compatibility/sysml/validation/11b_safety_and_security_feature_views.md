@@ -417,3 +417,84 @@ semantic.unresolved_name 'Boolean'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/11b_safety_and_security_feature_views.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 1) (end 2 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 6 3) (end 6 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 12 2) (end 12 41))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 17 4) (end 17 22))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 21 4) (end 21 14))
+      )
+      (diagnostic
+        (severity information)
+        (code "untyped_part_usage")
+        (source "sysml")
+        (range (start 26 4) (end 26 18))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 47 2) (end 47 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 48 2) (end 48 36))
+      )
+      (diagnostic
+        (severity warning)
+        (code "view_type_non_standard")
+        (source "semantic")
+        (range (start 50 2) (end 50 76))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 55 6) (end 55 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "view_expose_unresolved")
+        (source "semantic")
+        (range (start 55 6) (end 55 28))
+      )
+      (diagnostic
+        (severity warning)
+        (code "view_filter_non_boolean")
+        (source "semantic")
+        (range (start 56 3) (end 56 30))
+      )
+    )
+  )
+)
+~~~

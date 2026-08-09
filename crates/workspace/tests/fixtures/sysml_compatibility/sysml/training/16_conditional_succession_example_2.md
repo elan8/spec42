@@ -210,3 +210,30 @@ semantic.unresolved_name 'ScalarValues::Boolean'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/16_conditional_succession_example_2.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 16 3) (end 16 38))
+      )
+      (diagnostic
+        (severity error)
+        (code "recovered_action_body_element")
+        (source "sysml")
+        (range (start 20 2) (end 20 48))
+      )
+      (diagnostic
+        (severity error)
+        (code "implicit_redefinition_without_operator")
+        (source "semantic")
+        (range (start 26 3) (end 26 43))
+      )
+    )
+  )
+)
+~~~

@@ -91,3 +91,12 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/binding_connector_bind_kw.md"
+    (diagnostics
+    )
+  )
+)
+~~~

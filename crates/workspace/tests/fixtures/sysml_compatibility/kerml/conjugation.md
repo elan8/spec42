@@ -74,3 +74,12 @@ semantic.unresolved_name 'B::f'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/conjugation.md"
+    (diagnostics
+    )
+  )
+)
+~~~

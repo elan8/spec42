@@ -61,3 +61,12 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_ref_prefix_metadata_order.md"
+    (diagnostics
+    )
+  )
+)
+~~~

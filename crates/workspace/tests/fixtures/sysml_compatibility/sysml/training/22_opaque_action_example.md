@@ -106,3 +106,24 @@ semantic.unresolved_name 'ScalarValues::Boolean'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/22_opaque_action_example.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 3 2) (end 3 42))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "sysml")
+        (range (start 8 2) (end 8 145))
+      )
+    )
+  )
+)
+~~~

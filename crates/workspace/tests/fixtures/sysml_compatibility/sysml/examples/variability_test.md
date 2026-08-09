@@ -221,3 +221,18 @@ parse.expected_usage_declaration
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/variability_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_usage_body_element")
+        (source "sysml")
+        (range (start 15 2) (end 15 45))
+      )
+    )
+  )
+)
+~~~

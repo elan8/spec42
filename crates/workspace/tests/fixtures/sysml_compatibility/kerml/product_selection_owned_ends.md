@@ -390,3 +390,12 @@ semantic.unresolved_name 'target'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/product_selection_owned_ends.md"
+    (diagnostics
+    )
+  )
+)
+~~~

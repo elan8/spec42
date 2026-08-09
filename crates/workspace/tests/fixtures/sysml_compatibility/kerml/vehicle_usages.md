@@ -470,3 +470,18 @@ semantic.unresolved_name 'DriveIF'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/vehicle_usages.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 1) (end 6 38))
+      )
+    )
+  )
+)
+~~~

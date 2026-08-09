@@ -274,3 +274,12 @@ semantic.unresolved_name 'Occurrences::Occurrence::snapshots'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/time_varying_steps.md"
+    (diagnostics
+    )
+  )
+)
+~~~

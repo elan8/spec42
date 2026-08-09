@@ -104,3 +104,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/argument_resolution.md"
+    (diagnostics
+    )
+  )
+)
+~~~

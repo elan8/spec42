@@ -83,3 +83,30 @@ package P {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "fuzz/fuzz_flow_value_no_name.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 1 4) (end 1 166))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 2 8) (end 2 26))
+      )
+      (diagnostic
+        (severity error)
+        (code "missing_semicolon")
+        (source "sysml")
+        (range (start 4 8) (end 4 108))
+      )
+    )
+  )
+)
+~~~

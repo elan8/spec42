@@ -178,3 +178,12 @@ semantic.unresolved_name 'SysML::PartUsage'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/14a_language_extensions.md"
+    (diagnostics
+    )
+  )
+)
+~~~

@@ -43,3 +43,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml_part_def.md"
+    (diagnostics
+    )
+  )
+)
+~~~

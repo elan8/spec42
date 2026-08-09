@@ -121,3 +121,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/default_value_test.md"
+    (diagnostics
+    )
+  )
+)
+~~~

@@ -110,3 +110,12 @@ semantic.unresolved_name 'involvedObjects'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/take_picture.md"
+    (diagnostics
+    )
+  )
+)
+~~~

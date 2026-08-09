@@ -172,3 +172,24 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/07_parts_example_1.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 18 3) (end 18 25))
+      )
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 24 3) (end 24 25))
+      )
+    )
+  )
+)
+~~~

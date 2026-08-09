@@ -134,3 +134,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/10_port_conjugation_example.md"
+    (diagnostics
+    )
+  )
+)
+~~~

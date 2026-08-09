@@ -102,3 +102,36 @@ package Annotated {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/coverage_metadata.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 4 4) (end 4 39))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 4) (end 9 50))
+      )
+      (diagnostic
+        (severity warning)
+        (code "metadata_keyword_unresolved")
+        (source "semantic")
+        (range (start 11 4) (end 11 16))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_annotation_syntax")
+        (source "sysml")
+        (range (start 13 4) (end 13 51))
+      )
+    )
+  )
+)
+~~~

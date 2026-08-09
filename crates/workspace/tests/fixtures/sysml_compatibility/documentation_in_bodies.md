@@ -173,3 +173,12 @@ package DocTests {
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "documentation_in_bodies.md"
+    (diagnostics
+    )
+  )
+)
+~~~

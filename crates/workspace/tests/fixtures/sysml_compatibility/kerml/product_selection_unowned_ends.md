@@ -211,3 +211,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/product_selection_unowned_ends.md"
+    (diagnostics
+    )
+  )
+)
+~~~

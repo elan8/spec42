@@ -111,3 +111,12 @@ semantic.unresolved_name 'Real'
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "kerml/packet_usage.md"
+    (diagnostics
+    )
+  )
+)
+~~~

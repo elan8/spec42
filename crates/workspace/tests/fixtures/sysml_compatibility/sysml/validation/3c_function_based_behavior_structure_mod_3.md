@@ -203,3 +203,12 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/validation/3c_function_based_behavior_structure_mod_3.md"
+    (diagnostics
+    )
+  )
+)
+~~~

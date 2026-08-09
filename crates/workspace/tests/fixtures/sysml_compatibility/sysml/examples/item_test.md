@@ -142,3 +142,18 @@ NIL
   )
 )
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/examples/item_test.md"
+    (diagnostics
+      (diagnostic
+        (severity error)
+        (code "recovered_part_def_body_element")
+        (source "sysml")
+        (range (start 14 2) (end 14 27))
+      )
+    )
+  )
+)
+~~~
