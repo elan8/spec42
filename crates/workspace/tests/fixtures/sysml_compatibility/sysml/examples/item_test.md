@@ -108,19 +108,19 @@ NIL
       (contains
         (element (kind "item def") (id (node (document "d0") (qualified-name "ItemTest::A"))) (name "A") (declared-name "A")
           (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "ItemTest::A::c"))) (name "c") (declared-name "c") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::A")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "ItemTest::A::c"))) (name "c") (declared-name "c") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::A")))))
           )
         )
         (element (kind "item def") (id (node (document "d0") (qualified-name "ItemTest::B"))) (name "B") (declared-name "B")
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ItemTest::B::a"))) (name "a") (declared-name "a") (declared (properties (abstract true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "ItemTest::B")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ItemTest::B::a"))) (name "a") (declared-name "a") (declared (properties (abstract true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ItemTest::B")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "ItemTest::C"))) (name "C") (declared-name "C") (declared))
         (element (kind "port def") (id (node (document "d0") (qualified-name "ItemTest::P"))) (name "P") (declared-name "P")
           (contains
-            (element (kind "item") (id (node (document "d0") (qualified-name "ItemTest::P::a1"))) (name "a1") (declared-name "a1") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "ItemTest::P::a2"))) (name "a2") (declared-name "a2") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "ItemTest::P::a1"))) (name "a1") (declared-name "a1") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "ItemTest::P::a2"))) (name "a2") (declared-name "a2") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
             (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "ItemTest::P::~P"))) (name "~P") (declared-name "~P") (effective (featuring-type (node (document "d0") (qualified-name "ItemTest::P")))))
           )
         )

@@ -564,7 +564,7 @@ standard library package Items {
               )
             )
             (element (kind "ref") (id (node (document "d0") (qualified-name "Items::Item::self"))) (name "self") (declared-name "self") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Items::Item::subparts"))) (name "subparts") (declared-name "subparts") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Items::Item"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Items::Item::subparts"))) (name "subparts") (declared-name "subparts") (declared (properties (abstract true) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Items::Item"))))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Items::Item::subparts::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Items::Item")))))
               )

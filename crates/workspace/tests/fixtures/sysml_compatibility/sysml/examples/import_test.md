@@ -102,7 +102,7 @@ NIL
             (element (kind "import") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::*#import"))) (name "*") (declared-name "*"))
             (element (kind "part def") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::P12"))) (name "P12") (declared-name "P12") (declared))
             (element (kind "import") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::P211"))) (name "P211") (declared-name "P211"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::p11"))) (name "p11") (declared-name "p11") (declared (properties (composite true) (reference false) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ImportTest::Pkg1::p11"))) (name "p11") (declared-name "p11") (declared (properties (ordered false))))
           )
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "ImportTest::Pkg2"))) (name "Pkg2") (declared-name "Pkg2")

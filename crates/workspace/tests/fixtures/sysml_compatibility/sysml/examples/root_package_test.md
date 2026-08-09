@@ -85,12 +85,12 @@ NIL
     (element (kind "package") (id (node (document "d0") (qualified-name "P2"))) (name "P2") (declared-name "P2")
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "P2::*"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "P2::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "P2::a"))) (name "a") (declared-name "a") (declared (properties (ordered false))))
       )
     )
     (element (kind "package") (id (node (document "d0") (qualified-name "P3"))) (name "P3") (declared-name "P3")
       (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "P3::b"))) (name "b") (declared-name "b") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "P3::b"))) (name "b") (declared-name "b") (declared (properties (ordered false))))
       )
     )
   )

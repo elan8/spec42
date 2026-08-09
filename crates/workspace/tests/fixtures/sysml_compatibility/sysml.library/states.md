@@ -421,7 +421,7 @@ standard library package States {
         (element (kind "import") (id (node (document "d0") (qualified-name "States::actions"))) (name "actions") (declared-name "actions"))
         (element (kind "import") (id (node (document "d0") (qualified-name "States::notEmpty"))) (name "notEmpty") (declared-name "notEmpty"))
         (element (kind "import") (id (node (document "d0") (qualified-name "States::size"))) (name "size") (declared-name "size"))
-        (element (kind "state") (id (node (document "d0") (qualified-name "States::stateActions"))) (name "stateActions") (declared-name "stateActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+        (element (kind "state") (id (node (document "d0") (qualified-name "States::stateActions"))) (name "stateActions") (declared-name "stateActions") (declared (properties (abstract true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "States::stateActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "States::StateAction")))))
           )

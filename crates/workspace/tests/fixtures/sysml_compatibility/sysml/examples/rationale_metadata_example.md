@@ -114,9 +114,9 @@ semantic.unresolved_name 'TradeStudy'
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "RationaleMetadataExample::*"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "RationaleMetadataExample::Rationale"))) (name "Rationale") (declared-name "Rationale"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))) (name "engine6cyl") (declared-name "engine6cyl") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))) (name "engine6cyl") (declared-name "engine6cyl") (declared (properties (ordered false))))
         (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale"))) (name "engineSelectionRationale") (declared-name "engineSelectionRationale")
           (contains
             (element (kind "attribute") (id (node (document "d0") (qualified-name "RationaleMetadataExample::engineSelectionRationale::explanation"))) (name "explanation") (declared-name "explanation") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))

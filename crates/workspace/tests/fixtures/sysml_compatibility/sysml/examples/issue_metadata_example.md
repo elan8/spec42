@@ -154,14 +154,14 @@ semantic.unresolved_name 'Issue'
           )
         )
         (element (kind "import") (id (node (document "d0") (qualified-name "IssueMetadataExample::Issue"))) (name "Issue") (declared-name "Issue"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "IssueMetadataExample::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "IssueMetadataExample::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false)))
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "IssueMetadataExample::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "IssueMetadataExample::transmission"))) (name "transmission") (declared-name "transmission") (declared (properties (ordered false)))
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
           )
         )
       )

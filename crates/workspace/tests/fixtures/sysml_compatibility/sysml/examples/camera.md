@@ -80,12 +80,12 @@ semantic.unresolved_name 'takePicture::shoot'
   (containment
     (element (kind "part def") (id (node (document "d0") (qualified-name "Camera"))) (name "Camera") (declared-name "Camera") (declared)
       (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (name "focusingSubsystem") (declared-name "focusingSubsystem") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Camera"))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Camera::focusingSubsystem"))) (name "focusingSubsystem") (declared-name "focusingSubsystem") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Camera"))))
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "Camera::focusingSubsystem::takePicture.focus"))) (name "takePicture.focus") (declared-name "takePicture.focus") (effective (featuring-type (node (document "d0") (qualified-name "Camera")))))
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (name "imagingSubsystem") (declared-name "imagingSubsystem") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Camera"))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Camera::imagingSubsystem"))) (name "imagingSubsystem") (declared-name "imagingSubsystem") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Camera"))))
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "Camera::imagingSubsystem::takePicture.shoot"))) (name "takePicture.shoot") (declared-name "takePicture.shoot") (effective (featuring-type (node (document "d0") (qualified-name "Camera")))))
           )

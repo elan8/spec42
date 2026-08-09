@@ -101,7 +101,7 @@ semantic.unresolved_name 'self'
         (element (kind "import") (id (node (document "d0") (qualified-name "15_08-Range Restriction::*#import"))) (name "*") (declared-name "*"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob"))) (name "HeadLightsTiltKnob") (declared-name "HeadLightsTiltKnob") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (name "headLightsTile") (declared-name "headLightsTile") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))) (name "headLightsTile") (declared-name "headLightsTile") (declared (properties (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob")))))
           )
         )
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue"))) (name "LightBeamTiltAngleValue") (declared-name "LightBeamTiltAngleValue") (declared (properties (ordered false) (unique true)))

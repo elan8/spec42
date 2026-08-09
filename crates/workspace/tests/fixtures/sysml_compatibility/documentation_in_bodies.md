@@ -147,11 +147,11 @@ package DocTests {
         (element (kind "part def") (id (node (document "d0") (qualified-name "DocTests::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "DocTests::Vehicle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "DocTests::Vehicle")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "DocTests::Vehicle::speed"))) (name "speed") (declared-name "speed") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "DocTests::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "DocTests::Vehicle::speed"))) (name "speed") (declared-name "speed") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "DocTests::Vehicle")))))
           )
         )
         (element (kind "documentation") (id (node (document "d0") (qualified-name "DocTests::_documentation"))) (name ""))
-        (element (kind "part") (id (node (document "d0") (qualified-name "DocTests::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "DocTests::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "DocTests::vehicle::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "DocTests::Vehicle")))))
           )

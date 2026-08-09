@@ -97,11 +97,11 @@ semantic.unresolved_name 'Real'
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "Packet Usage::*"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "Packet Usage::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Packet Usage::packet1"))) (name "packet1") (declared-name "packet1") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Packet Usage::packet2"))) (name "packet2") (declared-name "packet2") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Packet Usage::packet3"))) (name "packet3") (declared-name "packet3") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Packet Usage::packet1"))) (name "packet1") (declared-name "packet1") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Packet Usage::packet2"))) (name "packet2") (declared-name "packet2") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Packet Usage::packet3"))) (name "packet3") (declared-name "packet3") (declared (properties (ordered false)))
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packet Usage::packet3::special data field"))) (name "special data field") (declared-name "special data field") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Packet Usage::packet3::special data field"))) (name "special data field") (declared-name "special data field") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
           )
         )
       )

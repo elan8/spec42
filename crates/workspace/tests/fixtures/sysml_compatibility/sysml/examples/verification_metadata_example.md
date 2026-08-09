@@ -98,7 +98,7 @@ semantic.unresolved_name 'VerificationMethod'
               )
             )
             (element (kind "objective") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::objective"))) (name "objective") (declared-name "objective") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (name "weighVehicle") (declared-name "weighVehicle") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (name "weighVehicle") (declared-name "weighVehicle") (declared) (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
               (contains
                 (element (kind "metadata usage") (id (node (document "d0") (qualified-name "VerificationMetadataExample::massTests::weighVehicle::VerificationMethod"))) (name "VerificationMethod") (declared-name "VerificationMethod") (effective (featuring-type (node (document "d0") (qualified-name "VerificationMetadataExample::MassTest"))))
                   (contains

@@ -128,12 +128,12 @@ NIL
         (element (kind "import") (id (node (document "d0") (qualified-name "12b-Allocation::*#import"))) (name "*") (declared-name "*"))
         (element (kind "package") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel"))) (name "LogicalModel") (declared-name "LogicalModel")
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared (properties (composite true) (reference false)))
+            (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared)
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared (properties (composite true) (reference false))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared))
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (composite true) (reference false) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (ordered false)))
               (contains
                 (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque"))
               )
@@ -142,9 +142,9 @@ NIL
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel"))) (name "PhysicalModel") (declared-name "PhysicalModel")
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (composite true) (reference false) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "action") (id (node (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain::engine::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque"))
                   )

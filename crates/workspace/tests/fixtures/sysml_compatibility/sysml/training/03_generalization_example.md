@@ -95,13 +95,13 @@ NIL
         (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenPoweredVehicle"))) (name "HumanDrivenPoweredVehicle") (declared-name "HumanDrivenPoweredVehicle") (declared))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle"))) (name "HumanDrivenVehicle") (declared-name "HumanDrivenVehicle") (declared)
           (contains
-            (element (kind "ref") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle")))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle::driver"))) (name "driver") (declared-name "driver") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "Generalization Example::HumanDrivenVehicle")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Person"))) (name "Person") (declared-name "Person") (declared))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle"))) (name "PoweredVehicle") (declared-name "PoweredVehicle") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Generalization Example::PoweredVehicle")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Generalization Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared (properties (abstract true))))

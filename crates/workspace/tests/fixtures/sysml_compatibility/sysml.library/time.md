@@ -911,7 +911,7 @@ standard library package Time {
         (element (kind "part def") (id (node (document "d0") (qualified-name "Time::Clock"))) (name "Clock") (declared-name "Clock") (declared)
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::Clock::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Clock")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Clock::currentTime"))) (name "currentTime") (declared-name "currentTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Time::Clock")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Time::Clock::currentTime"))) (name "currentTime") (declared-name "currentTime") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Time::Clock")))))
           )
         )
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::Coordinated Universal Time"))) (name "Coordinated Universal Time") (declared-name "Coordinated Universal Time") (declared (properties (ordered false) (unique true)))
@@ -1031,7 +1031,7 @@ standard library package Time {
         (element (kind "import") (id (node (document "d0") (qualified-name "Time::scalarQuantities"))) (name "scalarQuantities") (declared-name "scalarQuantities"))
         (element (kind "import") (id (node (document "d0") (qualified-name "Time::time"))) (name "time") (declared-name "time"))
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Time::timeInstant"))) (name "timeInstant") (declared-name "timeInstant") (declared (properties (ordered false) (unique true))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Time::universalClock"))) (name "universalClock") (declared-name "universalClock") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Time::universalClock"))) (name "universalClock") (declared-name "universalClock") (declared (properties (ordered false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored)))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Time::universalClock::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Time::Clock")))))
           )

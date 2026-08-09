@@ -185,18 +185,18 @@ semantic.invalid_connection_end_count
   (containment
     (element (kind "action def") (id (node (document "d0") (qualified-name "ControlNodeTest"))) (name "ControlNodeTest") (declared-name "ControlNodeTest")
       (contains
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (name "A1") (declared-name "A1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (name "A2") (declared-name "A2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A1"))) (name "A1") (declared-name "A1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::A2"))) (name "A2") (declared-name "A2") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::A2::a"))) (name "a") (declared-name "a") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (name "B1") (declared-name "B1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B1"))) (name "B1") (declared-name "B1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::B1::b"))) (name "b") (declared-name "b") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (name "B2") (declared-name "B2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "ControlNodeTest::B2"))) (name "B2") (declared-name "B2") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "ControlNodeTest"))))
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "ControlNodeTest::B2::b"))) (name "b") (declared-name "b") (effective (featuring-type (node (document "d0") (qualified-name "ControlNodeTest")))))
           )

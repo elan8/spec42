@@ -151,7 +151,7 @@ semantic.unresolved_name 'TorqueGeneration'
         (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Groups::*#import"))) (name "*") (declared-name "*"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Requirement Groups::Engine"))) (name "Engine") (declared-name "Engine") (declared)
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Requirement Groups::Engine::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Requirement Groups::Engine")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Requirement Groups::Engine::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Requirement Groups::Engine")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Requirement Groups::Engine::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "Requirement Groups::Engine")))))
           )
         )

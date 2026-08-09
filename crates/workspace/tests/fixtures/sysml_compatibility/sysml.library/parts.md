@@ -317,13 +317,13 @@ standard library package Parts {
         (element (kind "part def") (id (node (document "d0") (qualified-name "Parts::Part"))) (name "Part") (declared-name "Part") (declared (properties (abstract true)))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts::Part::done"))) (name "done") (declared-name "done") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts::Part::done"))) (name "done") (declared-name "done") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
             (element (kind "state") (id (node (document "d0") (qualified-name "Parts::Part::exhibitedStates"))) (name "exhibitedStates") (declared-name "exhibitedStates") (declared (properties (abstract true) (composite false) (reference true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::exhibitedStates::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
               )
             )
-            (element (kind "action") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions"))) (name "ownedActions") (declared-name "ownedActions") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions"))) (name "ownedActions") (declared-name "ownedActions") (declared (properties (abstract true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
                 (element (kind "ref") (id (node (document "d0") (qualified-name "Parts::Part::ownedActions::part"))) (name "part") (declared-name "part") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
@@ -333,12 +333,12 @@ standard library package Parts {
                 )
               )
             )
-            (element (kind "port") (id (node (document "d0") (qualified-name "Parts::Part::ownedPorts"))) (name "ownedPorts") (declared-name "ownedPorts") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Parts::Part::ownedPorts"))) (name "ownedPorts") (declared-name "ownedPorts") (declared (properties (abstract true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::ownedPorts::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
               )
             )
-            (element (kind "state") (id (node (document "d0") (qualified-name "Parts::Part::ownedStates"))) (name "ownedStates") (declared-name "ownedStates") (declared (properties (abstract true) (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Parts::Part::ownedStates"))) (name "ownedStates") (declared-name "ownedStates") (declared (properties (abstract true)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part"))))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::Part::ownedStates::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
               )
@@ -349,7 +349,7 @@ standard library package Parts {
               )
             )
             (element (kind "opaque member") (id (node (document "d0") (qualified-name "Parts::Part::self"))) (name "self") (declared-name "self") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Parts::Part::start"))) (name "start") (declared-name "start") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Parts::Part::start"))) (name "start") (declared-name "start") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
           )
         )
         (element (kind "import") (id (node (document "d0") (qualified-name "Parts::Port"))) (name "Port") (declared-name "Port"))
@@ -358,7 +358,7 @@ standard library package Parts {
         (element (kind "import") (id (node (document "d0") (qualified-name "Parts::actions"))) (name "actions") (declared-name "actions"))
         (element (kind "import") (id (node (document "d0") (qualified-name "Parts::items"))) (name "items") (declared-name "items"))
         (element (kind "import") (id (node (document "d0") (qualified-name "Parts::objects"))) (name "objects") (declared-name "objects"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Parts::parts"))) (name "parts") (declared-name "parts") (declared (properties (abstract true) (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Parts::parts"))) (name "parts") (declared-name "parts") (declared (properties (abstract true) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored)))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Parts::parts::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Parts::Part")))))
           )

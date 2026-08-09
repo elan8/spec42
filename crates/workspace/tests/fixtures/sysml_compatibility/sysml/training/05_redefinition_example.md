@@ -116,33 +116,33 @@ NIL
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::BigEngine"))) (name "BigEngine") (declared-name "BigEngine") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::BigEngine::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Redefinition Example::BigEngine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::BigEngine::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::BigEngine")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::BigVehicle"))) (name "BigVehicle") (declared-name "BigVehicle") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::BigVehicle::bigEng"))) (name "bigEng") (declared-name "bigEng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::BigVehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::BigVehicle::bigEng"))) (name "bigEng") (declared-name "bigEng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::BigVehicle")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::Engine"))) (name "Engine") (declared-name "Engine") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::Engine::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Redefinition Example::Engine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::Engine::cyl"))) (name "cyl") (declared-name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 6) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::Engine")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::SmallEngine"))) (name "SmallEngine") (declared-name "SmallEngine") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::SmallEngine::cyl"))) (name "cyl") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Redefinition Example::SmallEngine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::SmallEngine::cyl"))) (name "cyl") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::SmallEngine")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle"))) (name "SmallVehicle") (declared-name "SmallVehicle") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle::smallEng"))) (name "smallEng") (declared-name "smallEng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle::smallEng"))) (name "smallEng") (declared-name "smallEng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::SmallVehicle")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Redefinition Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Redefinition Example::Vehicle::eng"))) (name "eng") (declared-name "eng") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Redefinition Example::Vehicle")))))
           )
         )
       )

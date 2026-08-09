@@ -449,31 +449,31 @@ semantic.unresolved_name 'Torque'
         (element (kind "import") (id (node (document "d0") (qualified-name "4a-Functional Allocation::*"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "4a-Functional Allocation::*#import"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "4a-Functional Allocation::*#import2"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation"))) (name "vehicle1_c1_functional_allocation") (declared-name "vehicle1_c1_functional_allocation") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation"))) (name "vehicle1_c1_functional_allocation") (declared-name "vehicle1_c1_functional_allocation") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft"))) (name "driveshaft") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft"))) (name "driveshaft") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
                 (element (kind "action") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft::provide power.transfer torque"))) (name "provide power.transfer torque") (declared-name "provide power.transfer torque"))
-                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft::shaftPort_b"))) (name "shaftPort_b") (declared-name "shaftPort_b") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft::shaftPort_b"))) (name "shaftPort_b") (declared-name "shaftPort_b") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft::shaftPort_b::transmissionTorque"))) (name "transmissionTorque") (declared-name "transmissionTorque") (declared (properties (direction "in"))))
                   )
                 )
-                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft::shaftPort_c"))) (name "shaftPort_c") (declared-name "shaftPort_c") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft::shaftPort_c"))) (name "shaftPort_c") (declared-name "shaftPort_c") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::driveshaft::shaftPort_c::driveshaftTorque"))) (name "driveshaftTorque") (declared-name "driveshaftTorque") (declared (properties (direction "out"))))
                   )
                 )
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine"))) (name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine"))) (name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine::drivePwrPort"))) (name "drivePwrPort") (declared-name "drivePwrPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine::drivePwrPort::engineTorque"))) (name "engineTorque") (declared-name "engineTorque") (declared (properties (direction "out"))))
                   )
                 )
-                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine::fuelCmdPort::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (declared (properties (direction "in"))))
                   )
@@ -481,29 +481,29 @@ semantic.unresolved_name 'Torque'
                 (element (kind "action") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::engine::provide power.generate torque"))) (name "provide power.generate torque") (declared-name "provide power.generate torque"))
               )
             )
-            (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::fuelCmdPort"))) (name "fuelCmdPort") (declared-name "fuelCmdPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::fuelCmdPort::fuelCmd"))) (name "fuelCmd") (declared-name "fuelCmd") (declared (properties (direction "in"))))
               )
             )
             (element (kind "action") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::provide power"))) (name "provide power") (declared-name "provide power"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly"))) (name "rearAxleAssembly") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly"))) (name "rearAxleAssembly") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
                 (element (kind "action") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::provide power.distribute torque"))) (name "provide power.distribute torque") (declared-name "provide power.distribute torque"))
-                (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle"))) (name "rearAxle") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
-                    (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::leftHalfAxle"))) (name "leftHalfAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::leftHalfAxle"))) (name "leftHalfAxle") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                       (contains
-                        (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::leftHalfAxle::axleToWheelPort"))) (name "axleToWheelPort") (declared-name "axleToWheelPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::leftHalfAxle::axleToWheelPort"))) (name "axleToWheelPort") (declared-name "axleToWheelPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                           (contains
                             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::leftHalfAxle::axleToWheelPort::wheelTorque"))) (name "wheelTorque") (declared-name "wheelTorque") (declared (properties (direction "out"))))
                           )
                         )
                       )
                     )
-                    (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::rightHalfAxle"))) (name "rightHalfAxle") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                    (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::rightHalfAxle"))) (name "rightHalfAxle") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                       (contains
-                        (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::rightHalfAxle::axleToWheelPort"))) (name "axleToWheelPort") (declared-name "axleToWheelPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                        (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::rightHalfAxle::axleToWheelPort"))) (name "axleToWheelPort") (declared-name "axleToWheelPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                           (contains
                             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::rearAxle::rightHalfAxle::axleToWheelPort::wheelTorque"))) (name "wheelTorque") (declared-name "wheelTorque") (declared (properties (direction "out"))))
                           )
@@ -512,22 +512,22 @@ semantic.unresolved_name 'Torque'
                     )
                   )
                 )
-                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::shaftPort_d"))) (name "shaftPort_d") (declared-name "shaftPort_d") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::rearAxleAssembly::shaftPort_d::driveshaftTorque"))) (name "driveshaftTorque") (declared-name "driveshaftTorque") (declared (properties (direction "in"))))
                   )
                 )
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission"))) (name "transmission") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission"))) (name "transmission") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission::clutchPort"))) (name "clutchPort") (declared-name "clutchPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission::clutchPort::engineTorque"))) (name "engineTorque") (declared-name "engineTorque") (declared (properties (direction "in"))))
                   )
                 )
                 (element (kind "action") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission::provide power.amplify torque"))) (name "provide power.amplify torque") (declared-name "provide power.amplify torque"))
-                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission::shaftPort_a"))) (name "shaftPort_a") (declared-name "shaftPort_a") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission::shaftPort_a"))) (name "shaftPort_a") (declared-name "shaftPort_a") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "4a-Functional Allocation::vehicle1_c1_functional_allocation::transmission::shaftPort_a::transmissionTorque"))) (name "transmissionTorque") (declared-name "transmissionTorque") (declared (properties (direction "out"))))
                   )

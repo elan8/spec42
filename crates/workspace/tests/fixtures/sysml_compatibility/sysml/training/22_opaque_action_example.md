@@ -87,7 +87,7 @@ semantic.unresolved_name 'ScalarValues::Boolean'
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (name "Sensor") (declared-name "Sensor") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (name "ready") (declared-name "ready") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::Sensor")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (name "ready") (declared-name "ready") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::Sensor")))))
           )
         )
         (element (kind "action def") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (name "UpdateSensors") (declared-name "UpdateSensors")

@@ -86,10 +86,10 @@ semantic.invalid_connection_end_count
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (name "xsf") (declared-name "xsf") (effective (featuring-type (node (document "d0") (qualified-name "PictureTaking::Shoot")))))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared)
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (name "focus") (declared-name "focus") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (properties (composite true) (reference false)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::focus"))) (name "focus") (declared-name "focus") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))))
           )
         )
       )

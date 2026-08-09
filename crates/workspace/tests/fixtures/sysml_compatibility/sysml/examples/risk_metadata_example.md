@@ -104,7 +104,7 @@ semantic.unresolved_name 'Risk'
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "RiskMetadataExample::*"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "RiskMetadataExample::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (ordered false)))
           (contains
             (element (kind "metadata usage") (id (node (document "d0") (qualified-name "RiskMetadataExample::engine4cyl::Risk"))) (name "Risk") (declared-name "Risk")
               (contains

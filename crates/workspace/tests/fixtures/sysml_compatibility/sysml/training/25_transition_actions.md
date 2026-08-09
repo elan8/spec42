@@ -189,12 +189,12 @@ semantic.unresolved_name 'ScalarValues::Boolean'
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleOnSignal"))) (name "VehicleOnSignal") (declared-name "VehicleOnSignal") (declared (properties (ordered false) (unique true))))
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleStartSignal"))) (name "VehicleStartSignal") (declared-name "VehicleStartSignal") (declared (properties (ordered false) (unique true))))
         (element (kind "state def") (id (node (document "d0") (qualified-name "Transition Actions::VehicleStates"))) (name "VehicleStates") (declared-name "VehicleStates"))
-        (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::performSelfTest"))) (name "performSelfTest") (declared-name "performSelfTest") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::performSelfTest"))) (name "performSelfTest") (declared-name "performSelfTest") (declared)
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Transition Actions::performSelfTest::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
-        (element (kind "state") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared (properties (composite true) (reference false)))
+        (element (kind "state") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared)
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Transition Actions::vehicleStates::controller"))) (name "controller") (declared-name "controller") (effective (featuring-type (node (document "d0") (qualified-name "Transition Actions::VehicleStates")))))

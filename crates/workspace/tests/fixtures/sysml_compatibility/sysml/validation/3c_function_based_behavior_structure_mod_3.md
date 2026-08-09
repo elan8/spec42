@@ -147,11 +147,11 @@ NIL
   (containment
     (element (kind "package") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3"))) (name "3c-Function-based Behavior-structure mod-3") (declared-name "3c-Function-based Behavior-structure mod-3")
       (contains
-        (element (kind "action") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::"))) (name "") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::"))) (name "") (declared)
           (contains
             (element (kind "assign") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::::_assign"))) (name "assign") (declared-name "assign"))
             (element (kind "assign") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::::_assign#assign"))) (name "assign") (declared-name "assign"))
-            (element (kind "action") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::::connect trailer to vehicle"))) (name "connect trailer to vehicle") (declared-name "connect trailer to vehicle") (declared (properties (composite true) (reference false))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::::connect trailer to vehicle"))) (name "connect trailer to vehicle") (declared-name "connect trailer to vehicle") (declared))
             (element (kind "action") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::::disconnect trailer from vehicle"))) (name "disconnect trailer from vehicle") (declared-name "disconnect trailer from vehicle"))
           )
         )
@@ -161,24 +161,24 @@ NIL
         (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::TrailerFrame"))) (name "TrailerFrame") (declared-name "TrailerFrame") (declared))
         (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
         (element (kind "part def") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::VehicleFrame"))) (name "VehicleFrame") (declared-name "VehicleFrame") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer"))) (name "trailer") (declared-name "trailer") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer"))) (name "trailer") (declared-name "trailer") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer::trailerFrame"))) (name "trailerFrame") (declared-name "trailerFrame") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::Trailer"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer::trailerFrame"))) (name "trailerFrame") (declared-name "trailerFrame") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::Trailer"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer::trailerFrame::coupler"))) (name "coupler") (declared-name "coupler") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::TrailerFrame"))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer::trailerFrame::coupler"))) (name "coupler") (declared-name "coupler") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::TrailerFrame"))))
                   (contains
-                    (element (kind "ref") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer::trailerFrame::coupler::hitch"))) (name "hitch") (declared-name "hitch") (declared (properties (composite true) (reference false) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::TrailerCoupler")))))
+                    (element (kind "ref") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::trailer::trailerFrame::coupler::hitch"))) (name "hitch") (declared-name "hitch") (declared (properties (composite false) (reference true) (ordered false))) (effective (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::TrailerCoupler")))))
                   )
                 )
               )
             )
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::vehicle::vehicleFrame"))) (name "vehicleFrame") (declared-name "vehicleFrame") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::Vehicle"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::vehicle::vehicleFrame"))) (name "vehicleFrame") (declared-name "vehicleFrame") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::Vehicle"))))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::vehicle::vehicleFrame::hitch"))) (name "hitch") (declared-name "hitch") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::VehicleFrame")))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::vehicle::vehicleFrame::hitch"))) (name "hitch") (declared-name "hitch") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "3c-Function-based Behavior-structure mod-3::VehicleFrame")))))
               )
             )
           )

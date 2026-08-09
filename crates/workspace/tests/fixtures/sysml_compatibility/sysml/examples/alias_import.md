@@ -83,7 +83,7 @@ NIL
         (element (kind "package") (id (node (document "d0") (qualified-name "AliasImport::Usages"))) (name "Usages") (declared-name "Usages")
           (contains
             (element (kind "import") (id (node (document "d0") (qualified-name "AliasImport::Usages::Car"))) (name "Car") (declared-name "Car"))
-            (element (kind "part") (id (node (document "d0") (qualified-name "AliasImport::Usages::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "AliasImport::Usages::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false))))
           )
         )
       )

@@ -138,9 +138,9 @@ package CoverageIndividual {
       (contains
         (element (kind "individual def") (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (name "D1") (declared-name "D1"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (name "D4") (declared-name "D4") (declared (properties (individual true))))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (name "p1") (declared-name "p1") (declared (properties (individual true) (composite true) (reference false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (name "p2") (declared-name "p2") (declared (properties (individual true) (composite true) (reference false) (ordered false))))
-        (element (kind "state") (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (name "s1") (declared-name "s1") (declared (properties (composite true) (reference false))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (name "p1") (declared-name "p1") (declared (properties (individual true))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (name "p2") (declared-name "p2") (declared (properties (individual true) (ordered false))))
+        (element (kind "state") (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (name "s1") (declared-name "s1") (declared))
       )
     )
   )

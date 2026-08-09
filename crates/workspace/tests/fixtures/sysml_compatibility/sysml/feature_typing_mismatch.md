@@ -38,7 +38,7 @@ part p : Foo;
 (semantic-graph
   (containment
     (element (kind "attribute def") (id (node (document "d0") (qualified-name "Foo"))) (name "Foo") (declared-name "Foo") (declared (properties (ordered false) (unique true))))
-    (element (kind "part") (id (node (document "d0") (qualified-name "p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false) (ordered false))))
+    (element (kind "part") (id (node (document "d0") (qualified-name "p"))) (name "p") (declared-name "p") (declared (properties (ordered false))))
   )
   (relationships
     (typing (status resolved) (from (node (document "d0") (qualified-name "p"))) (to (node (document "d0") (qualified-name "Foo"))))

@@ -261,14 +261,14 @@ semantic.unresolved_name 'selectedAlternative'
           )
         )
         (element (kind "import") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engine6cyl"))) (name "engine6cyl") (declared-name "engine6cyl") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engine4cyl"))) (name "engine4cyl") (declared-name "engine4cyl") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engine6cyl"))) (name "engine6cyl") (declared-name "engine6cyl") (declared (properties (ordered false))))
         (element (kind "analysis") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy"))) (name "engineTradeStudy") (declared-name "engineTradeStudy")
           (contains
             (element (kind "subject") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::"))) (name ""))
             (element (kind "calc") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction"))) (name "evaluationFunction") (declared-name "evaluationFunction")
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::anEngine"))) (name "anEngine") (declared-name "anEngine") (declared (properties (direction "in") (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::anEngine"))) (name "anEngine") (declared-name "anEngine") (declared (properties (direction "in") (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
                 (element (kind "calc") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::costRollup"))) (name "costRollup") (declared-name "costRollup")
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::evaluationFunction::costRollup::engine"))) (name "engine") (declared-name "engine") (effective (featuring-type (node (document "d0") (qualified-name "Trade Study Analysis Example::CostRollup")))))

@@ -127,10 +127,10 @@ NIL
             (element (kind "item def") (id (node (document "d0") (qualified-name "Dependency Example::Software Design::MessageSchema"))) (name "MessageSchema") (declared-name "MessageSchema"))
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Dependency Example::System Assembly"))) (name "System Assembly") (declared-name "System Assembly") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Dependency Example::System Assembly"))) (name "System Assembly") (declared-name "System Assembly") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (name "Computer Subsystem") (declared-name "Computer Subsystem") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (name "Storage Subsystem") (declared-name "Storage Subsystem") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Dependency Example::System Assembly::Computer Subsystem"))) (name "Computer Subsystem") (declared-name "Computer Subsystem") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Dependency Example::System Assembly::Storage Subsystem"))) (name "Storage Subsystem") (declared-name "Storage Subsystem") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
           )
         )
         (element (kind "dependency") (id (node (document "d0") (qualified-name "Dependency Example::dependency"))) (name "dependency") (declared-name "dependency"))

@@ -131,9 +131,9 @@ semantic.duplicate_name 'test x'
   (containment
     (element (kind "action def") (id (node (document "d0") (qualified-name "DecisionTest"))) (name "DecisionTest") (declared-name "DecisionTest")
       (contains
-        (element (kind "action") (id (node (document "d0") (qualified-name "DecisionTest::A1"))) (name "A1") (declared-name "A1") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
-        (element (kind "action") (id (node (document "d0") (qualified-name "DecisionTest::A2"))) (name "A2") (declared-name "A2") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
-        (element (kind "action") (id (node (document "d0") (qualified-name "DecisionTest::A3"))) (name "A3") (declared-name "A3") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "DecisionTest::A1"))) (name "A1") (declared-name "A1") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "DecisionTest::A2"))) (name "A2") (declared-name "A2") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
+        (element (kind "action") (id (node (document "d0") (qualified-name "DecisionTest::A3"))) (name "A3") (declared-name "A3") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
         (element (kind "initial") (id (node (document "d0") (qualified-name "DecisionTest::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
         (element (kind "decide") (id (node (document "d0") (qualified-name "DecisionTest::test x"))) (name "decide") (declared-name "decide") (effective (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))
         (element (kind "action body decl") (id (node (document "d0") (qualified-name "DecisionTest::x = 1"))) (name "x = 1") (declared-name "x = 1") (effective (featuring-type (node (document "d0") (qualified-name "DecisionTest")))))

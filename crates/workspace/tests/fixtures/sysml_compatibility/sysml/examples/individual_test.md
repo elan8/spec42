@@ -166,28 +166,28 @@ NIL
       (contains
         (element (kind "action def") (id (node (document "d0") (qualified-name "IndividualTest::A"))) (name "A") (declared-name "A")
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "IndividualTest::A::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "IndividualTest::A")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "IndividualTest::A::a"))) (name "a") (declared-name "a") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::A")))))
           )
         )
         (element (kind "item def") (id (node (document "d0") (qualified-name "IndividualTest::I"))) (name "I") (declared-name "I")
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::I::i"))) (name "i") (declared-name "i") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::I")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::I::i"))) (name "i") (declared-name "i") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::I")))))
           )
         )
         (element (kind "individual def") (id (node (document "d0") (qualified-name "IndividualTest::IO1"))) (name "IO1") (declared-name "IO1"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::IP1"))) (name "IP1") (declared-name "IP1") (declared (properties (individual true)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP1")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP1::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP1")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::IP2"))) (name "IP2") (declared-name "IP2") (declared (properties (individual true)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP2")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::IP2::p"))) (name "p") (declared-name "p") (declared (properties (individual true) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::IP2")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "IndividualTest::P"))) (name "P") (declared-name "P") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::P::p"))) (name "p") (declared-name "p") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::P")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "IndividualTest::P::p"))) (name "p") (declared-name "p") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "IndividualTest::P")))))
           )
         )
       )

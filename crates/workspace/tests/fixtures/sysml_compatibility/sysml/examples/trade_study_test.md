@@ -111,15 +111,15 @@ semantic.unresolved_name 'Real'
         (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudyTest::*"))) (name "*") (declared-name "*"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "TradeStudyTest::Engine"))) (name "Engine") (declared-name "Engine") (declared))
         (element (kind "import") (id (node (document "d0") (qualified-name "TradeStudyTest::Real"))) (name "Real") (declared-name "Real"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (name "engine1") (declared-name "engine1") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (name "engine2") (declared-name "engine2") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine1"))) (name "engine1") (declared-name "engine1") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engine2"))) (name "engine2") (declared-name "engine2") (declared (properties (ordered false))))
         (element (kind "analysis") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy"))) (name "engineTradeStudy") (declared-name "engineTradeStudy")
           (contains
             (element (kind "subject") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::"))) (name ""))
             (element (kind "analysis result") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#analysis_result"))) (name ""))
             (element (kind "calc") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction"))) (name "evaluationFunction") (declared-name "evaluationFunction")
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (name "") (declared (properties (direction "in") (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))) (name "") (declared (properties (direction "in") (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
                 (element (kind "return parameter") (id (node (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::evaluationFunction::"))) (name ""))
               )
             )

@@ -191,12 +191,12 @@ semantic.unresolved_name 'Boolean'
             (element (kind "import") (id (node (document "d0") (qualified-name "Filtering Example-1::Safety Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy"))) (name "bodyAssy") (declared-name "bodyAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::body"))) (name "body") (declared-name "body") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))) (name "bumper") (declared-name "bumper") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper::Safety"))) (name "Safety") (declared-name "Safety")
                       (contains
@@ -205,13 +205,13 @@ semantic.unresolved_name 'Boolean'
                     )
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::bodyAssy::keylessEntry"))) (name "keylessEntry") (declared-name "keylessEntry") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))) (name "interior") (declared-name "interior") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior"))) (name "interior") (declared-name "interior") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::alarm"))) (name "alarm") (declared-name "alarm") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))) (name "driverAirBag") (declared-name "driverAirBag") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag::Safety"))) (name "Safety") (declared-name "Safety")
                       (contains
@@ -220,8 +220,8 @@ semantic.unresolved_name 'Boolean'
                     )
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::frontSeat"))) (name "frontSeat") (declared-name "frontSeat") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))) (name "seatBelt") (declared-name "seatBelt") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
                   (contains
                     (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt::Safety"))) (name "Safety") (declared-name "Safety")
                       (contains
@@ -232,9 +232,9 @@ semantic.unresolved_name 'Boolean'
                 )
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy"))) (name "wheelAssy") (declared-name "wheelAssy") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy"))) (name "wheelAssy") (declared-name "wheelAssy") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))) (name "antilockBrakes") (declared-name "antilockBrakes") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))) (name "antilockBrakes") (declared-name "antilockBrakes") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored)))
                   (contains
                     (element (kind "metadata usage") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes::Safety"))) (name "Safety") (declared-name "Safety")
                       (contains
@@ -243,7 +243,7 @@ semantic.unresolved_name 'Boolean'
                     )
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Filtering Example-1::vehicle::wheelAssy::wheel"))) (name "wheel") (declared-name "wheel") (declared (properties (ordered false)) (multiplicity (lower 2) (upper 2) (ordered false) (provenance authored))))
               )
             )
           )

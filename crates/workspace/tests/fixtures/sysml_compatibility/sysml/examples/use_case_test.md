@@ -184,7 +184,7 @@ semantic.invalid_membership_owning_type
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "UseCaseTest::User"))) (name "User") (declared-name "User") (declared))
-        (element (kind "part") (id (node (document "d0") (qualified-name "UseCaseTest::system"))) (name "system") (declared-name "system") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "UseCaseTest::system"))) (name "system") (declared-name "system") (declared (properties (ordered false)))
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "UseCaseTest::system::u"))) (name "u") (declared-name "u") (effective (featuring-type (node (document "d0") (qualified-name "UseCaseTest::System")))))
           )
@@ -196,7 +196,7 @@ semantic.invalid_membership_owning_type
             (element (kind "include use case") (id (node (document "d0") (qualified-name "UseCaseTest::uc3::u"))) (name "u") (declared-name "u"))
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "UseCaseTest::user"))) (name "user") (declared-name "user") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "UseCaseTest::user"))) (name "user") (declared-name "user") (declared (properties (ordered false))))
       )
     )
   )

@@ -134,7 +134,7 @@ semantic.unresolved_name 'ToolVariable'
   (containment
     (element (kind "package") (id (node (document "d0") (qualified-name "Metadata Example-2"))) (name "Metadata Example-2") (declared-name "Metadata Example-2")
       (contains
-        (element (kind "action") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics"))) (name "computeDynamics") (declared-name "computeDynamics") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics"))) (name "computeDynamics") (declared-name "computeDynamics") (declared)
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::a"))) (name "a") (declared-name "a"))
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::dt"))) (name "dt") (declared-name "dt"))

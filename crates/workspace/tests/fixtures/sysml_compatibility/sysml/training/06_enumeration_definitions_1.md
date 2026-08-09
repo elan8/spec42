@@ -92,7 +92,7 @@ NIL
         (element (kind "import") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::Real"))) (name "Real") (declared-name "Real"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight"))) (name "TrafficLight") (declared-name "TrafficLight") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (name "currentColor") (declared-name "currentColor") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))) (name "currentColor") (declared-name "currentColor") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight")))))
           )
         )
         (element (kind "enum def") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor"))) (name "TrafficLightColor") (declared-name "TrafficLightColor")
@@ -104,7 +104,7 @@ NIL
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (name "TrafficLightGo") (declared-name "TrafficLightGo") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (name "currentColor") (declared-name "currentColor") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "TrafficLightColor::green")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (role feature-value))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (name "currentColor") (declared-name "currentColor") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "TrafficLightColor::green")))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))) (role feature-value))))
           )
         )
       )

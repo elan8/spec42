@@ -198,7 +198,7 @@ standard library package Ports {
         (element (kind "port def") (id (node (document "d0") (qualified-name "Ports::Port"))) (name "Port") (declared-name "Port")
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::Port::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
-            (element (kind "port") (id (node (document "d0") (qualified-name "Ports::Port::subports"))) (name "subports") (declared-name "subports") (declared (properties (composite true) (reference false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port"))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Ports::Port::subports"))) (name "subports") (declared-name "subports") (declared (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Ports::Port"))))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Ports::Port::subports::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Ports::Port")))))
               )

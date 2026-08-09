@@ -176,13 +176,13 @@ semantic.unresolved_name 'Real'
         (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))) (name "ChargeBattery") (declared-name "ChargeBattery")
           (contains
             (element (kind "initial") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge"))) (name "addCharge") (declared-name "addCharge") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge"))) (name "addCharge") (declared-name "addCharge") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))))
               (contains
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::AddCharge")))))
               )
             )
             (element (kind "merge") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::continueCharging"))) (name "merge") (declared-name "merge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::endCharging"))) (name "endCharging") (declared-name "endCharging") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::endCharging"))) (name "endCharging") (declared-name "endCharging") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor"))) (name "monitor") (declared-name "monitor") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))))
               (contains
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor::batteryCharge"))) (name "batteryCharge") (declared-name "batteryCharge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
@@ -196,8 +196,8 @@ semantic.unresolved_name 'Real'
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::MonitorBattery::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Decision Example::battery"))) (name "battery") (declared-name "battery") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Decision Example::powerSystem"))) (name "powerSystem") (declared-name "powerSystem") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Decision Example::battery"))) (name "battery") (declared-name "battery") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Decision Example::powerSystem"))) (name "powerSystem") (declared-name "powerSystem") (declared (properties (ordered false))))
       )
     )
   )

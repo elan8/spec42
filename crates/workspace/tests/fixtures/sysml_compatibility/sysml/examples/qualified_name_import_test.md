@@ -91,7 +91,7 @@ NIL
                 (element (kind "import") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a::*"))) (name "*") (declared-name "*"))
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (name "x") (declared-name "x") (declared (properties (composite true) (reference false) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))) (name "x") (declared-name "x") (declared (properties (ordered false))))
           )
         )
       )

@@ -305,12 +305,12 @@ standard library package CausationConnections {
             (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::causations::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "CausationConnections::causations")))))
           )
         )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CausationConnections::causes"))) (name "causes") (declared-name "causes") (declared (properties (abstract true) (composite true) (reference false)))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CausationConnections::causes"))) (name "causes") (declared-name "causes") (declared (properties (abstract true)))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::causes::_documentation"))) (name ""))
           )
         )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CausationConnections::effects"))) (name "effects") (declared-name "effects") (declared (properties (abstract true) (composite true) (reference false)))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "CausationConnections::effects"))) (name "effects") (declared-name "effects") (declared (properties (abstract true)))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "CausationConnections::effects::_documentation"))) (name ""))
           )

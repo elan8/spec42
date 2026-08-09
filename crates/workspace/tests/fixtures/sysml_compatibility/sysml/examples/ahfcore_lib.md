@@ -231,7 +231,7 @@ semantic.unresolved_name 'ServiceMethod'
         (element (kind "import") (id (node (document "d0") (qualified-name "AHFCoreLib::*#import2"))) (name "*") (declared-name "*"))
         (element (kind "port def") (id (node (document "d0") (qualified-name "AHFCoreLib::Authorisation"))) (name "Authorisation") (declared-name "Authorisation")
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFCoreLib::Authorisation::publickey"))) (name "publickey") (declared-name "publickey") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::Authorisation")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AHFCoreLib::Authorisation::publickey"))) (name "publickey") (declared-name "publickey") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::Authorisation")))))
             (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "AHFCoreLib::Authorisation::~Authorisation"))) (name "~Authorisation") (declared-name "~Authorisation") (effective (featuring-type (node (document "d0") (qualified-name "AHFCoreLib::Authorisation")))))
           )
         )

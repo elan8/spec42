@@ -197,14 +197,14 @@ semantic.unresolved_name 'TemperatureValue'
         (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::TimeInstantValue"))) (name "TimeInstantValue") (declared-name "TimeInstantValue"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))) (name "maintenanceInterval") (declared-name "maintenanceInterval") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maxTemperature"))) (name "maxTemperature") (declared-name "maxTemperature") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))) (name "maintenanceInterval") (declared-name "maintenanceInterval") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maxTemperature"))) (name "maxTemperature") (declared-name "maxTemperature") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Change and Time Triggers::VehicleController"))) (name "VehicleController") (declared-name "VehicleController") (declared))
         (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::h"))) (name "h") (declared-name "h"))
-        (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (name "healthStates") (declared-name "healthStates") (declared (properties (composite true) (reference false)))
+        (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (name "healthStates") (declared-name "healthStates") (declared)
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_do"))) (name "do") (declared-name "do"))
             (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_entry"))) (name "entry") (declared-name "entry"))
@@ -236,7 +236,7 @@ semantic.unresolved_name 'TemperatureValue'
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature"))) (name "senseTemperature") (declared-name "senseTemperature") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature"))) (name "senseTemperature") (declared-name "senseTemperature") (declared)
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (name "temp") (declared-name "temp"))
           )

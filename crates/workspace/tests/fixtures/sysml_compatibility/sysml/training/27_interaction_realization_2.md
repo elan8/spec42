@@ -378,28 +378,28 @@ semantic.unresolved_name 'fuelCommandMessage'
     (element (kind "package") (id (node (document "d0") (qualified-name "Interaction Realization-2"))) (name "Interaction Realization-2") (declared-name "Interaction Realization-2")
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "Interaction Realization-2::*"))) (name "*") (declared-name "*"))
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b"))) (name "cruiseControlInteraction_b") (declared-name "cruiseControlInteraction_b") (declared (properties (composite true) (reference false)))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b"))) (name "cruiseControlInteraction_b") (declared-name "cruiseControlInteraction_b") (declared)
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::driver"))) (name "driver") (declared-name "driver") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::driver::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::driver::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
               )
             )
             (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle"))) (name "vehicle") (declared-name "vehicle") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::cruiseController"))) (name "cruiseController") (declared-name "cruiseController") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::cruiseController"))) (name "cruiseController") (declared-name "cruiseController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
-                    (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::cruiseController::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::cruiseController::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
-                    (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::engine::fuelCommandPort"))) (name "fuelCommandPort") (declared-name "fuelCommandPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::engine::fuelCommandPort"))) (name "fuelCommandPort") (declared-name "fuelCommandPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
                   )
                 )
-                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::speedometer"))) (name "speedometer") (declared-name "speedometer") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::speedometer"))) (name "speedometer") (declared-name "speedometer") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
-                    (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::speedometer::sensedSpeedPort"))) (name "sensedSpeedPort") (declared-name "sensedSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::cruiseControlInteraction_b::vehicle::speedometer::sensedSpeedPort"))) (name "sensedSpeedPort") (declared-name "sensedSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
                   )
                 )
               )
@@ -407,39 +407,39 @@ semantic.unresolved_name 'fuelCommandMessage'
           )
         )
         (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Interaction Realization-2::driverToVehicleInterface"))) (name "driverToVehicleInterface") (declared-name "driverToVehicleInterface"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::driver_b"))) (name "driver_b") (declared-name "driver_b") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::driver_b"))) (name "driver_b") (declared-name "driver_b") (declared (properties (ordered false)))
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::driver_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::driver_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interaction Realization-2::driver_b::setSpeedPort::setSpeed"))) (name "setSpeed") (declared-name "setSpeed") (declared (properties (direction "out"))))
               )
             )
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b"))) (name "vehicle_b") (declared-name "vehicle_b") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b"))) (name "cruiseController_b") (declared-name "cruiseController_b") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b"))) (name "cruiseController_b") (declared-name "cruiseController_b") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::fuelCommandPort"))) (name "fuelCommandPort") (declared-name "fuelCommandPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::fuelCommandPort"))) (name "fuelCommandPort") (declared-name "fuelCommandPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::fuelCommandPort::fuelCommand"))) (name "fuelCommand") (declared-name "fuelCommand") (declared (properties (direction "out"))))
                   )
                 )
-                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::sensedSpeedPort"))) (name "sensedSpeedPort") (declared-name "sensedSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::sensedSpeedPort"))) (name "sensedSpeedPort") (declared-name "sensedSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::sensedSpeedPort::sensedSpeed"))) (name "sensedSpeed") (declared-name "sensedSpeed") (declared (properties (direction "in"))))
                   )
                 )
-                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::cruiseController_b::setSpeedPort::setSpeed"))) (name "setSpeed") (declared-name "setSpeed") (declared (properties (direction "in"))))
                   )
                 )
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::engine_b"))) (name "engine_b") (declared-name "engine_b") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::engine_b"))) (name "engine_b") (declared-name "engine_b") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::engine_b::fuelCommandPort"))) (name "fuelCommandPort") (declared-name "fuelCommandPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::engine_b::fuelCommandPort"))) (name "fuelCommandPort") (declared-name "fuelCommandPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::engine_b::fuelCommandPort::fuelCommand"))) (name "fuelCommand") (declared-name "fuelCommand") (declared (properties (direction "in"))))
                   )
@@ -456,14 +456,14 @@ semantic.unresolved_name 'fuelCommandMessage'
                 (element (kind "flow payload") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::sensedSpeedFlow::_payload"))) (name "_payload") (declared-name "_payload"))
               )
             )
-            (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::setSpeedPort"))) (name "setSpeedPort") (declared-name "setSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
                 (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::setSpeedPort::setSpeed"))) (name "setSpeed") (declared-name "setSpeed") (declared (properties (direction "in"))))
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::speedometer_b"))) (name "speedometer_b") (declared-name "speedometer_b") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::speedometer_b"))) (name "speedometer_b") (declared-name "speedometer_b") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
               (contains
-                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::speedometer_b::sensedSpeedPort"))) (name "sensedSpeedPort") (declared-name "sensedSpeedPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
+                (element (kind "port") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::speedometer_b::sensedSpeedPort"))) (name "sensedSpeedPort") (declared-name "sensedSpeedPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)))
                   (contains
                     (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Interaction Realization-2::vehicle_b::speedometer_b::sensedSpeedPort::sensedSpeed"))) (name "sensedSpeed") (declared-name "sensedSpeed") (declared (properties (direction "out"))))
                   )

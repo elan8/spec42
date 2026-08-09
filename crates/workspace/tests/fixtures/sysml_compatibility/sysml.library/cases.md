@@ -252,7 +252,7 @@ standard library package Cases {
         (element (kind "case def") (id (node (document "d0") (qualified-name "Cases::Case"))) (name "Case") (declared-name "Case")
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Cases::Case::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case")))))
-            (element (kind "ref") (id (node (document "d0") (qualified-name "Cases::Case::actors"))) (name "actors") (declared-name "actors") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case"))))
+            (element (kind "ref") (id (node (document "d0") (qualified-name "Cases::Case::actors"))) (name "actors") (declared-name "actors") (declared (properties (composite false) (reference true) (ordered false)) (multiplicity (lower 0) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case"))))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Cases::Case::actors::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Cases::Case")))))
               )

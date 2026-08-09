@@ -99,21 +99,21 @@ NIL
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine"))) (name "Engine") (declared-name "Engine") (declared)
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (name "engineFuelPort") (declared-name "engineFuelPort") (declared (properties (conjugated true) (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::Engine")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Port Conjugation Example::Engine::engineFuelPort"))) (name "engineFuelPort") (declared-name "engineFuelPort") (declared (properties (conjugated true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::Engine")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Port Conjugation Example::Fuel"))) (name "Fuel") (declared-name "Fuel") (declared))
         (element (kind "port def") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort"))) (name "FuelPort") (declared-name "FuelPort")
           (contains
-            (element (kind "item") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (name "fuelReturn") (declared-name "fuelReturn") (declared (properties (direction "in") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
-            (element (kind "item") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (name "fuelSupply") (declared-name "fuelSupply") (declared (properties (direction "out") (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (name "temperature") (declared-name "temperature") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelReturn"))) (name "fuelReturn") (declared-name "fuelReturn") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
+            (element (kind "item") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::fuelSupply"))) (name "fuelSupply") (declared-name "fuelSupply") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::temperature"))) (name "temperature") (declared-name "temperature") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
             (element (kind "conjugated port definition") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort::~FuelPort"))) (name "~FuelPort") (declared-name "~FuelPort") (effective (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelPort")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank"))) (name "FuelTank") (declared-name "FuelTank") (declared)
           (contains
-            (element (kind "port") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (name "fuelTankPort") (declared-name "fuelTankPort") (declared (properties (composite true) (reference false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank")))))
+            (element (kind "port") (id (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank::fuelTankPort"))) (name "fuelTankPort") (declared-name "fuelTankPort") (declared) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Port Conjugation Example::FuelTank")))))
           )
         )
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Port Conjugation Example::Temp"))) (name "Temp") (declared-name "Temp") (declared (properties (ordered false) (unique true))))

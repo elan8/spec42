@@ -97,12 +97,12 @@ NIL
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor"))) (name "Processor") (declared-name "Processor") (declared)
           (contains
-            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::internalProcess"))) (name "internalProcess") (declared-name "internalProcess") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::internalProcess"))) (name "internalProcess") (declared-name "internalProcess") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor::workflowProcess"))) (name "workflowProcess") (declared-name "workflowProcess") (declared (properties (composite false) (reference true))) (effective (featuring-type (node (document "d0") (qualified-name "Terminate Actions Example-2::Processor")))))
           )
         )
         (element (kind "action def") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::WorkflowProcess"))) (name "WorkflowProcess") (declared-name "WorkflowProcess"))
-        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (name "terminateProcessing") (declared-name "terminateProcessing") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing"))) (name "terminateProcessing") (declared-name "terminateProcessing") (declared)
           (contains
             (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate"))) (name "terminate") (declared-name "terminate"))
             (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate#terminate"))) (name "terminate") (declared-name "terminate"))

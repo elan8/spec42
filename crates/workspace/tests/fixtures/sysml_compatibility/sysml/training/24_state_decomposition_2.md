@@ -140,7 +140,7 @@ semantic.duplicate_name 'off'
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Decomposition-1::VehicleOnSignal"))) (name "VehicleOnSignal") (declared-name "VehicleOnSignal") (declared (properties (ordered false) (unique true))))
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "State Decomposition-1::VehicleStartSignal"))) (name "VehicleStartSignal") (declared-name "VehicleStartSignal") (declared (properties (ordered false) (unique true))))
         (element (kind "state def") (id (node (document "d0") (qualified-name "State Decomposition-1::VehicleStates"))) (name "VehicleStates") (declared-name "VehicleStates"))
-        (element (kind "state") (id (node (document "d0") (qualified-name "State Decomposition-1::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared (properties (composite true) (reference false)))
+        (element (kind "state") (id (node (document "d0") (qualified-name "State Decomposition-1::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared)
           (contains
             (element (kind "state") (id (node (document "d0") (qualified-name "State Decomposition-1::vehicleStates::healthStates"))) (name "healthStates") (declared-name "healthStates") (effective (featuring-type (node (document "d0") (qualified-name "State Decomposition-1::VehicleStates")))))
             (element (kind "state") (id (node (document "d0") (qualified-name "State Decomposition-1::vehicleStates::operationalStates"))) (name "operationalStates") (declared-name "operationalStates") (effective (featuring-type (node (document "d0") (qualified-name "State Decomposition-1::VehicleStates"))))

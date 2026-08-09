@@ -161,12 +161,12 @@ semantic.duplicate_name 'off'
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Actions::VehicleStates::operatingVehicle"))) (name "operatingVehicle") (declared-name "operatingVehicle") (effective (featuring-type (node (document "d0") (qualified-name "State Actions::VehicleStates")))))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "State Actions::performSelfTest"))) (name "performSelfTest") (declared-name "performSelfTest") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "State Actions::performSelfTest"))) (name "performSelfTest") (declared-name "performSelfTest") (declared)
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Actions::performSelfTest::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
-        (element (kind "state") (id (node (document "d0") (qualified-name "State Actions::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared (properties (composite true) (reference false)))
+        (element (kind "state") (id (node (document "d0") (qualified-name "State Actions::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared)
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "State Actions::vehicleStates::_entry"))) (name "entry") (declared-name "entry") (effective (featuring-type (node (document "d0") (qualified-name "State Actions::VehicleStates")))))
             (element (kind "state") (id (node (document "d0") (qualified-name "State Actions::vehicleStates::off"))) (name "off") (declared-name "off") (effective (featuring-type (node (document "d0") (qualified-name "State Actions::VehicleStates")))))

@@ -192,8 +192,8 @@ parse.expected_semicolon_or_body
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "ViewTest::P"))) (name "P") (declared-name "P")
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "ViewTest::P::p1"))) (name "p1") (declared-name "p1") (declared (properties (composite true) (reference false) (ordered false))))
-            (element (kind "part") (id (node (document "d0") (qualified-name "ViewTest::P::p2"))) (name "p2") (declared-name "p2") (declared (properties (composite true) (reference false) (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ViewTest::P::p1"))) (name "p1") (declared-name "p1") (declared (properties (ordered false))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "ViewTest::P::p2"))) (name "p2") (declared-name "p2") (declared (properties (ordered false))))
           )
         )
         (element (kind "rendering def") (id (node (document "d0") (qualified-name "ViewTest::R"))) (name "R") (declared-name "R"))

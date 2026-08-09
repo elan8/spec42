@@ -488,7 +488,7 @@ semantic.unresolved_name 'LengthValue'
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::Velocity::v0"))) (name "v0") (declared-name "v0") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::Velocity")))))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn1"))) (name "dyn1") (declared-name "dyn1") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn1"))) (name "dyn1") (declared-name "dyn1") (declared)
           (contains
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cd"))) (name "Cd") (declared-name "Cd") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::Cf"))) (name "Cf") (declared-name "Cf") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
@@ -500,7 +500,7 @@ semantic.unresolved_name 'LengthValue'
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Dynamics::dyn1::x_in"))) (name "x_in") (declared-name "x_in") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn2"))) (name "dyn2") (declared-name "dyn2") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "Dynamics::dyn2"))) (name "dyn2") (declared-name "dyn2") (declared)
           (contains
             (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::acc : Acceleration"))) (name "acc : Acceleration") (declared-name "acc : Acceleration") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))
             (element (kind "action body decl") (id (node (document "d0") (qualified-name "Dynamics::dyn2::pos : Position"))) (name "pos : Position") (declared-name "pos : Position") (effective (featuring-type (node (document "d0") (qualified-name "Dynamics::StraightLineVehicleDynamics")))))

@@ -221,13 +221,13 @@ semantic.unresolved_name 'c::incr'
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "AssignmentTest::Counter"))) (name "Counter") (declared-name "Counter") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::count"))) (name "count") (declared-name "count") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (feature-value (kind initial) (expression (kind "integerLiteral") (literal 0)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
-            (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::decr"))) (name "decr") (declared-name "decr") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::count"))) (name "count") (declared-name "count") (declared (properties (ordered false) (unique true)) (feature-value (kind initial) (expression (kind "integerLiteral") (literal 0)))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::decr"))) (name "decr") (declared-name "decr") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
               (contains
                 (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::decr::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
               )
             )
-            (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::incr"))) (name "incr") (declared-name "incr") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
+            (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::incr"))) (name "incr") (declared-name "incr") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter"))))
               (contains
                 (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::Counter::incr::_assign"))) (name "assign") (declared-name "assign") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Counter")))))
               )
@@ -258,11 +258,11 @@ semantic.unresolved_name 'c::incr'
             (element (kind "in out parameter") (id (node (document "d0") (qualified-name "AssignmentTest::Increment::c"))) (name "c") (declared-name "c") (effective (featuring-type (node (document "d0") (qualified-name "AssignmentTest::Increment")))))
           )
         )
-        (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::a"))) (name "a") (declared-name "a") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "AssignmentTest::a"))) (name "a") (declared-name "a") (declared)
           (contains
             (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign"))) (name "assign") (declared-name "assign"))
             (element (kind "assign") (id (node (document "d0") (qualified-name "AssignmentTest::a::_assign#assign"))) (name "assign") (declared-name "assign"))
-            (element (kind "state") (id (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (name "counting") (declared-name "counting") (declared (properties (composite true) (reference false))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "AssignmentTest::a::counting"))) (name "counting") (declared-name "counting") (declared))
           )
         )
       )

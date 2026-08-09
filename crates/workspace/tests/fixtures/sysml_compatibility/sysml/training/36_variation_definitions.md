@@ -149,26 +149,26 @@ semantic.unresolved_name 'ISQ::LengthValue'
   (containment
     (element (kind "package") (id (node (document "d0") (qualified-name "Variation Definitions"))) (name "Variation Definitions") (declared-name "Variation Definitions")
       (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine"))) (name "4cylEngine") (declared-name "4cylEngine") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (name "cylinder") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::4cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 4) (upper 4) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine"))) (name "6cylEngine") (declared-name "6cylEngine") (declared (properties (ordered false)))
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (name "cylinder") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::6cylEngine::cylinder"))) (name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 6) (upper 6) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder"))) (name "Cylinder") (declared-name "Cylinder") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Cylinder")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Variation Definitions::Cylinder::diameter"))) (name "diameter") (declared-name "diameter") (declared (properties (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Cylinder")))))
           )
         )
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Variation Definitions::Diameter"))) (name "Diameter") (declared-name "Diameter") (declared (properties (ordered false) (unique true))))
         (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "Variation Definitions::DiameterChoices"))) (name "DiameterChoices") (declared-name "DiameterChoices"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Definitions::Engine"))) (name "Engine") (declared-name "Engine") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (name "cylinder") (declared-name "cylinder") (declared (properties (composite true) (reference false) (ordered false)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Variation Definitions::Engine::cylinder"))) (name "cylinder") (declared-name "cylinder") (declared (properties (ordered false)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Variation Definitions::Engine")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Variation Definitions::EngineChoices"))) (name "EngineChoices") (declared-name "EngineChoices") (declared (properties (variation true)))

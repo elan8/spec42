@@ -124,8 +124,8 @@ abstract part def Container {
     )
     (element (kind "part def") (id (node (document "d0") (qualified-name "EngineChoices"))) (name "EngineChoices") (declared-name "EngineChoices") (declared (properties (variation true)))
       (contains
-        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (name "fourCyl") (declared-name "fourCyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (name "sixCyl") (declared-name "sixCyl") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::fourCyl"))) (name "fourCyl") (declared-name "fourCyl") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "EngineChoices::sixCyl"))) (name "sixCyl") (declared-name "sixCyl") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "EngineChoices")))))
       )
     )
     (element (kind "attribute def") (id (node (document "d0") (qualified-name "Weight"))) (name "Weight") (declared-name "Weight") (declared (properties (ordered false) (unique true))))

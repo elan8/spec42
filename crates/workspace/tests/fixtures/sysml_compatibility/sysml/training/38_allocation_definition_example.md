@@ -165,12 +165,12 @@ NIL
             (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::LogicalElement"))) (name "LogicalElement") (declared-name "LogicalElement") (declared))
             (element (kind "action def") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::ProvidePower"))) (name "ProvidePower") (declared-name "ProvidePower"))
             (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator"))) (name "TorqueGenerator") (declared-name "TorqueGenerator") (declared))
-            (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared (properties (composite true) (reference false)))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower"))) (name "providePower") (declared-name "providePower") (declared)
               (contains
-                (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared (properties (composite true) (reference false))) (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::ProvidePower")))))
+                (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::providePower::generateTorque"))) (name "generateTorque") (declared-name "generateTorque") (declared) (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::ProvidePower")))))
               )
             )
-            (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (composite true) (reference false) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator"))) (name "torqueGenerator") (declared-name "torqueGenerator") (declared (properties (ordered false)))
               (contains
                 (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::torqueGenerator::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::LogicalModel::TorqueGenerator")))))
               )
@@ -188,9 +188,9 @@ NIL
             )
             (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PhysicalElement"))) (name "PhysicalElement") (declared-name "PhysicalElement") (declared))
             (element (kind "part def") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))) (name "PowerTrain") (declared-name "PowerTrain") (declared))
-            (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (composite true) (reference false) (ordered false)))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain"))) (name "powerTrain") (declared-name "powerTrain") (declared (properties (ordered false)))
               (contains
-                (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))))
+                (element (kind "part") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain::engine"))) (name "engine") (declared-name "engine") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain"))))
                   (contains
                     (element (kind "action") (id (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::powerTrain::engine::providePower.generateTorque"))) (name "providePower.generateTorque") (declared-name "providePower.generateTorque") (effective (featuring-type (node (document "d0") (qualified-name "Allocation Definition Example::PhysicalModel::PowerTrain")))))
                   )

@@ -220,7 +220,7 @@ semantic.unresolved_name 'presidentOfCountry::asPresident'
             (element (kind "attribute") (id (node (document "d0") (qualified-name "JohnIndividualExample::Person::age"))) (name "age") (declared-name "age") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "JohnIndividualExample::Person")))))
           )
         )
-        (element (kind "occurrence") (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident") (declared (properties (individual true) (composite true) (reference false))))
+        (element (kind "occurrence") (id (node (document "d0") (qualified-name "JohnIndividualExample::UnitedStatesWithJohnAsPresident"))) (name "UnitedStatesWithJohnAsPresident") (declared-name "UnitedStatesWithJohnAsPresident") (declared (properties (individual true))))
       )
     )
   )

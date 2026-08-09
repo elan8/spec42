@@ -152,9 +152,9 @@ semantic.unresolved_name 'severity'
         (element (kind "import") (id (node (document "d0") (qualified-name "User Keyword Example::*"))) (name "*") (declared-name "*"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "User Keyword Example::Device"))) (name "Device") (declared-name "Device") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (name "battery") (declared-name "battery") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device"))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery"))) (name "battery") (declared-name "battery") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device"))))
               (contains
-                (element (kind "attribute") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (name "power") (declared-name "power") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device")))))
+                (element (kind "attribute") (id (node (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))) (name "power") (declared-name "power") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "User Keyword Example::Device")))))
               )
             )
           )

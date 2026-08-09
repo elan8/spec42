@@ -151,7 +151,7 @@ semantic.unresolved_name 'ScalarValues::Boolean'
   (containment
     (element (kind "package") (id (node (document "d0") (qualified-name "StructuredControlTest"))) (name "StructuredControlTest") (declared-name "StructuredControlTest")
       (contains
-        (element (kind "action") (id (node (document "d0") (qualified-name "StructuredControlTest::"))) (name "") (declared (properties (composite true) (reference false)))
+        (element (kind "action") (id (node (document "d0") (qualified-name "StructuredControlTest::"))) (name "") (declared)
           (contains
             (element (kind "if") (id (node (document "d0") (qualified-name "StructuredControlTest::::_if"))) (name "if") (declared-name "if")
               (contains

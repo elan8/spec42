@@ -53,7 +53,7 @@ NIL
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Definitions::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Definitions::Vehicle")))))
           )
         )
       )
@@ -61,7 +61,7 @@ NIL
     (element (kind "package") (id (node (document "d1") (qualified-name "Usage"))) (name "Usage") (declared-name "Usage")
       (contains
         (element (kind "import") (id (node (document "d1") (qualified-name "Usage::*"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d1") (qualified-name "Usage::v"))) (name "v") (declared-name "v") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d1") (qualified-name "Usage::v"))) (name "v") (declared-name "v") (declared (properties (ordered false))))
       )
     )
   )

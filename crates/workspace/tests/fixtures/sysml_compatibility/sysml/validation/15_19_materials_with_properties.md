@@ -342,7 +342,7 @@ semantic.unresolved_name 'DimensionOneValue'
         (element (kind "import") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::*#import2"))) (name "*") (declared-name "*"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy"))) (name "Alloy") (declared-name "Alloy") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy::fractions"))) (name "fractions") (declared-name "fractions") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy::fractions"))) (name "fractions") (declared-name "fractions") (declared (properties (ordered false) (unique true)) (multiplicity (lower 2) (upper unbounded) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Alloy")))))
           )
         )
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::AtomicMassValue"))) (name "AtomicMassValue") (declared-name "AtomicMassValue") (declared (properties (ordered false) (unique true))))
@@ -371,7 +371,7 @@ semantic.unresolved_name 'DimensionOneValue'
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal"))) (name "Metal") (declared-name "Metal") (declared)
           (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal::atomicMass"))) (name "atomicMass") (declared-name "atomicMass") (declared (properties (composite true) (reference false) (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal::atomicMass"))) (name "atomicMass") (declared-name "atomicMass") (declared (properties (ordered false) (unique true)) (multiplicity (lower 1) (upper 1) (ordered false) (provenance authored))) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "15_19-Materials with Properties::Metal")))))
           )
         )
         (element (kind "import") (id (node (document "d0") (qualified-name "15_19-Materials with Properties::Real"))) (name "Real") (declared-name "Real"))

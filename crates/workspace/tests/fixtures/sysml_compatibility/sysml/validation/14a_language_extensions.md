@@ -155,8 +155,8 @@ semantic.unresolved_name 'SysML::PartUsage'
             )
           )
         )
-        (element (kind "part") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_X"))) (name "part_X") (declared-name "part_X") (declared (properties (composite true) (reference false) (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_Y"))) (name "part_Y") (declared-name "part_Y") (declared (properties (composite true) (reference false) (ordered false)))
+        (element (kind "part") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_X"))) (name "part_X") (declared-name "part_X") (declared (properties (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_Y"))) (name "part_Y") (declared-name "part_Y") (declared (properties (ordered false)))
           (contains
             (element (kind "metadata usage") (id (node (document "d0") (qualified-name "14a-Language Extensions::part_Y::Classified"))) (name "Classified") (declared-name "Classified")
               (contains

@@ -163,7 +163,7 @@ semantic.unresolved_name 'height'
         (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::String"))) (name "String") (declared-name "String"))
         (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mass"))) (name "mass") (declared-name "mass"))
         (element (kind "import") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::mm"))) (name "mm") (declared-name "mm"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (name "myBatteryUnit") (declared-name "myBatteryUnit") (declared (properties (composite true) (reference false) (ordered false))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "ExternalShapeRefExample::myBatteryUnit"))) (name "myBatteryUnit") (declared-name "myBatteryUnit") (declared (properties (ordered false))))
       )
     )
   )

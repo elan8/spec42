@@ -91,9 +91,9 @@ semantic.unresolved_name 'Real'
         (element (kind "item def") (id (node (document "d0") (qualified-name "Items Example::Person"))) (name "Person") (declared-name "Person"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Items Example::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Items Example::Vehicle::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (composite true) (reference false) (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Items Example::Vehicle::fuelTank"))) (name "fuelTank") (declared-name "fuelTank") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
             (element (kind "opaque member") (id (node (document "d0") (qualified-name "Items Example::Vehicle::item"))) (name "item") (declared-name "item") (effective (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Items Example::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (composite true) (reference false) (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Items Example::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Items Example::Vehicle")))))
           )
         )
       )
