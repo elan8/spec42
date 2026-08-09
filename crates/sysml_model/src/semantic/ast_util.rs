@@ -214,14 +214,14 @@ pub fn item_usage_feature_properties(
 pub fn occurrence_usage_feature_properties(
     usage: &sysml_v2_parser::ast::OccurrenceUsage,
 ) -> DeclaredFeatureProperties {
-    let (is_composite, is_reference) = composite_usage_ownership();
+    let (is_composite, is_reference) = usage_ownership_from_ref_flag(usage.is_reference);
     DeclaredFeatureProperties {
         direction: None,
-        is_abstract: false,
+        is_abstract: usage.is_abstract,
         is_variation: false,
         is_individual: usage.is_individual,
         is_derived: false,
-        is_constant: false,
+        is_constant: usage.is_constant,
         is_end: false,
         is_composite,
         is_reference,
