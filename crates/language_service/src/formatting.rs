@@ -11,8 +11,8 @@ pub struct FormatOptions {
 /// parser as its only compiler frontend.  The lexical pass is nevertheless
 /// aware of strings and both comment forms, so braces in those regions do not
 /// affect layout.  It also preserves a source verbatim if its lexical structure
-/// is incomplete; editor recovery must never turn an unfinished string or
-/// comment into different source text.
+/// is incomplete; editor recovery must never turn an unfinished string,
+/// unrestricted name, or comment into different source text.
 pub fn format_document_text(source: &str, options: FormatOptions) -> String {
     let analysis = match analyze(source) {
         Some(analysis) => analysis,
@@ -40,7 +40,7 @@ pub fn format_document_text(source: &str, options: FormatOptions) -> String {
             continue;
         }
 
-        // A line that opens a multiline string/comment owns everything after
+        // A line that opens a multiline protected region owns everything after
         // the delimiter. Its trailing spaces are payload and must survive.
         let content = if line.ends_in_protected_region {
             line.text.trim_start()
@@ -98,12 +98,14 @@ struct LineAnalysis<'a> {
 enum LexState {
     Code,
     String { escaped: bool },
+    UnrestrictedName { escaped: bool },
     BlockComment,
 }
 
 /// Returns `None` for incomplete lexical structure. This is a conservative
 /// recovery boundary: formatting an unbalanced block is useful in an editor,
-/// but an unfinished string or comment can contain whitespace payload.
+/// but an unfinished string, unrestricted name, or comment can contain
+/// whitespace payload.
 fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
     let mut state = LexState::Code;
     let mut lines = Vec::new();
@@ -126,6 +128,7 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
                         state = LexState::BlockComment;
                     }
                     '"' => state = LexState::String { escaped: false },
+                    '\'' => state = LexState::UnrestrictedName { escaped: false },
                     '{' => {
                         opens += 1;
                         only_leading_closes = false;
@@ -145,6 +148,14 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
                         (false, '\\') => LexState::String { escaped: true },
                         (false, '"') => LexState::Code,
                         _ => LexState::String { escaped: false },
+                    };
+                }
+                LexState::UnrestrictedName { escaped } => {
+                    state = match (escaped, ch) {
+                        (true, _) => LexState::UnrestrictedName { escaped: false },
+                        (false, '\\') => LexState::UnrestrictedName { escaped: true },
+                        (false, '\'') => LexState::Code,
+                        _ => LexState::UnrestrictedName { escaped: false },
                     };
                 }
                 LexState::BlockComment => {
@@ -234,6 +245,22 @@ mod tests {
     }
 
     #[test]
+    fn format_document_ignores_syntax_inside_unrestricted_names() {
+        let source = r"package P {
+feature 'brace { } // /* and slash \\ then escaped \' quote';
+part x;
+}";
+        assert_eq!(
+            format_document_text(source, default_options()),
+            r"package P {
+    feature 'brace { } // /* and slash \\ then escaped \' quote';
+    part x;
+}
+"
+        );
+    }
+
+    #[test]
     fn format_document_preserves_multiline_string_and_comment_payload() {
         let source = "package P {\ndoc /* first\n  { payload }  \n*/\nattr text = \"first  \n  { payload }  \nlast\";\n}";
         let formatted = format_document_text(source, default_options());
@@ -248,6 +275,12 @@ mod tests {
     #[test]
     fn format_document_preserves_incomplete_source_verbatim() {
         let source = "package P {\n  attr text = \"unfinished";
+        assert_eq!(format_document_text(source, default_options()), source);
+    }
+
+    #[test]
+    fn format_document_preserves_unfinished_unrestricted_name_verbatim() {
+        let source = "package P {\n  feature 'brace { // unfinished";
         assert_eq!(format_document_text(source, default_options()), source);
     }
 
