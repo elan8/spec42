@@ -1069,6 +1069,7 @@ package Demo {
     part def CleaningHead {
         part brushMotor : BrushMotor;
     }
+
     part def Robot {
         part cleaningHead : CleaningHead;
     }
@@ -1193,6 +1194,37 @@ package Demo {
         let projected = build_host_semantic_model_node(&graph, anonymous, &[]);
         assert_eq!(projected.facts.declared_name, None);
         assert_eq!(projected.facts.effective_name, "_itemDef");
+    }
+
+    #[test]
+    fn anonymous_graph_nodes_do_not_project_synthetic_names_as_authored() {
+        let content = r#"
+package Demo {
+    action def Step;
+    action def Pipeline {
+        first start;
+        action start : Step;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/initial.sysml"
+        } else {
+            "/workspace/initial.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _docs) = build_semantic_graph_with_provider(&provider).expect("graph");
+
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+        let initial = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Initial)
+            .expect("initial node");
+        assert_eq!(initial.name, "_initial");
+        assert_eq!(initial.facts.declared_name, None);
+        assert_eq!(initial.facts.effective_name, "_initial");
     }
 
     #[test]

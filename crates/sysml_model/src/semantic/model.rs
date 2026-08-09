@@ -180,6 +180,9 @@ pub enum ElementKind {
     /// One named value inside an `enum def { ... }` body (e.g. `active;`). Owned by the
     /// enclosing `EnumDef`; not independently typed or specialized.
     EnumeratedValue,
+    /// Standalone `first <step>;` action-body marker. This is an owned initial control node
+    /// whose outgoing `Flow` identifies the behavior's first step.
+    Initial,
     ForLoop,
     Assign,
     Assert,
@@ -297,6 +300,7 @@ impl ElementKind {
             ElementKind::TransitionEffect => "transition effect",
             ElementKind::FinalState => "final state",
             ElementKind::EnumeratedValue => "enumerated value",
+            ElementKind::Initial => "initial",
             ElementKind::ForLoop => "for loop",
             ElementKind::Assign => "assign",
             ElementKind::Assert => "assert",
@@ -405,6 +409,7 @@ impl ElementKind {
             "transition effect" => ElementKind::TransitionEffect,
             "final state" => ElementKind::FinalState,
             "enumerated value" => ElementKind::EnumeratedValue,
+            "initial" => ElementKind::Initial,
             "for loop" => ElementKind::ForLoop,
             "assign" => ElementKind::Assign,
             "assert" => ElementKind::Assert,

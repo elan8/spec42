@@ -23,6 +23,7 @@ use super::payload::insert_action_payload_attrs;
 use super::state;
 use super::{
     add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node,
+    resolve_addressable_name,
 };
 
 struct ThenActionChain {
@@ -338,6 +339,48 @@ fn add_assign_stmt(
         attrs,
         Some(parent_id),
     );
+}
+
+/// Materialize the standalone `first <step>;` form as an explicit initial control node.
+///
+/// `first <source> then <target>;` is a succession and is handled as a direct flow edge by the
+/// callers below. Without `then`, the parser distinguishes the form as an initial-node marker;
+/// retaining it as a child node preserves that authored behavior fact and its resolved outgoing
+/// flow without asking downstream projections to rediscover it from syntax.
+fn add_initial_stmt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    first: &sysml_v2_parser::Node<sysml_v2_parser::ast::FirstStmt>,
+) {
+    let target_expression = expressions::expr_node_to_qualified_string(&first.value.first);
+    let mut attrs = HashMap::new();
+    let addressable_name = resolve_addressable_name("", "initial", &mut attrs);
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &addressable_name, "initial");
+    attrs.insert(
+        "initialTarget".to_string(),
+        serde_json::json!(&target_expression),
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "initial",
+        addressable_name,
+        span_to_range(&first.span),
+        attrs,
+        Some(parent_id),
+    );
+
+    if target_expression.is_empty() {
+        return;
+    }
+    // `add_edge_if_both_exist` enqueues the relationship when the target declaration follows
+    // this marker. The normal final-link phase then resolves that queued edge against the same
+    // canonical qualified identity used for immediately declared targets.
+    let target = qualified_name(container_prefix, &target_expression);
+    add_edge_if_both_exist(g, uri, &qualified, &target, RelationshipKind::Flow);
 }
 
 fn add_state_usage(
@@ -813,8 +856,6 @@ pub(super) fn build_from_action_def_body(
                 );
             }
             ActionDefBodyElement::FirstStmt(first) => {
-                // `then` is `None` for the standalone initial-node marker `first start;` (§6
-                // G13) -- nothing to connect a Flow edge to in that case.
                 if let Some(then) = &first.value.then {
                     expressions::add_expression_edge_if_both_exist(
                         g,
@@ -824,6 +865,8 @@ pub(super) fn build_from_action_def_body(
                         then,
                         RelationshipKind::Flow,
                     );
+                } else {
+                    add_initial_stmt(g, uri, container_prefix, parent_id, first);
                 }
             }
             ActionDefBodyElement::MergeStmt(merge) => {
@@ -1032,8 +1075,6 @@ pub(super) fn build_from_action_usage_body(
                 );
             }
             ActionUsageBodyElement::FirstStmt(first) => {
-                // `then` is `None` for the standalone initial-node marker `first start;` (§6
-                // G13) -- nothing to connect a Flow edge to in that case.
                 if let Some(then) = &first.value.then {
                     expressions::add_expression_edge_if_both_exist(
                         g,
@@ -1043,6 +1084,8 @@ pub(super) fn build_from_action_usage_body(
                         then,
                         RelationshipKind::Flow,
                     );
+                } else {
+                    add_initial_stmt(g, uri, container_prefix, parent_id, first);
                 }
             }
             ActionUsageBodyElement::MergeStmt(merge) => {
