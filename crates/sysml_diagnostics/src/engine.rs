@@ -41,7 +41,9 @@ mod tests {
     use super::*;
     use crate::canonicalize_diagnostics;
     use crate::DiagnosticSeverity;
-    use sysml_model::build_graph_from_doc;
+    use sysml_model::{
+        build_and_link_graph, build_graph_from_doc, SysmlDocument, SysmlDocumentSourceKind,
+    };
 
     #[test]
     fn collect_diagnostics_from_graph_emits_implicit_redefinition_without_operator() {
@@ -213,6 +215,88 @@ mod tests {
         assert!(diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == "unresolved_import_target"));
+    }
+
+    #[test]
+    fn analysis_diagnostics_apply_to_authored_constraints_not_inherited_requirement_uses() {
+        let input = r#"
+            package P {
+                requirement def Template {
+                    require constraint { missingActual <= limit }
+                }
+                requirement applied : Template;
+                constraint reusable { missingConstraint <= limit }
+            }
+        "#;
+        let document = SysmlDocument::from_memory_path(
+            "analysis-owner",
+            "analysis-owner.sysml",
+            input.to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let uri = document.uri.clone();
+        let (graph, _) = build_and_link_graph(&[document]).expect("semantic graph");
+        let unresolved =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default())
+                .into_iter()
+                .filter(|diagnostic| diagnostic.code == "analysis_evaluation_unresolved")
+                .collect::<Vec<_>>();
+
+        assert_eq!(
+            unresolved.len(),
+            2,
+            "Template and reusable own unresolved constraints; applied inherits one: {unresolved:#?}"
+        );
+    }
+
+    #[test]
+    fn ambiguous_analysis_is_not_reported_as_unresolved() {
+        let input = r#"
+            package A { attribute value = 1; }
+            package B { attribute value = 2; }
+            package P {
+                import A::*;
+                import B::*;
+                requirement def Ambiguous {
+                    require constraint { value <= 2 }
+                }
+            }
+        "#;
+        let document = SysmlDocument::from_memory_path(
+            "ambiguous-analysis",
+            "ambiguous-analysis.sysml",
+            input.to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let uri = document.uri.clone();
+        let (graph, _) = build_and_link_graph(&[document]).expect("semantic graph");
+        let ambiguous = graph
+            .node_ids_by_qualified_name
+            .get("P::Ambiguous")
+            .and_then(|ids| ids.first())
+            .and_then(|id| graph.get_node(id))
+            .and_then(|node| graph.evaluation_facts_for(node))
+            .and_then(|facts| facts.analysis.as_ref())
+            .expect("analysis facts");
+        assert_eq!(
+            ambiguous.expression.status,
+            sysml_model::EvaluationStatus::Ambiguous
+        );
+
+        let diagnostics =
+            collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+        assert!(
+            !diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == "analysis_evaluation_unresolved"),
+            "ambiguous status must remain explicit instead of being relabeled: {diagnostics:#?}"
+        );
     }
 
     #[test]

@@ -34,6 +34,31 @@ fn is_viewpoint_kind(kind: &sysml_model::ElementKind) -> bool {
     )
 }
 
+/// Whether an analysis evaluation belongs to a directly authored diagnostic owner.
+///
+/// Evaluation facts are intentionally broader: an inherited requirement constraint, for
+/// example, remains queryable from the requirement usage. Reporting its unresolved result as a
+/// diagnostic on every use would turn a reusable/template expression into an apparent local
+/// error. This predicate uses only typed graph facts and keeps that reporting policy in one
+/// place.
+fn analysis_evaluation_diagnostic_applies(
+    graph: &SemanticGraph,
+    node: &sysml_model::SemanticNode,
+) -> bool {
+    matches!(
+        node.element_kind,
+        sysml_model::ElementKind::Analysis | sysml_model::ElementKind::Verification
+    ) || (node.element_kind == sysml_model::ElementKind::Constraint
+        && node.declared_facts.own_expression.is_some())
+        || graph.children_of(node).into_iter().any(|child| {
+            matches!(
+                child.element_kind,
+                sysml_model::ElementKind::AssertConstraint
+                    | sysml_model::ElementKind::RequireConstraint
+            ) && child.declared_facts.own_expression.is_some()
+        })
+}
+
 /// Returns LSP diagnostics for semantic rules in the given document.
 /// Only runs when the document has been parsed and merged into the graph.
 pub fn compute_semantic_diagnostics(
@@ -539,6 +564,9 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
             node.element_kind,
             sysml_model::ElementKind::ConstraintDef | sysml_model::ElementKind::CalcDef
         );
+        if !analysis_evaluation_diagnostic_applies(graph, node) {
+            continue;
+        }
         if let Some(analysis) = graph
             .evaluation_facts_for(node)
             .and_then(|facts| facts.analysis.as_ref())
@@ -558,10 +586,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
                         node.name
                     ),
                 ));
-            } else if !matches!(
-                analysis.expression.status,
-                sysml_model::EvaluationStatus::Ok | sysml_model::EvaluationStatus::Incomplete
-            ) {
+            } else if analysis.expression.status == sysml_model::EvaluationStatus::Unresolved {
                 let detail = analysis
                     .expression
                     .error
