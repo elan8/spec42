@@ -40,7 +40,9 @@ use crate::semantic::SemanticGraph;
 
 const MAGIC: &[u8; 4] = b"LGCX";
 const VERSION_FIELD_LEN: usize = 20;
-const LIBRARY_GRAPH_SEMANTICS_VERSION: u32 = 4;
+// v5 serializes the closed declared-expression and canonical evaluation publication facts.
+// Older graph payloads must be unreachable even if serde could decode their additive fields.
+const LIBRARY_GRAPH_SEMANTICS_VERSION: u32 = 5;
 
 fn version_field() -> [u8; VERSION_FIELD_LEN] {
     // First 12 bytes: spec42 semver string; then PARSE_AST_VERSION and the graph-semantics
@@ -571,5 +573,23 @@ mod tests {
 
         assert_eq!(decoded.library_paths, Vec::<String>::new());
         assert_eq!(decoded.graph.graph.node_count(), 0);
+    }
+
+    #[test]
+    fn prior_semantics_version_is_stale_before_payload_decode() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("v4.bin");
+        let mut prior_version = version_field();
+        prior_version[16..20].copy_from_slice(&4u32.to_le_bytes());
+        let mut file = std::fs::File::create(&path).unwrap();
+        file.write_all(MAGIC).unwrap();
+        file.write_all(&prior_version).unwrap();
+        file.write_all(b"not-a-current-payload").unwrap();
+        drop(file);
+
+        assert!(
+            is_stale(&path),
+            "a v4 library graph must be unreachable before attempting payload decode"
+        );
     }
 }
