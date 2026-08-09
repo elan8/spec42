@@ -145,6 +145,7 @@ fn evaluate_analysis_results(
                         | ElementKind::Verification
                         | ElementKind::Requirement
                         | ElementKind::RequirementDef
+                        | ElementKind::Constraint
                 ) && !has_declared_constraint
             {
                 continue;

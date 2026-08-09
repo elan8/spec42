@@ -247,6 +247,46 @@ fn preserves_ambiguous_and_unsupported_states() {
 }
 
 #[test]
+fn publishes_analysis_for_a_constraint_usage_with_an_own_expression() {
+    let uri = Url::parse("file:///constraint-usage.sysml").expect("uri");
+    let mut graph = SemanticGraph::new();
+    let id = NodeId::new(&uri, "P::check");
+    let node = SemanticNode {
+        id: id.clone(),
+        element_kind: ElementKind::Constraint,
+        declared_name: Some("check".to_string()),
+        name: "check".to_string(),
+        range: range(),
+        attributes: HashMap::new(),
+        declared_facts: DeclaredSemanticFacts {
+            own_expression: Some(reference("missing")),
+            ..Default::default()
+        },
+        parent_id: None,
+    };
+    let index = graph.graph.add_node(node);
+    graph.node_index_by_id.insert(id.clone(), index);
+    graph.nodes_by_uri.entry(uri).or_default().push(id.clone());
+    graph
+        .node_ids_by_qualified_name
+        .entry("P::check".to_string())
+        .or_default()
+        .push(id.clone());
+
+    evaluate_expressions(&mut graph);
+
+    assert_eq!(status(&graph, &id), Some(EvaluationStatus::Unresolved));
+    assert_eq!(
+        graph
+            .get_node(&id)
+            .and_then(|node| graph.evaluation_facts_for(node))
+            .and_then(|facts| facts.analysis.as_ref())
+            .map(|analysis| analysis.expression.status),
+        Some(EvaluationStatus::Unresolved)
+    );
+}
+
+#[test]
 fn typed_engine_cannot_reintroduce_projection_or_text_parser_evaluation() {
     let source = include_str!("engine.rs");
     let module = include_str!("mod.rs");
