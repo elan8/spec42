@@ -1,4 +1,4 @@
-﻿//! Host semantic model projection (no LSP transport types).
+//! Host semantic model projection (no LSP transport types).
 //!
 //! This is a 1:1 representation of the semantic graph in a serializable form.
 //! Every field present in [`SemanticNode`] and [`SemanticEdge`] is preserved here;
@@ -380,4 +380,24 @@ pub struct HostConnectorEnd {
     pub target_feature_id: Option<String>,
     pub range: TextRange,
     pub is_implied: bool,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn old_relationship_payload_defaults_provenance_to_authored() {
+        let relationship: HostSemanticModelRelationship =
+            serde_json::from_value(serde_json::json!({
+                "source": "Demo::source",
+                "target": "Demo::target",
+                "kind": "typing"
+            }))
+            .expect("older relationship payload");
+        assert_eq!(
+            relationship.provenance,
+            HostRelationshipProvenance::Authored
+        );
+    }
 }
