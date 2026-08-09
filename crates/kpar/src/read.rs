@@ -139,7 +139,8 @@ impl KparArchive {
                 .get(logical_path)
                 .cloned()
                 .unwrap_or_else(|| logical_path.clone());
-            let Some(bytes) = entries.get(&normalize_zip_path(&archive_path)) else {
+            let archive_path = normalize_zip_path(&archive_path)?;
+            let Some(bytes) = entries.get(&archive_path) else {
                 return Err(KparError::InvalidArchive(format!(
                     "indexed path '{logical_path}' not found in archive"
                 )));
@@ -157,15 +158,10 @@ impl KparArchive {
     }
 
     pub fn materialize_to(&self, destination_root: &Path) -> Result<MaterializedProject> {
-        fs::create_dir_all(destination_root).map_err(|source| KparError::Io {
-            path: destination_root.display().to_string(),
-            source,
-        })?;
-
         let entries = read_zip_entries(&self.bytes)?;
         let mut source_files = Vec::new();
 
-        let paths: Vec<(String, String)> = if self.meta.index.is_empty() {
+        let mut paths: Vec<(String, String)> = if self.meta.index.is_empty() {
             entries
                 .keys()
                 .filter(|p| is_source_path(p))
@@ -186,14 +182,36 @@ impl KparArchive {
                 })
                 .collect()
         };
+        paths.sort();
 
+        // Validate every destination before creating the output directory. KPAR
+        // indexes are archive data, so they must never be allowed to escape the
+        // caller's materialization root, including on a host with Windows path
+        // semantics.
+        let mut planned = Vec::with_capacity(paths.len());
+        let mut materialized_paths = std::collections::HashSet::new();
         for (logical_path, archive_path) in paths {
-            let normalized = normalize_zip_path(&archive_path);
-            let Some(bytes) = entries.get(&normalized) else {
+            let logical_path = normalize_zip_path(&logical_path)?;
+            let archive_path = normalize_zip_path(&archive_path)?;
+            if !materialized_paths.insert(logical_path.clone()) {
                 return Err(KparError::InvalidArchive(format!(
-                    "missing archive entry '{normalized}' for '{logical_path}'"
+                    "multiple source entries materialize to '{logical_path}'"
+                )));
+            }
+            let Some(bytes) = entries.get(&archive_path) else {
+                return Err(KparError::InvalidArchive(format!(
+                    "missing archive entry '{archive_path}' for '{logical_path}'"
                 )));
             };
+            planned.push((logical_path, bytes));
+        }
+
+        fs::create_dir_all(destination_root).map_err(|source| KparError::Io {
+            path: destination_root.display().to_string(),
+            source,
+        })?;
+
+        for (logical_path, bytes) in planned {
             let dest = destination_root.join(&logical_path);
             if let Some(parent) = dest.parent() {
                 fs::create_dir_all(parent).map_err(|source| KparError::Io {
@@ -244,20 +262,66 @@ fn read_zip_entries(bytes: &[u8]) -> Result<HashMap<String, Vec<u8>>> {
         if entry.is_dir() {
             continue;
         }
-        let name = normalize_zip_path(entry.name());
+        let name = normalize_zip_path(entry.name())?;
         let mut buf = Vec::new();
         entry
             .read_to_end(&mut buf)
             .map_err(|e| KparError::Zip(format!("read {name}: {e}")))?;
-        entries.insert(name, buf);
+        if entries.insert(name.clone(), buf).is_some() {
+            return Err(KparError::InvalidArchive(format!(
+                "duplicate archive entry '{name}'"
+            )));
+        }
     }
     Ok(entries)
 }
 
-fn normalize_zip_path(path: &str) -> String {
-    path.trim_start_matches("./")
-        .trim_start_matches('/')
-        .replace('\\', "/")
+/// Canonicalize a portable, relative KPAR entry path.
+///
+/// ZIP member names and KPAR index values are untrusted archive data. Treating
+/// them as ordinary filesystem paths would make `destination_root.join(...)`
+/// vulnerable to `..`, absolute, or Windows-drive path escapes.
+fn normalize_zip_path(path: &str) -> Result<String> {
+    let path = path.replace('\\', "/");
+    if path.starts_with('/') || is_windows_drive_path(&path) {
+        return Err(KparError::InvalidArchive(format!(
+            "archive path must be relative: '{path}'"
+        )));
+    }
+
+    let mut components = Vec::new();
+    for component in path.split('/') {
+        match component {
+            "" => {
+                return Err(KparError::InvalidArchive(format!(
+                    "archive path contains an empty component: '{path}'"
+                )));
+            }
+            "." => continue,
+            ".." => {
+                return Err(KparError::InvalidArchive(format!(
+                    "archive path contains a parent component: '{path}'"
+                )));
+            }
+            component if component.contains('\0') || component.contains(':') => {
+                return Err(KparError::InvalidArchive(format!(
+                    "archive path is not portable: '{path}'"
+                )));
+            }
+            component => components.push(component),
+        }
+    }
+
+    if components.is_empty() {
+        return Err(KparError::InvalidArchive(
+            "archive path is empty".to_string(),
+        ));
+    }
+    Ok(components.join("/"))
+}
+
+fn is_windows_drive_path(path: &str) -> bool {
+    matches!(path.as_bytes(), [drive, b':', ..] if drive.is_ascii_alphabetic())
 }
 
 fn is_source_path(path: &str) -> bool {
@@ -375,5 +439,79 @@ mod tests {
             materialized.source_files,
             vec![dest.join("ScalarValues.kerml")]
         );
+    }
+
+    #[test]
+    fn materialize_rejects_index_path_traversal_before_writing() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("traversal.kpar");
+        let contents = b"package Escaped {}";
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"Traversal","version":"1.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            let meta = format!(
+                r#"{{
+  "index": {{"../escaped.sysml": "Source.sysml"}},
+  "created": "2025-03-13T00:00:00Z",
+  "checksum": {{
+    "../escaped.sysml": {{"value": "{}", "algorithm": "SHA256"}}
+  }}
+}}"#,
+                sha256_hex(contents)
+            );
+            zip.write_all(meta.as_bytes()).expect("meta write");
+            zip.start_file("Source.sysml", options)
+                .expect("source start");
+            zip.write_all(contents).expect("source write");
+            zip.finish().expect("finish");
+        }
+
+        let destination = source.path().join("out");
+        let error = materialize(&fs::read(&path).expect("read"), &destination)
+            .expect_err("traversal path must be rejected");
+        assert!(matches!(error, KparError::InvalidArchive(_)));
+        assert!(
+            !destination.exists(),
+            "invalid archive must not create output"
+        );
+        assert!(
+            !source.path().join("escaped.sysml").exists(),
+            "invalid archive must not write outside its root"
+        );
+    }
+
+    #[test]
+    fn open_rejects_traversal_zip_member() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("traversal-member.kpar");
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"Traversal","version":"1.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            zip.write_all(br#"{"index":{},"created":"2025-03-13T00:00:00Z"}"#)
+                .expect("meta write");
+            zip.start_file("../escaped.sysml", options)
+                .expect("source start");
+            zip.write_all(b"package Escaped {}").expect("source write");
+            zip.finish().expect("finish");
+        }
+
+        let error = open_kpar_path(&path).expect_err("traversal member must be rejected");
+        assert!(matches!(error, KparError::InvalidArchive(_)));
     }
 }
