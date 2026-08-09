@@ -60,12 +60,6 @@ pub(super) fn add_view_filter_node(
         "filterOwnerKind".to_string(),
         serde_json::json!(filter_owner_kind),
     );
-    if let Some(vis) = &filter.value.visibility {
-        attrs.insert(
-            "visibility".to_string(),
-            serde_json::json!(format!("{vis:?}")),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -642,12 +636,6 @@ pub(super) fn build_filter_member(
         "exprClass".to_string(),
         serde_json::json!(expressions::classify_expression(&f.value.condition).as_str()),
     );
-    if let Some(vis) = &f.value.visibility {
-        attrs.insert(
-            "visibility".to_string(),
-            serde_json::json!(format!("{vis:?}")),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,

@@ -44,6 +44,58 @@ const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
     "valueType",
 ];
 
+const MEMBERSHIP_IMPORT_PROJECTION_KEYS: &[&str] = &[
+    "visibility",
+    "importTarget",
+    "importAll",
+    "recursive",
+    "isExpose",
+];
+
+#[test]
+fn membership_and_import_attribute_keys_are_confined_to_presentation() {
+    let root = repository_root();
+    let mut violations = Vec::new();
+    visit_repository_rust_files(&root.join("crates"), &mut |path| {
+        if is_presentation_only_membership_key_owner(path) {
+            return;
+        }
+        let source = fs::read_to_string(path).expect("read production Rust module");
+        let parsed = syn::parse_file(&source)
+            .unwrap_or_else(|error| panic!("{}: Rust parse error: {error}", path.display()));
+        let mut visitor = MembershipImportProjectionKeyVisitor::default();
+        visitor.visit_file(&parsed);
+        for key in visitor.keys {
+            violations.push(format!("{}: forbidden attribute key {key}", path.display()));
+        }
+    });
+    assert!(
+        violations.is_empty(),
+        "membership/import semantics must use typed graph facts, not projection keys:\n{}",
+        violations.join("\n")
+    );
+}
+
+#[test]
+fn membership_import_key_guard_rejects_code_and_ignores_comments() {
+    let cases = [
+        (
+            r#"fn f(node: Node) { let _ = node.attributes.get("importTarget"); }"#,
+            vec!["importTarget"],
+        ),
+        (
+            r#"// attributes.get("visibility"); const EXAMPLE: &str = "safe prose";"#,
+            vec![],
+        ),
+    ];
+    for (source, expected) in cases {
+        let parsed = syn::parse_file(source).expect("guard fixture parses");
+        let mut visitor = MembershipImportProjectionKeyVisitor::default();
+        visitor.visit_file(&parsed);
+        assert_eq!(visitor.keys, expected);
+    }
+}
+
 #[test]
 fn post_construction_semantic_and_diagnostic_consumers_do_not_read_relationship_projections() {
     let root = repository_root();
@@ -116,6 +168,21 @@ struct RelationshipProjectionAttributeVisitor {
     keys: Vec<String>,
 }
 
+#[derive(Default)]
+struct MembershipImportProjectionKeyVisitor {
+    keys: Vec<String>,
+}
+
+impl<'ast> Visit<'ast> for MembershipImportProjectionKeyVisitor {
+    fn visit_lit_str(&mut self, literal: &'ast LitStr) {
+        let key = literal.value();
+        if MEMBERSHIP_IMPORT_PROJECTION_KEYS.contains(&key.as_str()) {
+            self.keys.push(key);
+        }
+        syn::visit::visit_lit_str(self, literal);
+    }
+}
+
 impl<'ast> Visit<'ast> for RelationshipProjectionAttributeVisitor {
     fn visit_lit_str(&mut self, literal: &'ast LitStr) {
         let key = literal.value();
@@ -176,4 +243,30 @@ fn repository_root() -> PathBuf {
         .nth(2)
         .expect("workspace repository root")
         .to_path_buf()
+}
+
+fn visit_repository_rust_files(root: &Path, visit: &mut impl FnMut(&Path)) {
+    for entry in fs::read_dir(root).expect("read repository crate directory") {
+        let path = entry.expect("read repository crate entry").path();
+        if path.file_name().is_some_and(|name| name == "target") {
+            continue;
+        }
+        if path.is_dir() {
+            visit_repository_rust_files(&path, visit);
+        } else if path.extension().is_some_and(|extension| extension == "rs")
+            && path
+                .components()
+                .any(|component| component.as_os_str() == "src")
+        {
+            visit(&path);
+        }
+    }
+}
+
+fn is_presentation_only_membership_key_owner(path: &Path) -> bool {
+    matches!(
+        path.to_string_lossy().as_ref(),
+        value if value.ends_with("crates/language_service/src/presentation_hover.rs")
+            || value.ends_with("crates/workspace/src/comparison/relationships.rs")
+    )
 }
