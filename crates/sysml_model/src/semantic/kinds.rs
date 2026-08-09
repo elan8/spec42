@@ -212,6 +212,21 @@ pub fn is_namespace(element_kind: &ElementKind) -> bool {
     )
 }
 
+/// Whether two direct members must have distinct identifiers in `owner`'s namespace.
+///
+/// Definitions declared directly in a package participate in one classifier namespace even
+/// when their concrete metaclasses differ (for example, a `part def` and an `action def`).
+/// Other modeled namespace members retain the existing kind-specific distinguishability rule:
+/// role members and behavioral features may use the same name when their kinds differ.
+pub fn namespace_member_names_must_be_distinguishable(
+    owner: &ElementKind,
+    left: &ElementKind,
+    right: &ElementKind,
+) -> bool {
+    left == right
+        || (*owner == ElementKind::Package && left.is_definition() && right.is_definition())
+}
+
 pub fn is_part_like(element_kind: &ElementKind) -> bool {
     matches!(
         element_kind,

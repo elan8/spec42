@@ -1,7 +1,9 @@
-//! Deferred implied-semantic contracts that are parser-backed but not yet
-//! publishable without an authoritative graph representation for every fact.
+//! Implied semantic contracts published separately from their authored source facts.
 
-use sysml_model::{build_semantic_graph_from_documents, SysmlDocument, SysmlDocumentSourceKind};
+use sysml_model::{
+    build_semantic_graph_from_documents, ElementKind, ExpressionResultRole, SysmlDocument,
+    SysmlDocumentSourceKind,
+};
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
     SysmlDocument::from_memory_path(
@@ -16,7 +18,6 @@ fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
 }
 
 #[test]
-#[ignore = "SKIP: requires a canonical implied-multiplicity fact distinct from parser-authored multiplicity"]
 fn nested_usage_without_multiplicity_publishes_implied_exactly_one() {
     let document = workspace_doc(
         "default_multiplicity.sysml",
@@ -30,20 +31,23 @@ fn nested_usage_without_multiplicity_publishes_implied_exactly_one() {
     let wheel = graph
         .nodes_named("wheel")
         .into_iter()
-        .find(|node| node.element_kind == "part")
+        .find(|node| node.element_kind == ElementKind::Part)
         .expect("nested part usage");
 
     assert!(
         wheel.declared_facts.multiplicity.is_none(),
         "the parser-backed fact must remain absent when no multiplicity was authored"
     );
-    panic!(
-        "SKIP: publish a separate implied [1..1] multiplicity fact for this usage without changing the authored fact"
-    );
+    let multiplicity = graph
+        .effective_facts_for(wheel)
+        .and_then(|facts| facts.implied_multiplicity)
+        .expect("the effective multiplicity fact");
+    assert_eq!(multiplicity.lower, 1);
+    assert_eq!(multiplicity.upper, Some(1));
+    assert!(!multiplicity.is_ordered);
 }
 
 #[test]
-#[ignore = "SKIP: requires a canonical featuring-type closure rather than ownership-parent inference"]
 fn feature_nested_in_a_usage_publishes_its_nearest_featuring_type() {
     let document = workspace_doc(
         "nested_featuring.sysml",
@@ -59,21 +63,23 @@ fn feature_nested_in_a_usage_publishes_its_nearest_featuring_type() {
     let rpm = graph
         .nodes_named("rpm")
         .into_iter()
-        .find(|node| node.element_kind == "attribute")
+        .find(|node| node.element_kind == ElementKind::Attribute)
         .expect("nested feature");
 
+    let featuring_type = graph
+        .effective_facts_for(rpm)
+        .and_then(|facts| facts.featuring_type.as_ref())
+        .expect("resolved featuring type");
+    assert_eq!(featuring_type.qualified_name, "P::Vehicle");
     assert_eq!(
-        graph.parent_of(rpm).map(|node| node.name.as_str()),
-        Some("engine"),
-        "the parser-backed ownership chain is available"
-    );
-    panic!(
-        "SKIP: publish the resolved featuring type only after inheritance and ownership closure share one semantic owner"
+        graph
+            .get_node(featuring_type)
+            .map(|node| &node.element_kind),
+        Some(&ElementKind::PartDef)
     );
 }
 
 #[test]
-#[ignore = "SKIP: requires a canonical expression-result identity before an implied binding fact can be published"]
 fn bound_feature_value_publishes_an_implied_binding_to_its_expression_result() {
     let document = workspace_doc(
         "bound_feature_value.sysml",
@@ -87,14 +93,20 @@ fn bound_feature_value_publishes_an_implied_binding_to_its_expression_result() {
     let speed = graph
         .nodes_named("speed")
         .into_iter()
-        .find(|node| node.element_kind == "attribute")
+        .find(|node| node.element_kind == ElementKind::Attribute)
         .expect("bound attribute usage");
 
     assert!(
         speed.declared_facts.feature_value.is_some(),
         "the parser-backed bound feature value is available to the semantic graph"
     );
-    panic!(
-        "SKIP: materialize the relationship only after the value expression has a stable semantic identity"
+    let binding = graph
+        .effective_facts_for(speed)
+        .and_then(|facts| facts.implied_feature_value_binding.as_ref())
+        .expect("implied feature-value binding");
+    assert_eq!(binding.expression_result.owner_id, speed.id);
+    assert_eq!(
+        binding.expression_result.role,
+        ExpressionResultRole::FeatureValue
     );
 }

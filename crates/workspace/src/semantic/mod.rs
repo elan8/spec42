@@ -26,6 +26,7 @@ pub use sysml_model::semantic::graph_builder::build_graph_from_doc;
 pub use sysml_model::{
     add_semantic_edge_once, build_and_link_graph_parallel, evaluate_workspace_graph,
     finalize_and_evaluate, link_parsed_documents_parallel, link_parsed_documents_parallel_from,
-    patch_graph_for_document, prepare_analysis_evaluation_context, WorkspaceParsedDocument,
+    patch_graph_for_document, patch_graph_for_document_scoped, prepare_analysis_evaluation_context,
+    WorkspaceParsedDocument,
 };
 pub use workspace_uri::uri_under_any_library;

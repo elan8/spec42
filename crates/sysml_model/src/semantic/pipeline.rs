@@ -232,6 +232,7 @@ pub fn link_parsed_documents_parallel_from(
     link_workspace_derivations(&mut graph);
     prepare_analysis_evaluation_context(&mut graph);
     resolve_workspace_pending_relationships(&mut graph);
+    graph.refresh_effective_facts();
     if evaluate {
         evaluate_expressions(&mut graph);
     }
@@ -259,6 +260,7 @@ pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
     link_workspace_relationships(graph);
     prepare_analysis_evaluation_context(graph);
     resolve_workspace_pending_relationships(graph);
+    graph.refresh_effective_facts();
     // Edge additions above go via graph.graph.add_edge() directly, bypassing
     // insert_workspace_edge. Invalidate here so the first post-finalization query
     // builds the edge index with all edges present.
@@ -324,6 +326,7 @@ pub fn finalize_and_evaluate_frontier(graph: &mut SemanticGraph, changed_uri: &U
     refresh_relationship_frontier(graph, changed_uri);
     prepare_analysis_evaluation_context(graph);
     resolve_workspace_pending_relationships(graph);
+    graph.refresh_effective_facts();
     graph.invalidate_query_indexes();
     evaluate_expressions(graph);
     graph.invalidate_query_indexes();

@@ -282,8 +282,7 @@ fn distinct_declared_short_names_remain_distinguishable() {
 }
 
 #[test]
-#[ignore = "SKIP: the semantic graph does not yet publish a canonical cross-category namespace-distinguishability fact"]
-fn cross_category_short_name_collision_needs_namespace_distinguishability_fact() {
+fn cross_category_short_name_collision_is_not_distinguishable_in_a_package() {
     let input = r#"
         package P {
             part def <'Shared'> First;

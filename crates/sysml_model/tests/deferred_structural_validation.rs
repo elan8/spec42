@@ -1,12 +1,11 @@
 //! Deferred structural-validation regressions from the compatibility corpus.
 //!
-//! These regressions stay visible until the graph contains the exact facts needed
-//! for their structural checks.  Active cases assert parser-backed graph facts;
-//! unsupported closures remain explicit skips.
+//! These regressions assert the graph facts required by their structural checks.
 
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, ElementKind, SysmlDocument, SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, resolve_inherited_member_via_type, ElementKind,
+    ResolveResult, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -167,8 +166,7 @@ fn binary_flow_and_allocation_definitions_reject_excess_authored_ends() {
 }
 
 #[test]
-#[ignore = "SKIP S42-COMPAT-STRUCT-002: FlowPayload typing is represented, but no graph-backed payload-occurrence conformance rule is defined"]
-fn skip_flow_payload_occurrence_type_fixture() {
+fn flow_payload_occurrence_retains_its_resolved_type() {
     let source = r#"
 package P {
   attribute def Scalar;
@@ -177,17 +175,69 @@ package P {
   flow transfer of Scalar from Source to Target;
 }
 "#;
-    panic!("SKIP: retain fixture until payload typing supports a real conformance rule: {source}");
+    let doc = workspace_doc("flow_payload.sysml", source);
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+    let flow = graph
+        .nodes_named("transfer")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Flow)
+        .expect("named flow usage");
+    let payload = graph
+        .children_of(flow)
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::FlowPayload)
+        .expect("payload feature");
+
+    assert_eq!(
+        payload
+            .attributes
+            .get("payloadType")
+            .and_then(serde_json::Value::as_str),
+        Some("Scalar"),
+        "the authored payload type must remain a semantic fact"
+    );
+    assert!(
+        graph
+            .outgoing_typing_or_specializes_targets(payload)
+            .iter()
+            .any(|target| target.name == "Scalar"
+                && target.element_kind == ElementKind::AttributeDef),
+        "the payload feature must use the canonical typing relationship"
+    );
 }
 
 #[test]
-#[ignore = "SKIP S42-COMPAT-STRUCT-003: graph has ownership but no complete featuring-type closure for the KerML overlap constraint"]
-fn skip_redefinition_featuring_type_overlap_fixture() {
+fn redefinition_resolves_through_its_featuring_type() {
     let source = r#"
 package P {
   part def Vehicle { attribute mass : Real; }
   part def Car :> Vehicle { attribute mass :>> mass; }
 }
 "#;
-    panic!("SKIP: retain fixture until featuring-type closure is graph-backed: {source}");
+    let doc = workspace_doc("redefinition_feature_type.sysml", source);
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+    let car = graph
+        .nodes_named("Car")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::PartDef)
+        .expect("Car definition");
+    let mass = graph
+        .children_of(car)
+        .into_iter()
+        .find(|node| node.name == "mass")
+        .expect("redefining mass feature");
+
+    assert_eq!(
+        mass.attributes
+            .get("redefines")
+            .and_then(serde_json::Value::as_str),
+        Some("mass"),
+        "the authored redefinition must remain distinct from the resolved target"
+    );
+    let ResolveResult::Resolved(inherited_mass) =
+        resolve_inherited_member_via_type(&graph, car, "mass")
+    else {
+        panic!("Car's inherited mass feature must resolve through Vehicle");
+    };
+    assert_eq!(inherited_mass.qualified_name, "P::Vehicle::mass");
 }

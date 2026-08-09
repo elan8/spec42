@@ -691,6 +691,52 @@ pub struct DeclaredSemanticFacts {
     pub own_expression: Option<DeclaredExpression>,
 }
 
+/// Derived semantic facts that are effective for a fully linked graph state.
+///
+/// These facts are deliberately separate from [`DeclaredSemanticFacts`]: an implied default,
+/// resolved featuring type, or expression-result binding must never overwrite the source fact
+/// (or make an absent authored clause appear present).
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct EffectiveSemanticFacts {
+    /// SysML's effective default multiplicity when the feature has no authored multiplicity.
+    #[serde(default)]
+    pub implied_multiplicity: Option<ImpliedMultiplicity>,
+    /// The nearest resolved type that features this element, after ownership and typing closure.
+    #[serde(default)]
+    pub featuring_type: Option<NodeId>,
+    /// The implied binding from an authored `=` FeatureValue to its addressable expression result.
+    #[serde(default)]
+    pub implied_feature_value_binding: Option<ImpliedFeatureValueBinding>,
+}
+
+/// An effective multiplicity with no source range because it was not authored.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ImpliedMultiplicity {
+    pub lower: u32,
+    pub upper: Option<u32>,
+    pub is_ordered: bool,
+    pub is_unique: Option<bool>,
+}
+
+/// Stable, graph-neutral identity of an expression result owned by a semantic element.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ExpressionResultId {
+    pub owner_id: NodeId,
+    pub role: ExpressionResultRole,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum ExpressionResultRole {
+    FeatureValue,
+}
+
+/// An evaluated/effective binding whose target is an expression result rather than a graph node.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ImpliedFeatureValueBinding {
+    pub expression_result: ExpressionResultId,
+}
+
 /// Explicit feature/definition modifiers from the textual declaration.
 ///
 /// Composite/reference ownership is inferred from ordinary usage vs `RefDecl`

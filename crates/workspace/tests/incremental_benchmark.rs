@@ -95,9 +95,6 @@ fn benchmark_single_document_incremental_vs_full_rebuild() {
 /// gating `experimental_incremental_updates`'s default (see
 /// incremental update design history in git).
 #[test]
-#[ignore = "currently fails: try_incremental_update shows no measurable win over full rebuild \
-            on this fixture (see plan discussion, 2026-07-13) — kept as a regression guard to \
-            re-enable once that's addressed, not deleted"]
 fn incremental_update_is_meaningfully_faster_than_full_rebuild() {
     const FILE_COUNT: usize = 40;
     const ITERATIONS: u32 = 5;

@@ -184,7 +184,7 @@ pub(super) fn build_from_verification_body(
                                 g,
                                 uri,
                                 container_prefix,
-                                parent_id,
+                                &NodeId::new(uri, &qualified),
                                 &requirement_ref,
                                 verify_node.value.explicit_requirement_keyword,
                                 span_to_range(&verify_node.span),

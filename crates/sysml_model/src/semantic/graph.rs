@@ -12,8 +12,10 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::semantic::model::{
-    node_matches_simple_name, ConnectStatementDetail, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
+    EffectiveSemanticFacts, ElementKind, ExpressionResultId, ExpressionResultRole,
+    ImpliedFeatureValueBinding, ImpliedMultiplicity, NodeId, RelationshipKind, SemanticEdge,
+    SemanticNode,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -58,6 +60,10 @@ pub struct SemanticGraphData {
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
+    /// Authoritative effective facts published after semantic linking. Unlike query indexes,
+    /// this is model state: consumers use it instead of re-deriving defaults or closure facts.
+    #[serde(default)]
+    pub effective_facts_by_node_id: HashMap<NodeId, EffectiveSemanticFacts>,
     #[serde(skip)]
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
     #[serde(skip)]
@@ -104,6 +110,7 @@ impl Clone for SemanticGraphData {
             children_by_parent_id: self.children_by_parent_id.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
+            effective_facts_by_node_id: self.effective_facts_by_node_id.clone(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -126,6 +133,87 @@ impl SemanticGraph {
 
     pub fn into_data(self) -> SemanticGraphData {
         Arc::try_unwrap(self.0).unwrap_or_else(|arc| (*arc).clone())
+    }
+
+    /// Returns the effective facts published for `node` at the graph's current semantic barrier.
+    pub fn effective_facts_for(&self, node: &SemanticNode) -> Option<&EffectiveSemanticFacts> {
+        self.effective_facts_by_node_id.get(&node.id)
+    }
+
+    /// Publish all derived effective facts after relationship linking has settled.
+    ///
+    /// This is intentionally a graph-level publication rather than a collection of consumer
+    /// fallbacks: authored facts remain on their nodes, while normalized and implied facts are
+    /// computed once from the complete graph and exposed here with explicit provenance.
+    pub fn refresh_effective_facts(&mut self) {
+        let mut nodes: Vec<SemanticNode> = self.graph.node_weights().cloned().collect();
+        nodes.sort_by(|left, right| {
+            left.id
+                .uri
+                .as_str()
+                .cmp(right.id.uri.as_str())
+                .then_with(|| left.id.qualified_name.cmp(&right.id.qualified_name))
+        });
+
+        let mut effective_facts_by_node_id = HashMap::with_capacity(nodes.len());
+        for node in &nodes {
+            let implied_multiplicity = (node.declared_facts.multiplicity.is_none()
+                && !node.element_kind.is_definition()
+                && node.declared_facts.feature_properties.is_some())
+            .then_some(ImpliedMultiplicity {
+                lower: 1,
+                upper: Some(1),
+                is_ordered: false,
+                is_unique: None,
+            });
+            let featuring_type = self.nearest_featuring_type(node);
+            let implied_feature_value_binding = node
+                .declared_facts
+                .feature_value
+                .as_ref()
+                .filter(|value| matches!(value.kind, DeclaredFeatureValueKind::Bound))
+                .map(|_| ImpliedFeatureValueBinding {
+                    expression_result: ExpressionResultId {
+                        owner_id: node.id.clone(),
+                        role: ExpressionResultRole::FeatureValue,
+                    },
+                });
+
+            let facts = EffectiveSemanticFacts {
+                implied_multiplicity,
+                featuring_type,
+                implied_feature_value_binding,
+            };
+            if facts != EffectiveSemanticFacts::default() {
+                effective_facts_by_node_id.insert(node.id.clone(), facts);
+            }
+        }
+        self.effective_facts_by_node_id = effective_facts_by_node_id;
+    }
+
+    fn nearest_featuring_type(&self, node: &SemanticNode) -> Option<NodeId> {
+        let mut current = node.parent_id.clone();
+        let mut visited = HashSet::new();
+        while let Some(owner_id) = current {
+            if !visited.insert(owner_id.clone()) {
+                return None;
+            }
+            let owner = self.get_node(&owner_id)?;
+            if owner.element_kind.is_definition() {
+                return Some(owner.id.clone());
+            }
+            let typed_owners: Vec<_> = self
+                .outgoing_typing_or_specializes_targets(owner)
+                .into_iter()
+                .filter(|target| target.element_kind.is_definition())
+                .map(|target| target.id.clone())
+                .collect();
+            if typed_owners.len() == 1 {
+                return typed_owners.into_iter().next();
+            }
+            current = owner.parent_id.clone();
+        }
+        None
     }
 }
 
@@ -257,6 +345,7 @@ impl SemanticGraphData {
             children_by_parent_id: HashMap::new(),
             pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
+            effective_facts_by_node_id: HashMap::new(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -453,6 +542,7 @@ impl SemanticGraphData {
                 }
             }
         }
+        self.effective_facts_by_node_id.clear();
         self.remove_recorded_cross_document_edges_for_uri(uri);
         self.invalidate_query_indexes();
         self.clear_import_lookup_cache();
@@ -482,6 +572,7 @@ impl SemanticGraphData {
         other: SemanticGraphData,
         shadowed_packages: Option<&std::collections::HashSet<String>>,
     ) {
+        self.effective_facts_by_node_id.clear();
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships

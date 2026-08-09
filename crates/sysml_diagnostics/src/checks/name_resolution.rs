@@ -11,7 +11,8 @@ use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
 use sysml_model::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
 use sysml_model::semantic::kinds::{
-    is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS,
+    is_metadata_restriction_attribute, is_namespace,
+    namespace_member_names_must_be_distinguishable, RULE6_ALLOWED_KINDS,
 };
 use sysml_model::semantic::model::node_matches_simple_name;
 use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
@@ -132,11 +133,9 @@ fn collect_duplicate_namespace_members(
         }
         // A graph member's primary name and declared short name are both names by
         // which resolution can address it. Keep these semantic identifier facts
-        // distinct from presentation labels, and only compare members in the
-        // established kind-specific distinguishability domain. The graph does
-        // not yet publish a canonical cross-category distinguishability fact.
-        let mut members_by_identifier: BTreeMap<(String, String), Vec<&SemanticNode>> =
-            BTreeMap::new();
+        // distinct from presentation labels. The model's kind policy owns which
+        // cross-category members share a namespace identity domain.
+        let mut members_by_identifier: BTreeMap<String, Vec<&SemanticNode>> = BTreeMap::new();
         for child in graph.children_of(node) {
             if matches!(
                 child.element_kind,
@@ -153,9 +152,8 @@ fn collect_duplicate_namespace_members(
             if child.element_kind == sysml_model::ElementKind::Alias {
                 continue;
             }
-            let kind = child.element_kind.as_str().to_string();
             members_by_identifier
-                .entry((child.name.clone(), kind.clone()))
+                .entry(child.name.clone())
                 .or_default()
                 .push(child);
             if let Some(short_name) = child
@@ -165,12 +163,12 @@ fn collect_duplicate_namespace_members(
                 .filter(|short_name| !short_name.trim().is_empty() && *short_name != child.name)
             {
                 members_by_identifier
-                    .entry((short_name.to_string(), kind))
+                    .entry(short_name.to_string())
                     .or_default()
                     .push(child);
             }
         }
-        for ((name, kind), mut members) in members_by_identifier {
+        for (name, mut members) in members_by_identifier {
             if members.len() < 2 {
                 continue;
             }
@@ -190,11 +188,22 @@ fn collect_duplicate_namespace_members(
                     .then_with(|| left.id.uri.as_str().cmp(right.id.uri.as_str()))
                     .then_with(|| left.id.qualified_name.cmp(&right.id.qualified_name))
             });
-            let key = format!("{}|{}|{}", node.id.qualified_name, name, kind);
+            let Some(duplicate_index) = (1..members.len()).find(|&index| {
+                members[..index].iter().any(|previous| {
+                    namespace_member_names_must_be_distinguishable(
+                        &node.element_kind,
+                        &previous.element_kind,
+                        &members[index].element_kind,
+                    )
+                })
+            }) else {
+                continue;
+            };
+            let key = format!("{}|{}", node.id.qualified_name, name);
             if !seen.insert(key) {
                 continue;
             }
-            let duplicate = members[1];
+            let duplicate = members[duplicate_index];
             diagnostics.push(diag(
                 uri,
                 diagnostic_range(graph, duplicate, None),
@@ -202,11 +211,9 @@ fn collect_duplicate_namespace_members(
                 "semantic",
                 "duplicate_namespace_member",
                 format!(
-                    "Namespace '{}' declares '{}' ({}) {} times; member names must be unique within a namespace.",
+                    "Namespace '{}' declares '{}' more than once; member names must be unique within a namespace.",
                     node.name,
                     name,
-                    kind,
-                    members.len()
                 ),
             ));
         }

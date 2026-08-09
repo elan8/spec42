@@ -69,9 +69,17 @@ fn declared_expression_atom(
         .map(ToString::to_string)
 }
 
-pub(crate) fn port_multiplicity_label(node: &SemanticNode) -> String {
+pub(crate) fn port_multiplicity_label(graph: &SemanticGraph, node: &SemanticNode) -> String {
     let Some(multiplicity) = node.declared_facts.multiplicity.as_ref() else {
-        return "[1]".to_string();
+        return graph
+            .effective_facts_for(node)
+            .and_then(|facts| facts.implied_multiplicity)
+            .map(|multiplicity| match multiplicity.upper {
+                Some(upper) if upper == multiplicity.lower => format!("[{}]", multiplicity.lower),
+                Some(upper) => format!("[{}..{}]", multiplicity.lower, upper),
+                None => format!("[{}..*]", multiplicity.lower),
+            })
+            .unwrap_or_else(|| "[?]".to_string());
     };
     let lower = multiplicity
         .lower
@@ -328,7 +336,7 @@ fn collect_inherited_ports(
                     .get("portType")
                     .and_then(|v| v.as_str())
                     .map(String::from),
-                multiplicity: port_multiplicity_label(child),
+                multiplicity: port_multiplicity_label(graph, child),
                 parent_path: parent_path.to_string(),
             });
         }

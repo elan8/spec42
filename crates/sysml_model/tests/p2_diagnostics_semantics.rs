@@ -703,11 +703,31 @@ fn singular_role_members_and_subject_before_actor_do_not_emit_role_diagnostics()
 }
 
 #[test]
-#[ignore = "SKIP: verified-requirement graph nodes retain the verification-case parent, not their containing objective, so placement cannot be diagnosed from authoritative graph facts."]
-fn verification_membership_outside_objective_requires_parentage_fact() {
-    panic!(
-        "Blocked until SemanticGraph preserves the objective membership parent for verified requirements"
+fn verification_membership_retains_its_objective_parentage() {
+    let doc = workspace_doc(
+        "verification_objective_parentage.sysml",
+        r#"package Demo {
+  requirement def ReqA;
+  verification def Check {
+    subject subject;
+    objective { verify requirement ReqA; }
+  }
+}"#,
     );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let verified_requirement = graph
+        .nodes_for_uri(&uri)
+        .into_iter()
+        .find(|node| node.element_kind == sysml_model::ElementKind::VerifiedRequirement)
+        .expect("verified requirement");
+    let parent = verified_requirement
+        .parent_id
+        .as_ref()
+        .and_then(|id| graph.get_node(id))
+        .expect("verified requirement has an owning objective");
+
+    assert_eq!(parent.element_kind, sysml_model::ElementKind::Objective);
 }
 
 #[test]

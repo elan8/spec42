@@ -28,7 +28,7 @@ use crate::error::WorkspaceResult;
 use crate::parse_cache;
 use crate::semantic::{
     build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
-    SemanticGraph, WorkspaceParsedDocument,
+    patch_graph_for_document_scoped, SemanticGraph, WorkspaceParsedDocument,
 };
 use crate::snapshot::{HostSemanticProjection, HostValidationReport};
 use crate::{SysmlDocument, SysmlDocumentSourceKind};
@@ -261,7 +261,11 @@ impl IncrementalWorkspace {
         let parse_ms = elapsed_ms(parse_start);
 
         let build_start = Instant::now();
-        patch_graph_for_document(&mut self.graph, &document.uri, parsed.as_ref(), true);
+        // The semantic pipeline owns the frontier calculation and its parity guarantees. A
+        // single-document patch can therefore relink only the changed document and the
+        // documents that explicitly depend on it, while preserving the same settled graph as
+        // a full relink.
+        patch_graph_for_document_scoped(&mut self.graph, &document.uri, parsed.as_ref(), true);
         let graph_update_ms = elapsed_ms(build_start);
 
         match parsed {
