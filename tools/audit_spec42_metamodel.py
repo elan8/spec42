@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 """Audit Spec42's published metaclass and projected-relationship mappings.
 
-This is intentionally a source-level audit: it verifies the exhaustive Rust
-mapping rather than pretending that Spec42 stores every OMG XMI property.  An
-optional ``--schema`` makes the check compare published names to an external,
-authoritative OMG JSON schema.  Without it, the mapping audit is deterministic
-and still suitable for CI; the OMG conformance portion reports SKIP.
+This source-level audit verifies that Spec42's Rust projection mappings remain
+internally complete and consistent.
 """
 from __future__ import annotations
 
-import argparse
-import json
 import re
 from pathlib import Path
 
@@ -34,10 +29,6 @@ def variants(path: Path, pattern: re.Pattern[str]) -> set[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--schema", type=Path, help="optional OMG JSON abstract-syntax schema")
-    parser.add_argument("--strict-schema", action="store_true", help="fail when published names are not exact schema names")
-    args = parser.parse_args()
     api_text = API.read_text(encoding="utf-8")
     pairs = MAPPING.findall(api_text)
     published = variants(PROTOCOL, ENUM) - {"Unrecognized"}
@@ -59,24 +50,6 @@ def main() -> int:
     print(f"Published Metaclass variants: {len(published)}")
     print(f"Projected relationship metaclasses: {len(relationship_variants)}")
     print(f"Relationship metaclasses used by projection: {len(referenced_relationships)}")
-    if args.schema is None:
-        print("SKIP: OMG schema conformance not checked; pass --schema /path/to/SysML-abstract-syntax.json")
-    elif not args.schema.is_file():
-        print(f"SKIP: OMG schema input is unavailable: {args.schema}")
-    else:
-        schema = json.loads(args.schema.read_text(encoding="utf-8"))
-        definitions = set(schema.get("$defs", {}))
-        missing = published - definitions
-        if missing:
-            print(f"OMG schema exact-name matches: {len(published - missing)}/{len(published)}")
-            detail = ", ".join(sorted(missing))
-            if args.strict_schema:
-                problems.append("published metaclasses absent from OMG schema: " + detail)
-            else:
-                print("SKIP: exact OMG metaclass conformance needs a reviewed normalization map; "
-                      "raw unmatched names: " + detail)
-        else:
-            print("OMG schema conformance: all published metaclasses found")
     if problems:
         print("FAIL: " + "\nFAIL: ".join(problems))
         return 1

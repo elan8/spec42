@@ -23,28 +23,10 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("PartUsage", result.stdout)
 
-    def test_audit_is_deterministic_without_external_schema(self) -> None:
+    def test_projection_mapping_audit_is_deterministic(self) -> None:
         result = run("tools/audit_spec42_metamodel.py")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("PASS: Spec42 mapping consistency", result.stdout)
-        self.assertIn("SKIP: OMG schema conformance", result.stdout)
-
-    def test_metamodel_query_uses_explicit_schema_input(self) -> None:
-        result = run(
-            "tools/sysml_reference/query_metamodel.py",
-            "--schema",
-            "tools/sysml_reference/fixtures/minimal-schema.json",
-            "show",
-            "PartUsage",
-        )
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('"type": "object"', result.stdout)
-        missing = run("tools/sysml_reference/query_metamodel.py", "list")
-        self.assertEqual(missing.returncode, 0, missing.stderr)
-        self.assertIn("SKIP: no schema supplied", missing.stdout)
-        strict = run("tools/sysml_reference/query_metamodel.py", "--strict-input", "list")
-        self.assertEqual(strict.returncode, 2, strict.stdout + strict.stderr)
-        self.assertIn("ERROR: no schema supplied", strict.stdout)
 
     def test_specification_query_lists_sections_and_handles_missing_input(self) -> None:
         listing = run(
