@@ -50,7 +50,7 @@ pub(crate) async fn initialize(
         })
         .expect("initialize called twice");
     handle
-        .set_startup_config(roots, library_paths, standard_library_paths)
+        .set_startup_config(roots, library_paths, standard_library_paths.clone())
         .await
         .ok();
     Ok(InitializeResult {
@@ -68,9 +68,13 @@ pub(crate) async fn initialized(
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
-    let (workspace_roots, library_paths) = {
+    let (workspace_roots, library_paths, standard_library_paths) = {
         let snap = handle.snapshot();
-        (snap.workspace_roots.clone(), snap.library_paths.clone())
+        (
+            snap.workspace_roots.clone(),
+            snap.library_paths.clone(),
+            snap.standard_library_paths.clone(),
+        )
     };
     let cfg = runtime_config
         .get()
@@ -173,15 +177,17 @@ pub(crate) async fn initialized(
         // disk I/O, parsing, and graph construction.
         // Keep a clone for the post-rebuild cache store call (cache miss path).
         let library_paths_for_store = library_paths_for_closure.clone();
+        let standard_library_paths_for_store = standard_library_paths.clone();
         let closure_seed_signature_for_store = closure_seed_signature.clone();
         let library_graph_cache_hit =
             if !crate::workspace::library_closure::library_full_scan_enabled()
                 && !library_paths_for_closure.is_empty()
             {
                 let lp = library_paths_for_closure.clone();
+                let standard = standard_library_paths.clone();
                 let signature = closure_seed_signature.clone();
                 tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::load(&lp, &signature)
+                    crate::workspace::library_graph_cache::load(&lp, &standard, &signature)
                 })
                 .await
                 .ok()
@@ -341,9 +347,15 @@ pub(crate) async fn initialized(
                     .semantic_graph
                     .extract_library_subgraph(&snap.library_paths);
                 let lp = library_paths_for_store.clone();
+                let standard = standard_library_paths_for_store.clone();
                 let signature = closure_seed_signature_for_store.clone();
                 tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::store(&lp, &signature, &graph_to_cache);
+                    crate::workspace::library_graph_cache::store(
+                        &lp,
+                        &standard,
+                        &signature,
+                        &graph_to_cache,
+                    );
                 });
             }
 

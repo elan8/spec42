@@ -40,7 +40,7 @@ use crate::semantic::SemanticGraph;
 
 const MAGIC: &[u8; 4] = b"LGCX";
 const VERSION_FIELD_LEN: usize = 20;
-const LIBRARY_GRAPH_SEMANTICS_VERSION: u32 = 3;
+const LIBRARY_GRAPH_SEMANTICS_VERSION: u32 = 4;
 
 fn version_field() -> [u8; VERSION_FIELD_LEN] {
     // First 12 bytes: spec42 semver string; then PARSE_AST_VERSION and the graph-semantics
@@ -71,6 +71,7 @@ struct FileFingerprintEntry {
 struct LibraryGraphCachePayload {
     /// Sorted list of library root paths (for human-readable validation).
     library_paths: Vec<String>,
+    standard_library_paths: Vec<String>,
     /// Workspace facts that determined the import-scoped library subset.
     closure_seed_signature: Vec<String>,
     /// Level-2 fingerprint: sorted content digests of all library source files.
@@ -96,9 +97,17 @@ pub fn default_cache_dir() -> Option<PathBuf> {
 ///
 /// Returns `None` on any miss, version mismatch, stale file content, or
 /// decode error. All failures are silent.
-pub fn load(library_paths: &[Url], closure_seed_signature: &[String]) -> Option<SemanticGraph> {
+pub fn load(
+    library_paths: &[Url],
+    standard_library_paths: &[Url],
+    closure_seed_signature: &[String],
+) -> Option<SemanticGraph> {
     let cache_dir = default_cache_dir()?;
-    let key = cache_key(library_paths, closure_seed_signature);
+    let key = cache_key(
+        library_paths,
+        standard_library_paths,
+        closure_seed_signature,
+    );
     let path = entry_path(&cache_dir, &key);
 
     tracing::debug!(
@@ -147,6 +156,9 @@ pub fn load(library_paths: &[Url], closure_seed_signature: &[String]) -> Option<
         tracing::debug!("library graph cache: workspace closure signature mismatch");
         return None;
     }
+    if payload.standard_library_paths != normalized_paths(standard_library_paths) {
+        return None;
+    }
 
     // Level-2 check: verify file content fingerprint.
     if !fingerprint_valid(&payload.file_fingerprint, library_paths) {
@@ -168,9 +180,19 @@ pub fn load(library_paths: &[Url], closure_seed_signature: &[String]) -> Option<
 ///
 /// Creates the cache directory if needed. Silently ignores all errors —
 /// caching is always best-effort.
-pub fn store(library_paths: &[Url], closure_seed_signature: &[String], graph: &SemanticGraph) {
+pub fn store(
+    library_paths: &[Url],
+    standard_library_paths: &[Url],
+    closure_seed_signature: &[String],
+    graph: &SemanticGraph,
+) {
     tracing::debug!("library graph cache: attempting store");
-    if let Err(e) = store_inner(library_paths, closure_seed_signature, graph) {
+    if let Err(e) = store_inner(
+        library_paths,
+        standard_library_paths,
+        closure_seed_signature,
+        graph,
+    ) {
         tracing::warn!("library graph cache store failed: {e}");
     } else {
         tracing::debug!("library graph cache: store succeeded");
@@ -235,14 +257,21 @@ pub fn evict_stale_entries() {
 /// Level-1 cache key: SHA-256 of sorted library paths, workspace closure seeds, binary
 /// version, parser AST schema version, and graph-semantics version (so either kind of semantic
 /// change gets a fresh filename too, not just a header mismatch -- see `version_field`).
-fn cache_key(library_paths: &[Url], closure_seed_signature: &[String]) -> [u8; 32] {
+fn cache_key(
+    library_paths: &[Url],
+    standard_library_paths: &[Url],
+    closure_seed_signature: &[String],
+) -> [u8; 32] {
     let mut hasher = Sha256::new();
     hasher.update(env!("CARGO_PKG_VERSION").as_bytes());
     hasher.update(sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
     hasher.update(LIBRARY_GRAPH_SEMANTICS_VERSION.to_le_bytes());
-    let mut sorted: Vec<&str> = library_paths.iter().map(|u| u.as_str()).collect();
-    sorted.sort_unstable();
-    for path in sorted {
+    for path in normalized_paths(library_paths) {
+        hasher.update(path.as_bytes());
+        hasher.update(b"\0");
+    }
+    hasher.update(b"standard-library-roots-v1\0");
+    for path in normalized_paths(standard_library_paths) {
         hasher.update(path.as_bytes());
         hasher.update(b"\0");
     }
@@ -254,6 +283,13 @@ fn cache_key(library_paths: &[Url], closure_seed_signature: &[String]) -> [u8; 3
         hasher.update(b"\0");
     }
     hasher.finalize().into()
+}
+
+fn normalized_paths(paths: &[Url]) -> Vec<String> {
+    let mut paths = paths.iter().map(ToString::to_string).collect::<Vec<_>>();
+    paths.sort_unstable();
+    paths.dedup();
+    paths
 }
 
 fn normalized_signature(signature: &[String]) -> Vec<String> {
@@ -317,6 +353,7 @@ fn fingerprint_valid(stored: &[FileFingerprintEntry], library_paths: &[Url]) -> 
 
 fn store_inner(
     library_paths: &[Url],
+    standard_library_paths: &[Url],
     closure_seed_signature: &[String],
     graph: &SemanticGraph,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -326,6 +363,7 @@ fn store_inner(
     let file_fingerprint = build_fingerprint(library_paths).ok_or("library source unavailable")?;
     let payload = LibraryGraphCachePayload {
         library_paths: library_paths.iter().map(|u| u.to_string()).collect(),
+        standard_library_paths: normalized_paths(standard_library_paths),
         closure_seed_signature: normalized_signature(closure_seed_signature),
         file_fingerprint,
         graph: graph.clone(),
@@ -333,7 +371,11 @@ fn store_inner(
 
     let payload_bytes = serde_json::to_vec(&payload)?;
 
-    let key = cache_key(library_paths, closure_seed_signature);
+    let key = cache_key(
+        library_paths,
+        standard_library_paths,
+        closure_seed_signature,
+    );
     let path = entry_path(&cache_dir, &key);
     let mut file = std::fs::File::create(&path)?;
     file.write_all(MAGIC)?;
@@ -371,12 +413,12 @@ mod tests {
         let a = Url::parse("file:///lib/a").unwrap();
         let b = Url::parse("file:///lib/b").unwrap();
         let signature = vec!["import:ScalarValues::*".to_string()];
-        let key1 = cache_key(&[a.clone(), b.clone()], &signature);
-        let key2 = cache_key(&[b.clone(), a.clone()], &signature);
+        let key1 = cache_key(&[a.clone(), b.clone()], &[], &signature);
+        let key2 = cache_key(&[b.clone(), a.clone()], &[], &signature);
         assert_eq!(key1, key2, "cache key must be order-independent");
 
         let c = Url::parse("file:///lib/c").unwrap();
-        let key3 = cache_key(&[a, b, c], &signature);
+        let key3 = cache_key(&[a, b, c], &[], &signature);
         assert_ne!(key1, key3, "different paths must produce different keys");
     }
 
@@ -390,9 +432,23 @@ mod tests {
         ];
 
         assert_ne!(
-            cache_key(std::slice::from_ref(&library), &without_metadata),
-            cache_key(std::slice::from_ref(&library), &with_metadata),
+            cache_key(std::slice::from_ref(&library), &[], &without_metadata),
+            cache_key(std::slice::from_ref(&library), &[], &with_metadata),
             "a graph without ModelingMetadata must not satisfy a workspace that imports it"
+        );
+    }
+
+    #[test]
+    fn cache_key_changes_with_standard_library_classification() {
+        let library = Url::parse("file:///lib").unwrap();
+        let signature = vec!["import:Parts::*".to_string()];
+        assert_ne!(
+            cache_key(std::slice::from_ref(&library), &[], &signature),
+            cache_key(
+                std::slice::from_ref(&library),
+                std::slice::from_ref(&library),
+                &signature,
+            ),
         );
     }
 
@@ -486,6 +542,7 @@ mod tests {
         let graph = SemanticGraph::default();
         let payload = LibraryGraphCachePayload {
             library_paths: vec![],
+            standard_library_paths: vec![],
             closure_seed_signature: vec![],
             file_fingerprint: vec![],
             graph: graph.clone(),
