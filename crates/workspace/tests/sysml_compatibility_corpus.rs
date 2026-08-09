@@ -434,6 +434,8 @@ fn regenerate_semantic_graph_sections() {
             && documents
                 .iter()
                 .any(|document| !document.text.trim().is_empty());
+        let existing_skip_reason = semantic_graph_skip_reason(&fixture)
+            .unwrap_or_else(|error| panic!("{relative}: malformed semantic graph skip: {error}"));
         let metadata = updated_semantic_graph_metadata(
             section(&fixture, "META")
                 .unwrap_or_else(|| panic!("{relative}: fixture is missing META")),
@@ -441,7 +443,9 @@ fn regenerate_semantic_graph_sections() {
             documents
                 .iter()
                 .all(|document| sysml_v2_parser::parse(&document.text).is_ok()),
-        );
+            existing_skip_reason.as_deref(),
+        )
+        .unwrap_or_else(|error| panic!("{relative}: {error}"));
         let fixture = replace_section(&fixture, "META", &metadata)
             .unwrap_or_else(|| panic!("{relative}: fixture is missing a META section"));
         let updated = replace_section(&fixture, "SMG", &rendering)
@@ -814,7 +818,8 @@ fn updated_semantic_graph_metadata(
     metadata: String,
     requires_skip: bool,
     parser_accepts_all: bool,
-) -> String {
+    existing_skip_reason: Option<&str>,
+) -> Result<String, String> {
     let mut lines = metadata
         .lines()
         .filter(|line| {
@@ -824,14 +829,21 @@ fn updated_semantic_graph_metadata(
         .collect::<Vec<_>>();
     if requires_skip {
         lines.push("semantic_graph=skip".to_string());
-        let reason = if parser_accepts_all {
-            "strictly parsed non-empty source produced no typed semantic graph facts"
-        } else {
-            "parser recovery for non-empty source produced no typed semantic graph facts"
+        let reason = match existing_skip_reason {
+            Some(reason) => reason,
+            None if !parser_accepts_all => {
+                "parser recovery for non-empty source produced no typed semantic graph facts"
+            }
+            None => {
+                return Err(
+                    "strictly parsed source produced no typed semantic graph facts; add a concrete semantic_graph_skip_reason naming the unavailable parser or semantic capability before regenerating"
+                        .to_string(),
+                );
+            }
         };
         lines.push(format!("semantic_graph_skip_reason={reason}"));
     }
-    lines.join("\n")
+    Ok(lines.join("\n"))
 }
 
 fn updated_diagnostics_metadata(metadata: String) -> String {
@@ -906,9 +918,31 @@ fn camera_fixture_keeps_opaque_root_declaration_as_an_explicit_skip() {
     assert_eq!(
         semantic_graph_skip_reason(&fixture),
         Ok(Some(
-            "strictly parsed non-empty source produced no typed semantic graph facts".to_string()
+            "KerML class portions and successions are opaque parser fallback nodes; containment and succession endpoints are unavailable as structured semantic inputs".to_string()
         ))
     );
+}
+
+#[test]
+fn semantic_graph_regeneration_preserves_concrete_skip_reasons() {
+    let metadata =
+        "semantic_graph=skip\nsemantic_graph_skip_reason=structured connector ends are unavailable";
+    assert_eq!(
+        updated_semantic_graph_metadata(
+            metadata.to_string(),
+            true,
+            true,
+            Some("structured connector ends are unavailable"),
+        ),
+        Ok(metadata.to_string())
+    );
+}
+
+#[test]
+fn semantic_graph_regeneration_refuses_to_invent_a_strict_skip_reason() {
+    let error = updated_semantic_graph_metadata(String::new(), true, true, None)
+        .expect_err("a new strict empty graph needs a reviewed capability reason");
+    assert!(error.contains("add a concrete semantic_graph_skip_reason"));
 }
 
 #[test]
