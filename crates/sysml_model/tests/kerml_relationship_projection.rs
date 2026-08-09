@@ -9,6 +9,7 @@ use sysml_model::{
     build_semantic_graph_from_documents, patch_graph_for_document, ElementKind, NodeId,
     RelationshipKind, SemanticGraph, SysmlDocument, SysmlDocumentSourceKind,
 };
+use sysml_v2_parser::ast::{PackageBody, PackageBodyElement, RootElement};
 use url::Url;
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -60,6 +61,74 @@ fn assert_cross_document_edge(
             .any(|(actual_target, actual_kind)| actual_target.id == target && *actual_kind == kind),
         "expected {kind:?} edge from {source:?} to {target:?}"
     );
+}
+
+/// The parser's recovery result is the current syntax boundary for relationship declarations
+/// without an AST variant. Keep this assertion narrow so a parser addition forces this test to
+/// become a semantic-projection test.
+fn assert_unmodeled_package_relationship_declaration(source: &str, declaration_keyword: &str) {
+    let parsed = sysml_v2_parser::parse_for_editor(source);
+    assert_eq!(
+        parsed.errors.len(),
+        1,
+        "the parser boundary must remain a single recovery diagnostic: {source}"
+    );
+    let error = &parsed.errors[0];
+    assert_eq!(
+        error.code.as_deref(),
+        Some("unrecognized_declaration_in_scope"),
+        "unexpected parser boundary for {source}"
+    );
+    assert!(
+        error
+            .found
+            .as_deref()
+            .is_some_and(|found| found.starts_with(declaration_keyword)),
+        "the recovery diagnostic must identify the unsupported declaration: {error:#?}"
+    );
+    assert!(
+        sysml_v2_parser::parse(source).is_err(),
+        "strict parsing must reject an unmodeled standalone relationship declaration"
+    );
+}
+
+/// Some KerML declarations are preserved by the parser only as source-fidelity fallback nodes.
+/// Their public AST contract has no typed relationship endpoint, span, or authored identity.
+fn assert_raw_package_declaration(
+    source: &str,
+    expected_keyword: &str,
+    expected_text_fragment: &str,
+    expected_variant: fn(&PackageBodyElement) -> Option<(&str, &str)>,
+) {
+    let root = sysml_v2_parser::parse(source).expect("raw declaration remains strictly parseable");
+    let RootElement::Package(package) = &root.elements[0].value else {
+        panic!("expected a package root");
+    };
+    let PackageBody::Brace { elements } = &package.value.body else {
+        panic!("expected package members");
+    };
+    assert_eq!(elements.len(), 1, "expected exactly one raw declaration");
+    let (keyword, text) = expected_variant(&elements[0].value)
+        .expect("expected the parser's raw declaration fallback variant");
+    assert_eq!(keyword, expected_keyword);
+    assert!(
+        text.contains(expected_text_fragment),
+        "raw source fidelity must retain the authored spelling"
+    );
+}
+
+fn raw_feature_declaration(element: &PackageBodyElement) -> Option<(&str, &str)> {
+    let PackageBodyElement::FeatureDecl(declaration) = element else {
+        return None;
+    };
+    Some((&declaration.value.keyword, &declaration.value.text))
+}
+
+fn raw_classifier_declaration(element: &PackageBodyElement) -> Option<(&str, &str)> {
+    let PackageBodyElement::ClassifierDecl(declaration) = element else {
+        return None;
+    };
+    Some((&declaration.value.keyword, &declaration.value.text))
 }
 
 #[test]
@@ -341,62 +410,81 @@ fn port_conjugation_has_its_own_relationship_kind_and_conjugated_typing_target()
 }
 
 #[test]
-#[ignore = "SKIP: publish standalone specialization and subclassification only after the parser exposes their endpoints as structured relationship facts"]
-fn standalone_named_and_anonymous_specialization_and_subclassification_are_projected() {
-    let doc = workspace_doc(
-        "standalone_specialization.sysml",
-        r#"package P {
-  specialization Named subtype A specializes B;
-  subtype A specializes B;
-  specialization Classified subclassifier C specializes D;
-  subclassifier C specializes D;
-}"#,
-    );
-    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-    assert!(graph.graph.node_count() > 0, "parser-backed graph");
-    panic!(
-        "SKIP: preserve each standalone relationship's authored identity and resolved endpoints"
-    );
-}
-
-#[test]
-#[ignore = "SKIP: publish standalone typing, subsetting, redefinition, conjugation, and disjoining only after the parser exposes their endpoints as structured relationship facts"]
-fn standalone_named_and_anonymous_relationship_declarations_are_projected() {
-    let doc = workspace_doc(
-        "standalone_relationships.sysml",
-        r#"package P {
-  specialization Typed typing customer typed by Person;
-  typing customer typed by Person;
-  specialization Subset subset rearWheels subsets wheels;
-  subset rearWheels :> wheels;
-  specialization Redefined redefinition vin redefines identifier;
-  redefinition vin redefines identifier;
-  conjugation Named conjugate C conjugates O;
-  conjugate C conjugates O;
-  disjoining Named disjoint A from B;
-  disjoint A from B;
-}"#,
-    );
-    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-    assert!(graph.graph.node_count() > 0, "parser-backed graph");
-    panic!(
-        "SKIP: preserve each standalone relationship's authored identity and resolved endpoints"
+fn standalone_specialization_and_subclassification_remain_untyped_parser_boundaries() {
+    for (declaration, keyword) in [
+        (
+            "specialization Named subtype A specializes B;",
+            "specialization",
+        ),
+        ("subtype A specializes B;", "subtype"),
+        (
+            "specialization Classified subclassifier C specializes D;",
+            "specialization",
+        ),
+    ] {
+        assert_unmodeled_package_relationship_declaration(
+            &format!("package P {{ {declaration} }}"),
+            keyword,
+        );
+    }
+    assert_raw_package_declaration(
+        "package P { subclassifier C specializes D; }",
+        "subclassifier",
+        "specializes D",
+        raw_classifier_declaration,
     );
 }
 
 #[test]
-#[ignore = "SKIP: publish feature-inverting and explicit type-featuring only after the parser exposes their endpoints as structured relationship facts"]
-fn named_and_anonymous_feature_inverting_and_type_featuring_are_projected() {
-    let doc = workspace_doc(
-        "feature_inverting_and_featuring.sysml",
-        r#"package P {
-  feature inverse of inverseTarget;
-  inverting Named inverse specific of general;
-  feature featured by FeaturingType;
-  featuring Named of featuredFeature by FeaturingType;
-}"#,
+fn standalone_relationship_declarations_remain_untyped_parser_boundaries() {
+    for (declaration, keyword) in [
+        (
+            "specialization Typed typing customer typed by Person;",
+            "specialization",
+        ),
+        ("typing customer typed by Person;", "typing"),
+        (
+            "specialization Subset subset rearWheels subsets wheels;",
+            "specialization",
+        ),
+        ("subset rearWheels :> wheels;", "subset"),
+        (
+            "specialization Redefined redefinition vin redefines identifier;",
+            "specialization",
+        ),
+        ("redefinition vin redefines identifier;", "redefinition"),
+        ("conjugation Named conjugate C conjugates O;", "conjugation"),
+        ("conjugate C conjugates O;", "conjugate"),
+        ("disjoining Named disjoint A from B;", "disjoining"),
+        ("disjoint A from B;", "disjoint"),
+    ] {
+        assert_unmodeled_package_relationship_declaration(
+            &format!("package P {{ {declaration} }}"),
+            keyword,
+        );
+    }
+}
+
+#[test]
+fn feature_inverting_and_type_featuring_remain_untyped_parser_boundaries() {
+    assert_raw_package_declaration(
+        "package P { feature inverse of inverseTarget; }",
+        "feature",
+        "of inverseTarget",
+        raw_feature_declaration,
     );
-    let (graph, _) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
-    assert!(graph.graph.node_count() > 0, "parser-backed graph");
-    panic!("SKIP: retain authored inversion and featuring facts without inferring a featuring-type closure");
+    assert_raw_package_declaration(
+        "package P { feature featured by FeaturingType; }",
+        "feature",
+        "by FeaturingType",
+        raw_feature_declaration,
+    );
+    assert_unmodeled_package_relationship_declaration(
+        "package P { inverting Named inverse specific of general; }",
+        "inverting",
+    );
+    assert_unmodeled_package_relationship_declaration(
+        "package P { featuring Named of featuredFeature by FeaturingType; }",
+        "featuring",
+    );
 }
