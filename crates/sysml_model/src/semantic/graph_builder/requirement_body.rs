@@ -11,8 +11,6 @@ use url::Url;
 
 use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::import_resolution::resolve_type_reference_targets;
-use crate::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
@@ -209,18 +207,6 @@ fn require_constraint_structured(
     })
 }
 
-fn fallback_verified_requirement_target(parent_id: &NodeId, requirement_ref: &str) -> String {
-    if requirement_ref.contains("::") {
-        requirement_ref.to_string()
-    } else {
-        parent_id
-            .qualified_name
-            .rsplit_once("::")
-            .map(|(owner, _)| format!("{owner}::{requirement_ref}"))
-            .unwrap_or_else(|| requirement_ref.to_string())
-    }
-}
-
 pub(super) fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
     if let Some(requirement) = member.requirement.as_ref() {
         if let Some(type_name) = requirement.value.type_name.as_deref() {
@@ -277,27 +263,6 @@ pub(super) fn add_verified_requirement_node(
         Some(parent_id),
     );
     add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
-    let requirement_target = if let Some(parent) = g.get_node(parent_id) {
-        resolve_type_reference_targets(
-            g,
-            parent,
-            requirement_ref,
-            VERIFIED_REQUIREMENT_TARGET_KINDS,
-        )
-        .into_iter()
-        .next()
-        .map(|id| id.qualified_name.clone())
-        .unwrap_or_else(|| fallback_verified_requirement_target(parent_id, requirement_ref))
-    } else {
-        fallback_verified_requirement_target(parent_id, requirement_ref)
-    };
-    add_edge_if_both_exist(
-        g,
-        uri,
-        &parent_id.qualified_name,
-        &requirement_target,
-        RelationshipKind::Subject,
-    );
 }
 
 pub(super) fn import_member_label(target: &str) -> String {

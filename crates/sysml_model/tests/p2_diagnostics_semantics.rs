@@ -731,6 +731,29 @@ fn verification_membership_retains_its_objective_parentage() {
         .expect("verified requirement has an owning objective");
 
     assert_eq!(parent.element_kind, sysml_model::ElementKind::Objective);
+
+    let case_subject_edges: Vec<_> = graph
+        .edges_for_uri_as_strings(&uri)
+        .into_iter()
+        .filter(|(source, target, kind, _)| {
+            source == "Demo::Check"
+                && target == "Demo::ReqA"
+                && *kind == sysml_model::RelationshipKind::Subject
+        })
+        .collect();
+    assert_eq!(
+        case_subject_edges.len(),
+        1,
+        "the verification case must retain exactly one resolved subject edge"
+    );
+    assert!(
+        !graph.edges_for_uri_as_strings(&uri).iter().any(|(source, target, kind, _)| {
+            source == "Demo::Check::ReqA"
+                && target == "Demo::ReqA"
+                && *kind == sysml_model::RelationshipKind::Subject
+        }),
+        "the objective owns the verified-requirement member but is not the verification case's subject"
+    );
 }
 
 #[test]

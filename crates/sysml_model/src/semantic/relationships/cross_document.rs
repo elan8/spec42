@@ -402,28 +402,7 @@ pub fn resolve_cross_document_edges_for_uri(
                 }
             }
 
-            for verified_requirement in g
-                .children_of(node)
-                .into_iter()
-                .filter(|child| child.element_kind == ElementKind::VerifiedRequirement)
-            {
-                let Some(requirement_ref) = verified_requirement
-                    .attributes
-                    .get("verifiedRequirement")
-                    .and_then(|value| value.as_str())
-                else {
-                    continue;
-                };
-                let Some(target_id) = resolve_type_reference_targets(
-                    g,
-                    verified_requirement,
-                    requirement_ref,
-                    VERIFIED_REQUIREMENT_TARGET_KINDS,
-                )
-                .into_iter()
-                .next() else {
-                    continue;
-                };
+            for target_id in resolved_verified_requirement_targets_for_case(g, node) {
                 let dedupe_key = (node_id.clone(), target_id.clone(), "subject");
                 if seen_edges.insert(dedupe_key) {
                     resolved_edges.push((node_id.clone(), target_id, RelationshipKind::Subject));
