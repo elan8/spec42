@@ -2,6 +2,8 @@
 ~~~ini
 description=Coverage: SysML usage variants with direction flags, multiplicity, values, and modifiers
 type=file
+semantic_graph=skip
+semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -184,7 +186,6 @@ part def Vehicle {
 # SMG
 ~~~
 (semantic-graph
-  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
   (containment
   )
   (relationships

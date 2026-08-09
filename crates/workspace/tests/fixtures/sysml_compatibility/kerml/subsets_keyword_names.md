@@ -2,6 +2,8 @@
 ~~~ini
 description=Permissive QN parsing: keywords used as specialization target names
 type=file
+semantic_graph=skip
+semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~kerml
@@ -45,7 +47,6 @@ feature f2 subsets do, step;
 # SMG
 ~~~
 (semantic-graph
-  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
   (containment
   )
   (relationships

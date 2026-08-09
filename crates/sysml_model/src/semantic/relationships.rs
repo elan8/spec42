@@ -543,13 +543,22 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
     // Typing and inherited-member resolution are mutually dependent for nested
     // redefinitions. Iterate to the monotonic edge-set fixed point rather than
     // letting hash-map traversal decide which prerequisites happen to exist first.
-    for _ in 0..=g.graph.node_count() {
+    // A bound exhaustion is a failed semantic publication, never a silently
+    // incomplete graph.
+    let max_passes = g.graph.node_count().saturating_add(1);
+    let mut converged = false;
+    for _ in 0..max_passes {
         let edge_count = g.graph.edge_count();
         link_workspace_relationships_pass(g);
         if g.graph.edge_count() == edge_count {
+            converged = true;
             break;
         }
     }
+    assert!(
+        converged,
+        "workspace relationship linking did not converge within {max_passes} passes; semantic graph was not published"
+    );
 
     // Per-document graph build cannot see imported elements from other files; re-wire after merge.
     let connection_ids: Vec<NodeId> = sorted_node_ids(g)
@@ -593,13 +602,20 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
     // Full parallel builds resolve typing/specializes/subject in
     // `resolve_cross_document_edges_for_uri`; subsetting/redefinition still need
     // a whole-graph pass after merge (same shape as derivation rewiring).
-    for _ in 0..=g.graph.node_count() {
+    let max_passes = g.graph.node_count().saturating_add(1);
+    let mut converged = false;
+    for _ in 0..max_passes {
         let edge_count = g.graph.edge_count();
         for node_id in sorted_node_ids(g) {
             link_subsetting_family_edges_for_node(g, &node_id);
         }
         if g.graph.edge_count() == edge_count {
+            converged = true;
             break;
         }
     }
+    assert!(
+        converged,
+        "workspace derivation linking did not converge within {max_passes} passes; semantic graph was not published"
+    );
 }

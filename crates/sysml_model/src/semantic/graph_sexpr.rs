@@ -25,20 +25,54 @@ struct CanonicalIdentities {
 
 impl CanonicalIdentities {
     fn from_graph(graph: &SemanticGraph) -> Self {
-        let mut documents = graph
-            .nodes_by_uri
-            .iter()
-            .map(|(uri, ids)| {
-                let mut nodes = ids
-                    .iter()
+        let mut document_facts: HashMap<Url, Vec<String>> = HashMap::new();
+        for (uri, ids) in &graph.nodes_by_uri {
+            let facts = document_facts.entry(uri.clone()).or_default();
+            facts.extend(
+                ids.iter()
                     .filter_map(|id| graph.get_node(id))
-                    .map(node_sort_key)
-                    .collect::<Vec<_>>();
-                nodes.sort();
+                    .map(|node| format!("node:{:?}", node_sort_key(node))),
+            );
+        }
+        for pending in &graph.pending_relationships {
+            let mut target_kinds = pending
+                .target_kinds
+                .as_ref()
+                .map(|kinds| kinds.iter().map(|kind| kind.as_str()).collect::<Vec<_>>())
+                .unwrap_or_default();
+            target_kinds.sort();
+            document_facts
+                .entry(pending.uri.clone())
+                .or_default()
+                .push(format!(
+                    "pending:{}:{:?}:{:?}:{target_kinds:?}",
+                    pending.kind.as_str(),
+                    pending.source_qualified,
+                    pending.target_qualified,
+                ));
+        }
+        for pending in &graph.pending_expression_relationships {
+            document_facts
+                .entry(pending.uri.clone())
+                .or_default()
+                .push(format!(
+                    "pending-expression:{}:{:?}:{:?}:{:?}:{:?}:{:?}",
+                    pending.kind.as_str(),
+                    pending.source_expression,
+                    pending.target_expression,
+                    pending.container_prefix,
+                    pending.is_interface_usage,
+                    pending.interface_type,
+                ));
+        }
+        let mut documents = document_facts
+            .into_iter()
+            .map(|(uri, mut facts)| {
+                facts.sort();
                 // The URI breaks ties only to assign an otherwise invisible ordinal.
                 // It is never emitted; a single document therefore remains stable when
                 // moved, while duplicate qualified names remain unambiguous.
-                (nodes, uri.clone())
+                (facts, uri)
             })
             .collect::<Vec<_>>();
         documents.sort_by(|(left_key, left_uri), (right_key, right_uri)| {
@@ -688,5 +722,35 @@ mod tests {
         let (forward, _) = build_and_link_graph(&[first.clone(), second.clone()]).expect("forward");
         let (reverse, _) = build_and_link_graph(&[second, first]).expect("reverse");
         assert_eq!(forward.to_semantic_sexpr(), reverse.to_semantic_sexpr());
+    }
+
+    #[test]
+    fn pending_only_documents_have_canonical_identities_and_rendering() {
+        let first = crate::semantic::graph::PendingRelationship {
+            uri: Url::parse("memory://semantic-sexpr-test/pending-a.sysml").expect("URI"),
+            source_qualified: "P::x".to_string(),
+            target_qualified: "P::Missing".to_string(),
+            kind: crate::semantic::model::RelationshipKind::Typing,
+            target_kinds: None,
+        };
+        let second = crate::semantic::graph::PendingRelationship {
+            uri: Url::parse("memory://semantic-sexpr-test/pending-b.sysml").expect("URI"),
+            source_qualified: "Q::x".to_string(),
+            target_qualified: "Q::Missing".to_string(),
+            kind: crate::semantic::model::RelationshipKind::Subsetting,
+            target_kinds: None,
+        };
+        let mut graph = SemanticGraph::new();
+        graph.restore_pending_relationship(first.clone());
+        graph.restore_pending_relationship(second.clone());
+        let rendering = graph.to_semantic_sexpr();
+        assert!(rendering.contains("(document \"d0\")"));
+        assert!(rendering.contains("(document \"d1\")"));
+        assert!(rendering.contains("(status pending)"));
+
+        let mut reverse = SemanticGraph::new();
+        reverse.restore_pending_relationship(second);
+        reverse.restore_pending_relationship(first);
+        assert_eq!(rendering, reverse.to_semantic_sexpr());
     }
 }

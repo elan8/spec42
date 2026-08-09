@@ -2,6 +2,8 @@
 ~~~ini
 description=Coverage: SysML definition body member dispatch (attribute/enum/occurrence/individual/item/part/port in body context)
 type=file
+semantic_graph=skip
+semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -153,7 +155,6 @@ part def Outer {
 # SMG
 ~~~
 (semantic-graph
-  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
   (containment
   )
   (relationships

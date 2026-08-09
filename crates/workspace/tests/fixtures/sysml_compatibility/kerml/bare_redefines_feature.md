@@ -2,6 +2,8 @@
 ~~~ini
 description=Bare redefines/subsets as shorthand features in KerML bodies
 type=kerml
+semantic_graph=skip
+semantic_graph_skip_reason=strictly parsed non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~kerml
@@ -66,7 +68,6 @@ class A {
 # SMG
 ~~~
 (semantic-graph
-  (status (skip (code "SMG-EMPTY-STRICT") (reason "strictly parsed non-empty source produced no typed semantic graph facts")))
   (containment
   )
   (relationships

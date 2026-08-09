@@ -2,6 +2,8 @@
 ~~~ini
 description=Coverage: Abstract and variation SysML definitions in body and top-level context
 type=file
+semantic_graph=skip
+semantic_graph_skip_reason=parser recovery for non-empty source produced no typed semantic graph facts
 ~~~
 # SOURCE
 ~~~sysml
@@ -105,7 +107,6 @@ abstract part def Container {
 # SMG
 ~~~
 (semantic-graph
-  (status (skip (code "SMG-EMPTY-RECOVERY") (reason "parser recovery for non-empty source produced no typed semantic graph facts")))
   (containment
   )
   (relationships

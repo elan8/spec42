@@ -1,9 +1,7 @@
 //! Compatibility coverage for the imported SysML snapshot corpus.
 //!
-//! These fixtures intentionally retain their tokens, AST, semantic-graph, and
-//! diagnostic sections as reference evidence. They are not Spec42 contracts
-//! because the internal representations differ. This runner instead checks the
-//! shared, portable properties listed in the companion document.
+//! Token, AST, and diagnostic sections remain fixture evidence. The SMG section
+//! is the exact canonical semantic-graph projection asserted by this runner.
 
 use std::fs;
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -32,7 +30,7 @@ struct Coverage {
     smg_exact_strict: usize,
     smg_exact_recovery: usize,
     smg_empty_recovery_skipped: usize,
-    smg_empty_unsupported_skipped: usize,
+    smg_empty_strict_skipped: usize,
     formatter_idempotent: usize,
     formatter_goldens_equal: usize,
     formatter_golden_skipped: usize,
@@ -81,14 +79,23 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
         coverage.snapshots += 1;
         coverage.source_documents += documents.len();
 
-        let parser_accepts_all = documents
+        let parser_errors = documents
             .iter()
-            .all(|document| sysml_v2_parser::parse(&document.text).is_ok());
+            .filter_map(|document| {
+                sysml_v2_parser::parse(&document.text)
+                    .err()
+                    .map(|error| format!("{}: {error:?}", document.name))
+            })
+            .collect::<Vec<_>>();
+        let parser_accepts_all = parser_errors.is_empty();
         if parser_accepts_all {
             coverage.parser_accepted += 1;
         } else {
             coverage.parser_skipped += 1;
-            eprintln!("SKIP parser acceptance {relative}: pinned parser rejects recovery or unsupported syntax in the compatibility fixture");
+            eprintln!(
+                "SKIP parser acceptance {relative}: strict parser rejected fixture: {}",
+                parser_errors.join("; ")
+            );
         }
 
         // The semantic pipeline uses editor recovery.  It is useful even when
@@ -120,17 +127,30 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
                 );
                 let expected = section(&fixture, "SMG")
                     .unwrap_or_else(|| panic!("{relative}: compatibility fixture is missing SMG"));
-                match empty_graph_skip(&rendering, &documents, parser_accepts_all) {
-                    Some(skip) => {
-                        assert_eq!(expected, skip, "{relative}: empty graph skip changed");
-                        eprintln!("SKIP semantic graph {relative}: {skip}");
+                let skip_reason = semantic_graph_skip_reason(&fixture).unwrap_or_else(|error| {
+                    panic!("{relative}: malformed semantic graph skip: {error}")
+                });
+                let requires_skip = rendering == empty_semantic_graph()
+                    && documents
+                        .iter()
+                        .any(|document| !document.text.trim().is_empty());
+                match (skip_reason, requires_skip) {
+                    (Some(reason), true) => {
+                        assert_eq!(rendering, expected, "{relative}: semantic graph golden changed");
+                        eprintln!("SKIP semantic graph {relative}: {reason}");
                         if parser_accepts_all {
-                            coverage.smg_empty_unsupported_skipped += 1;
+                            coverage.smg_empty_strict_skipped += 1;
                         } else {
                             coverage.smg_empty_recovery_skipped += 1;
                         }
                     }
-                    None => {
+                    (Some(_), false) => panic!(
+                        "{relative}: semantic_graph=skip is stale because the source now materializes graph facts"
+                    ),
+                    (None, true) => panic!(
+                        "{relative}: non-empty source produced no typed semantic graph facts; META must declare semantic_graph=skip with semantic_graph_skip_reason"
+                    ),
+                    (None, false) => {
                         assert_eq!(
                             rendering, expected,
                             "{relative}: semantic graph golden changed; run `SPEC42_SEMANTIC_GRAPH_FIXTURE='{relative}' cargo test -p workspace --no-default-features --test sysml_compatibility_corpus print_semantic_graph_fixture -- --ignored --nocapture` to inspect the deterministic replacement"
@@ -186,13 +206,13 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
         coverage.smg_exact_strict
             + coverage.smg_exact_recovery
             + coverage.smg_empty_recovery_skipped
-            + coverage.smg_empty_unsupported_skipped
+            + coverage.smg_empty_strict_skipped
             + coverage.non_utf8_skipped,
         coverage.snapshots,
         "every fixture must have a Spec42 SMG golden or a concrete non-UTF-8 skip"
     );
     eprintln!(
-        "SysML compatibility coverage: snapshots={}; non_utf8_skipped={}; source_documents={}; parser_accepted={}; parser_skipped={}; semantic_completed={}; semantic_rendered={}; smg_exact_strict={}; smg_exact_recovery={}; smg_empty_recovery_skipped={}; smg_empty_unsupported_skipped={}; formatter_idempotent={}; formatter_goldens_equal={}; formatter_golden_skipped={}",
+        "SysML compatibility coverage: snapshots={}; non_utf8_skipped={}; source_documents={}; parser_accepted={}; parser_skipped={}; semantic_completed={}; semantic_rendered={}; smg_exact_strict={}; smg_exact_recovery={}; smg_empty_recovery_skipped={}; smg_empty_strict_skipped={}; formatter_idempotent={}; formatter_goldens_equal={}; formatter_golden_skipped={}",
         coverage.snapshots,
         coverage.non_utf8_skipped,
         coverage.source_documents,
@@ -203,7 +223,7 @@ fn sysml_snapshot_corpus_is_accounted_for_without_interchange() {
         coverage.smg_exact_strict,
         coverage.smg_exact_recovery,
         coverage.smg_empty_recovery_skipped,
-        coverage.smg_empty_unsupported_skipped,
+        coverage.smg_empty_strict_skipped,
         coverage.formatter_idempotent,
         coverage.formatter_goldens_equal,
         coverage.formatter_golden_skipped,
@@ -265,15 +285,22 @@ fn regenerate_semantic_graph_sections() {
             })
             .collect::<Vec<_>>();
         let (graph, _) = build_and_link_graph(&semantic_documents).expect("semantic graph");
-        let expected = empty_graph_skip(
-            &graph.to_semantic_sexpr(),
-            &documents,
+        let rendering = graph.to_semantic_sexpr();
+        let requires_skip = rendering == empty_semantic_graph()
+            && documents
+                .iter()
+                .any(|document| !document.text.trim().is_empty());
+        let metadata = updated_semantic_graph_metadata(
+            section(&fixture, "META")
+                .unwrap_or_else(|| panic!("{relative}: fixture is missing META")),
+            requires_skip,
             documents
                 .iter()
                 .all(|document| sysml_v2_parser::parse(&document.text).is_ok()),
-        )
-        .unwrap_or_else(|| graph.to_semantic_sexpr());
-        let updated = replace_section(&fixture, "SMG", &expected)
+        );
+        let fixture = replace_section(&fixture, "META", &metadata)
+            .unwrap_or_else(|| panic!("{relative}: fixture is missing a META section"));
+        let updated = replace_section(&fixture, "SMG", &rendering)
             .unwrap_or_else(|| panic!("{relative}: fixture is missing an SMG section"));
         fs::write(path, updated).expect("write fixture");
     }
@@ -369,31 +396,64 @@ fn replace_section(fixture: &str, name: &str, replacement: &str) -> Option<Strin
     Some(updated)
 }
 
-fn empty_graph_skip(
-    rendering: &str,
-    documents: &[SourceDocument],
-    parser_accepts_all: bool,
-) -> Option<String> {
-    if rendering != empty_semantic_graph()
-        || documents
-            .iter()
-            .all(|document| document.text.trim().is_empty())
-    {
-        return None;
+fn semantic_graph_skip_reason(fixture: &str) -> Result<Option<String>, String> {
+    let state = unique_metadata_value(fixture, "semantic_graph")?;
+    let reason = unique_metadata_value(fixture, "semantic_graph_skip_reason")?;
+    match (state.as_deref(), reason) {
+        (None, None) => Ok(None),
+        (Some("skip"), Some(reason)) if !reason.trim().is_empty() => Ok(Some(reason)),
+        (Some("skip"), Some(_)) => Err("semantic_graph_skip_reason must be non-empty".to_string()),
+        (Some("skip"), None) => {
+            Err("semantic_graph=skip requires semantic_graph_skip_reason".to_string())
+        }
+        (None, Some(_)) => {
+            Err("semantic_graph_skip_reason requires semantic_graph=skip".to_string())
+        }
+        (Some(other), _) => Err(format!("unsupported semantic_graph state {other:?}")),
     }
-    let reason = if parser_accepts_all {
-        "strictly parsed non-empty source produced no typed semantic graph facts"
-    } else {
-        "parser recovery for non-empty source produced no typed semantic graph facts"
-    };
-    let code = if parser_accepts_all {
-        "SMG-EMPTY-STRICT"
-    } else {
-        "SMG-EMPTY-RECOVERY"
-    };
-    Some(format!(
-        "(semantic-graph\n  (status (skip (code {code:?}) (reason {reason:?})))\n  (containment\n  )\n  (relationships\n  )\n  (pending-relationships\n  )\n  (pending-expression-relationships\n  )\n)"
-    ))
+}
+
+fn unique_metadata_value(fixture: &str, key: &str) -> Result<Option<String>, String> {
+    let mut values = Vec::new();
+    if let Some(metadata) = section(fixture, "META") {
+        for line in metadata.lines() {
+            let Some((line_key, value)) = line.split_once('=') else {
+                continue;
+            };
+            if line_key.trim() == key {
+                values.push(value.trim().to_string());
+            }
+        }
+    }
+    match values.as_slice() {
+        [] => Ok(None),
+        [value] => Ok(Some(value.clone())),
+        _ => Err(format!("META contains duplicate {key} entries")),
+    }
+}
+
+fn updated_semantic_graph_metadata(
+    metadata: String,
+    requires_skip: bool,
+    parser_accepts_all: bool,
+) -> String {
+    let mut lines = metadata
+        .lines()
+        .filter(|line| {
+            !line.starts_with("semantic_graph=") && !line.starts_with("semantic_graph_skip_reason=")
+        })
+        .map(str::to_string)
+        .collect::<Vec<_>>();
+    if requires_skip {
+        lines.push("semantic_graph=skip".to_string());
+        let reason = if parser_accepts_all {
+            "strictly parsed non-empty source produced no typed semantic graph facts"
+        } else {
+            "parser recovery for non-empty source produced no typed semantic graph facts"
+        };
+        lines.push(format!("semantic_graph_skip_reason={reason}"));
+    }
+    lines.join("\n")
 }
 
 fn empty_semantic_graph() -> &'static str {
@@ -441,12 +501,32 @@ fn camera_fixture_has_an_explicit_strict_empty_semantic_graph_skip() {
         })
         .collect::<Vec<_>>();
     let (graph, _) = build_and_link_graph(&semantic_documents).expect("semantic graph");
-    assert_eq!(
-        empty_graph_skip(&graph.to_semantic_sexpr(), &documents, true),
-        Some("(semantic-graph\n  (status (skip (code \"SMG-EMPTY-STRICT\") (reason \"strictly parsed non-empty source produced no typed semantic graph facts\")))\n  (containment\n  )\n  (relationships\n  )\n  (pending-relationships\n  )\n  (pending-expression-relationships\n  )\n)".to_string())
-    );
+    assert_eq!(graph.to_semantic_sexpr(), empty_semantic_graph());
     assert_eq!(
         section(&fixture, "SMG").expect("camera SMG section"),
-        "(semantic-graph\n  (status (skip (code \"SMG-EMPTY-STRICT\") (reason \"strictly parsed non-empty source produced no typed semantic graph facts\")))\n  (containment\n  )\n  (relationships\n  )\n  (pending-relationships\n  )\n  (pending-expression-relationships\n  )\n)"
+        empty_semantic_graph()
     );
+    assert_eq!(
+        semantic_graph_skip_reason(&fixture),
+        Ok(Some(
+            "strictly parsed non-empty source produced no typed semantic graph facts".to_string()
+        ))
+    );
+}
+
+#[test]
+fn semantic_graph_skip_metadata_requires_non_empty_reason() {
+    let valid = "# META\n~~~ini\nsemantic_graph=skip\nsemantic_graph_skip_reason=known semantic materialization bug\n~~~\n";
+    assert_eq!(
+        semantic_graph_skip_reason(valid),
+        Ok(Some("known semantic materialization bug".to_string()))
+    );
+    let missing_reason = "# META\n~~~ini\nsemantic_graph=skip\n~~~\n";
+    assert!(semantic_graph_skip_reason(missing_reason).is_err());
+    let empty_reason = "# META\n~~~ini\nsemantic_graph=skip\nsemantic_graph_skip_reason=   \n~~~\n";
+    assert!(semantic_graph_skip_reason(empty_reason).is_err());
+    let orphan_reason = "# META\n~~~ini\nsemantic_graph_skip_reason=known bug\n~~~\n";
+    assert!(semantic_graph_skip_reason(orphan_reason).is_err());
+    let duplicate_state = "# META\n~~~ini\nsemantic_graph=skip\nsemantic_graph=skip\nsemantic_graph_skip_reason=known bug\n~~~\n";
+    assert!(semantic_graph_skip_reason(duplicate_state).is_err());
 }

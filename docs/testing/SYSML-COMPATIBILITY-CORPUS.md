@@ -11,8 +11,7 @@ Run the portable compatibility runner with:
 cargo test -p workspace --test sysml_compatibility_corpus -- --nocapture
 ```
 
-The runner accounts for every imported fixture and performs the checks that are
-meaningful across implementations:
+The runner accounts for every fixture and performs these checks:
 
 - strict parsing with the pinned `sysml-v2-parser`;
 - recovery-mode semantic graph construction and canonical S-expression rendering,
@@ -24,9 +23,11 @@ The fixture `SMG` section is the exact, canonical `(semantic-graph ...)` renderi
 of the semantic graph constructed from its `SOURCE`. Every UTF-8 fixture is
 byte-compared to this owned golden, including recovery-mode sources that
 materialize semantic facts. A non-empty source that currently has no typed
-semantic facts uses an inline `(status (skip ...))` graph with a stable strict
-or recovery code and an explicit zero-facts state; that state is also counted
-and printed by the runner. Refresh these sections deliberately with:
+semantic facts retains the pure empty graph rendering. Its `META` section must
+instead declare `semantic_graph=skip` and a concrete non-empty
+`semantic_graph_skip_reason`; this state is counted and printed by the runner,
+and becomes a failure when graph facts materialize. Refresh these sections
+deliberately with:
 
 ```sh
 cargo test -p workspace --no-default-features --test sysml_compatibility_corpus \
