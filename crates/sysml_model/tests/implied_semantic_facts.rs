@@ -168,6 +168,176 @@ fn directed_feature_does_not_receive_the_ownership_default() {
 }
 
 #[test]
+fn ownership_kind_predicates_are_typed_and_exclude_non_feature_contexts() {
+    for usage_kind in [
+        ElementKind::Interface,
+        ElementKind::Enumeration,
+        ElementKind::Perform,
+        ElementKind::ViewRendering,
+        ElementKind::Objective,
+        ElementKind::AssertConstraint,
+        ElementKind::RequireConstraint,
+    ] {
+        assert!(
+            usage_kind.is_composite_by_default_usage(),
+            "{usage_kind} must retain its explicit composite-by-default classification"
+        );
+    }
+
+    for non_feature_context in [
+        ElementKind::Package,
+        ElementKind::InterfaceEnd,
+        ElementKind::InOutParameter,
+    ] {
+        assert!(
+            !non_feature_context.is_composite_by_default_usage(),
+            "{non_feature_context} must not receive the composite ownership default"
+        );
+        assert!(
+            !non_feature_context.is_type_context(),
+            "{non_feature_context} must not make its members eligible for the default"
+        );
+    }
+}
+
+#[test]
+#[ignore = "SKIP: interface usage is not yet materialized and enumeration usage does not yet publish parser-backed DeclaredFeatureProperties, so ownership cannot safely distinguish authored ref/end/direction facts"]
+fn interface_and_enumeration_ownership_defaults_require_typed_builder_facts() {
+    let document = workspace_doc(
+        "future_interface_enumeration_ownership.sysml",
+        r#"package P {
+  part def Container {
+    interface nestedInterface;
+    enum nestedEnumeration;
+  }
+}"#,
+    );
+    let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
+
+    let enumeration = graph
+        .nodes_named("nestedEnumeration")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Enumeration)
+        .expect("parser-backed enumeration usage");
+    assert_future_implied_ownership(&graph, enumeration, "enumeration usage");
+
+    let interface = graph
+        .nodes_named("nestedInterface")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Interface)
+        .expect("parser-backed interface usage");
+    assert_future_implied_ownership(&graph, interface, "interface usage");
+}
+
+#[test]
+#[ignore = "SKIP: objective, assert-constraint, and require-constraint builders retain only legacy attributes; typed declared feature properties are required before ownership defaults can be resolved"]
+fn objective_and_constraint_ownership_defaults_require_typed_builder_facts() {
+    let document = workspace_doc(
+        "future_objective_constraint_ownership.sysml",
+        r#"package P {
+  requirement def Required {
+    require constraint { true; }
+  }
+  occurrence def Checked {
+    assert constraint { true; }
+  }
+  verification def Verification {
+    objective verificationObjective {
+      verify requirement Required;
+    }
+  }
+}"#,
+    );
+    let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
+
+    for (name, element_kind, description) in [
+        ("verificationObjective", ElementKind::Objective, "objective"),
+        (
+            "_assertConstraint_0",
+            ElementKind::AssertConstraint,
+            "assert constraint",
+        ),
+        (
+            "_requireConstraint_0",
+            ElementKind::RequireConstraint,
+            "require constraint",
+        ),
+    ] {
+        let node = graph
+            .nodes_named(name)
+            .into_iter()
+            .find(|node| node.element_kind == element_kind)
+            .unwrap_or_else(|| panic!("parser-backed {description} usage"));
+        assert_future_implied_ownership(&graph, node, description);
+    }
+}
+
+#[test]
+#[ignore = "SKIP: performed-action and view-rendering builders do not yet publish parser-backed DeclaredFeatureProperties, so ownership cannot safely distinguish authored ref/end/direction facts"]
+fn perform_and_view_rendering_ownership_defaults_require_typed_builder_facts() {
+    let document = workspace_doc(
+        "future_perform_rendering_ownership.sysml",
+        r#"package P {
+  part def Container {
+    perform action nestedPerformedAction;
+  }
+  action def Workflow {
+    perform action nestedPerformStep;
+  }
+  view def Dashboard {
+    render nestedRendering;
+  }
+}"#,
+    );
+    let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
+
+    let perform_step = graph
+        .nodes_named("nestedPerformStep")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Perform)
+        .expect("parser-backed perform step");
+    assert_future_implied_ownership(&graph, perform_step, "perform step");
+
+    let performed_action = graph
+        .nodes_named("nestedPerformedAction")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Action)
+        .expect("parser-backed performed action usage");
+    assert_future_implied_ownership(&graph, performed_action, "performed action usage");
+
+    let view_rendering = graph
+        .nodes_named("nestedRendering")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::ViewRendering)
+        .expect("parser-backed view rendering usage");
+    assert_future_implied_ownership(&graph, view_rendering, "view rendering usage");
+}
+
+fn assert_future_implied_ownership(graph: &SemanticGraph, node: &SemanticNode, description: &str) {
+    assert!(
+        node.declared_facts.feature_properties.is_some(),
+        "{description} builder must publish parser-backed DeclaredFeatureProperties before ownership can be resolved"
+    );
+    assert_eq!(
+        graph
+            .effective_facts_for(node)
+            .and_then(|facts| facts.implied_feature_ownership),
+        Some(ImpliedFeatureOwnership {
+            is_composite: true,
+            is_reference: false,
+        }),
+        "{description} should receive the contextual composite ownership default"
+    );
+    assert_eq!(
+        graph
+            .effective_feature_ownership_for(node)
+            .map(|ownership| ownership.provenance),
+        Some(FeatureOwnershipProvenance::Implied),
+        "{description} should expose implied ownership through the canonical query"
+    );
+}
+
+#[test]
 fn nested_usage_without_multiplicity_publishes_implied_exactly_one() {
     let document = workspace_doc(
         "default_multiplicity.sysml",

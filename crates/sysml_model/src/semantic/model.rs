@@ -490,6 +490,7 @@ impl ElementKind {
         matches!(
             self,
             ElementKind::Part
+                | ElementKind::Interface
                 | ElementKind::Port
                 | ElementKind::Item
                 | ElementKind::Attribute
@@ -510,6 +511,12 @@ impl ElementKind {
                 | ElementKind::Occurrence
                 | ElementKind::Calc
                 | ElementKind::Constraint
+                | ElementKind::Enumeration
+                | ElementKind::Perform
+                | ElementKind::ViewRendering
+                | ElementKind::Objective
+                | ElementKind::AssertConstraint
+                | ElementKind::RequireConstraint
         )
     }
 
@@ -523,6 +530,7 @@ impl ElementKind {
             || matches!(
                 self,
                 ElementKind::Ref
+                    | ElementKind::ViewRendering
                     | ElementKind::Actor
                     | ElementKind::Stakeholder
                     | ElementKind::Individual
@@ -532,6 +540,8 @@ impl ElementKind {
                     | ElementKind::Subject
                     | ElementKind::VerifiedRequirement
                     | ElementKind::IncludeUseCase
+                    | ElementKind::Interface
+                    | ElementKind::Enumeration
             )
     }
 }
