@@ -249,6 +249,60 @@ fn emits_duplicate_namespace_member() {
 }
 
 #[test]
+fn emits_duplicate_namespace_member_for_declared_short_name() {
+    let input = "package P {\n  part def <'Shared'> First;\n  part def Shared;\n}\n";
+    let diags = diags_for(input);
+    let duplicate = diags
+        .iter()
+        .find(|diagnostic| diagnostic.code == "duplicate_namespace_member")
+        .expect("declared short name collides with the sibling primary name");
+
+    assert_eq!(duplicate.range.start.line, 2);
+    assert_eq!(duplicate.range.start.character, 2);
+}
+
+#[test]
+fn distinct_declared_short_names_remain_distinguishable() {
+    let input = r#"
+        package P {
+            part def <'First'> One;
+            part def <'Second'> Two;
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        !has_code(&diags, "duplicate_namespace_member"),
+        "distinct declared short names must not collide: {:?}",
+        diags
+            .iter()
+            .filter(|diagnostic| diagnostic.code == "duplicate_namespace_member")
+            .map(|diagnostic| &diagnostic.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+#[ignore = "SKIP: the semantic graph does not yet publish a canonical cross-category namespace-distinguishability fact"]
+fn cross_category_short_name_collision_needs_namespace_distinguishability_fact() {
+    let input = r#"
+        package P {
+            part def <'Shared'> First;
+            action def <'Shared'> Act;
+        }
+    "#;
+    let diags = diags_for(input);
+    assert!(
+        has_code(&diags, "duplicate_namespace_member"),
+        "owned members with the same short name must be distinguishable: {:?}",
+        diags
+            .iter()
+            .filter(|diagnostic| diagnostic.code == "duplicate_namespace_member")
+            .map(|diagnostic| &diagnostic.message)
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
 fn emits_attribute_value_type_mismatch_for_boolean_on_real() {
     let input = r#"
         package P {

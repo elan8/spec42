@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use url::Url;
 
@@ -119,16 +119,24 @@ fn collect_duplicate_namespace_members(
 ) {
     let mut seen: HashSet<String> = HashSet::new();
     for node in graph.nodes_for_uri(uri) {
-        if !matches!(
-            node.element_kind,
-            sysml_model::ElementKind::Package
-                | sysml_model::ElementKind::PartDef
-                | sysml_model::ElementKind::RequirementDef
-                | sysml_model::ElementKind::UseCaseDef
-        ) {
+        if is_synthetic(node)
+            || !matches!(
+                node.element_kind,
+                sysml_model::ElementKind::Package
+                    | sysml_model::ElementKind::PartDef
+                    | sysml_model::ElementKind::RequirementDef
+                    | sysml_model::ElementKind::UseCaseDef
+            )
+        {
             continue;
         }
-        let mut counts: HashMap<(String, String), usize> = HashMap::new();
+        // A graph member's primary name and declared short name are both names by
+        // which resolution can address it. Keep these semantic identifier facts
+        // distinct from presentation labels, and only compare members in the
+        // established kind-specific distinguishability domain. The graph does
+        // not yet publish a canonical cross-category distinguishability fact.
+        let mut members_by_identifier: BTreeMap<(String, String), Vec<&SemanticNode>> =
+            BTreeMap::new();
         for child in graph.children_of(node) {
             if matches!(
                 child.element_kind,
@@ -139,33 +147,66 @@ fn collect_duplicate_namespace_members(
             {
                 continue;
             }
-            if child.name.trim().is_empty() || child.name.starts_with('_') {
+            if is_synthetic(child) || child.name.trim().is_empty() || child.name.starts_with('_') {
                 continue;
             }
             if child.element_kind == sysml_model::ElementKind::Alias {
                 continue;
             }
-            *counts
-                .entry((child.name.clone(), child.element_kind.as_str().to_string()))
-                .or_default() += 1;
+            let kind = child.element_kind.as_str().to_string();
+            members_by_identifier
+                .entry((child.name.clone(), kind.clone()))
+                .or_default()
+                .push(child);
+            if let Some(short_name) = child
+                .attributes
+                .get("shortName")
+                .and_then(serde_json::Value::as_str)
+                .filter(|short_name| !short_name.trim().is_empty() && *short_name != child.name)
+            {
+                members_by_identifier
+                    .entry((short_name.to_string(), kind))
+                    .or_default()
+                    .push(child);
+            }
         }
-        for ((name, kind), count) in counts {
-            if count < 2 {
+        for ((name, kind), mut members) in members_by_identifier {
+            if members.len() < 2 {
                 continue;
             }
-            let key = format!("{}|{}|{}|{}", node.id.qualified_name, name, kind, count);
+            members.sort_by(|left, right| {
+                (
+                    left.range.start.line,
+                    left.range.start.character,
+                    left.range.end.line,
+                    left.range.end.character,
+                )
+                    .cmp(&(
+                        right.range.start.line,
+                        right.range.start.character,
+                        right.range.end.line,
+                        right.range.end.character,
+                    ))
+                    .then_with(|| left.id.uri.as_str().cmp(right.id.uri.as_str()))
+                    .then_with(|| left.id.qualified_name.cmp(&right.id.qualified_name))
+            });
+            let key = format!("{}|{}|{}", node.id.qualified_name, name, kind);
             if !seen.insert(key) {
                 continue;
             }
+            let duplicate = members[1];
             diagnostics.push(diag(
                 uri,
-                diagnostic_range(graph, node, None),
+                diagnostic_range(graph, duplicate, None),
                 DiagnosticSeverity::Warning,
                 "semantic",
                 "duplicate_namespace_member",
                 format!(
                     "Namespace '{}' declares '{}' ({}) {} times; member names must be unique within a namespace.",
-                    node.name, name, kind, count
+                    node.name,
+                    name,
+                    kind,
+                    members.len()
                 ),
             ));
         }
