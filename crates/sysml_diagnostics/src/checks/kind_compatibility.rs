@@ -5,8 +5,8 @@ use url::Url;
 use crate::helpers::{
     attribute_value_is_string_literal, declared_specializes_refs, declared_type_ref, diag,
     diagnostic_range, is_builtin_type_ref, is_synthetic, multiplicity_issue_message,
-    normalize_declared_type_ref, parse_non_negative_bound, reference_token_range,
-    resolves_to_enum_def, unresolved_type_diagnostic_range,
+    normalize_declared_type_ref, parse_non_negative_bound, resolves_to_enum_def,
+    unresolved_type_diagnostic_range,
 };
 use crate::kind_rules::{
     allowed_subset_redefine_target_kinds, allowed_typing_target_kinds,
@@ -21,7 +21,8 @@ use sysml_model::semantic::kinds::{
 };
 use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
 use sysml_model::{
-    resolve_inherited_member_via_type, resolve_type_reference_targets, ResolveResult, SemanticGraph,
+    resolve_inherited_member_via_type, resolve_type_reference_targets, RelationshipKind,
+    ResolveResult, SemanticGraph,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -366,33 +367,6 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                                     }
                                 }
                             }
-                            if let (Some(child_type), Some(parent_type)) =
-                                (declared_type_ref(node), declared_type_ref(target))
-                            {
-                                let child_norm = normalize_declared_type_ref(child_type);
-                                let parent_norm = normalize_declared_type_ref(parent_type);
-                                if !child_norm.is_empty()
-                                    && !parent_norm.is_empty()
-                                    && child_norm != parent_norm
-                                    && !is_builtin_type_ref(&child_norm)
-                                {
-                                    let key = format!("rtype|{}", node.id.qualified_name);
-                                    if seen.insert(key) {
-                                        diagnostics.push(diag(
-                                            uri,
-                                            reference_token_range(node, child_type)
-                                                .unwrap_or_else(|| diagnostic_range(graph, node, None)),
-                                            DiagnosticSeverity::Error,
-                                            "semantic",
-                                            "redefinition_type_incompatible",
-                                            format!(
-                                                "Feature '{}' type '{}' is not conformant with inherited type '{}'.",
-                                                node.name, child_norm, parent_norm
-                                            ),
-                                        ));
-                                    }
-                                }
-                            }
                         }
                     }
                 }
@@ -416,6 +390,57 @@ pub(crate) fn collect_kind_compatibility_diagnostics(
                             ),
                         ));
                     }
+                }
+            }
+        }
+
+        if node
+            .declared_facts
+            .feature_properties
+            .as_ref()
+            .is_some_and(|properties| properties.is_derived)
+        {
+            continue;
+        }
+        for relationship_kind in [
+            RelationshipKind::Redefinition,
+            RelationshipKind::Subsetting,
+            RelationshipKind::ReferenceSubsetting,
+            RelationshipKind::CrossSubsetting,
+        ] {
+            for target in graph.outgoing_targets_by_kind(node, relationship_kind.clone()) {
+                if graph.feature_typing_conforms(node, target) {
+                    continue;
+                }
+                let (code, relationship) = match relationship_kind {
+                    RelationshipKind::Redefinition => {
+                        ("redefinition_type_incompatible", "redefined")
+                    }
+                    RelationshipKind::Subsetting => ("subsetting_type_incompatible", "subsetted"),
+                    RelationshipKind::ReferenceSubsetting => {
+                        ("subsetting_type_incompatible", "reference-subsetted")
+                    }
+                    RelationshipKind::CrossSubsetting => {
+                        ("subsetting_type_incompatible", "cross-subsetted")
+                    }
+                    _ => unreachable!("only type-conformance relationships are checked"),
+                };
+                let key = format!(
+                    "{code}|{}|{}",
+                    node.id.qualified_name, target.id.qualified_name
+                );
+                if seen.insert(key) {
+                    diagnostics.push(diag(
+                        uri,
+                        diagnostic_range(graph, node, Some(target)),
+                        DiagnosticSeverity::Error,
+                        "semantic",
+                        code,
+                        format!(
+                            "Feature '{}' has types that do not conform to {} feature '{}'.",
+                            node.name, relationship, target.name
+                        ),
+                    ));
                 }
             }
         }

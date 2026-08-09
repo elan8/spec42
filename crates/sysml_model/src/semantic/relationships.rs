@@ -139,16 +139,17 @@ fn specializes_refs_from_value(value: &serde_json::Value) -> Vec<String> {
     }
 }
 
-/// Resolve a `subsetsFeature` / `redefines` attribute value to a target node id.
+/// Resolve a subsetting-family attribute value to a target node id.
 /// Prefers a direct qualified-name hit, then inherited-member resolution via the owner.
 fn resolve_subsets_or_redefines_target(
     g: &SemanticGraph,
     owner: Option<&SemanticNode>,
+    source_id: &NodeId,
     attribute_value: &str,
 ) -> Option<NodeId> {
     let qualified = attribute_value.replace('.', "::");
     if let Some(node_ids) = g.node_ids_by_qualified_name.get(&qualified) {
-        if let Some(id) = node_ids.first() {
+        if let Some(id) = node_ids.iter().find(|id| **id != *source_id) {
             return Some(id.clone());
         }
     }
@@ -157,6 +158,15 @@ fn resolve_subsets_or_redefines_target(
         .split("::")
         .last()
         .unwrap_or(attribute_value);
+    let local_matches: Vec<NodeId> = g
+        .child_named(&owner.id, member)
+        .into_iter()
+        .filter(|candidate| candidate.id != *source_id)
+        .map(|candidate| candidate.id.clone())
+        .collect();
+    if local_matches.len() == 1 {
+        return local_matches.into_iter().next();
+    }
     match resolve_inherited_member_via_type(g, owner, member) {
         ResolveResult::Resolved(target_id) => Some(target_id),
         _ => None,
@@ -187,7 +197,9 @@ fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId
             .get(attribute_key)
             .and_then(|value| value.as_str())
         {
-            if let Some(target_id) = resolve_subsets_or_redefines_target(g, owner.as_ref(), attr) {
+            if let Some(target_id) =
+                resolve_subsets_or_redefines_target(g, owner.as_ref(), node_id, attr)
+            {
                 add_semantic_edge_once(g, node_id, &target_id, SemanticEdge::plain(kind));
             }
         }

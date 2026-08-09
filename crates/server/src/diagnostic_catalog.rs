@@ -319,6 +319,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "subsetting_type_incompatible",
+        severity: "error",
+        meaning: "A subsetting feature type is not conformant with the subsetted feature.",
+        typical_fix: "Use the subsetted feature type or a type that specializes it.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "redefinition_end_mismatch",
         severity: "warning",
         meaning: "A feature redefines an end feature but is not itself declared as an end.",
@@ -822,6 +829,7 @@ mod tests {
         ("redefinition_end_mismatch", "warning"),
         ("redefinition_direction_mismatch", "warning"),
         ("redefinition_type_incompatible", "error"),
+        ("subsetting_type_incompatible", "error"),
         ("satisfy_endpoint_prefers_usage", "warning"),
         ("satisfy_invalid_endpoint_kind", "warning"),
         ("send_payload_incompatible", "warning"),

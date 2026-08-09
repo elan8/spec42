@@ -1,6 +1,6 @@
 //! Petgraph-backed semantic graph and query API.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::{Arc, Mutex};
 
 use crate::semantic::text_span::{TextPosition, TextRange};
@@ -752,6 +752,74 @@ impl SemanticGraphData {
             }
         }
         targets
+    }
+
+    /// Returns whether `specific` is identical to, or specializes, `general`.
+    ///
+    /// This follows only resolved `Specializes` relationships.  Callers that
+    /// need type conformance must use this graph fact rather than comparing
+    /// declared type text.
+    pub fn specializes_transitively(
+        &self,
+        specific: &SemanticNode,
+        general: &SemanticNode,
+    ) -> bool {
+        if specific.id == general.id {
+            return true;
+        }
+
+        let mut seen = HashSet::new();
+        let mut pending: VecDeque<NodeId> = self
+            .outgoing_targets_by_kind(specific, RelationshipKind::Specializes)
+            .into_iter()
+            .map(|node| node.id.clone())
+            .collect();
+
+        while let Some(current_id) = pending.pop_front() {
+            if !seen.insert(current_id.clone()) {
+                continue;
+            }
+            if current_id == general.id {
+                return true;
+            }
+            let Some(current) = self.get_node(&current_id) else {
+                continue;
+            };
+            pending.extend(
+                self.outgoing_targets_by_kind(current, RelationshipKind::Specializes)
+                    .into_iter()
+                    .map(|node| node.id.clone()),
+            );
+        }
+
+        false
+    }
+
+    /// Returns whether every resolved type of `specific_feature` conforms to
+    /// the corresponding resolved type of `general_feature`.
+    ///
+    /// An untyped feature inherits the other feature's typing, so it does not
+    /// violate this check.  For each type of the general feature, at least one
+    /// type of the specific feature must be identical to it or specialize it.
+    pub fn feature_typing_conforms(
+        &self,
+        specific_feature: &SemanticNode,
+        general_feature: &SemanticNode,
+    ) -> bool {
+        let specific_types =
+            self.outgoing_targets_by_kind(specific_feature, RelationshipKind::Typing);
+        let general_types =
+            self.outgoing_targets_by_kind(general_feature, RelationshipKind::Typing);
+
+        if specific_types.is_empty() || general_types.is_empty() {
+            return true;
+        }
+
+        general_types.iter().all(|general_type| {
+            specific_types
+                .iter()
+                .any(|specific_type| self.specializes_transitively(specific_type, general_type))
+        })
     }
 
     /// Returns source nodes that have typing/specializes edges to the given node.

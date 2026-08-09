@@ -140,6 +140,7 @@ Spec areas: 7.6, 8.2.2.6, 8.4.2.
 - Done: `unresolved_redefines_target` — redefines target does not resolve on specializing owners.
 - Done: `redefinition_multiplicity_widened` — redefinition loosens inherited multiplicity.
 - Done: `redefinition_type_incompatible` — redefinition type/value not conformant with inherited feature.
+- Done: `subsetting_type_incompatible` — subsetting feature type not conformant with subsetted feature.
 - Done: `specialization_cycle` — specializes chain contains a cycle.
 
 ### P1: expressions, values, units, and multiplicity
