@@ -230,7 +230,7 @@ Tracked limitations (`S42-LIM-*`) addressed in this cycle:
 
 - `S42-LIM-001`: cross-package `verify requirement` resolves via imports (`requirement_body.rs`, `relationships.rs`).
 - `S42-LIM-002`: `then done` succession accepts `verdict` endpoints (`behavior_conformance.rs`).
-- `S42-LIM-004`: `VerdictKind::pass` evaluates to `analysisEvaluationStatus = ok` (`evaluation/mod.rs`).
+- `S42-LIM-004`: `VerdictKind::pass` publishes `EvaluationStatus::Ok` through the canonical typed analysis fact (`evaluation/mod.rs`).
 - `S42-LIM-007`: named `transition … first source then target` no longer counts as initial (`sysml-v2-parser` + `state.rs`).
 - `S42-LIM-008`: cyclic state machines suppress `missing_final_state` guidance (`behavior_conformance.rs`).
 - `S42-LIM-009`: bundled `MonetaryUnits` indexed for `[EUR]` (`evaluation/units.rs`).

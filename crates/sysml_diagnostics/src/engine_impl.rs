@@ -539,21 +539,14 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
             node.element_kind,
             sysml_model::ElementKind::ConstraintDef | sysml_model::ElementKind::CalcDef
         );
-        if let Some(status) = node
-            .attributes
-            .get("analysisEvaluationStatus")
-            .and_then(|value| value.as_str())
+        if let Some(analysis) = graph
+            .evaluation_facts_for(node)
+            .and_then(|facts| facts.analysis.as_ref())
         {
             if is_analysis_template_def {
                 continue;
             }
-            if status == "failed_constraint"
-                || node
-                    .attributes
-                    .get("analysisConstraintPassed")
-                    .and_then(|value| value.as_bool())
-                    == Some(false)
-            {
+            if analysis.passed == Some(false) {
                 diagnostics.push(diag(
                     uri,
                     diagnostic_range(graph, node, None),
@@ -565,11 +558,14 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
                         node.name
                     ),
                 ));
-            } else if status != "ok" && status != "incomplete" {
-                let detail = node
-                    .attributes
-                    .get("analysisEvaluationError")
-                    .and_then(|value| value.as_str())
+            } else if !matches!(
+                analysis.expression.status,
+                sysml_model::EvaluationStatus::Ok | sysml_model::EvaluationStatus::Incomplete
+            ) {
+                let detail = analysis
+                    .expression
+                    .error
+                    .as_deref()
                     .unwrap_or("analysis expression could not be evaluated");
                 diagnostics.push(diag(
                     uri,

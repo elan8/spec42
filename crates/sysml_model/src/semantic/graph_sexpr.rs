@@ -362,7 +362,7 @@ fn render_evaluation_facts(graph: &SemanticGraph, node: &SemanticNode, output: &
             atom(expression.status.as_str())
         );
         if let Some(value) = &expression.value {
-            let _ = write!(output, " (value {})", atom(&render_evaluated_value(value)));
+            let _ = write!(output, " (value {})", render_evaluated_value(value));
         }
         if let Some(unit) = &expression.unit {
             let _ = write!(output, " (unit {})", atom(unit));
@@ -385,7 +385,7 @@ fn render_evaluation_facts(graph: &SemanticGraph, node: &SemanticNode, output: &
             let _ = write!(
                 output,
                 " (computed-value {})",
-                atom(&render_evaluated_value(value))
+                render_evaluated_value(value)
             );
         }
         if let Some(unit) = &analysis.computed_unit {
@@ -585,10 +585,10 @@ fn render_evaluated_value(value: &crate::semantic::model::EvaluatedValue) -> Str
     use crate::semantic::model::EvaluatedValue;
 
     match value {
-        EvaluatedValue::Integer(value) => value.to_string(),
-        EvaluatedValue::Real(value) => value.to_string(),
-        EvaluatedValue::Boolean(value) => value.to_string(),
-        EvaluatedValue::String(value) => serde_json::to_string(value).expect("strings serialize"),
+        EvaluatedValue::Integer(value) => format!("(integer {value})"),
+        EvaluatedValue::Real(value) => format!("(real {value})"),
+        EvaluatedValue::Boolean(value) => format!("(boolean {value})"),
+        EvaluatedValue::String(value) => format!("(string {})", atom(value)),
     }
 }
 
@@ -679,9 +679,10 @@ fn render_declared_literal(literal: &crate::semantic::model::DeclaredLiteral) ->
     use crate::semantic::model::DeclaredLiteral;
 
     match literal {
-        DeclaredLiteral::Integer(value) => value.to_string(),
-        DeclaredLiteral::Real(value) | DeclaredLiteral::String(value) => atom(value),
-        DeclaredLiteral::Boolean(value) => value.to_string(),
+        DeclaredLiteral::Integer(value) => format!("(integer {value})"),
+        DeclaredLiteral::Real(value) => format!("(real {})", atom(value)),
+        DeclaredLiteral::String(value) => format!("(string {})", atom(value)),
+        DeclaredLiteral::Boolean(value) => format!("(boolean {value})"),
     }
 }
 
@@ -731,7 +732,9 @@ fn write_indent(output: &mut String, depth: usize) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::semantic::model::{DeclaredSemanticFacts, ElementKind, NodeId};
+    use crate::semantic::model::{
+        DeclaredLiteral, DeclaredSemanticFacts, ElementKind, EvaluatedValue, NodeId,
+    };
     use crate::semantic::pipeline::{build_and_link_graph, patch_graph_for_document};
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::text_span::{TextPosition, TextRange};
@@ -747,6 +750,30 @@ mod tests {
             None,
         )
         .expect("memory document")
+    }
+
+    #[test]
+    fn renders_declared_and_evaluated_scalars_with_structural_type_tags() {
+        assert_eq!(
+            render_declared_literal(&DeclaredLiteral::Integer(1)),
+            "(integer 1)"
+        );
+        assert_eq!(
+            render_declared_literal(&DeclaredLiteral::Real("1.0".into())),
+            r#"(real "1.0")"#
+        );
+        assert_eq!(
+            render_declared_literal(&DeclaredLiteral::String("1.0".into())),
+            r#"(string "1.0")"#
+        );
+        assert_eq!(
+            render_evaluated_value(&EvaluatedValue::Boolean(true)),
+            "(boolean true)"
+        );
+        assert_eq!(
+            render_evaluated_value(&EvaluatedValue::String("ok".into())),
+            r#"(string "ok")"#
+        );
     }
 
     #[test]

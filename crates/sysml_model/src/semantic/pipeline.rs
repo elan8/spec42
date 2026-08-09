@@ -280,6 +280,10 @@ pub fn evaluate_workspace_graph(graph: &mut SemanticGraph) {
 
 /// Link, prepare analysis context, and resolve pending relationships after graph mutation.
 pub fn finalize_workspace_graph(graph: &mut SemanticGraph) {
+    // Linking and effective-fact construction can change an expression's resolved meaning.
+    // A deferred (`evaluate: false`) publication must therefore expose NotRun, never facts from
+    // the prior graph revision.
+    graph.invalidate_evaluation_facts();
     link_workspace_relationships(graph);
     prepare_analysis_evaluation_context(graph);
     resolve_workspace_pending_relationships(graph);

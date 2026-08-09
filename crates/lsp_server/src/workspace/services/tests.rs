@@ -25,6 +25,13 @@ fn find_attribute_node<'a>(
         .expect("attribute node")
 }
 
+fn expression<'a>(
+    state: &'a ServerState,
+    node: &crate::semantic::SemanticNode,
+) -> sysml_model::ExpressionEvaluationQuery<'a> {
+    state.semantic_graph.expression_evaluation_for(node)
+}
+
 fn register_units_library_document(state: &mut ServerState) -> Url {
     const UNITS_CATALOG: &str = r#"
             package Units {
@@ -125,9 +132,8 @@ fn fast_apply_updates_document_without_running_workspace_evaluation() {
         "package Demo { part def Rocket { attribute mass = 1 + 1; } }".to_string(),
     );
     let mass = find_attribute_node(&state, &uri, "mass");
-    assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(2))
+    assert!(
+        matches!(expression(&state, mass), sysml_model::ExpressionEvaluationQuery::Result(result) if result.value == Some(sysml_model::EvaluatedValue::Integer(2)))
     );
 
     let warnings = apply_document_changes_fast(
@@ -148,10 +154,10 @@ fn fast_apply_updates_document_without_running_workspace_evaluation() {
         .content
         .contains("1 + 2"));
     let mass = find_attribute_node(&state, &uri, "mass");
-    assert!(
-        !mass.attributes.contains_key("evaluatedValue"),
-        "fast path should defer expression evaluation until async relink"
-    );
+    assert!(matches!(
+        expression(&state, mass),
+        sysml_model::ExpressionEvaluationQuery::NotRun
+    ));
 }
 
 #[test]
@@ -242,7 +248,7 @@ fn rebuild_all_document_links_relinks_public_reexport_chains_after_dependency_in
 }
 
 #[test]
-fn store_document_text_persists_evaluated_attributes() {
+fn store_document_text_publishes_typed_evaluation() {
     let uri = fixture_uri();
     let mut state = ServerState::default();
     let warning = store_document_text(
@@ -253,22 +259,13 @@ fn store_document_text_persists_evaluated_attributes() {
     assert!(warning.is_none());
 
     let mass = find_attribute_node(&state, &uri, "mass");
-    assert_eq!(
-        mass.attributes.get("evaluationStatus"),
-        Some(&serde_json::json!("ok"))
-    );
-    assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(3))
-    );
     assert!(
-        !mass.attributes.contains_key("evaluatedUnit"),
-        "phase-1 arithmetic without unit should not emit evaluatedUnit"
+        matches!(expression(&state, mass), sysml_model::ExpressionEvaluationQuery::Result(result) if result.status == sysml_model::EvaluationStatus::Ok && result.value == Some(sysml_model::EvaluatedValue::Integer(3)) && result.unit.is_none())
     );
 }
 
 #[test]
-fn rebuild_all_document_links_recomputes_evaluated_attributes() {
+fn rebuild_all_document_links_recomputes_typed_evaluation() {
     let uri = fixture_uri();
     let mut state = ServerState::default();
     store_document_text(
@@ -280,13 +277,8 @@ fn rebuild_all_document_links_recomputes_evaluated_attributes() {
     rebuild_all_document_links(&mut state);
 
     let mass = find_attribute_node(&state, &uri, "mass");
-    assert_eq!(
-        mass.attributes.get("evaluationStatus"),
-        Some(&serde_json::json!("ok"))
-    );
-    assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(4))
+    assert!(
+        matches!(expression(&state, mass), sysml_model::ExpressionEvaluationQuery::Result(result) if result.value == Some(sysml_model::EvaluatedValue::Integer(4)))
     );
 }
 
@@ -303,13 +295,8 @@ fn store_document_text_resolves_referenced_attributes() {
     assert!(warning.is_none());
 
     let mass = find_attribute_node(&state, &uri, "mass");
-    assert_eq!(
-        mass.attributes.get("evaluationStatus"),
-        Some(&serde_json::json!("ok"))
-    );
-    assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(15))
+    assert!(
+        matches!(expression(&state, mass), sysml_model::ExpressionEvaluationQuery::Result(result) if result.value == Some(sysml_model::EvaluatedValue::Integer(15)))
     );
 }
 
@@ -327,18 +314,13 @@ fn rebuild_all_document_links_recomputes_referenced_attributes() {
     rebuild_all_document_links(&mut state);
 
     let mass = find_attribute_node(&state, &uri, "mass");
-    assert_eq!(
-        mass.attributes.get("evaluationStatus"),
-        Some(&serde_json::json!("ok"))
-    );
-    assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(25))
+    assert!(
+        matches!(expression(&state, mass), sysml_model::ExpressionEvaluationQuery::Result(result) if result.value == Some(sysml_model::EvaluatedValue::Integer(25)))
     );
 }
 
 #[test]
-fn store_document_text_evaluates_unit_conversions() {
+fn store_document_text_reports_unit_evaluation_unsupported_without_typed_unit_facts() {
     let mut state = ServerState::default();
     let _units_uri = register_units_library_document(&mut state);
     let uri = fixture_uri();
@@ -351,29 +333,13 @@ fn store_document_text_evaluates_unit_conversions() {
     assert!(warning.is_none());
 
     let distance = find_attribute_node(&state, &uri, "distance");
-    assert_eq!(
-        distance.attributes.get("evaluationStatus"),
-        Some(&serde_json::json!("ok")),
-        "distance attributes: {:#?}",
-        distance.attributes
-    );
-    assert_eq!(
-        distance.attributes.get("evaluatedUnit"),
-        Some(&serde_json::json!("m"))
-    );
-    let value = distance
-        .attributes
-        .get("evaluatedValue")
-        .and_then(serde_json::Value::as_f64)
-        .expect("evaluated numeric value");
     assert!(
-        (value - 1.8048).abs() < 1e-9,
-        "expected 1.8048 m after conversion, got {value}"
+        matches!(expression(&state, distance), sysml_model::ExpressionEvaluationQuery::Result(result) if result.status == sysml_model::EvaluationStatus::Unsupported && result.value.is_none() && result.unit.is_none())
     );
 }
 
 #[test]
-fn rebuild_all_document_links_recomputes_unit_conversions() {
+fn rebuild_all_document_links_keeps_unit_evaluation_explicitly_unsupported() {
     let mut state = ServerState::default();
     let _units_uri = register_units_library_document(&mut state);
     let uri = fixture_uri();
@@ -386,23 +352,7 @@ fn rebuild_all_document_links_recomputes_unit_conversions() {
     rebuild_all_document_links(&mut state);
 
     let distance = find_attribute_node(&state, &uri, "distance");
-    assert_eq!(
-        distance.attributes.get("evaluationStatus"),
-        Some(&serde_json::json!("ok")),
-        "distance attributes after rebuild: {:#?}",
-        distance.attributes
-    );
-    assert_eq!(
-        distance.attributes.get("evaluatedUnit"),
-        Some(&serde_json::json!("m"))
-    );
-    let value = distance
-        .attributes
-        .get("evaluatedValue")
-        .and_then(serde_json::Value::as_f64)
-        .expect("evaluated numeric value");
     assert!(
-        (value - 1.3048).abs() < 1e-9,
-        "expected 1.3048 m after rebuild conversion, got {value}"
+        matches!(expression(&state, distance), sysml_model::ExpressionEvaluationQuery::Result(result) if result.status == sysml_model::EvaluationStatus::Unsupported && result.value.is_none() && result.unit.is_none())
     );
 }

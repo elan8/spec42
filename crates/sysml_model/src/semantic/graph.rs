@@ -14,10 +14,11 @@ use url::Url;
 use crate::semantic::model::{
     node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
     DeclaredMembershipFacts, DerivedRelationshipResolution, EffectiveFeatureOwnership,
-    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
-    ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
-    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule,
-    MembershipVisibilityProvenance, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
+    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, EvaluationPublicationState,
+    ExpressionEvaluationQuery, ExpressionResultId, ExpressionResultRole,
+    FeatureOwnershipProvenance, ImpliedFeatureOwnership, ImpliedFeatureValueBinding,
+    ImpliedMultiplicity, ImpliedRelationshipRule, MembershipVisibilityProvenance,
+    NodeEvaluationFacts, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
     SemanticNode, VisibilityKind,
 };
 
@@ -82,6 +83,14 @@ pub struct SemanticGraphData {
     #[serde(default)]
     pub derived_relationship_resolution_by_source_id:
         HashMap<NodeId, DerivedRelationshipResolution>,
+    /// Authoritative results from the evaluation phase. Interpret absence through
+    /// `evaluation_publication`: it is `NotRun` before the barrier and `NotApplicable` after.
+    #[serde(default)]
+    pub evaluation_facts_by_node_id: HashMap<NodeId, NodeEvaluationFacts>,
+    /// Completeness marker for `evaluation_facts_by_node_id`. A map with no entries is only
+    /// `NotApplicable` after this barrier is complete; otherwise it is explicitly `NotRun`.
+    #[serde(default)]
+    pub evaluation_publication: EvaluationPublicationState,
     #[serde(skip)]
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
     #[serde(skip)]
@@ -135,6 +144,8 @@ impl Clone for SemanticGraphData {
             derived_relationship_resolution_by_source_id: self
                 .derived_relationship_resolution_by_source_id
                 .clone(),
+            evaluation_facts_by_node_id: self.evaluation_facts_by_node_id.clone(),
+            evaluation_publication: self.evaluation_publication,
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -355,6 +366,28 @@ impl SemanticGraph {
                 .insert(source_id, resolution);
         }
         self.invalidate_query_indexes();
+    }
+
+    /// Returns the raw evaluation facts published for `node`. Call
+    /// [`Self::expression_evaluation_for`] when the NotRun/NotApplicable distinction matters.
+    pub fn evaluation_facts_for(&self, node: &SemanticNode) -> Option<&NodeEvaluationFacts> {
+        self.evaluation_facts_by_node_id.get(&node.id)
+    }
+
+    pub fn expression_evaluation_for(&self, node: &SemanticNode) -> ExpressionEvaluationQuery<'_> {
+        if self.evaluation_publication == EvaluationPublicationState::NotRun {
+            return ExpressionEvaluationQuery::NotRun;
+        }
+        self.evaluation_facts_for(node)
+            .and_then(|facts| facts.expression.as_ref())
+            .map(ExpressionEvaluationQuery::Result)
+            .unwrap_or(ExpressionEvaluationQuery::NotApplicable)
+    }
+
+    /// Invalidates the whole atomic evaluation publication after a semantic mutation.
+    pub fn invalidate_evaluation_facts(&mut self) {
+        self.evaluation_facts_by_node_id.clear();
+        self.evaluation_publication = EvaluationPublicationState::NotRun;
     }
 
     /// Returns a feature's ownership after applying its parser-backed modifier or the one
@@ -661,6 +694,8 @@ impl SemanticGraphData {
             pending_declared_membership_facts: HashMap::new(),
             effective_facts_by_node_id: HashMap::new(),
             derived_relationship_resolution_by_source_id: HashMap::new(),
+            evaluation_facts_by_node_id: HashMap::new(),
+            evaluation_publication: EvaluationPublicationState::NotRun,
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -863,6 +898,8 @@ impl SemanticGraphData {
         }
         self.effective_facts_by_node_id.clear();
         self.derived_relationship_resolution_by_source_id.clear();
+        self.evaluation_facts_by_node_id.clear();
+        self.evaluation_publication = EvaluationPublicationState::NotRun;
         self.remove_recorded_cross_document_edges_for_uri(uri);
         self.invalidate_query_indexes();
         self.clear_import_lookup_cache();
@@ -894,6 +931,8 @@ impl SemanticGraphData {
     ) {
         self.effective_facts_by_node_id.clear();
         self.derived_relationship_resolution_by_source_id.clear();
+        self.evaluation_facts_by_node_id.clear();
+        self.evaluation_publication = EvaluationPublicationState::NotRun;
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships

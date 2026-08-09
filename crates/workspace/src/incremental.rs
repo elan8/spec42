@@ -731,7 +731,7 @@ package Architecture {
         assert!(metrics.parse_ms >= 1);
     }
 
-    /// Same parity check, but for the evaluated-attribute side effect specifically — the
+    /// Same parity check, but for the canonical evaluation publication specifically — the
     /// exact class of bug (`evaluate_expressions` silently skipped) Tier 2 Phase 3b Steps
     /// 1-4 found in the two hand-written pipelines this engine is designed to replace.
     #[test]
@@ -758,8 +758,13 @@ package Architecture {
             .find(|node| node.name == "mass")
             .expect("mass attribute node");
         assert_eq!(
-            mass.attributes.get("evaluatedValue"),
-            Some(&serde_json::json!(3))
+            graph.expression_evaluation_for(mass),
+            sysml_model::ExpressionEvaluationQuery::Result(&sysml_model::ExpressionEvaluation {
+                status: sysml_model::EvaluationStatus::Ok,
+                value: Some(sysml_model::EvaluatedValue::Integer(3)),
+                unit: None,
+                error: None,
+            })
         );
     }
 

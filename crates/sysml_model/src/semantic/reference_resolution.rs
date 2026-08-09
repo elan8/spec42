@@ -505,7 +505,7 @@ pub fn resolve_expose_target(
 mod tests {
     use url::Url;
 
-    use crate::semantic::model::{ElementKind, RelationshipKind};
+    use crate::semantic::model::{ElementKind, EvaluationStatus, RelationshipKind};
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::workspace_graph::build_semantic_graph_from_documents;
 
@@ -911,11 +911,11 @@ mod tests {
             })
             .expect("analysis");
         assert_eq!(
-            analysis
-                .attributes
-                .get("analysisEvaluationStatus")
-                .and_then(|value| value.as_str()),
-            Some("ok"),
+            graph
+                .evaluation_facts_for(analysis)
+                .and_then(|facts| facts.analysis.as_ref())
+                .map(|evaluation| evaluation.expression.status),
+            Some(EvaluationStatus::Ok),
             "specialized :>> attribute values should resolve for analysis roll-up"
         );
     }

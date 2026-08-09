@@ -1,4 +1,4 @@
-﻿//! sysml/featureInspector request parsing and response building.
+//! sysml/featureInspector request parsing and response building.
 
 use std::collections::{HashSet, VecDeque};
 
@@ -10,11 +10,12 @@ use crate::common::util;
 use crate::semantic::{RelationshipKind, SemanticGraph, SemanticNode};
 use crate::views::dto::{
     SysmlFeatureInspectorElementDto, SysmlFeatureInspectorElementRefDto,
+    SysmlFeatureInspectorEvaluationDto, SysmlFeatureInspectorEvaluationStatusDto,
     SysmlFeatureInspectorInheritedFeatureDto, SysmlFeatureInspectorParamsDto,
     SysmlFeatureInspectorRelationshipDto, SysmlFeatureInspectorResolutionDto,
     SysmlFeatureInspectorResultDto, SysmlFeatureInspectorSelectionDto,
 };
-use sysml_model::{range_to_dto, ElementKind, PositionDto};
+use sysml_model::{range_to_dto, ElementKind, ExpressionEvaluationQuery, PositionDto};
 
 const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
     "partType",
@@ -43,6 +44,152 @@ const TYPING_ATTRIBUTE_KEYS: &[&str] = &[
     "metadataType",
     "keywordType",
 ];
+
+/// The inspector is a JSON transport boundary. Semantic evaluation keeps this closed scalar
+/// representation in `sysml_model`; conversion happens only while assembling this DTO.
+fn evaluated_value_to_json(value: &sysml_model::EvaluatedValue) -> serde_json::Value {
+    match value {
+        sysml_model::EvaluatedValue::Integer(value) => serde_json::Value::Number((*value).into()),
+        sysml_model::EvaluatedValue::Real(value) => serde_json::Number::from_f64(*value)
+            .map(serde_json::Value::Number)
+            // Preserve an invalid externally-constructed scalar visibly instead of presenting it
+            // as a successful JSON number. The evaluator itself only publishes finite values.
+            .unwrap_or_else(|| serde_json::Value::String(value.to_string())),
+        sysml_model::EvaluatedValue::Boolean(value) => serde_json::Value::Bool(*value),
+        sysml_model::EvaluatedValue::String(value) => serde_json::Value::String(value.clone()),
+    }
+}
+
+fn evaluation_status(
+    status: sysml_model::EvaluationStatus,
+) -> SysmlFeatureInspectorEvaluationStatusDto {
+    match status {
+        sysml_model::EvaluationStatus::Ok => SysmlFeatureInspectorEvaluationStatusDto::Ok,
+        sysml_model::EvaluationStatus::Unresolved => {
+            SysmlFeatureInspectorEvaluationStatusDto::Unresolved
+        }
+        sysml_model::EvaluationStatus::Ambiguous => {
+            SysmlFeatureInspectorEvaluationStatusDto::Ambiguous
+        }
+        sysml_model::EvaluationStatus::Malformed => {
+            SysmlFeatureInspectorEvaluationStatusDto::Malformed
+        }
+        sysml_model::EvaluationStatus::Incomplete => {
+            SysmlFeatureInspectorEvaluationStatusDto::Incomplete
+        }
+        sysml_model::EvaluationStatus::TypeError => {
+            SysmlFeatureInspectorEvaluationStatusDto::TypeError
+        }
+        sysml_model::EvaluationStatus::DivByZero => {
+            SysmlFeatureInspectorEvaluationStatusDto::DivByZero
+        }
+        sysml_model::EvaluationStatus::Unsupported => {
+            SysmlFeatureInspectorEvaluationStatusDto::Unsupported
+        }
+        sysml_model::EvaluationStatus::Cycle => SysmlFeatureInspectorEvaluationStatusDto::Cycle,
+    }
+}
+
+fn evaluation(
+    semantic_graph: &SemanticGraph,
+    node: &SemanticNode,
+) -> SysmlFeatureInspectorEvaluationDto {
+    match semantic_graph.expression_evaluation_for(node) {
+        ExpressionEvaluationQuery::NotRun => SysmlFeatureInspectorEvaluationDto::NotRun,
+        ExpressionEvaluationQuery::NotApplicable => {
+            SysmlFeatureInspectorEvaluationDto::NotApplicable
+        }
+        ExpressionEvaluationQuery::Result(result) => {
+            let analysis = semantic_graph
+                .evaluation_facts_for(node)
+                .and_then(|facts| facts.analysis.as_ref());
+            SysmlFeatureInspectorEvaluationDto::Result {
+                status: evaluation_status(result.status),
+                value: result.value.as_ref().map(evaluated_value_to_json),
+                unit: result.unit.clone(),
+                error: result.error.clone(),
+                passed: analysis.and_then(|value| value.passed),
+                computed_value: analysis
+                    .and_then(|value| value.computed_value.as_ref())
+                    .map(evaluated_value_to_json),
+                computed_unit: analysis.and_then(|value| value.computed_unit.clone()),
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sysml_model::{
+        build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
+        SysmlDocumentSourceKind,
+    };
+
+    fn graph() -> (SemanticGraph, sysml_model::NodeId) {
+        let document = SysmlDocument::from_memory_path(
+            "inspector-evaluation",
+            "model.sysml",
+            "package Demo { attribute value = 1; part def Empty; }".into(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
+        let id = graph
+            .node_ids_by_qualified_name
+            .get("Demo::value")
+            .and_then(|ids| ids.first())
+            .cloned()
+            .expect("value");
+        (graph, id)
+    }
+
+    #[test]
+    fn inspector_evaluation_is_not_run_before_phase() {
+        let (mut graph, id) = graph();
+        graph.invalidate_evaluation_facts();
+        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+        assert!(matches!(
+            dto.evaluation,
+            SysmlFeatureInspectorEvaluationDto::NotRun
+        ));
+    }
+
+    #[test]
+    fn inspector_evaluation_is_not_applicable_after_phase() {
+        let (mut graph, _) = graph();
+        evaluate_expressions(&mut graph);
+        let id = graph
+            .node_ids_by_qualified_name
+            .get("Demo::Empty")
+            .and_then(|ids| ids.first())
+            .cloned()
+            .expect("empty");
+        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+        assert!(matches!(
+            dto.evaluation,
+            SysmlFeatureInspectorEvaluationDto::NotApplicable
+        ));
+    }
+
+    #[test]
+    fn inspector_evaluation_projects_completed_typed_result_at_transport_boundary() {
+        let (mut graph, id) = graph();
+        evaluate_expressions(&mut graph);
+        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+        assert!(matches!(
+            dto.evaluation,
+            SysmlFeatureInspectorEvaluationDto::Result {
+                status: SysmlFeatureInspectorEvaluationStatusDto::Ok,
+                value: Some(serde_json::Value::Number(ref value)),
+                unit: None,
+                ..
+            } if value.as_i64() == Some(1)
+        ));
+    }
+}
 
 pub fn parse_sysml_feature_inspector_params(v: &serde_json::Value) -> Result<(Url, Position)> {
     // vscode-jsonrpc versions can encode `sendRequest(method, params, undefined)`
@@ -384,11 +531,10 @@ fn feature_modifiers(semantic_graph: &SemanticGraph, node: &SemanticNode) -> Vec
 fn declared_expression_text(expression: &sysml_model::DeclaredExpression) -> Option<String> {
     if let Some(literal) = expression.literal.as_ref() {
         return match literal {
-            serde_json::Value::String(value) => Some(value.clone()),
-            serde_json::Value::Null
-            | serde_json::Value::Array(_)
-            | serde_json::Value::Object(_) => None,
-            value => Some(value.to_string()),
+            sysml_model::DeclaredLiteral::Integer(value) => Some(value.to_string()),
+            sysml_model::DeclaredLiteral::Real(value)
+            | sysml_model::DeclaredLiteral::String(value) => Some(value.clone()),
+            sysml_model::DeclaredLiteral::Boolean(value) => Some(value.to_string()),
         };
     }
     expression.reference.clone()
@@ -575,6 +721,7 @@ pub(crate) fn feature_inspector_element(
         direction,
         modifiers: feature_modifiers(semantic_graph, node),
         attributes: node.attributes.clone(),
+        evaluation: evaluation(semantic_graph, node),
         typing: resolution(has_typing_intent(node), typing_targets),
         effective_typing: resolution(
             has_typing_intent(node)

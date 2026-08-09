@@ -1,5 +1,15 @@
 use super::*;
-use crate::semantic::model::RelationshipKind;
+use crate::semantic::model::{
+    EvaluatedValue, EvaluationPublicationState, EvaluationStatus, ExpressionEvaluationQuery,
+    RelationshipKind, SemanticNode,
+};
+
+fn expression_value(graph: &SemanticGraph, node: &SemanticNode) -> Option<EvaluatedValue> {
+    match graph.expression_evaluation_for(node) {
+        ExpressionEvaluationQuery::Result(result) => result.value.clone(),
+        ExpressionEvaluationQuery::NotRun | ExpressionEvaluationQuery::NotApplicable => None,
+    }
+}
 
 fn parse(_uri: &Url, content: &str) -> sysml_v2_parser::RootNamespace {
     sysml_v2_parser::parse(content).expect("parse")
@@ -61,10 +71,14 @@ fn evaluate_false_skips_expression_evaluation() {
         .into_iter()
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
-    assert!(
-        !mass.attributes.contains_key("evaluatedValue"),
-        "evaluate: false should not populate evaluatedValue"
+    assert_eq!(
+        graph.evaluation_publication,
+        EvaluationPublicationState::NotRun
     );
+    assert!(matches!(
+        graph.expression_evaluation_for(mass),
+        ExpressionEvaluationQuery::NotRun
+    ));
 }
 
 #[test]
@@ -83,8 +97,12 @@ fn evaluate_true_populates_evaluated_value() {
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
     assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(3))
+        graph.evaluation_publication,
+        EvaluationPublicationState::Complete
+    );
+    assert_eq!(
+        expression_value(&graph, mass),
+        Some(EvaluatedValue::Integer(3))
     );
 }
 
@@ -120,11 +138,13 @@ fn full_and_incremental_typed_expression_evaluation_match() {
             .get("Demo::Capacity")
             .and_then(|ids| ids.first())
             .and_then(|id| graph.get_node(id))
-            .map(|node| {
+            .and_then(|node| graph.evaluation_facts_for(node))
+            .and_then(|facts| facts.analysis.as_ref())
+            .map(|analysis| {
                 (
-                    node.attributes.get("analysisEvaluationStatus").cloned(),
-                    node.attributes.get("analysisEvaluationValue").cloned(),
-                    node.attributes.get("analysisConstraintPassed").cloned(),
+                    analysis.expression.status,
+                    analysis.expression.value.clone(),
+                    analysis.passed,
                 )
             })
             .expect("capacity requirement")
@@ -134,16 +154,16 @@ fn full_and_incremental_typed_expression_evaluation_match() {
     assert_eq!(
         outcomes(&full),
         (
-            Some(serde_json::json!("ok")),
-            Some(serde_json::json!(true)),
-            Some(serde_json::json!(true)),
+            EvaluationStatus::Ok,
+            Some(EvaluatedValue::Boolean(true)),
+            Some(true),
         )
     );
 }
 
 /// Track C: `link_parsed_documents_parallel_from`'s `evaluate` parameter must skip
 /// expression evaluation (but still do structural relink/dependency-index work) when
-/// `false`, and populate `evaluatedValue` when `true` — the same contract
+/// `false`, and publish `NotRun` when `true` is deferred — the same contract
 /// `patch_graph_for_document`'s `evaluate` flag already has, now on the parallel full-build
 /// path `lsp_server`'s live-edit relink uses.
 #[test]
@@ -169,10 +189,10 @@ fn link_parsed_documents_parallel_from_respects_evaluate_flag() {
         .into_iter()
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
-    assert!(
-        !mass_no_eval.attributes.contains_key("evaluatedValue"),
-        "evaluate: false should not populate evaluatedValue"
-    );
+    assert!(matches!(
+        graph_no_eval.expression_evaluation_for(mass_no_eval),
+        ExpressionEvaluationQuery::NotRun
+    ));
 
     let (graph_eval, _) = link_parsed_documents_parallel_from(
         SemanticGraph::new(),
@@ -185,8 +205,8 @@ fn link_parsed_documents_parallel_from_respects_evaluate_flag() {
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
     assert_eq!(
-        mass_eval.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(3))
+        expression_value(&graph_eval, mass_eval),
+        Some(EvaluatedValue::Integer(3))
     );
 }
 
@@ -384,13 +404,12 @@ fn parallel_build_evaluates_expressions_like_sequential_build() {
             .graph
             .node_weights()
             .find(|node| node.name == "drivePowerW")
-            .and_then(|node| node.attributes.get("evaluatedValue"))
-            .cloned()
+            .and_then(|node| expression_value(graph, node))
     };
     let sequential_value = find_drive_power(&sequential_graph);
     let parallel_value = find_drive_power(&parallel_graph);
     assert_eq!(sequential_value, parallel_value);
-    assert_eq!(sequential_value, Some(serde_json::json!(28)));
+    assert_eq!(sequential_value, Some(EvaluatedValue::Integer(28)));
 }
 
 // Equivalence for the Tier 2 unified-incremental-engine Phase 4 extraction:

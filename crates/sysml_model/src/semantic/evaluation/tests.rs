@@ -286,8 +286,12 @@ fn production_consumers_cannot_reintroduce_retired_evaluation_attributes() {
     for source in production_sources {
         for retired_key in [
             "evaluatedValue",
+            "evaluatedUnit",
+            "evaluationStatus",
+            "evaluationError",
             "analysisEvaluationStatus",
             "analysisEvaluationValue",
+            "analysisEvaluationError",
             "analysisConstraintPassed",
             "analysisComputedValue",
             "analysisComputedUnit",

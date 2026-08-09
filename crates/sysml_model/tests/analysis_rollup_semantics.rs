@@ -215,19 +215,26 @@ fn cross_document_analysis_subject_relationship_resolves_without_pending_diagnos
 fn cross_document_analysis_evaluates_power_rollup() {
     let graph = build_two_document_graph();
     let analysis_qualified = "AnalysisCases::TotalPowerConsumptionAnalysis";
+    let analysis = graph
+        .node_ids_by_qualified_name
+        .get(analysis_qualified)
+        .and_then(|ids| ids.first())
+        .and_then(|id| graph.get_node(id))
+        .and_then(|node| graph.evaluation_facts_for(node))
+        .and_then(|facts| facts.analysis.as_ref());
     assert_eq!(
-        node_attr(&graph, analysis_qualified, "analysisEvaluationStatus").as_deref(),
-        Some("ok"),
+        analysis.map(|result| result.expression.status),
+        Some(sysml_model::EvaluationStatus::Ok),
         "analysis should evaluate successfully"
     );
     assert_eq!(
-        node_attr(&graph, analysis_qualified, "analysisComputedValue").as_deref(),
-        Some("54"),
+        analysis.and_then(|result| result.computed_value.as_ref()),
+        Some(&sysml_model::EvaluatedValue::Integer(54)),
         "expected 28+12+6+8 power roll-up"
     );
     assert_eq!(
-        node_attr(&graph, analysis_qualified, "analysisEvaluationValue").as_deref(),
-        Some("true"),
+        analysis.and_then(|result| result.expression.value.as_ref()),
+        Some(&sysml_model::EvaluatedValue::Boolean(true)),
         "comparison constraint should pass"
     );
     assert_eq!(

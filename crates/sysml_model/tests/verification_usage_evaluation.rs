@@ -1,5 +1,5 @@
 ﻿use sysml_model::{
-    build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
+    build_semantic_graph_from_documents, evaluate_expressions, EvaluationStatus, SysmlDocument,
     SysmlDocumentSourceKind,
 };
 
@@ -52,28 +52,15 @@ fn typed_verification_usage_inherits_return_expression() {
         build_semantic_graph_from_documents(&[library, consumer]).expect("semantic graph");
     evaluate_expressions(&mut graph);
 
-    let expression = graph
-        .node_ids_by_qualified_name
-        .get("VerificationCases::powerCheck")
-        .and_then(|ids| ids.first())
-        .and_then(|id| graph.get_node(id))
-        .and_then(|node| node.attributes.get("analysisExpression"))
-        .and_then(|value| value.as_str())
-        .unwrap_or_default();
-    assert!(
-        !expression.is_empty(),
-        "expected propagated verification return expression"
-    );
-
     let status = graph
         .node_ids_by_qualified_name
         .get("VerificationCases::powerCheck")
         .and_then(|ids| ids.first())
         .and_then(|id| graph.get_node(id))
-        .and_then(|node| node.attributes.get("analysisEvaluationStatus"))
-        .and_then(|value| value.as_str())
-        .unwrap_or_default();
-    assert_eq!(status, "ok");
+        .and_then(|node| graph.evaluation_facts_for(node))
+        .and_then(|facts| facts.analysis.as_ref())
+        .map(|analysis| analysis.expression.status);
+    assert_eq!(status, Some(EvaluationStatus::Ok));
 }
 
 #[test]
@@ -103,11 +90,12 @@ fn verification_return_verdict_kind_pass_evaluates_to_ok() {
         .get("Verification::verifyCleaningCoverage")
         .and_then(|ids| ids.first())
         .and_then(|id| graph.get_node(id))
-        .and_then(|node| node.attributes.get("analysisEvaluationStatus"))
-        .and_then(|value| value.as_str())
-        .unwrap_or_default();
+        .and_then(|node| graph.evaluation_facts_for(node))
+        .and_then(|facts| facts.analysis.as_ref())
+        .map(|analysis| analysis.expression.status);
     assert_eq!(
-        status, "ok",
+        status,
+        Some(EvaluationStatus::Ok),
         "VerdictKind::pass should evaluate without analysis_evaluation_unresolved"
     );
 }
