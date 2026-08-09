@@ -1,7 +1,7 @@
 use sysml_model::{
-    build_and_link_graph, patch_graph_for_document, DerivedRelationshipResolution,
-    ImpliedRelationshipRule, RelationshipKind, RelationshipProvenance, StandardLibraryElement,
-    SysmlDocument, SysmlDocumentSourceKind,
+    build_and_link_graph, build_and_link_graph_parallel, patch_graph_for_document,
+    DerivedRelationshipResolution, ImpliedRelationshipRule, RelationshipKind,
+    RelationshipProvenance, StandardLibraryElement, SysmlDocument, SysmlDocumentSourceKind,
 };
 
 fn document(path: &str, content: &str, source_kind: SysmlDocumentSourceKind) -> SysmlDocument {
@@ -154,4 +154,72 @@ fn removal_republishes_missing_prerequisite_instead_of_stale_success() {
             target: StandardLibraryElement::PartsPart,
         }
     );
+}
+
+#[test]
+fn self_target_and_authored_equivalent_are_never_replaced_or_duplicated() {
+    let standard_library = document(
+        "standard.sysml",
+        "package Parts { part def Part; }",
+        SysmlDocumentSourceKind::StandardLibrary,
+    );
+    let (self_graph, _) = build_and_link_graph(&[standard_library.clone()]).expect("graph");
+    let self_target = self_graph
+        .node_ids_for_qualified_name("Parts::Part")
+        .and_then(|ids| ids.first())
+        .and_then(|id| self_graph.get_node(id))
+        .expect("standard part");
+    assert!(matches!(
+        self_graph.universal_relationship_resolution_for(self_target),
+        DerivedRelationshipResolution::SelfTargetSuppressed { .. }
+    ));
+
+    let workspace = document(
+        "workspace.sysml",
+        "package Demo { part def Vehicle :> Parts::Part; }",
+        SysmlDocumentSourceKind::Workspace,
+    );
+    let (graph, _) = build_and_link_graph(&[workspace, standard_library]).expect("graph");
+    let definition = vehicle(&graph);
+    assert!(matches!(
+        graph.universal_relationship_resolution_for(definition),
+        DerivedRelationshipResolution::Resolved { .. }
+    ));
+    assert_eq!(
+        graph
+            .outgoing_targets_by_kind_and_provenance(
+                definition,
+                RelationshipKind::Specializes,
+                RelationshipProvenance::Authored,
+            )
+            .len(),
+        1
+    );
+    assert!(graph
+        .outgoing_targets_by_kind_and_provenance(
+            definition,
+            RelationshipKind::Specializes,
+            RelationshipProvenance::Implied(
+                ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+            ),
+        )
+        .is_empty());
+}
+
+#[test]
+fn full_and_parallel_publications_are_semantically_identical() {
+    let workspace = document(
+        "workspace.sysml",
+        "package Demo { part def Vehicle; part vehicle; }",
+        SysmlDocumentSourceKind::Workspace,
+    );
+    let standard_library = document(
+        "standard.sysml",
+        "package Parts { part def Part; part parts; }",
+        SysmlDocumentSourceKind::StandardLibrary,
+    );
+    let (sequential, _) =
+        build_and_link_graph(&[workspace.clone(), standard_library.clone()]).expect("graph");
+    let (parallel, _) = build_and_link_graph_parallel(&[workspace, standard_library]);
+    assert_eq!(sequential.to_semantic_sexpr(), parallel.to_semantic_sexpr());
 }
