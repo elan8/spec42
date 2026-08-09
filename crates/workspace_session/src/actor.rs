@@ -10,6 +10,9 @@ use workspace::RelinkToken;
 /// `self.session.is_token_current(token)`.
 pub trait TracksRelink {
     fn is_token_current(&self, token: &RelinkToken) -> bool;
+
+    /// Establishes a fresh owner boundary when this state seeds a new actor.
+    fn rekey_for_actor(&mut self);
 }
 
 /// Error returned to a [`SessionActor::mutate`] caller when the supplied closure panicked.
@@ -20,12 +23,29 @@ pub trait TracksRelink {
 pub struct MutatePanicked;
 
 type BoxedAny = Box<dyn std::any::Any + Send>;
-type BoxedApply<M> = Box<dyn FnOnce(&mut M) -> BoxedAny + Send>;
+type BoxedApply<M> = Box<dyn FnOnce(&mut M) -> Mutation<BoxedAny> + Send>;
+
+/// Declares whether a synchronous actor mutation changed the coherent state that readers see.
+///
+/// Use [`Unchanged`](Self::Unchanged) for content-equivalent updates. The actor still returns
+/// the closure's value, but retains the existing `Arc` and does not notify readers. This keeps
+/// harmless editor echoes from invalidating work that depends on the current publication.
+pub enum Mutation<R> {
+    Changed(R),
+    Unchanged(R),
+}
+
+/// Value returned by [`SessionActor::mutate_if_changed`].
+#[derive(Debug)]
+pub struct MutationOutcome<R> {
+    pub value: R,
+    pub published: bool,
+}
 
 enum Command<M> {
     Mutate {
         apply: BoxedApply<M>,
-        reply: oneshot::Sender<Result<BoxedAny, MutatePanicked>>,
+        reply: oneshot::Sender<Result<(BoxedAny, bool), MutatePanicked>>,
     },
     JobResult {
         token: RelinkToken,
@@ -49,7 +69,8 @@ pub struct SessionActor<M> {
 impl<M: Clone + Send + Sync + TracksRelink + 'static> SessionActor<M> {
     /// Spawns the actor task and returns a handle to control it plus a snapshot handle for
     /// reading its published state.
-    pub fn spawn(initial: M) -> (Self, crate::SnapshotHandle<M>) {
+    pub fn spawn(mut initial: M) -> (Self, crate::SnapshotHandle<M>) {
+        initial.rekey_for_actor();
         let (tx, mut rx) = mpsc::unbounded_channel::<Command<M>>();
         let (watch_tx, watch_rx) = watch::channel(Arc::new(initial));
 
@@ -62,9 +83,16 @@ impl<M: Clone + Send + Sync + TracksRelink + 'static> SessionActor<M> {
                             apply(Arc::make_mut(&mut state))
                         }));
                         match outcome {
-                            Ok(boxed) => {
+                            Ok(Mutation::Changed(boxed)) => {
                                 let _ = watch_tx.send(state.clone());
-                                let _ = reply.send(Ok(boxed));
+                                let _ = reply.send(Ok((boxed, true)));
+                            }
+                            Ok(Mutation::Unchanged(boxed)) => {
+                                // A no-op must retain the exact prior snapshot. `Arc::make_mut`
+                                // may have detached it before the closure recognized equal
+                                // content, so restore the last publication explicitly.
+                                state = watch_tx.borrow().clone();
+                                let _ = reply.send(Ok((boxed, false)));
                             }
                             Err(payload) => {
                                 tracing::error!(
@@ -118,15 +146,42 @@ impl<M: Clone + Send + Sync + TracksRelink + 'static> SessionActor<M> {
     ) -> Result<R, MutatePanicked> {
         let (reply_tx, reply_rx) = oneshot::channel();
         let boxed_apply: BoxedApply<M> =
-            Box::new(move |state: &mut M| Box::new(apply(state)) as BoxedAny);
+            Box::new(move |state: &mut M| Mutation::Changed(Box::new(apply(state)) as BoxedAny));
         let _ = self.tx.send(Command::Mutate {
             apply: boxed_apply,
             reply: reply_tx,
         });
         match reply_rx.await.unwrap_or(Err(MutatePanicked)) {
-            Ok(boxed) => Ok(*boxed
+            Ok((boxed, _published)) => Ok(*boxed
                 .downcast::<R>()
                 .expect("R matches the closure's own return type by construction")),
+            Err(MutatePanicked) => Err(MutatePanicked),
+        }
+    }
+
+    /// Applies a mutation that may be content-equivalent. An [`Mutation::Unchanged`] result is
+    /// not published and does not replace the current snapshot; [`Mutation::Changed`] is
+    /// published atomically before this method returns.
+    pub async fn mutate_if_changed<R: Send + 'static>(
+        &self,
+        apply: impl FnOnce(&mut M) -> Mutation<R> + Send + 'static,
+    ) -> Result<MutationOutcome<R>, MutatePanicked> {
+        let (reply_tx, reply_rx) = oneshot::channel();
+        let boxed_apply: BoxedApply<M> = Box::new(move |state: &mut M| match apply(state) {
+            Mutation::Changed(value) => Mutation::Changed(Box::new(value) as BoxedAny),
+            Mutation::Unchanged(value) => Mutation::Unchanged(Box::new(value) as BoxedAny),
+        });
+        let _ = self.tx.send(Command::Mutate {
+            apply: boxed_apply,
+            reply: reply_tx,
+        });
+        match reply_rx.await.unwrap_or(Err(MutatePanicked)) {
+            Ok((boxed, published)) => Ok(MutationOutcome {
+                value: *boxed
+                    .downcast::<R>()
+                    .expect("R matches the closure's own return type by construction"),
+                published,
+            }),
             Err(MutatePanicked) => Err(MutatePanicked),
         }
     }
@@ -168,6 +223,8 @@ mod tests {
         fn is_token_current(&self, token: &RelinkToken) -> bool {
             token.generation() == self.generation
         }
+
+        fn rekey_for_actor(&mut self) {}
     }
 
     #[tokio::test]
@@ -249,5 +306,48 @@ mod tests {
             .unwrap();
         assert_eq!(result, 5);
         assert_eq!(snapshot.current().value, 5);
+    }
+
+    #[tokio::test]
+    async fn unchanged_mutation_retains_the_published_snapshot() {
+        let (actor, snapshot) = SessionActor::spawn(TestState {
+            generation: 1,
+            value: 5,
+        });
+        let before = snapshot.current();
+
+        let outcome = actor
+            .mutate_if_changed(|state| {
+                assert_eq!(state.value, 5);
+                Mutation::Unchanged("same content")
+            })
+            .await
+            .unwrap();
+
+        assert_eq!(outcome.value, "same content");
+        assert!(!outcome.published);
+        assert!(Arc::ptr_eq(&before, &snapshot.current()));
+    }
+
+    #[tokio::test]
+    async fn changed_mutation_publishes_a_new_coherent_snapshot() {
+        let (actor, snapshot) = SessionActor::spawn(TestState {
+            generation: 1,
+            value: 5,
+        });
+        let before = snapshot.current();
+
+        let outcome = actor
+            .mutate_if_changed(|state| {
+                state.value = 8;
+                Mutation::Changed(())
+            })
+            .await
+            .unwrap();
+
+        assert!(outcome.published);
+        let after = snapshot.current();
+        assert_eq!(after.value, 8);
+        assert!(!Arc::ptr_eq(&before, &after));
     }
 }
