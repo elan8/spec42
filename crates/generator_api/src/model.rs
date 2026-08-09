@@ -6,8 +6,8 @@ use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use thiserror::Error;
 use workspace::{
-    ElementKind, HostSemanticModelNode, HostWorkspaceSnapshot, NodeId, RelationshipKind,
-    SemanticNode,
+    ElementKind, HostEvaluatedScalar, HostEvaluationQuery, HostExpressionEvaluation,
+    HostSemanticModelNode, HostWorkspaceSnapshot, NodeId, RelationshipKind, SemanticNode,
 };
 
 /// Re-exported from the protocol crate rather than declared again.
@@ -330,7 +330,8 @@ impl GeneratorModelView {
                 .and_then(|value| value.is_unique)
                 .or_else(|| declared_properties.and_then(|value| value.is_unique)),
             multiplicity,
-            evaluated_value: attributes.get("evaluatedValue").map(value_string),
+            evaluated_value: projected
+                .and_then(|value| evaluated_value_string(&value.facts.evaluation)),
         })
     }
 
@@ -776,11 +777,23 @@ fn expression_string(value: &impl Serialize) -> String {
     serde_json::to_string(value).unwrap_or_else(|_| "null".to_owned())
 }
 
-fn value_string(value: &serde_json::Value) -> String {
-    match value {
-        serde_json::Value::String(value) => value.clone(),
-        other => other.to_string(),
-    }
+fn evaluated_value_string(evaluation: &HostEvaluationQuery) -> Option<String> {
+    let HostEvaluationQuery::Result {
+        expression:
+            Some(HostExpressionEvaluation::Ok {
+                value: Some(value), ..
+            }),
+        ..
+    } = evaluation
+    else {
+        return None;
+    };
+    Some(match value {
+        HostEvaluatedScalar::Integer(value) => value.to_string(),
+        HostEvaluatedScalar::Real(value) => value.clone(),
+        HostEvaluatedScalar::Boolean(value) => value.to_string(),
+        HostEvaluatedScalar::String(value) => value.clone(),
+    })
 }
 
 #[cfg(test)]
@@ -921,6 +934,19 @@ package P {
             Metaclass::ActionUsage,
             "an initial node is the action-step member of an InitialNodeMember"
         );
+    }
+
+    #[test]
+    fn formats_only_ok_host_evaluation_scalars_at_generator_boundary() {
+        let evaluation = HostEvaluationQuery::Result {
+            expression: Some(HostExpressionEvaluation::Ok {
+                value: Some(HostEvaluatedScalar::Integer(7)),
+                unit: None,
+            }),
+            analysis: None,
+        };
+        assert_eq!(evaluated_value_string(&evaluation).as_deref(), Some("7"));
+        assert_eq!(evaluated_value_string(&HostEvaluationQuery::NotRun), None);
     }
 
     #[test]

@@ -60,7 +60,8 @@ pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSess
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
-    HostConnectorEnd, HostContext, HostElementFacts, HostExpression, HostExpressionArgument,
+    HostAnalysisEvaluation, HostConnectorEnd, HostContext, HostElementFacts, HostEvaluatedScalar,
+    HostEvaluationQuery, HostExpression, HostExpressionArgument, HostExpressionEvaluation,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
     HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
     HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity, HostPipelinePhase,

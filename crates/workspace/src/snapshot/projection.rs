@@ -114,6 +114,11 @@ pub struct HostElementFacts {
     /// from strings.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub membership: Option<HostMembershipFacts>,
+    /// Canonical result of querying this element's expression evaluation at the graph's
+    /// publication barrier. This is always present so `NotRun` and `NotApplicable` cannot be
+    /// confused with a missing projection field.
+    #[serde(default)]
+    pub evaluation: HostEvaluationQuery,
     /// Semantic ID of this element's own addressable `Expression` content (in
     /// [`HostSemanticProjection::expressions`]), when the element itself directly *is* an
     /// expression (for example a `TransitionGuard`) rather than merely having one attached via
@@ -168,6 +173,91 @@ pub enum HostImportOrigin {
 pub enum HostMembershipVisibilityProvenance {
     Authored,
     Implied,
+}
+
+/// Neutral host projection of the semantic evaluator's exhaustive query result.
+///
+/// The workspace boundary preserves the typed published result while `sysml_model` remains the
+/// authority for evaluation and scalar meaning.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "status")]
+pub enum HostEvaluationQuery {
+    #[default]
+    NotRun,
+    NotApplicable,
+    Result {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        expression: Option<HostExpressionEvaluation>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        analysis: Option<HostAnalysisEvaluation>,
+    },
+}
+
+/// Evaluated expression result, distinct from the publication/query wrapper.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "status")]
+pub enum HostExpressionEvaluation {
+    Ok {
+        value: Option<HostEvaluatedScalar>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        unit: Option<String>,
+    },
+    Unresolved {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Ambiguous {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Malformed {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Incomplete {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    TypeError {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    DivByZero {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Unsupported {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Cycle {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+}
+
+/// Typed scalar carried by an evaluated host expression. Real values are finite canonical decimal
+/// strings so the DTO remains equality-safe and deterministic across host boundaries.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "kind", content = "value")]
+pub enum HostEvaluatedScalar {
+    Integer(i64),
+    Real(String),
+    Boolean(bool),
+    String(String),
+}
+
+/// Analysis-specific evaluation data. An analysis result must not be collapsed to
+/// `NotApplicable` merely because it has no standalone expression fact.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostAnalysisEvaluation {
+    pub expression: HostExpressionEvaluation,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub passed: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_value: Option<HostEvaluatedScalar>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_unit: Option<String>,
 }
 
 /// Explicit feature/definition modifiers projected from declared semantic facts.
@@ -240,7 +330,7 @@ pub struct HostSemanticModelNode {
     pub parent: Option<String>,
     /// Element-specific attributes extracted during graph construction.
     /// Keys and value shapes are kind-dependent (e.g. `"typeRef"`, `"multiplicity"`,
-    /// `"redefines"`, `"evaluatedValue"`, …).
+    /// `"redefines"`, …).
     #[serde(default)]
     pub attributes: HashMap<String, Value>,
     /// Typed identity and containment data consumed by API projections.

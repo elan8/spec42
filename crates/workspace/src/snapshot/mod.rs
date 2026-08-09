@@ -18,7 +18,8 @@ pub use context::{CancellationToken, HostContext, HostPipelinePhase, HostResourc
 pub use metadata::HostArtifactMetadata;
 pub use output::Spec42ProjectionOutput;
 pub use projection::{
-    HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
+    HostAnalysisEvaluation, HostConnectorEnd, HostElementFacts, HostEvaluatedScalar,
+    HostEvaluationQuery, HostExpression, HostExpressionArgument, HostExpressionEvaluation,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
     HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
     HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity,

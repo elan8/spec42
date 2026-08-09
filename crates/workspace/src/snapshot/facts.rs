@@ -5,12 +5,16 @@ use std::collections::{BTreeSet, HashMap, HashSet};
 use sha2::{Digest, Sha256};
 
 use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
-use sysml_model::{typed_by_reference, SemanticGraph, SysmlDocument, UnitRegistry};
+use sysml_model::{
+    typed_by_reference, EvaluationStatus, ExpressionEvaluationQuery, SemanticGraph, SysmlDocument,
+    UnitRegistry,
+};
 use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
-    HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
+    HostAnalysisEvaluation, HostConnectorEnd, HostElementFacts, HostEvaluatedScalar,
+    HostEvaluationQuery, HostExpression, HostExpressionArgument, HostExpressionEvaluation,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
     HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
     HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity,
@@ -192,8 +196,91 @@ fn build_host_semantic_model_node(
                         }),
                 }
             }),
+            evaluation: project_evaluation_query(graph, node),
             content_expression_id: None,
         },
+    }
+}
+
+fn project_evaluated_scalar(value: &sysml_model::EvaluatedValue) -> Option<HostEvaluatedScalar> {
+    match value {
+        sysml_model::EvaluatedValue::Integer(value) => Some(HostEvaluatedScalar::Integer(*value)),
+        sysml_model::EvaluatedValue::Real(value) => value
+            .is_finite()
+            .then(|| HostEvaluatedScalar::Real(value.to_string())),
+        sysml_model::EvaluatedValue::Boolean(value) => Some(HostEvaluatedScalar::Boolean(*value)),
+        sysml_model::EvaluatedValue::String(value) => {
+            Some(HostEvaluatedScalar::String(value.clone()))
+        }
+    }
+}
+
+fn project_expression_evaluation(
+    evaluation: &sysml_model::ExpressionEvaluation,
+) -> HostExpressionEvaluation {
+    match evaluation.status {
+        EvaluationStatus::Ok => HostExpressionEvaluation::Ok {
+            value: evaluation.value.as_ref().and_then(project_evaluated_scalar),
+            unit: evaluation.unit.clone(),
+        },
+        EvaluationStatus::Unresolved => HostExpressionEvaluation::Unresolved {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Ambiguous => HostExpressionEvaluation::Ambiguous {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Malformed => HostExpressionEvaluation::Malformed {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Incomplete => HostExpressionEvaluation::Incomplete {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::TypeError => HostExpressionEvaluation::TypeError {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::DivByZero => HostExpressionEvaluation::DivByZero {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Unsupported => HostExpressionEvaluation::Unsupported {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Cycle => HostExpressionEvaluation::Cycle {
+            error: evaluation.error.clone(),
+        },
+    }
+}
+
+fn project_evaluation_query(
+    graph: &SemanticGraph,
+    node: &sysml_model::SemanticNode,
+) -> HostEvaluationQuery {
+    match graph.expression_evaluation_for(node) {
+        ExpressionEvaluationQuery::NotRun => HostEvaluationQuery::NotRun,
+        ExpressionEvaluationQuery::NotApplicable | ExpressionEvaluationQuery::Result(_) => {
+            let facts = graph.evaluation_facts_for(node);
+            let expression = facts
+                .and_then(|facts| facts.expression.as_ref())
+                .map(project_expression_evaluation);
+            let analysis = facts
+                .and_then(|facts| facts.analysis.as_ref())
+                .map(|analysis| HostAnalysisEvaluation {
+                    expression: project_expression_evaluation(&analysis.expression),
+                    passed: analysis.passed,
+                    computed_value: analysis
+                        .computed_value
+                        .as_ref()
+                        .and_then(project_evaluated_scalar),
+                    computed_unit: analysis.computed_unit.clone(),
+                });
+            if expression.is_some() || analysis.is_some() {
+                HostEvaluationQuery::Result {
+                    expression,
+                    analysis,
+                }
+            } else {
+                HostEvaluationQuery::NotApplicable
+            }
+        }
     }
 }
 
@@ -629,7 +716,7 @@ fn project_expression(
             } => {
                 output.push(HostExpression {
                     semantic_id: id,
-                    kind: node.kind.clone(),
+                    kind: node.kind.as_str().to_owned(),
                     range: node.range,
                     literal: node.literal.clone(),
                     reference: node.reference.clone(),
@@ -971,8 +1058,15 @@ fn summarize_host_documents(documents: &[HostValidatedDocument]) -> HostValidati
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::snapshot::discovery::path_to_file_url;
-    use sysml_model::{build_semantic_graph_with_provider, InMemoryDocumentProvider};
+    use crate::snapshot::{
+        discovery::path_to_file_url, HostEvaluatedScalar, HostEvaluationQuery,
+        HostExpressionEvaluation,
+    };
+    use sysml_model::{
+        build_semantic_graph_with_provider, evaluate_expressions, AnalysisEvaluation, ElementKind,
+        EvaluatedValue, EvaluationPublicationState, EvaluationStatus, ExpressionEvaluation,
+        InMemoryDocumentProvider, NodeEvaluationFacts, NodeId, SemanticNode,
+    };
 
     fn make_provider(uri: &str, content: &str) -> InMemoryDocumentProvider {
         let doc = sysml_model::SysmlDocument {
@@ -984,6 +1078,136 @@ mod tests {
             byte_size: None,
         };
         InMemoryDocumentProvider::new(vec![doc])
+    }
+
+    #[test]
+    fn projection_preserves_exhaustive_evaluation_query_states() {
+        let uri = "file:///workspace/evaluation.sysml";
+        let target = std::path::PathBuf::from("/workspace/evaluation.sysml");
+        let provider = make_provider(
+            uri,
+            "package Demo { attribute value = 2; attribute unresolved = missing; }",
+        );
+        let (mut graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        graph.invalidate_evaluation_facts();
+
+        let before = project_host_semantic_model(&graph, std::slice::from_ref(&target), &[])
+            .expect("not-run projection");
+        let value_before = before
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::value")
+            .expect("value node");
+        assert_eq!(value_before.facts.evaluation, HostEvaluationQuery::NotRun);
+
+        evaluate_expressions(&mut graph);
+        let after =
+            project_host_semantic_model(&graph, &[target], &[]).expect("complete projection");
+        let value = after
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::value")
+            .expect("value node");
+        assert!(matches!(
+            value.facts.evaluation,
+            HostEvaluationQuery::Result {
+                expression: Some(HostExpressionEvaluation::Ok {
+                    value: Some(HostEvaluatedScalar::Integer(2)),
+                    unit: None,
+                }),
+                analysis: None,
+            }
+        ));
+        let package = after
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo")
+            .expect("package node");
+        assert_eq!(package.facts.evaluation, HostEvaluationQuery::NotApplicable);
+        let unresolved = after
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::unresolved")
+            .expect("unresolved node");
+        assert!(matches!(
+            unresolved.facts.evaluation,
+            HostEvaluationQuery::Result {
+                expression: Some(HostExpressionEvaluation::Unresolved { .. }),
+                analysis: None,
+            }
+        ));
+    }
+
+    #[test]
+    fn analysis_evaluation_projects_without_a_standalone_expression_fact() {
+        let uri = url::Url::parse("memory://evaluation/analysis.sysml").expect("uri");
+        let id = NodeId::new(&uri, "Analysis::result");
+        let node = SemanticNode {
+            id: id.clone(),
+            element_kind: ElementKind::Analysis,
+            declared_name: Some("result".to_string()),
+            name: "result".to_string(),
+            range: sysml_model::TextRange::new(
+                sysml_model::TextPosition::new(0, 0),
+                sysml_model::TextPosition::new(0, 0),
+            ),
+            attributes: HashMap::new(),
+            declared_facts: Default::default(),
+            parent_id: None,
+        };
+        let mut graph = SemanticGraph::new();
+        let index = graph.graph.add_node(node);
+        graph.node_index_by_id.insert(id.clone(), index);
+        graph.nodes_by_uri.insert(uri.clone(), vec![id.clone()]);
+        graph
+            .node_ids_by_qualified_name
+            .insert(id.qualified_name.clone(), vec![id.clone()]);
+        graph.evaluation_publication = EvaluationPublicationState::Complete;
+        graph.evaluation_facts_by_node_id.insert(
+            id.clone(),
+            NodeEvaluationFacts {
+                expression: None,
+                analysis: Some(AnalysisEvaluation {
+                    expression: ExpressionEvaluation {
+                        status: EvaluationStatus::Ok,
+                        value: Some(EvaluatedValue::Integer(3)),
+                        unit: None,
+                        error: None,
+                    },
+                    passed: Some(true),
+                    computed_value: Some(EvaluatedValue::Integer(3)),
+                    computed_unit: None,
+                }),
+            },
+        );
+
+        assert!(matches!(
+            project_evaluation_query(&graph, graph.get_node(&id).expect("analysis node")),
+            HostEvaluationQuery::Result {
+                expression: None,
+                analysis: Some(ref analysis),
+            } if analysis.passed == Some(true)
+                && analysis.computed_value == Some(HostEvaluatedScalar::Integer(3))
+                && matches!(analysis.expression, HostExpressionEvaluation::Ok {
+                    value: Some(HostEvaluatedScalar::Integer(3)),
+                    unit: None,
+                })
+        ));
+    }
+
+    #[test]
+    fn evaluation_projection_round_trips_through_serde() {
+        let value = HostEvaluationQuery::Result {
+            expression: Some(HostExpressionEvaluation::Ok {
+                value: Some(HostEvaluatedScalar::Real("2.5".to_string())),
+                unit: Some("m".to_string()),
+            }),
+            analysis: None,
+        };
+        let encoded = serde_json::to_value(&value).expect("serialize host evaluation");
+        assert_eq!(encoded["status"], "result");
+        let decoded: HostEvaluationQuery = serde_json::from_value(encoded).expect("deserialize");
+        assert_eq!(decoded, value);
     }
 
     #[test]
