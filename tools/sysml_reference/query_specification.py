@@ -8,8 +8,12 @@ checks as well as local reference lookups.
 from __future__ import annotations
 
 import argparse
+import re
 from dataclasses import dataclass
 from pathlib import Path
+
+FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(?:[^\r\n]*)$")
+CLOSING_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})[ \t]*$")
 
 
 @dataclass(frozen=True)
@@ -29,8 +33,21 @@ def unavailable(message: str, strict: bool) -> int:
 def sections(text: str) -> list[Section]:
     lines = text.splitlines(keepends=True)
     headings: list[tuple[str, int, int]] = []
+    fence: tuple[str, int] | None = None
     for index, line in enumerate(lines):
         stripped = line.rstrip("\r\n")
+        marker_match = FENCE.match(stripped)
+        if fence is not None:
+            closing_match = CLOSING_FENCE.match(stripped)
+            if closing_match:
+                marker = closing_match.group(1)
+                if marker[0] == fence[0] and len(marker) >= fence[1] and marker.rstrip(marker[0]) == "":
+                    fence = None
+            continue
+        if marker_match:
+            marker = marker_match.group(1)
+            fence = (marker[0], len(marker))
+            continue
         if not stripped.startswith("#"):
             continue
         marker, separator, title = stripped.partition(" ")

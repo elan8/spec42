@@ -6,6 +6,14 @@ This authored fixture contains a **sample rule**.
 
 An example element has one member.
 
+```text
+# Not a section
+```
+
+~~~~
+## Also not a section
+~~~~
+
 ### Details
 
 The details remain searchable.

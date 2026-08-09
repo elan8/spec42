@@ -55,6 +55,8 @@ class ToolsTest(unittest.TestCase):
         )
         self.assertEqual(listing.returncode, 0, listing.stderr)
         self.assertIn("Element rules", listing.stdout)
+        self.assertNotIn("Not a section", listing.stdout)
+        self.assertNotIn("Also not a section", listing.stdout)
         missing = run("tools/sysml_reference/query_specification.py", "search", "rule")
         self.assertEqual(missing.returncode, 0, missing.stderr)
         self.assertIn("SKIP: no specification Markdown supplied", missing.stdout)
