@@ -29,11 +29,7 @@ impl Project {
     /// Validate the portable identity used for default archive and extraction paths.
     pub fn validate_identity(&self) -> Result<()> {
         for (field, value) in [("name", &self.name), ("version", &self.version)] {
-            if value.trim().is_empty()
-                || value.contains(['/', '\\'])
-                || value == "."
-                || value == ".."
-            {
+            if !is_portable_path_component(value) {
                 return Err(KparError::InvalidArchive(format!(
                     "project metadata field '{field}' must be a non-empty portable path component"
                 )));
@@ -41,6 +37,47 @@ impl Project {
         }
         Ok(())
     }
+}
+
+fn is_portable_path_component(value: &str) -> bool {
+    if value.trim().is_empty()
+        || value.ends_with(['.', ' '])
+        || value.chars().any(|character| {
+            character.is_control()
+                || matches!(
+                    character,
+                    '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*'
+                )
+        })
+        || matches!(value, "." | "..")
+    {
+        return false;
+    }
+
+    let base = value.split('.').next().unwrap_or_default();
+    let upper = base.to_ascii_uppercase();
+    !matches!(upper.as_str(), "CON" | "PRN" | "AUX" | "NUL")
+        && !matches!(
+            upper.as_str(),
+            "COM1"
+                | "COM2"
+                | "COM3"
+                | "COM4"
+                | "COM5"
+                | "COM6"
+                | "COM7"
+                | "COM8"
+                | "COM9"
+                | "LPT1"
+                | "LPT2"
+                | "LPT3"
+                | "LPT4"
+                | "LPT5"
+                | "LPT6"
+                | "LPT7"
+                | "LPT8"
+                | "LPT9"
+        )
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -98,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn project_identity_rejects_blank_and_path_like_components() {
+    fn project_identity_rejects_nonportable_components() {
         for (name, version) in [
             ("", "1.0.0"),
             ("Example", ""),
@@ -106,8 +143,18 @@ mod tests {
             ("Example", "release/1"),
             (".", "1.0.0"),
             ("Example", ".."),
+            ("A:B", "1.0.0"),
+            ("Example", "A?B"),
+            ("Example\0", "1.0.0"),
+            ("Example.", "1.0.0"),
+            ("Example", "1.0.0 "),
+            ("CON", "1.0.0"),
+            ("Example", "LPT1"),
         ] {
             assert!(project(name, version).validate_identity().is_err());
         }
+        assert!(project("Example Library", "1.0.0 rc 1")
+            .validate_identity()
+            .is_ok());
     }
 }

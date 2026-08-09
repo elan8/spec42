@@ -143,6 +143,12 @@ impl KparArchive {
         }
         let entries = read_zip_entries(&self.bytes)?;
         for (logical_path, entry) in &self.meta.checksum {
+            if !entry.algorithm.eq_ignore_ascii_case("SHA256") {
+                return Err(KparError::InvalidArchive(format!(
+                    "unsupported checksum algorithm '{}' for '{logical_path}'; expected SHA256",
+                    entry.algorithm
+                )));
+            }
             let archive_path = self
                 .meta
                 .index
@@ -737,6 +743,46 @@ mod tests {
             .expect_err("checksum mismatch must be rejected");
 
         assert!(matches!(error, KparError::ChecksumMismatch { .. }));
+        assert_eq!(
+            fs::read_to_string(destination.join("sentinel.txt")).expect("sentinel remains"),
+            "keep"
+        );
+    }
+
+    #[test]
+    fn unsupported_checksum_algorithm_preserves_existing_destination() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("unsupported-checksum.kpar");
+        let contents = b"package Example {}";
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"Example","version":"1.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            let meta = format!(
+                r#"{{"index":{{"Model.sysml":"Model.sysml"}},"created":"2025-03-13T00:00:00Z","checksum":{{"Model.sysml":{{"value":"{}","algorithm":"SHA1"}}}}}}"#,
+                sha256_hex(contents)
+            );
+            zip.write_all(meta.as_bytes()).expect("meta write");
+            zip.start_file("Model.sysml", options)
+                .expect("source start");
+            zip.write_all(contents).expect("source write");
+            zip.finish().expect("finish");
+        }
+        let destination = source.path().join("existing");
+        fs::create_dir_all(&destination).expect("existing destination");
+        fs::write(destination.join("sentinel.txt"), "keep").expect("sentinel");
+
+        let error = materialize(&fs::read(&path).expect("read"), &destination)
+            .expect_err("unsupported checksum algorithm must be rejected");
+
+        assert!(matches!(error, KparError::InvalidArchive(_)));
         assert_eq!(
             fs::read_to_string(destination.join("sentinel.txt")).expect("sentinel remains"),
             "keep"
