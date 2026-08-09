@@ -173,6 +173,7 @@ pub(crate) fn rebuild_all_document_links(
 pub(crate) fn rebuild_semantic_graph_staged(
     index: &std::collections::HashMap<Url, IndexEntry>,
     library_paths: &[Url],
+    standard_library_paths: &[Url],
     base_graph: Option<semantic::SemanticGraph>,
     evaluate: bool,
 ) -> (
@@ -199,10 +200,18 @@ pub(crate) fn rebuild_semantic_graph_staged(
     let rebuild_start = Instant::now();
     let mut entries =
         parsed_entries_for_uris(index, &workspace_uris, SysmlDocumentSourceKind::Workspace);
+    let (standard_library_uris, generic_library_uris): (Vec<_>, Vec<_>) = library_uris
+        .into_iter()
+        .partition(|uri| util::uri_under_any_library(uri, standard_library_paths));
     entries.extend(parsed_entries_for_uris(
         index,
-        &library_uris,
+        &generic_library_uris,
         SysmlDocumentSourceKind::Library,
+    ));
+    entries.extend(parsed_entries_for_uris(
+        index,
+        &standard_library_uris,
+        SysmlDocumentSourceKind::StandardLibrary,
     ));
     // If a base graph was provided (library graph cache hit), start from it so library nodes
     // are already present for cross-document resolution — `load_parsed_from` resolves

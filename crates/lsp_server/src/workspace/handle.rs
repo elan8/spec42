@@ -63,11 +63,13 @@ impl WorkspaceHandle {
         &self,
         roots: Vec<Url>,
         library_paths: Vec<Url>,
+        standard_library_paths: Vec<Url>,
     ) -> Result<(), MutatePanicked> {
         self.actor
             .mutate(move |s| {
                 s.workspace_roots = roots;
                 s.library_paths = library_paths;
+                s.standard_library_paths = standard_library_paths;
                 s.session.reset();
             })
             .await
@@ -110,12 +112,20 @@ impl WorkspaceHandle {
 
     /// Plain `Arc` read, no actor round-trip needed — snapshots `(publication, index, library_paths)`
     /// for the caller to build a staged relink off of without holding anything.
-    pub(crate) fn relink_snapshot(&self) -> (PublicationToken, HashMap<Url, IndexEntry>, Vec<Url>) {
+    pub(crate) fn relink_snapshot(
+        &self,
+    ) -> (
+        PublicationToken,
+        HashMap<Url, IndexEntry>,
+        Vec<Url>,
+        Vec<Url>,
+    ) {
         let snap = self.snapshot();
         (
             snap.session.publication(),
             snap.index.clone(),
             snap.library_paths.clone(),
+            snap.standard_library_paths.clone(),
         )
     }
 

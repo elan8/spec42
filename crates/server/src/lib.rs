@@ -305,6 +305,7 @@ async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let config = Arc::new(
         lsp_server::default_server_config()
             .with_default_library_paths(environment.library_paths.clone())
+            .with_standard_library_paths(environment.stdlib_roots.clone())
             .with_custom_rpc_provider(library_status_rpc::library_status_rpc_provider(
                 environment.standard_library.clone(),
                 environment.standard_library_paths.clone(),

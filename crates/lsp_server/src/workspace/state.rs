@@ -38,6 +38,7 @@ pub(crate) struct RuntimeConfig {
 pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
+    pub(crate) standard_library_paths: Vec<Url>,
     pub(crate) session: workspace::WorkspaceSession,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,

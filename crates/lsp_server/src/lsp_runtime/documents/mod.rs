@@ -71,6 +71,7 @@ fn schedule_semantic_relink_after_change(
             (
                 snap.index.clone(),
                 snap.library_paths.clone(),
+                snap.standard_library_paths.clone(),
                 // Library files are not stored in the index when loaded from the
                 // graph cache (cache hit path). Pass the library graph snapshot so
                 // library types survive the workspace rebuild regardless of whether
@@ -78,7 +79,7 @@ fn schedule_semantic_relink_after_change(
                 snap.library_graph_snapshot.clone(),
             )
         };
-        let (index, library_paths, base_graph) = snapshot;
+        let (index, library_paths, standard_library_paths, base_graph) = snapshot;
         let perf_logging_enabled = runtime_config
             .get()
             .expect("initialize precedes all other LSP requests")
@@ -94,6 +95,7 @@ fn schedule_semantic_relink_after_change(
             crate::workspace::rebuild_semantic_graph_staged(
                 &index,
                 &library_paths,
+                &standard_library_paths,
                 base_graph,
                 false,
             )

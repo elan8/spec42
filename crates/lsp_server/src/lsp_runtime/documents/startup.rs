@@ -15,6 +15,11 @@ pub(crate) async fn initialize(
         &config.default_library_paths,
         client_library_paths,
     );
+    let standard_library_paths = config
+        .standard_library_paths
+        .iter()
+        .filter_map(|path| Url::from_file_path(path).ok())
+        .collect::<Vec<_>>();
     let startup_trace_id =
         util::parse_startup_trace_id_from_value(params.initialization_options.as_ref());
     let code_lens_enabled =
@@ -44,7 +49,10 @@ pub(crate) async fn initialize(
             diagnose_library_paths,
         })
         .expect("initialize called twice");
-    handle.set_startup_config(roots, library_paths).await.ok();
+    handle
+        .set_startup_config(roots, library_paths, standard_library_paths)
+        .await
+        .ok();
     Ok(InitializeResult {
         server_info: Some(ServerInfo {
             name: server_name.to_string(),
@@ -280,8 +288,12 @@ pub(crate) async fn initialized(
             // Snapshot index/library_paths (a plain `Arc` read, no lock) before running the
             // expensive rebuild off the actor so semantic-token and hover requests can proceed
             // concurrently instead of queueing behind anything.
-            let (snapshot_publication, index_snapshot, library_paths_snapshot) =
-                handle.relink_snapshot();
+            let (
+                snapshot_publication,
+                index_snapshot,
+                library_paths_snapshot,
+                standard_library_paths_snapshot,
+            ) = handle.relink_snapshot();
             let base_graph_for_rebuild =
                 library_graph_cache_was_hit.then(|| handle.snapshot().semantic_graph.clone());
             let (new_graph, new_symbols, staged_relink_metrics) =
@@ -289,6 +301,7 @@ pub(crate) async fn initialized(
                     crate::workspace::rebuild_semantic_graph_staged(
                         &index_snapshot,
                         &library_paths_snapshot,
+                        &standard_library_paths_snapshot,
                         base_graph_for_rebuild,
                         true, // startup: settle fully before first use, not the live-edit fast path
                     )
