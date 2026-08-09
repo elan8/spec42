@@ -617,12 +617,6 @@ semantic.unresolved_name 'ISQ::acceleration'
       )
       (diagnostic
         (severity warning)
-        (code "analysis_evaluation_unresolved")
-        (source "semantic")
-        (range (start 53 2) (end 53 828))
-      )
-      (diagnostic
-        (severity warning)
         (code "invalid_qualified_name_segment")
         (source "semantic")
         (range (start 59 3) (end 59 70))

@@ -622,12 +622,6 @@ standard library package TradeStudies {
       )
       (diagnostic
         (severity warning)
-        (code "analysis_evaluation_unresolved")
-        (source "semantic")
-        (range (start 34 1) (end 34 1358))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 44 2) (end 44 168))

@@ -500,12 +500,6 @@ semantic.unresolved_name 'PowerValue'
       )
       (diagnostic
         (severity warning)
-        (code "analysis_evaluation_unresolved")
-        (source "semantic")
-        (range (start 29 1) (end 29 1411))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 50 3) (end 50 29))

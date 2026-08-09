@@ -10427,12 +10427,6 @@ semantic.unresolved_name 'LengthValue'
       )
       (diagnostic
         (severity warning)
-        (code "analysis_evaluation_unresolved")
-        (source "semantic")
-        (range (start 1092 12) (end 1092 966))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 1109 16) (end 1109 109))
