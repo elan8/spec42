@@ -9,7 +9,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, text_range_to_json};
+use crate::semantic::ast_util::{span_to_range, text_range_to_json};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -537,11 +537,11 @@ pub(super) fn walk_requirement_def_body(
                     &name,
                     "import",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
-                attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-                attach_membership_visibility(&mut attrs, &v.membership);
-                attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
+                let attrs = HashMap::new();
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_import_membership_facts(imp),
+                );
                 add_node_and_recurse(
                     g,
                     uri,

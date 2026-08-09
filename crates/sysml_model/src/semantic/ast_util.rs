@@ -5,14 +5,16 @@ use std::collections::HashMap;
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::model::{
     DeclaredExpression, DeclaredExpressionArgument, DeclaredFeatureProperties,
-    DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredMultiplicity,
-    DeclaredRelationshipTarget,
+    DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredImportFacts, DeclaredImportTarget,
+    DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
+    DeclaredRelationshipTarget, ImportShape, VisibilityKind,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
-    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Membership, Node,
-    SubsettingRelationship, TypingRelationship,
+    Argument, ConnectionEnd, DefinitionPrefix, Identification, InOut, Membership, MembershipKind,
+    Node, SubsettingRelationship, TypingRelationship,
 };
+use sysml_v2_parser::ast::{ExposeMember, Import, Visibility};
 use sysml_v2_parser::{Expression, Span};
 
 /// Maps a parser direction prefix to the Systems Modeling API direction token.
@@ -45,24 +47,84 @@ fn usage_ownership_from_ref_flag(is_reference: bool) -> (Option<bool>, Option<bo
         .unwrap_or((None, None))
 }
 
-/// Attaches the explicit `private`/`protected`/`public` visibility prefix from a member's
-/// `Membership` to its node attributes, if one was written. Mirrors the exact convention
-/// previously duplicated ad hoc in `graph_builder/ref_decl.rs`/`requirement_body.rs`/
-/// `package_body/materialize.rs`; centralized here so every builder that constructs an `attrs`
-/// map for a node with a `membership` field (the parser's Item 4b rollout covers ~51 of 53
-/// `*Def`/`*Usage` structs, see `sysml-v2-parser`'s `src/ast/membership.rs` doc comment) can share
-/// it instead of re-deriving the `format!("{vis:?}")` encoding independently. `None`/omitted when
-/// no explicit prefix was written -- `Membership` records only what was written, not the resolved
-/// default visibility.
-pub fn attach_membership_visibility(
-    attrs: &mut HashMap<String, serde_json::Value>,
-    membership: &Membership,
-) {
-    if let Some(vis) = &membership.visibility {
-        attrs.insert(
-            "visibility".to_string(),
-            serde_json::json!(format!("{vis:?}")),
-        );
+fn visibility_kind(visibility: Visibility) -> VisibilityKind {
+    match visibility {
+        Visibility::Public => VisibilityKind::Public,
+        Visibility::Private => VisibilityKind::Private,
+        Visibility::Protected => VisibilityKind::Protected,
+    }
+}
+
+fn membership_kind(kind: MembershipKind) -> DeclaredMembershipKind {
+    match kind {
+        MembershipKind::OwningMembership => DeclaredMembershipKind::Owning,
+        MembershipKind::FeatureMembership => DeclaredMembershipKind::Feature,
+        MembershipKind::Import => DeclaredMembershipKind::Import,
+        MembershipKind::Alias => DeclaredMembershipKind::Alias,
+        MembershipKind::VariantMembership => DeclaredMembershipKind::Variant,
+        MembershipKind::ActorMembership => DeclaredMembershipKind::Actor,
+    }
+}
+
+/// Retains exactly the membership information supplied by the parser. In particular, no absent
+/// visibility is defaulted here: defaults require the owning graph context.
+pub fn declared_membership_facts(membership: &Membership) -> DeclaredMembershipFacts {
+    DeclaredMembershipFacts {
+        kind: membership_kind(membership.kind),
+        visibility: membership.visibility.map(visibility_kind),
+        range: Some(span_to_range(&membership.span)),
+        import: None,
+    }
+}
+
+/// Parser-backed import membership facts. Filter-package imports remain a separate shape so
+/// downstream resolution cannot accidentally treat an unsupported filter as `::*`.
+pub fn declared_import_membership_facts(import: &Node<Import>) -> DeclaredMembershipFacts {
+    let value = &import.value;
+    let shape = if value.filter_members.is_some() {
+        ImportShape::FilteredNamespace
+    } else if value.is_import_all {
+        ImportShape::Namespace
+    } else {
+        ImportShape::Membership
+    };
+    DeclaredMembershipFacts {
+        kind: membership_kind(value.membership.kind),
+        visibility: value.membership.visibility.map(visibility_kind),
+        range: Some(span_to_range(&value.membership.span)),
+        import: Some(DeclaredImportFacts {
+            target: DeclaredImportTarget {
+                reference: value.target.clone(),
+                range: Some(span_to_range(&value.target_span)),
+            },
+            shape,
+            recursive: value.is_recursive,
+            is_expose: false,
+        }),
+    }
+}
+
+/// `ExposeMember` currently has no target sub-span or membership wrapper in the parser AST.
+/// Retain that absence explicitly rather than inventing source precision or visibility.
+pub fn declared_expose_membership_facts(expose: &Node<ExposeMember>) -> DeclaredMembershipFacts {
+    let value = &expose.value;
+    DeclaredMembershipFacts {
+        kind: DeclaredMembershipKind::Import,
+        visibility: None,
+        range: Some(span_to_range(&expose.span)),
+        import: Some(DeclaredImportFacts {
+            target: DeclaredImportTarget {
+                reference: value.target.clone(),
+                range: None,
+            },
+            shape: if value.is_import_all {
+                ImportShape::Namespace
+            } else {
+                ImportShape::Membership
+            },
+            recursive: value.is_recursive,
+            is_expose: true,
+        }),
     }
 }
 

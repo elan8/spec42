@@ -92,6 +92,11 @@ pub struct HostElementFacts {
     /// distinguish a source fact from an implied semantic result.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub effective_feature_ownership: Option<HostFeatureOwnership>,
+    /// Parser-authored membership visibility and its canonical effective value. This is separate
+    /// from display attributes so relationship projection never recovers membership semantics
+    /// from strings.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub membership: Option<HostMembershipFacts>,
     /// Semantic ID of this element's own addressable `Expression` content (in
     /// [`HostSemanticProjection::expressions`]), when the element itself directly *is* an
     /// expression (for example a `TransitionGuard`) rather than merely having one attached via
@@ -99,6 +104,40 @@ pub struct HostElementFacts {
     /// "this feature's value is X"; this represents "this element's substance is X".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_expression_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostMembershipFacts {
+    pub declared_kind: HostMembershipKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub authored_visibility: Option<HostVisibilityKind>,
+    pub effective_visibility: HostVisibilityKind,
+    pub visibility_provenance: HostMembershipVisibilityProvenance,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub import_shape: Option<HostImportShape>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostVisibilityKind {
+    Public,
+    Private,
+    Protected,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostImportShape {
+    Membership,
+    Namespace,
+    FilteredNamespace,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostMembershipVisibilityProvenance {
+    Authored,
+    Implied,
 }
 
 /// Explicit feature/definition modifiers projected from declared semantic facts.

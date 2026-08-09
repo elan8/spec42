@@ -88,6 +88,7 @@ pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
     // workspace graph. In particular, verified requirements owned by objectives link their
     // resolved target back to the enclosing verification case after the whole document exists.
     crate::semantic::relationships::link_case_subject_relationships(&mut g);
+    g.assert_no_pending_declared_membership_facts();
     g
 }
 
@@ -258,6 +259,7 @@ pub(super) fn add_node_and_recurse(
     parent_id: Option<&NodeId>,
 ) {
     let node_id = NodeId::new(uri, qualified);
+    let declared_membership = g.take_declared_membership_facts(&node_id);
     let is_anonymous = attrs
         .get("isAnonymous")
         .and_then(serde_json::Value::as_bool)
@@ -269,7 +271,10 @@ pub(super) fn add_node_and_recurse(
         name,
         range,
         attributes: attrs,
-        declared_facts: Default::default(),
+        declared_facts: crate::semantic::model::DeclaredSemanticFacts {
+            membership: declared_membership,
+            ..Default::default()
+        },
         parent_id: parent_id.cloned(),
     };
     // Also index the node under its short-name-qualified variant (if any), so
@@ -644,8 +649,13 @@ mod root_namespace_tests {
             "root import keeps authored root scope"
         );
         assert_eq!(
-            import.attributes.get("importTarget"),
-            Some(&serde_json::json!("Catalog::*"))
+            import
+                .declared_facts
+                .membership
+                .as_ref()
+                .and_then(|membership| membership.import.as_ref())
+                .map(|facts| facts.target.reference.as_str()),
+            Some("Catalog::*")
         );
     }
 

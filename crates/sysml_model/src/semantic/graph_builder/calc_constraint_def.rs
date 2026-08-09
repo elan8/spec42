@@ -14,9 +14,7 @@ use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
     resolve_addressable_name, wire_def_specialization_edge,
 };
-use crate::semantic::ast_util::{
-    attach_membership_visibility, attach_short_name_attribute, identification_name, span_to_range,
-};
+use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
 use crate::semantic::model::NodeId;
@@ -183,7 +181,10 @@ pub(super) fn build_constraint_def(
     }
     insert_def_specialization_attr(&mut attrs, c_node.value.specializes.as_deref());
     attach_short_name_attribute(&mut attrs, &c_node.value.identification);
-    attach_membership_visibility(&mut attrs, &c_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -227,7 +228,10 @@ pub(super) fn build_constraint_usage(
     let name = resolve_addressable_name(&c_node.value.name, "constraint", &mut attrs);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "constraint");
     let (params, expression) = extract_constraint_metadata(uri, &c_node.value.body);
-    attach_membership_visibility(&mut attrs, &c_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
+    );
     attrs.insert(
         "analysisKind".to_string(),
         serde_json::json!("constraint_usage"),
@@ -291,7 +295,10 @@ pub(super) fn build_calc_def(
         attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
     }
     attach_short_name_attribute(&mut attrs, &c_node.value.identification);
-    attach_membership_visibility(&mut attrs, &c_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -413,7 +420,10 @@ pub(super) fn materialize_calc_usage(
     let range = span_to_range(&calc_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &calc_node.value.identification);
-    attach_membership_visibility(&mut attrs, &calc_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&calc_node.value.membership),
+    );
     if let Some(ref t) = calc_node.value.type_name {
         attrs.insert("calcType".to_string(), serde_json::json!(t));
     }

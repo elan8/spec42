@@ -13,10 +13,11 @@ use url::Url;
 
 use crate::semantic::model::{
     node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
-    EffectiveFeatureOwnership, EffectiveSemanticFacts, ElementKind, ExpressionResultId,
-    ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
-    ImpliedFeatureValueBinding, ImpliedMultiplicity, NodeId, RelationshipKind, SemanticEdge,
-    SemanticNode,
+    DeclaredMembershipFacts, EffectiveFeatureOwnership, EffectiveMembershipVisibility,
+    EffectiveSemanticFacts, ElementKind, ExpressionResultId, ExpressionResultRole,
+    FeatureOwnershipProvenance, ImpliedFeatureOwnership, ImpliedFeatureValueBinding,
+    ImpliedMultiplicity, MembershipVisibilityProvenance, NodeId, RelationshipKind, SemanticEdge,
+    SemanticNode, VisibilityKind,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -61,6 +62,10 @@ pub struct SemanticGraphData {
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
+    /// Build-local typed handoff from an AST membership adapter to its immediately following
+    /// node materialization. It is never serialized or published as an attribute projection.
+    #[serde(skip)]
+    pub(crate) pending_declared_membership_facts: HashMap<NodeId, DeclaredMembershipFacts>,
     /// Authoritative effective facts published after semantic linking. Unlike query indexes,
     /// this is model state: consumers use it instead of re-deriving defaults or closure facts.
     #[serde(default)]
@@ -111,6 +116,8 @@ impl Clone for SemanticGraphData {
             children_by_parent_id: self.children_by_parent_id.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
+            // A cloned/published graph must never inherit an unfinished builder handoff.
+            pending_declared_membership_facts: HashMap::new(),
             effective_facts_by_node_id: self.effective_facts_by_node_id.clone(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
@@ -139,6 +146,43 @@ impl SemanticGraph {
     /// Returns the effective facts published for `node` at the graph's current semantic barrier.
     pub fn effective_facts_for(&self, node: &SemanticNode) -> Option<&EffectiveSemanticFacts> {
         self.effective_facts_by_node_id.get(&node.id)
+    }
+
+    /// Returns the authored membership visibility or the parser-documented contextual default:
+    /// public for members of a package, private for nested members. The source fact remains
+    /// absent when no prefix was written, so consumers can preserve provenance instead of
+    /// mistaking the default for authored source.
+    pub fn effective_membership_visibility_for(
+        &self,
+        node: &SemanticNode,
+    ) -> Option<EffectiveMembershipVisibility> {
+        let membership = node.declared_facts.membership.as_ref()?;
+        Some(match membership.visibility {
+            Some(value) => EffectiveMembershipVisibility {
+                value,
+                provenance: MembershipVisibilityProvenance::Authored,
+            },
+            None => EffectiveMembershipVisibility {
+                value: if membership.import.is_some() {
+                    // KerML Import's abstract-syntax default is private; it does not inherit
+                    // package-member visibility merely because it is declared in a package.
+                    VisibilityKind::Private
+                } else {
+                    match node
+                        .parent_id
+                        .as_ref()
+                        .and_then(|parent| self.get_node(parent))
+                    {
+                        None => VisibilityKind::Public,
+                        Some(parent) if parent.element_kind == ElementKind::Package => {
+                            VisibilityKind::Public
+                        }
+                        Some(_) => VisibilityKind::Private,
+                    }
+                },
+                provenance: MembershipVisibilityProvenance::Implied,
+            },
+        })
     }
 
     /// Returns a feature's ownership after applying its parser-backed modifier or the one
@@ -441,6 +485,7 @@ impl SemanticGraphData {
             children_by_parent_id: HashMap::new(),
             pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
+            pending_declared_membership_facts: HashMap::new(),
             effective_facts_by_node_id: HashMap::new(),
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
@@ -851,6 +896,36 @@ impl SemanticGraphData {
     pub fn get_node_mut(&mut self, id: &NodeId) -> Option<&mut SemanticNode> {
         let idx = *self.node_index_by_id.get(id)?;
         self.graph.node_weight_mut(idx)
+    }
+
+    /// Registers a parser-backed membership fact for the node identity about to be materialized.
+    /// The graph builder consumes it during node insertion; duplicate registration is a builder
+    /// bug because one declaration has exactly one membership fact.
+    pub(crate) fn register_declared_membership_facts(
+        &mut self,
+        id: NodeId,
+        facts: DeclaredMembershipFacts,
+    ) {
+        assert!(
+            self.pending_declared_membership_facts
+                .insert(id, facts)
+                .is_none(),
+            "membership facts registered twice for one node"
+        );
+    }
+
+    pub(crate) fn take_declared_membership_facts(
+        &mut self,
+        id: &NodeId,
+    ) -> Option<DeclaredMembershipFacts> {
+        self.pending_declared_membership_facts.remove(id)
+    }
+
+    pub(crate) fn assert_no_pending_declared_membership_facts(&self) {
+        assert!(
+            self.pending_declared_membership_facts.is_empty(),
+            "all parser-authored membership facts must be consumed before graph publication"
+        );
     }
 
     /// Returns the node whose range contains the given position (first match).

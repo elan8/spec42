@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::checks::import_resolution::import_target_resolves;
+use crate::checks::import_resolution::{import_target, import_target_resolves};
 use crate::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
@@ -377,11 +377,9 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             if import_target_resolves(graph, node) {
                 continue;
             }
-            let target = node
-                .attributes
-                .get("importTarget")
-                .and_then(|v| v.as_str())
-                .unwrap_or("import");
+            let Some(target) = import_target(node) else {
+                continue;
+            };
             (target.to_string(), "viewpoint_import")
         } else if matches!(
             node.element_kind,

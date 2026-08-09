@@ -14,8 +14,8 @@ use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
 use crate::semantic::ast_util::{
-    attach_membership_visibility, attach_short_name_attribute, definition_feature_properties,
-    identification_name, span_to_range, text_range_to_json,
+    attach_short_name_attribute, definition_feature_properties, identification_name, span_to_range,
+    text_range_to_json,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};

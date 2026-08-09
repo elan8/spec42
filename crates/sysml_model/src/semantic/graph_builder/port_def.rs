@@ -7,9 +7,8 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_membership_visibility, declared_multiplicity, direction_name,
-    item_usage_feature_properties, port_usage_feature_properties, span_to_range, subsetting_target,
-    typing_targets,
+    declared_multiplicity, direction_name, item_usage_feature_properties,
+    port_usage_feature_properties, span_to_range, subsetting_target, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId};
@@ -72,7 +71,10 @@ pub(super) fn materialize_port_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "port");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(ref t) = n.type_name {
         attrs.insert("portType".to_string(), serde_json::json!(t));
     }
@@ -187,7 +189,10 @@ pub(super) fn build_from_port_def_body_element(
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
-            attach_membership_visibility(&mut attrs, &n.membership);
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&n.membership),
+            );
             let typed_by = typing_targets(n.typing.as_deref());
             if !typed_by.is_empty() {
                 attrs.insert(
@@ -221,7 +226,10 @@ pub(super) fn build_from_port_def_body_element(
                     qualified_name_for_node(g, uri, container_prefix, name, "in out parameter");
                 let range = span_to_range(&n.span);
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &n.membership);
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&n.membership),
+                );
                 attrs.insert(
                     "direction".to_string(),
                     serde_json::json!(direction_name(direction)),
@@ -316,7 +324,10 @@ fn materialize_port_def_item_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(direction) = n.direction {
         attrs.insert(
             "direction".to_string(),

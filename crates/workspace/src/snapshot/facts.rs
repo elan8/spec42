@@ -12,8 +12,9 @@ use super::discovery::path_to_file_url;
 use super::projection::{
     HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
     HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostMembershipKind, HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection,
+    HostImportShape, HostMembershipFacts, HostMembershipKind, HostMembershipVisibilityProvenance,
+    HostMultiplicity, HostRelationshipMetaclass, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection, HostVisibilityKind,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -159,6 +160,40 @@ fn build_host_semantic_model_node(
                     },
                 },
             ),
+            membership: node
+                .declared_facts
+                .membership
+                .as_ref()
+                .and_then(|membership| {
+                    graph
+                        .effective_membership_visibility_for(node)
+                        .map(|effective| HostMembershipFacts {
+                            declared_kind: host_declared_membership_kind(membership.kind),
+                            authored_visibility: membership.visibility.map(host_visibility_kind),
+                            effective_visibility: host_visibility_kind(effective.value),
+                            visibility_provenance: match effective.provenance {
+                                sysml_model::MembershipVisibilityProvenance::Authored => {
+                                    HostMembershipVisibilityProvenance::Authored
+                                }
+                                sysml_model::MembershipVisibilityProvenance::Implied => {
+                                    HostMembershipVisibilityProvenance::Implied
+                                }
+                            },
+                            import_shape: membership.import.as_ref().map(|import| {
+                                match import.shape {
+                                    sysml_model::ImportShape::Membership => {
+                                        HostImportShape::Membership
+                                    }
+                                    sysml_model::ImportShape::Namespace => {
+                                        HostImportShape::Namespace
+                                    }
+                                    sysml_model::ImportShape::FilteredNamespace => {
+                                        HostImportShape::FilteredNamespace
+                                    }
+                                }
+                            }),
+                        })
+                }),
             content_expression_id: None,
         },
     }
@@ -802,6 +837,9 @@ fn membership_kind(
     node: &HostSemanticModelNode,
     owner_kind: Option<&sysml_model::ElementKind>,
 ) -> HostMembershipKind {
+    if let Some(membership) = node.facts.membership.as_ref() {
+        return membership.declared_kind;
+    }
     use sysml_model::ElementKind;
 
     if node
@@ -896,10 +934,11 @@ fn membership_relationship_metaclass(
     match kind {
         HostMembershipKind::Import => {
             if node
-                .attributes
-                .get("importAll")
-                .and_then(|value| value.as_bool())
-                == Some(true)
+                .facts
+                .membership
+                .as_ref()
+                .and_then(|membership| membership.import_shape)
+                == Some(HostImportShape::Namespace)
             {
                 HostRelationshipMetaclass::NamespaceImport
             } else {
@@ -912,10 +951,35 @@ fn membership_relationship_metaclass(
 }
 
 fn membership_visibility(node: &HostSemanticModelNode) -> Option<String> {
-    node.attributes
-        .get("visibility")
-        .and_then(|value| value.as_str())
-        .map(|value| value.trim_matches('"').to_owned())
+    node.facts
+        .membership
+        .as_ref()
+        .and_then(|membership| membership.authored_visibility)
+        .map(|visibility| match visibility {
+            HostVisibilityKind::Public => "public".to_owned(),
+            HostVisibilityKind::Private => "private".to_owned(),
+            HostVisibilityKind::Protected => "protected".to_owned(),
+        })
+}
+
+fn host_visibility_kind(visibility: sysml_model::VisibilityKind) -> HostVisibilityKind {
+    match visibility {
+        sysml_model::VisibilityKind::Public => HostVisibilityKind::Public,
+        sysml_model::VisibilityKind::Private => HostVisibilityKind::Private,
+        sysml_model::VisibilityKind::Protected => HostVisibilityKind::Protected,
+    }
+}
+
+fn host_declared_membership_kind(kind: sysml_model::DeclaredMembershipKind) -> HostMembershipKind {
+    match kind {
+        sysml_model::DeclaredMembershipKind::Owning => HostMembershipKind::OwningMembership,
+        sysml_model::DeclaredMembershipKind::Feature => HostMembershipKind::FeatureMembership,
+        sysml_model::DeclaredMembershipKind::Import => HostMembershipKind::Import,
+        sysml_model::DeclaredMembershipKind::Alias => HostMembershipKind::Alias,
+        sysml_model::DeclaredMembershipKind::Variant => HostMembershipKind::VariantMembership,
+        sysml_model::DeclaredMembershipKind::Actor => HostMembershipKind::ActorMembership,
+        sysml_model::DeclaredMembershipKind::Synthesized => HostMembershipKind::OwningMembership,
+    }
 }
 
 /// Distinguishes multiple `Connection` edges between the same endpoint pair (the graph allows

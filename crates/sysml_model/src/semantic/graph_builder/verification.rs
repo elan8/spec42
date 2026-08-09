@@ -10,7 +10,7 @@ use super::requirement_body::{add_verified_requirement_node, verify_requirement_
 use super::use_case::{self, add_include_use_case_node};
 use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 use crate::semantic::analysis_typing::strip_analysis_return_body;
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, typing_targets};
+use crate::semantic::ast_util::{span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -316,7 +316,10 @@ pub(super) fn build_from_verification_body(
                     "attribute def",
                 );
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
+                g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
                 let typed_by = typing_targets(value.typing.as_deref());
                 if !typed_by.is_empty() {
                     attrs.insert(

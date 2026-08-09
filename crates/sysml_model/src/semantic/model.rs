@@ -745,6 +745,10 @@ impl RelationshipKind {
 /// remain separate from the legacy display-oriented `attributes` map.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DeclaredSemanticFacts {
+    /// Parser-authored membership and import facts. These own membership visibility and import
+    /// shape; consumers must not recover either from presentation attributes.
+    #[serde(default)]
+    pub membership: Option<DeclaredMembershipFacts>,
     #[serde(default)]
     pub multiplicity: Option<DeclaredMultiplicity>,
     #[serde(default)]
@@ -766,6 +770,102 @@ pub struct DeclaredSemanticFacts {
     /// feature's value is X". Projected as `HostElementFacts::content_expression_id`.
     #[serde(default)]
     pub own_expression: Option<DeclaredExpression>,
+}
+
+/// Visibility written on a membership declaration.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum VisibilityKind {
+    Public,
+    Private,
+    Protected,
+}
+
+impl VisibilityKind {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Public => "public",
+            Self::Private => "private",
+            Self::Protected => "protected",
+        }
+    }
+}
+
+/// Parser-authored membership facts. An absent `visibility` is deliberately distinct from the
+/// effective private default published by [`SemanticGraph::effective_membership_visibility_for`].
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredMembershipFacts {
+    #[serde(default)]
+    pub kind: DeclaredMembershipKind,
+    #[serde(default)]
+    pub visibility: Option<VisibilityKind>,
+    /// The parser span for the declaration carrying this membership.
+    #[serde(default)]
+    pub range: Option<TextRange>,
+    /// Present only for import/expose memberships.
+    #[serde(default)]
+    pub import: Option<DeclaredImportFacts>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum DeclaredMembershipKind {
+    Owning,
+    Feature,
+    Import,
+    Alias,
+    Variant,
+    Actor,
+    /// A graph-owned synthesized membership whose parser grammar has no Membership wrapper.
+    Synthesized,
+}
+
+impl Default for DeclaredMembershipKind {
+    fn default() -> Self {
+        Self::Synthesized
+    }
+}
+
+/// The parser-authored form of an import membership.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredImportFacts {
+    pub target: DeclaredImportTarget,
+    pub shape: ImportShape,
+    pub recursive: bool,
+    #[serde(default)]
+    pub is_expose: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredImportTarget {
+    /// Authored target reference, before any lookup or normalization.
+    pub reference: String,
+    /// Exact target span when the parser exposes it; otherwise the enclosing import span.
+    #[serde(default)]
+    pub range: Option<TextRange>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum ImportShape {
+    Membership,
+    Namespace,
+    /// Parser-backed filter-package form. It is retained distinctly until filter semantics are
+    /// implemented; consumers must not treat it as an ordinary namespace import.
+    FilteredNamespace,
+}
+
+/// Canonical effective membership visibility with explicit authored/default provenance.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct EffectiveMembershipVisibility {
+    pub value: VisibilityKind,
+    pub provenance: MembershipVisibilityProvenance,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MembershipVisibilityProvenance {
+    Authored,
+    Implied,
 }
 
 /// Explicit relationship targets authored on a declaration.

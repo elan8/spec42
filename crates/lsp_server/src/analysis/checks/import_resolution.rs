@@ -1,5 +1,6 @@
 use crate::semantic::SemanticGraph;
 use sysml_model::ElementKind;
+use sysml_model::semantic::import_resolution::{import_target, is_import_all};
 
 pub(super) fn has_import_in_scope(
     graph: &SemanticGraph,
@@ -39,20 +40,6 @@ fn is_namespace_kind(kind: &ElementKind) -> bool {
     )
 }
 
-pub(super) fn import_target(node: &crate::semantic::SemanticNode) -> Option<&str> {
-    node.attributes
-        .get("importTarget")
-        .and_then(|value| value.as_str())
-        .map(str::trim)
-        .filter(|value| !value.is_empty())
-}
-
-fn import_is_all(node: &crate::semantic::SemanticNode) -> bool {
-    node.attributes
-        .get("importAll")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false)
-}
 
 fn normalized_namespace_target(target: &str) -> String {
     target
@@ -95,7 +82,7 @@ pub(super) fn import_target_resolves(
         return false;
     };
 
-    if import_is_all(import_node) {
+    if is_import_all(import_node) {
         let namespace_target = normalized_namespace_target(target);
         return graph
             .nodes_by_uri

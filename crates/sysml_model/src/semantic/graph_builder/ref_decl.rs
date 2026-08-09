@@ -7,8 +7,8 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_membership_visibility, declared_feature_value, ref_decl_feature_properties,
-    span_to_range, subsetting_target, typing_targets,
+    declared_feature_value, ref_decl_feature_properties, span_to_range, subsetting_target,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
@@ -42,7 +42,10 @@ pub(super) fn materialize_ref_decl(
     let range = span_to_range(&wrap.span);
     let mut attrs = HashMap::new();
     attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }

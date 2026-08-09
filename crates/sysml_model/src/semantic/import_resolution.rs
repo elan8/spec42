@@ -2,41 +2,73 @@ use std::collections::HashSet;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::{self, element_kind_allowed, is_namespace};
-use crate::semantic::model::{node_matches_simple_name, ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{
+    node_matches_simple_name, ElementKind, ImportShape, NodeId, SemanticNode, VisibilityKind,
+};
 use crate::semantic::resolution::naming::{
     normalize_declared_type_ref, normalize_for_lookup, type_ref_candidates_with_kind,
 };
 
-fn import_visibility(import: &SemanticNode) -> String {
-    import
-        .attributes
-        .get("visibility")
-        .and_then(|value| value.as_str())
-        .map(|value| value.to_ascii_lowercase())
-        .unwrap_or_else(|| "private".to_string())
+fn import_visibility(graph: &SemanticGraph, import: &SemanticNode) -> VisibilityKind {
+    graph
+        .effective_membership_visibility_for(import)
+        .map(|visibility| visibility.value)
+        .expect("import nodes with declared import facts have membership facts")
 }
 
 pub fn import_target(import: &SemanticNode) -> Option<&str> {
-    import
-        .attributes
-        .get("importTarget")
-        .and_then(|value| value.as_str())
+    let target = &import
+        .declared_facts
+        .membership
+        .as_ref()?
+        .import
+        .as_ref()?
+        .target
+        .reference;
+    (!target.trim().is_empty()).then_some(target.as_str())
 }
 
-pub(crate) fn is_import_all(import: &SemanticNode) -> bool {
+pub fn is_import_all(import: &SemanticNode) -> bool {
     import
-        .attributes
-        .get("importAll")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false)
+        .declared_facts
+        .membership
+        .as_ref()
+        .and_then(|membership| membership.import.as_ref())
+        .is_some_and(|import| import.shape == ImportShape::Namespace)
+}
+
+pub fn import_shape(import: &SemanticNode) -> Option<ImportShape> {
+    import
+        .declared_facts
+        .membership
+        .as_ref()?
+        .import
+        .as_ref()
+        .map(|import| import.shape)
 }
 
 fn is_recursive(import: &SemanticNode) -> bool {
     import
-        .attributes
-        .get("recursive")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false)
+        .declared_facts
+        .membership
+        .as_ref()
+        .and_then(|membership| membership.import.as_ref())
+        .is_some_and(|import| import.recursive)
+}
+
+/// Whether this import fact originated from an `expose` declaration.
+pub fn is_expose(import: &SemanticNode) -> bool {
+    import
+        .declared_facts
+        .membership
+        .as_ref()
+        .and_then(|membership| membership.import.as_ref())
+        .is_some_and(|import| import.is_expose)
+}
+
+/// Whether the parser authored the recursive import marker.
+pub fn is_recursive_import(import: &SemanticNode) -> bool {
+    is_recursive(import)
 }
 
 pub(crate) fn normalized_namespace_target(target: &str) -> String {
@@ -232,7 +264,11 @@ fn exported_members_named_from_namespace(
     };
 
     for child in graph.children_of(namespace) {
-        if child.element_kind != ElementKind::Import && node_matches_simple_name(child, simple_name)
+        if child.element_kind != ElementKind::Import
+            && node_matches_simple_name(child, simple_name)
+            && graph
+                .effective_membership_visibility_for(child)
+                .is_some_and(|visibility| visibility.value == VisibilityKind::Public)
         {
             out.push(child.id.clone());
         }
@@ -243,7 +279,7 @@ fn exported_members_named_from_namespace(
         .into_iter()
         .filter(|child| child.element_kind == ElementKind::Import)
     {
-        if exported_only && import_visibility(import) != "public" {
+        if exported_only && import_visibility(graph, import) != VisibilityKind::Public {
             continue;
         }
         out.extend(resolve_import_targets_named(
@@ -389,22 +425,25 @@ fn resolve_import_targets_named(
     };
     let mut out = Vec::new();
     for candidate in import_namespace_target_candidates(graph, import, target) {
-        let resolved = if is_import_all(import) {
-            resolve_namespace_import_named(
+        let resolved = match import_shape(import) {
+            Some(ImportShape::Namespace) => resolve_namespace_import_named(
                 graph,
                 &candidate,
                 is_recursive(import),
                 simple_name,
                 stack,
-            )
-        } else {
-            resolve_membership_import_named(
+            ),
+            Some(ImportShape::Membership) => resolve_membership_import_named(
                 graph,
                 &candidate,
                 is_recursive(import),
                 simple_name,
                 stack,
-            )
+            ),
+            // Filter-package import semantics are not implemented. The parser-backed shape
+            // remains explicit; publishing ordinary namespace members here would be success
+            // for an unsupported construct.
+            Some(ImportShape::FilteredNamespace) | None => Vec::new(),
         };
         out.extend(resolved);
     }
@@ -552,7 +591,7 @@ pub fn import_target_resolves(graph: &SemanticGraph, import_node: &SemanticNode)
         return false;
     };
 
-    if is_import_all(import_node) {
+    if matches!(import_shape(import_node), Some(ImportShape::Namespace)) {
         return import_namespace_target_candidates(graph, import_node, target)
             .iter()
             .any(|candidate| {
@@ -565,6 +604,10 @@ pub fn import_target_resolves(graph: &SemanticGraph, import_node: &SemanticNode)
                             .unwrap_or(false)
                     })
             });
+    }
+
+    if !matches!(import_shape(import_node), Some(ImportShape::Membership)) {
+        return false;
     }
 
     let membership_target = normalized_membership_target(target);

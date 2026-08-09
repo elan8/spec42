@@ -2,7 +2,9 @@ use std::collections::HashSet;
 
 use url::Url;
 
-use crate::checks::import_resolution::{import_target, import_target_resolves};
+use crate::checks::import_resolution::{
+    import_target, import_target_resolves, is_expose, is_import_all, is_recursive_import,
+};
 use crate::helpers::{
     condition_expression_is_boolean, diag, diagnostic_range, reference_token_range,
 };
@@ -11,32 +13,13 @@ use crate::SemanticDiagnostic;
 use sysml_model::semantic::kinds::is_namespace;
 use sysml_model::{resolve_expose_target, ExposeTargetResolution, SemanticGraph};
 
-fn import_is_all(node: &sysml_model::SemanticNode) -> bool {
-    node.attributes
-        .get("importAll")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false)
-}
-
-fn import_is_recursive(node: &sysml_model::SemanticNode) -> bool {
-    node.attributes
-        .get("recursive")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false)
-}
-
 fn import_target_is_resolved(
     graph: &SemanticGraph,
     uri: &Url,
     node: &sysml_model::SemanticNode,
     target: &str,
 ) -> bool {
-    if node
-        .attributes
-        .get("isExpose")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false)
-    {
+    if is_expose(node) {
         return matches!(
             resolve_expose_target(
                 graph,
@@ -66,7 +49,7 @@ fn resolve_import_target_kind(
     import_node: &sysml_model::SemanticNode,
 ) -> Option<sysml_model::ElementKind> {
     let target = import_target(import_node)?;
-    let lookup = if import_is_all(import_node) {
+    let lookup = if is_import_all(import_node) {
         normalized_namespace_target(target)
     } else {
         target.trim().trim_end_matches("::**").trim().to_string()
@@ -116,7 +99,7 @@ pub(crate) fn collect_import_conformance_diagnostics(
         }
 
         if let Some(resolved_kind) = resolve_import_target_kind(graph, node) {
-            if import_is_all(node) && !is_namespace(&resolved_kind) {
+            if is_import_all(node) && !is_namespace(&resolved_kind) {
                 let key = format!("kind|{}", node.id.qualified_name);
                 if seen.insert(key) {
                     diagnostics.push(diag(
@@ -132,7 +115,7 @@ pub(crate) fn collect_import_conformance_diagnostics(
                     ));
                 }
             }
-            if !import_is_all(node)
+            if !is_import_all(node)
                 && is_namespace(&resolved_kind)
                 && (target.contains("::*") || target.ends_with("::**"))
             {
@@ -151,7 +134,7 @@ pub(crate) fn collect_import_conformance_diagnostics(
                     ));
                 }
             }
-            if import_is_recursive(node) && !is_namespace(&resolved_kind) {
+            if is_recursive_import(node) && !is_namespace(&resolved_kind) {
                 let key = format!("recursive|{}", node.id.qualified_name);
                 if seen.insert(key) {
                     diagnostics.push(diag(

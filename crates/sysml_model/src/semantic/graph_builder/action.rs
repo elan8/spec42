@@ -10,9 +10,9 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use crate::semantic::ast_util::{
-    action_usage_feature_properties, attach_membership_visibility, attach_short_name_attribute,
-    declared_multiplicity, span_to_range, state_usage_feature_properties, subsetting_target,
-    subsetting_targets, typing_targets,
+    action_usage_feature_properties, attach_short_name_attribute, declared_multiplicity,
+    span_to_range, state_usage_feature_properties, subsetting_target, subsetting_targets,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
@@ -392,6 +392,10 @@ fn add_state_usage(
 ) {
     let name = &su_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&su_node.value.membership),
+    );
     let attrs = state_usage_graph_attrs(&su_node.value);
     add_node_and_recurse(
         g,
@@ -515,7 +519,10 @@ fn add_default_reference_usage(
     let value = &node.value;
     let qualified = qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
     let targets = typing_targets(value.typing.as_deref());
     if !targets.is_empty() {
         attrs.insert(
@@ -676,6 +683,10 @@ fn materialize_nested_action_usage(
 ) -> String {
     let name = &au_node.name;
     let child_qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &child_qualified),
+        crate::semantic::ast_util::declared_membership_facts(&au_node.membership),
+    );
     let mut attrs = action_usage_graph_attrs(au_node);
     insert_action_payload_attrs(&mut attrs, au_node);
     add_node_and_recurse(
@@ -708,7 +719,6 @@ fn materialize_nested_action_usage(
 
 fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &usage.membership);
     attrs.insert(
         "actionType".to_string(),
         serde_json::json!(&usage.type_name),
@@ -770,7 +780,6 @@ fn wire_action_usage_typing(
 
 pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &usage.membership);
     if let Some(ref t) = usage.type_name {
         attrs.insert("stateType".to_string(), serde_json::json!(t));
     }
@@ -1284,6 +1293,10 @@ pub(super) fn materialize_top_level_action_usage(
     let usage = &au_node.value;
     let name = &usage.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&usage.membership),
+    );
     let mut attrs = action_usage_graph_attrs(usage);
     insert_action_payload_attrs(&mut attrs, usage);
     add_node_and_recurse(
@@ -1318,7 +1331,10 @@ pub(super) fn materialize_action_def(
     let action_id = NodeId::new(uri, &qualified);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ad_node.identification);
-    attach_membership_visibility(&mut attrs, &ad_node.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&ad_node.membership),
+    );
     let spec_targets: Vec<&str> = specializes
         .map(|spec| crate::semantic::ast_util::typing_targets(Some(spec)))
         .unwrap_or_default()

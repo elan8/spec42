@@ -17,8 +17,8 @@ use super::{
     wire_def_specialization_edge,
 };
 use crate::semantic::ast_util::{
-    attach_membership_visibility, attach_short_name_attribute, declared_expression,
-    identification_name, span_to_range, subsetting_target,
+    attach_short_name_attribute, declared_expression, identification_name, span_to_range,
+    subsetting_target,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
@@ -97,7 +97,10 @@ pub(super) fn add_view_rendering_node(
         "view rendering",
     );
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &vr.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&vr.membership),
+    );
     if let Some(ref rendering_type) = vr.type_name {
         attrs.insert(
             "renderingType".to_string(),
@@ -193,7 +196,10 @@ fn add_view_column_node(
         "view column",
     );
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &cv.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&cv.membership),
+    );
     if let Some(redefines) = redefines_name {
         attrs.insert("redefines".to_string(), serde_json::json!(redefines));
     }
@@ -279,11 +285,11 @@ pub(super) fn materialize_expose_member(
         &name,
         "import",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
-    attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-    attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
-    attrs.insert("isExpose".to_string(), serde_json::json!(true));
+    let attrs = HashMap::new();
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_expose_membership_facts(expose),
+    );
     add_node_and_recurse(
         g,
         uri,
@@ -357,7 +363,10 @@ pub(super) fn build_view_def(
     let range = span_to_range(&vd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &vd_node.value.identification);
-    attach_membership_visibility(&mut attrs, &vd_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&vd_node.value.membership),
+    );
     insert_def_specialization_attr(&mut attrs, vd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -417,7 +426,10 @@ pub(super) fn build_viewpoint_def(
     let range = span_to_range(&vpd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &vpd_node.value.identification);
-    attach_membership_visibility(&mut attrs, &vpd_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&vpd_node.value.membership),
+    );
     insert_def_specialization_attr(&mut attrs, vpd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -461,7 +473,10 @@ pub(super) fn build_rendering_def(
     let range = span_to_range(&rd_node.span);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &rd_node.value.identification);
-    attach_membership_visibility(&mut attrs, &rd_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&rd_node.value.membership),
+    );
     insert_def_specialization_attr(&mut attrs, rd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
@@ -495,7 +510,10 @@ pub(super) fn build_view_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "view");
     let range = span_to_range(&vu_node.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &vu_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&vu_node.value.membership),
+    );
     if let Some(ref t) = vu_node.value.type_name {
         attrs.insert("viewType".to_string(), serde_json::json!(t));
     }
@@ -527,7 +545,10 @@ pub(super) fn build_viewpoint_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "viewpoint");
     let range = span_to_range(&vpu_node.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &vpu_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&vpu_node.value.membership),
+    );
     attrs.insert(
         "viewpointType".to_string(),
         serde_json::json!(vpu_node.value.type_name.as_str()),
@@ -571,7 +592,10 @@ pub(super) fn build_rendering_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "rendering");
     let range = span_to_range(&ru_node.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &ru_node.value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&ru_node.value.membership),
+    );
     if let Some(ref t) = ru_node.value.type_name {
         attrs.insert("renderingType".to_string(), serde_json::json!(t));
     }
