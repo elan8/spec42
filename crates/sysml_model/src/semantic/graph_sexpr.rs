@@ -796,11 +796,15 @@ mod tests {
     )
   )
   (relationships
-    (typing (status resolved) (from (node (document "d0") (qualified-name "P::engine"))) (to (node (document "d0") (qualified-name "P::Engine"))))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "P::engine"))) (to (node (document "d0") (qualified-name "P::Engine"))) (provenance authored))
   )
   (pending-relationships
   )
   (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::Engine"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "P::engine"))) (status missing-prerequisite) (target "Parts::parts"))
   )
 )"#
         );
