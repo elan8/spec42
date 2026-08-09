@@ -221,10 +221,14 @@ pub(super) fn add_node_and_recurse(
     parent_id: Option<&NodeId>,
 ) {
     let node_id = NodeId::new(uri, qualified);
+    let is_anonymous = attrs
+        .get("isAnonymous")
+        .and_then(serde_json::Value::as_bool)
+        .unwrap_or(false);
     let node = SemanticNode {
         id: node_id.clone(),
         element_kind: ElementKind::from(kind),
-        declared_name: (!name.is_empty()).then(|| name.clone()),
+        declared_name: (!is_anonymous && !name.is_empty()).then(|| name.clone()),
         name,
         range,
         attributes: attrs,

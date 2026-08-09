@@ -33,6 +33,10 @@ fn anonymous_item_def_materializes_with_kind_tagged_name_and_nested_member() {
         .expect("anonymous item def");
     assert_eq!(item_def.id.qualified_name, "P::_itemDef");
     assert_eq!(
+        item_def.declared_name, None,
+        "the addressable name is generated, not parser-authored"
+    );
+    assert_eq!(
         item_def.attributes.get("isAnonymous"),
         Some(&serde_json::json!(true))
     );

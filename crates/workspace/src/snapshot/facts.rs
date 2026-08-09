@@ -1172,6 +1172,30 @@ package Demo {
     }
 
     #[test]
+    fn projection_keeps_generated_anonymous_name_out_of_declared_name() {
+        let document = sysml_model::SysmlDocument::from_memory_path(
+            "workspace",
+            "anonymous_item.sysml",
+            "package P { item def { attribute id : String; } }".to_string(),
+            sysml_model::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace document");
+        let (graph, _) =
+            sysml_model::build_semantic_graph_from_documents(&[document]).expect("semantic graph");
+        let anonymous = graph
+            .nodes_named("_itemDef")
+            .into_iter()
+            .find(|node| node.element_kind == "item def")
+            .expect("anonymous item definition");
+
+        let projected = build_host_semantic_model_node(&graph, anonymous, &[]);
+        assert_eq!(projected.facts.declared_name, None);
+        assert_eq!(projected.facts.effective_name, "_itemDef");
+    }
+
+    #[test]
     fn projection_exposes_declared_feature_properties_for_modifiers() {
         let content = r#"
 package Demo {
