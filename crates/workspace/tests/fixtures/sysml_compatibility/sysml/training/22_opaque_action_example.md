@@ -92,7 +92,7 @@ semantic.unresolved_name 'ScalarValues::Boolean'
         )
         (element (kind "action def") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (name "UpdateSensors") (declared-name "UpdateSensors")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (name "sensors") (declared-name "sensors") (effective (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (name "sensors") (declared-name "sensors") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors")))))
           )
         )
       )

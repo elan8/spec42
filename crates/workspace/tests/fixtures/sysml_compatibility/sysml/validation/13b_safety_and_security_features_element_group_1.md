@@ -262,7 +262,7 @@ semantic.unresolved_name 'Boolean'
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Mandatory Safety Features"))) (name "Mandatory Safety Features") (declared-name "Mandatory Safety Features")
           (contains
-            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Mandatory Safety Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "&&") (children (expression (kind "classification") (reference "Safety")) (expression (kind "featureReference") (reference "Safety::isMandatory")))))))
+            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Mandatory Safety Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "&&") (children (expression (kind "classification") (reference "Safety")) (expression (kind "featureReference") (reference "Safety::isMandatory")))))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
             (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Mandatory Safety Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
@@ -337,19 +337,19 @@ semantic.unresolved_name 'Boolean'
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety & Security Features"))) (name "Safety & Security Features") (declared-name "Safety & Security Features")
           (contains
-            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety & Security Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "||") (children (expression (kind "classification") (reference "Safety")) (expression (kind "classification") (reference "Security")))))))
+            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety & Security Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "binary") (operator "||") (children (expression (kind "classification") (reference "Safety")) (expression (kind "classification") (reference "Security")))))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
             (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety & Security Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety Features"))) (name "Safety Features") (declared-name "Safety Features")
           (contains
-            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Safety")))))
+            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Safety")))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
             (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Security Features"))) (name "Security Features") (declared-name "Security Features")
           (contains
-            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Security Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Security")))))
+            (element (kind "filter") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Security Features::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "Security")))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
             (element (kind "import") (id (node (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Security Features::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )

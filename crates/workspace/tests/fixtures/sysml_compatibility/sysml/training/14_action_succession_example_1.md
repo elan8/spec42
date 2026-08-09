@@ -133,8 +133,8 @@ NIL
       (contains
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus"))) (name "Focus") (declared-name "Focus")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
           )
         )
         (element (kind "item def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Image"))) (name "Image") (declared-name "Image"))
@@ -142,16 +142,16 @@ NIL
         (element (kind "item def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Scene"))) (name "Scene") (declared-name "Scene"))
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot"))) (name "Shoot") (declared-name "Shoot")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
           )
         )
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus"))) (name "focus") (declared-name "focus") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Focus")))))
               )
             )
             (element (kind "flow") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture")))))
@@ -159,8 +159,8 @@ NIL
             (element (kind "item") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture"))))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Succession Example-1::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Succession Example-1::Shoot")))))
               )
             )
           )

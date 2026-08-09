@@ -136,12 +136,12 @@ semantic.unresolved_name 'ToolVariable'
       (contains
         (element (kind "action") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics"))) (name "computeDynamics") (declared-name "computeDynamics") (declared)
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::a"))) (name "a") (declared-name "a"))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::dt"))) (name "dt") (declared-name "dt"))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::v_in"))) (name "v_in") (declared-name "v_in"))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::v_out"))) (name "v_out") (declared-name "v_out"))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::x_in"))) (name "x_in") (declared-name "x_in"))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::x_out"))) (name "x_out") (declared-name "x_out"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::a"))) (name "a") (declared-name "a") (declared (properties (direction "in"))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::dt"))) (name "dt") (declared-name "dt") (declared (properties (direction "in"))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::v_in"))) (name "v_in") (declared-name "v_in") (declared (properties (direction "in"))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::v_out"))) (name "v_out") (declared-name "v_out") (declared (properties (direction "out"))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::x_in"))) (name "x_in") (declared-name "x_in") (declared (properties (direction "in"))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Metadata Example-2::computeDynamics::x_out"))) (name "x_out") (declared-name "x_out") (declared (properties (direction "out"))))
           )
         )
       )

@@ -128,8 +128,8 @@ NIL
       (contains
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus"))) (name "Focus") (declared-name "Focus")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
           )
         )
         (element (kind "item def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Image"))) (name "Image") (declared-name "Image"))
@@ -137,8 +137,8 @@ NIL
         (element (kind "item def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Scene"))) (name "Scene") (declared-name "Scene"))
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot"))) (name "Shoot") (declared-name "Shoot")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Shorthand Example::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot")))))
           )
         )
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
@@ -146,7 +146,7 @@ NIL
             (element (kind "action") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus"))) (name "focus") (declared-name "focus") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))))
               (contains
                 (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus")))))
-                (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in")) (feature-value (kind bound) (expression (kind "featureReference") (reference "TakePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::scene"))) (role feature-value))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in")) (feature-value (kind bound) (expression (kind "featureReference") (reference "TakePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::scene"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
               )
             )
             (element (kind "flow") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture")))))
@@ -154,7 +154,7 @@ NIL
             (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot"))) (name "shoot") (declared-name "shoot") (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))))
               (contains
-                (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out")) (feature-value (kind bound) (expression (kind "featureReference") (reference "TakePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (role feature-value))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out")) (feature-value (kind bound) (expression (kind "featureReference") (reference "TakePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Shorthand Example::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Shorthand Example::TakePicture::shoot::picture"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
               )
             )
           )

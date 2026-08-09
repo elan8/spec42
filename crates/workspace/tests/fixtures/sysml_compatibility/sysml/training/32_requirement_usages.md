@@ -128,25 +128,25 @@ semantic.unresolved_name 'massReqd'
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Usages::*"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "Requirement Usages::*#import"))) (name "*") (declared-name "*"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (name "emptyVehicleMassLimit") (declared-name "emptyVehicleMassLimit")
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit"))) (name "emptyVehicleMassLimit") (declared-name "emptyVehicleMassLimit") (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved")))
           (contains
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0")
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (declared (own-expression (expression (kind "binary") (operator "==") (children (expression (kind "memberAccess") (reference "fuelMass") (children (expression (kind "featureReference") (reference "vehicle")))) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 0))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::_requireConstraint_0::_documentation"))) (name ""))
               )
             )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (declared (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 1500))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
             (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (name "fullVehicleMassLimit") (declared-name "fullVehicleMassLimit")
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit"))) (name "fullVehicleMassLimit") (declared-name "fullVehicleMassLimit") (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")) (analysis (status "unresolved")))
           (contains
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0")
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (declared (own-expression (expression (kind "binary") (operator "==") (children (expression (kind "memberAccess") (reference "fuelMass") (children (expression (kind "featureReference") (reference "vehicle")))) (expression (kind "memberAccess") (reference "fuelFullMass") (children (expression (kind "featureReference") (reference "vehicle")))))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
               (contains
                 (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::_requireConstraint_0::_documentation"))) (name ""))
               )
             )
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (name "massReqd") (declared-name "massReqd") (declared (feature-value (kind bound) (expression (kind "literalWithUnit") (children (expression (kind "integerLiteral") (literal (integer 2000))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "kg")))))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
             (element (kind "subject") (id (node (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::vehicle"))) (name "vehicle") (declared-name "vehicle"))
           )
         )

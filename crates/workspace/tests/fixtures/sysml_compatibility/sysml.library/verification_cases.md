@@ -356,10 +356,10 @@ standard library package VerificationCases {
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "VerificationCases::Boolean"))) (name "Boolean") (declared-name "Boolean"))
         (element (kind "import") (id (node (document "d0") (qualified-name "VerificationCases::Case"))) (name "Case") (declared-name "Case"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "VerificationCases::PassIf"))) (name "PassIf") (declared-name "PassIf")
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "VerificationCases::PassIf"))) (name "PassIf") (declared-name "PassIf") (declared (own-expression (expression (kind "featureReference") (reference "attribute")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "VerificationCases::PassIf::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::PassIf")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VerificationCases::PassIf::isPassing"))) (name "isPassing") (declared-name "isPassing") (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::PassIf")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "VerificationCases::PassIf::isPassing"))) (name "isPassing") (declared-name "isPassing") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "VerificationCases::PassIf")))))
           )
         )
         (element (kind "import") (id (node (document "d0") (qualified-name "VerificationCases::RequirementCheck"))) (name "RequirementCheck") (declared-name "RequirementCheck"))

@@ -235,7 +235,7 @@ semantic.unresolved_name 'ScalarValues::Real'
         (element (kind "enum def") (id (node (document "d0") (qualified-name "EnumerationTest::SizeChoice"))) (name "SizeChoice") (declared-name "SizeChoice"))
         (element (kind "enumeration") (id (node (document "d0") (qualified-name "EnumerationTest::color"))) (name "color") (declared-name "color"))
         (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "EnumerationTest::color1"))) (name "color1") (declared-name "color1"))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "EnumerationTest::color2"))) (name "color2") (declared-name "color2") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "color1")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EnumerationTest::color2"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "EnumerationTest::color2"))) (name "color2") (declared-name "color2") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "color1")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "EnumerationTest::color2"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
         (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "EnumerationTest::size"))) (name "size") (declared-name "size"))
       )
     )

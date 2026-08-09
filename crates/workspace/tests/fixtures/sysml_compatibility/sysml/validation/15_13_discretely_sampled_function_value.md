@@ -418,7 +418,7 @@ semantic.unresolved_name 'samples'
             (element (kind "attribute") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF::mRefs"))) (name "mRefs") (declared-name "mRefs") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::spatialCF")))))
           )
         )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (name "velocityCF") (declared-name "velocityCF") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "spatialCF")) (expression (kind "featureReference") (reference "s")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (name "velocityCF") (declared-name "velocityCF") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "binary") (operator "/") (children (expression (kind "featureReference") (reference "spatialCF")) (expression (kind "featureReference") (reference "s")))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15_13-Discretely Sampled Function Value::velocityCF"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
       )
     )
   )

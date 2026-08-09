@@ -113,7 +113,7 @@ semantic.unresolved_name 'ScalarValues::Integer'
         (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::e"))) (name "e") (declared-name "e") (declared (properties (ordered false)) (multiplicity (lower unevaluated) (upper unevaluated) (ordered false) (provenance authored))))
         (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::f"))) (name "f") (declared-name "f") (declared (properties (ordered false)) (multiplicity (lower unevaluated) (upper unbounded) (ordered false) (provenance authored))))
         (element (kind "part") (id (node (document "d0") (qualified-name "MultiplicityTest::g"))) (name "g") (declared-name "g") (declared (properties (ordered false)) (multiplicity (lower 1) (upper unevaluated) (ordered false) (provenance authored))))
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MultiplicityTest::n"))) (name "n") (declared-name "n") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal 5)))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "MultiplicityTest::n"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "MultiplicityTest::n"))) (name "n") (declared-name "n") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "integerLiteral") (literal (integer 5))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "MultiplicityTest::n"))) (role feature-value))) (evaluation (expression (status "ok") (value (integer 5)))))
       )
     )
   )

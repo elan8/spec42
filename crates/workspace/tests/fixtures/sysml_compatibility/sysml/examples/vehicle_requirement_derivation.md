@@ -177,9 +177,9 @@ semantic.unresolved_name 'ISQ::mass'
     (element (kind "package") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation"))) (name "VehicleRequirementDerivation") (declared-name "VehicleRequirementDerivation")
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::*"))) (name "*") (declared-name "*"))
-        (element (kind "requirement def") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (name "MassRequirement") (declared-name "MassRequirement")
+        (element (kind "requirement def") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement"))) (name "MassRequirement") (declared-name "MassRequirement") (evaluation (expression (status "ambiguous") (error "expression has an ambiguous reference")) (analysis (status "ambiguous")))
           (contains
-            (element (kind "require constraint") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (effective (featuring-type (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement")))))
+            (element (kind "require constraint") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (declared (own-expression (expression (kind "binary") (operator "<=") (children (expression (kind "featureReference") (reference "mass")) (expression (kind "featureReference") (reference "massLimit")))))) (effective (featuring-type (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement")))) (evaluation (expression (status "ambiguous") (error "expression has an ambiguous reference"))))
             (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement::massLimit"))) (name "massLimit") (declared-name "massLimit") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "VehicleRequirementDerivation::MassRequirement")))))
           )
         )
@@ -190,8 +190,8 @@ semantic.unresolved_name 'ISQ::mass'
             (element (kind "interface end") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::_derivationConnection::#original"))) (name "#original") (declared-name "#original") (declared (properties (end true))))
           )
         )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (name "chassisMassRequirement") (declared-name "chassisMassRequirement"))
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (name "engineMassRequirement") (declared-name "engineMassRequirement"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))) (name "chassisMassRequirement") (declared-name "chassisMassRequirement") (evaluation (expression (status "ambiguous") (error "expression has an ambiguous reference")) (analysis (status "ambiguous"))))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))) (name "engineMassRequirement") (declared-name "engineMassRequirement") (evaluation (expression (status "ambiguous") (error "expression has an ambiguous reference")) (analysis (status "ambiguous"))))
         (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (ordered false)))
           (contains
             (element (kind "part") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::chassis"))) (name "chassis") (declared-name "chassis") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)))
@@ -207,7 +207,7 @@ semantic.unresolved_name 'ISQ::mass'
             (element (kind "attribute") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
           )
         )
-        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement"))
+        (element (kind "requirement") (id (node (document "d0") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))) (name "vehicleMassRequirement") (declared-name "vehicleMassRequirement") (evaluation (expression (status "ambiguous") (error "expression has an ambiguous reference")) (analysis (status "ambiguous"))))
       )
     )
   )

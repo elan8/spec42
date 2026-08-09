@@ -186,7 +186,7 @@ semantic.invalid_connection_end_count
       (contains
         (element (kind "part def") (id (node (document "d0") (qualified-name "Q::A"))) (name "A") (declared-name "A") (declared)
           (contains
-            (element (kind "part") (id (node (document "d0") (qualified-name "Q::A::g"))) (name "g") (declared-name "g") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "a") (children (expression (kind "featureReference") (reference "f")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Q::A"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Q::A::g"))) (role feature-value))))
+            (element (kind "part") (id (node (document "d0") (qualified-name "Q::A::g"))) (name "g") (declared-name "g") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "a") (children (expression (kind "featureReference") (reference "f")))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Q::A"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Q::A::g"))) (role feature-value))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Q::B"))) (name "B") (declared-name "B") (declared)
@@ -222,7 +222,7 @@ semantic.invalid_connection_end_count
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Q::f"))) (name "f") (declared-name "f") (declared (properties (ordered false))))
-        (element (kind "part") (id (node (document "d0") (qualified-name "Q::g"))) (name "g") (declared-name "g") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "g") (children (expression (kind "memberAccess") (reference "g") (children (expression (kind "memberAccess") (reference "g") (children (expression (kind "constructor") (reference "A")))))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Q::g"))) (role feature-value))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "Q::g"))) (name "g") (declared-name "g") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "memberAccess") (reference "g") (children (expression (kind "memberAccess") (reference "g") (children (expression (kind "memberAccess") (reference "g") (children (expression (kind "constructor") (reference "A")))))))))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Q::g"))) (role feature-value))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
       )
     )
   )

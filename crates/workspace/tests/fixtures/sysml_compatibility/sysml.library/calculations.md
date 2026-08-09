@@ -152,7 +152,7 @@ standard library package Calculations {
     (element (kind "package") (id (node (document "d0") (qualified-name "Calculations"))) (name "Calculations") (declared-name "Calculations")
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "Calculations::Action"))) (name "Action") (declared-name "Action"))
-        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculations::Calculation"))) (name "Calculation") (declared-name "Calculation")
+        (element (kind "calc def") (id (node (document "d0") (qualified-name "Calculations::Calculation"))) (name "Calculation") (declared-name "Calculation") (declared (own-expression (expression (kind "featureReference") (reference "ref")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Calculations::Calculation::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))
             (element (kind "calc") (id (node (document "d0") (qualified-name "Calculations::Calculation::self"))) (name "self") (declared-name "self") (effective (featuring-type (node (document "d0") (qualified-name "Calculations::Calculation")))))

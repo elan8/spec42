@@ -111,8 +111,8 @@ semantic.unresolved_name 'Real'
         (element (kind "import") (id (node (document "d0") (qualified-name "TextualRepresentationTest::Real"))) (name "Real") (declared-name "Real"))
         (element (kind "action def") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX"))) (name "setX") (declared-name "setX")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (name "c") (declared-name "c") (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (name "newX") (declared-name "newX") (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::c"))) (name "c") (declared-name "c") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "TextualRepresentationTest::setX::newX"))) (name "newX") (declared-name "newX") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "TextualRepresentationTest::setX")))))
           )
         )
       )

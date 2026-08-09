@@ -670,7 +670,7 @@ standard library package Requirements {
             (element (kind "constraint") (id (node (document "d0") (qualified-name "Requirements::constraints"))) (name "constraints") (declared-name "constraints") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementCheck")))))
           )
         )
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck"))) (name "RequirementConstraintCheck") (declared-name "RequirementConstraintCheck")
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck"))) (name "RequirementConstraintCheck") (declared-name "RequirementConstraintCheck") (declared (own-expression (expression (kind "featureReference") (reference "return")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Requirements::RequirementConstraintCheck")))))
           )

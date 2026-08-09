@@ -288,7 +288,7 @@ semantic.redefinition_featuring_type_overlap
             (element (kind "transition") (id (node (document "d0") (qualified-name "StateTest::S::T"))) (name "T") (declared-name "T") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S"))))
               (contains
                 (element (kind "transition effect") (id (node (document "d0") (qualified-name "StateTest::S::T::effect"))) (name "effect") (declared-name "effect") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
-                (element (kind "transition guard") (id (node (document "d0") (qualified-name "StateTest::S::T::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "booleanLiteral") (literal true)))) (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
+                (element (kind "transition guard") (id (node (document "d0") (qualified-name "StateTest::S::T::guard"))) (name "guard") (declared-name "guard") (declared (own-expression (expression (kind "booleanLiteral") (literal (boolean true))))) (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))) (evaluation (expression (status "ok") (value (boolean true)))))
                 (element (kind "transition trigger") (id (node (document "d0") (qualified-name "StateTest::S::T::trigger"))) (name "trigger") (declared-name "trigger") (effective (featuring-type (node (document "d0") (qualified-name "StateTest::S")))))
               )
             )

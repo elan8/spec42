@@ -138,12 +138,12 @@ semantic.unresolved_name 'driver'
               (contains
                 (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (name "mass") (declared-name "mass") (declared (feature-value (kind bound) (expression (kind "realLiteral") (literal (real "2000.0"))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))) (role feature-value))) (evaluation (expression (status "ok") (value (integer 2000)))))
                   )
                 )
                 (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))) (name "") (declared (properties (portion true) (portion-kind "snapshot"))) (effective (implied-feature-ownership (composite true) (reference false)))
                   (contains
-                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (name "mass") (declared-name "mass") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false))))
+                    (element (kind "attribute") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (name "mass") (declared-name "mass") (declared (feature-value (kind bound) (expression (kind "realLiteral") (literal (real "1500.0"))))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))) (role feature-value))) (evaluation (expression (status "ok") (value (integer 1500)))))
                   )
                 )
                 (element (kind "occurrence") (id (node (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))) (name "item") (declared-name "item") (declared (properties (individual true) (composite false) (reference true))))

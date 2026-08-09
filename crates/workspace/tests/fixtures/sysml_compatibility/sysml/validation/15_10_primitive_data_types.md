@@ -358,7 +358,7 @@ semantic.unresolved_name 'ISQ::LengthValue'
             (element (kind "attribute") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x"))) (name "x") (declared-name "x") (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (featuring-type (node (document "d0") (qualified-name "15.10-Primitive Data Types::UnsignedReal")))))
           )
         )
-        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (name "aperatureDiameter") (declared-name "aperatureDiameter") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "DiameterChoice::small")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (role feature-value))))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (name "aperatureDiameter") (declared-name "aperatureDiameter") (declared (properties (ordered false) (unique true)) (feature-value (kind bound) (expression (kind "featureReference") (reference "DiameterChoice::small")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "15.10-Primitive Data Types::aperatureDiameter"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
       )
     )
   )

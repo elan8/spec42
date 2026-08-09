@@ -156,7 +156,7 @@ semantic.unresolved_name 'columnView'
         (element (kind "import") (id (node (document "d0") (qualified-name "Views Example::*#import2"))) (name "*") (declared-name "*"))
         (element (kind "view def") (id (node (document "d0") (qualified-name "Views Example::Part Structure View"))) (name "Part Structure View") (declared-name "Part Structure View")
           (contains
-            (element (kind "filter") (id (node (document "d0") (qualified-name "Views Example::Part Structure View::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "SysML::PartUsage")))) (effective (featuring-type (node (document "d0") (qualified-name "Views Example::Part Structure View")))))
+            (element (kind "filter") (id (node (document "d0") (qualified-name "Views Example::Part Structure View::_filter"))) (name "_filter") (declared-name "_filter") (declared (own-expression (expression (kind "classification") (reference "SysML::PartUsage")))) (effective (featuring-type (node (document "d0") (qualified-name "Views Example::Part Structure View")))) (evaluation (expression (status "unsupported") (error "declared expression form is not supported"))))
           )
         )
         (element (kind "rendering") (id (node (document "d0") (qualified-name "Views Example::asTextualNotationTable"))) (name "asTextualNotationTable") (declared-name "asTextualNotationTable")

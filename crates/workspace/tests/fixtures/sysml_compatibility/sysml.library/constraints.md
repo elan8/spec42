@@ -168,7 +168,7 @@ standard library package Constraints {
     (element (kind "package") (id (node (document "d0") (qualified-name "Constraints"))) (name "Constraints") (declared-name "Constraints")
       (contains
         (element (kind "import") (id (node (document "d0") (qualified-name "Constraints::BooleanEvaluation"))) (name "BooleanEvaluation") (declared-name "BooleanEvaluation"))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))) (name "ConstraintCheck") (declared-name "ConstraintCheck")
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Constraints::ConstraintCheck"))) (name "ConstraintCheck") (declared-name "ConstraintCheck") (declared (own-expression (expression (kind "featureReference") (reference "ref")))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference")))
           (contains
             (element (kind "documentation") (id (node (document "d0") (qualified-name "Constraints::ConstraintCheck::_documentation"))) (name "") (effective (featuring-type (node (document "d0") (qualified-name "Constraints::ConstraintCheck")))))
           )

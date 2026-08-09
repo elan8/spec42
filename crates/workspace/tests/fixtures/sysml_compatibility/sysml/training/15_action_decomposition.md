@@ -133,8 +133,8 @@ NIL
       (contains
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (name "Focus") (declared-name "Focus")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
           )
         )
         (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Image"))) (name "Image") (declared-name "Image") (declared))
@@ -142,14 +142,14 @@ NIL
         (element (kind "part def") (id (node (document "d0") (qualified-name "Action Decomposition::Scene"))) (name "Scene") (declared-name "Scene") (declared))
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (name "Shoot") (declared-name "Shoot")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (name "image") (declared-name "image") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::image"))) (name "image") (declared-name "image") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::Shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot")))))
           )
         )
         (element (kind "action def") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))) (name "TakePicture") (declared-name "TakePicture")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (name "picture") (declared-name "picture") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (name "scene") (declared-name "scene") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Action Decomposition::TakePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
           )
         )
         (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared)
@@ -157,7 +157,7 @@ NIL
             (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus"))) (name "focus") (declared-name "focus") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))))
               (contains
                 (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::image"))) (name "image") (declared-name "image") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus")))))
-                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (role feature-value))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::scene")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Focus"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::focus::scene"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
               )
             )
             (element (kind "flow") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::from"))) (name "from") (declared-name "from") (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
@@ -165,7 +165,7 @@ NIL
             (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::scene"))) (name "scene") (declared-name "scene") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot"))) (name "shoot") (declared-name "shoot") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Action Decomposition::TakePicture"))))
               (contains
-                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (role feature-value))))
+                (element (kind "item") (id (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (name "picture") (declared-name "picture") (declared (properties (direction "out")) (feature-value (kind bound) (expression (kind "featureReference") (reference "takePicture::picture")))) (effective (featuring-type (node (document "d0") (qualified-name "Action Decomposition::Shoot"))) (implied-feature-value-binding (owner (node (document "d0") (qualified-name "Action Decomposition::takePicture::shoot::picture"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
               )
             )
           )

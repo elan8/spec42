@@ -233,7 +233,7 @@ semantic.unresolved_name 'ISQ::torque'
           (contains
             (element (kind "action def") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque"))) (name "GenerateTorque") (declared-name "GenerateTorque")
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque::torque"))) (name "torque") (declared-name "torque") (effective (featuring-type (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque::torque"))) (name "torque") (declared-name "torque") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::GenerateTorque")))))
               )
             )
             (element (kind "part def") (id (node (document "d0") (qualified-name "12b-Allocation-1::LogicalModel::LogicalElement"))) (name "LogicalElement") (declared-name "LogicalElement") (declared))
@@ -277,9 +277,9 @@ semantic.unresolved_name 'ISQ::torque'
         )
         (element (kind "package") (id (node (document "d0") (qualified-name "12b-Allocation-1::RequirementModel"))) (name "RequirementModel") (declared-name "RequirementModel")
           (contains
-            (element (kind "requirement") (id (node (document "d0") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration"))) (name "torqueGeneration") (declared-name "torqueGeneration")
+            (element (kind "requirement") (id (node (document "d0") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration"))) (name "torqueGeneration") (declared-name "torqueGeneration") (evaluation (expression (status "incomplete") (error "expression is incomplete")) (analysis (status "incomplete")))
               (contains
-                (element (kind "require constraint") (id (node (document "d0") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0"))
+                (element (kind "require constraint") (id (node (document "d0") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration::_requireConstraint_0"))) (name "_requireConstraint_0") (declared-name "_requireConstraint_0") (declared (own-expression (expression (kind "binary") (operator ">") (children (expression (kind "memberAccess") (reference "torque") (children (expression (kind "memberAccess") (reference "generateTorque") (children (expression (kind "featureReference") (reference "generator")))))) (expression (kind "literalWithUnit") (children (expression (kind "realLiteral") (literal (real "0.0"))) (expression (kind "bracket") (children (expression (kind "featureReference") (reference "N*m")))))))))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
                 (element (kind "subject") (id (node (document "d0") (qualified-name "12b-Allocation-1::RequirementModel::torqueGeneration::generator"))) (name "generator") (declared-name "generator"))
               )
             )

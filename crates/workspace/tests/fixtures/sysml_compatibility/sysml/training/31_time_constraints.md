@@ -202,7 +202,7 @@ semantic.unresolved_name 'TemperatureValue'
                 (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::transition_healthStates_to_normal::trigger"))) (name "trigger") (declared-name "trigger"))
               )
             )
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Time Constraints::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (direction "in"))))
           )
         )
         (element (kind "import") (id (node (document "d0") (qualified-name "Time Constraints::s"))) (name "s") (declared-name "s"))

@@ -208,7 +208,7 @@ semantic.unresolved_name 'TemperatureValue'
           (contains
             (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_do"))) (name "do") (declared-name "do"))
             (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_entry"))) (name "entry") (declared-name "entry"))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::controller"))) (name "controller") (declared-name "controller"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::controller"))) (name "controller") (declared-name "controller") (declared (properties (direction "in"))))
             (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::degraded"))) (name "degraded") (declared-name "degraded"))
             (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::maintenance"))) (name "maintenance") (declared-name "maintenance"))
             (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))) (name "normal") (declared-name "normal"))
@@ -233,12 +233,12 @@ semantic.unresolved_name 'TemperatureValue'
                 (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal#transition::trigger"))) (name "trigger") (declared-name "trigger"))
               )
             )
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (direction "in"))))
           )
         )
         (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature"))) (name "senseTemperature") (declared-name "senseTemperature") (declared)
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (name "temp") (declared-name "temp"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (name "temp") (declared-name "temp") (declared (properties (direction "out"))))
           )
         )
       )

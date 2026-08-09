@@ -106,7 +106,7 @@ NIL
           (contains
             (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate"))) (name "terminate") (declared-name "terminate"))
             (element (kind "terminate") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::_terminate#terminate"))) (name "terminate") (declared-name "terminate"))
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (name "processor") (declared-name "processor"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Terminate Actions Example-2::terminateProcessing::processor"))) (name "processor") (declared-name "processor") (declared (properties (direction "in"))))
           )
         )
       )

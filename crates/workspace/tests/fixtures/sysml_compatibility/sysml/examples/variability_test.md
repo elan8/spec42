@@ -201,7 +201,7 @@ parse.expected_usage_declaration
         (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::uc1"))) (name "uc1") (declared-name "uc1"))
         (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::v"))) (name "v") (declared-name "v") (declared (properties (variation true) (ordered false))))
         (element (kind "kermlDecl") (id (node (document "d0") (qualified-name "VariabilityTest::v1"))) (name "v1") (declared-name "v1"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::y"))) (name "y") (declared-name "y") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "v::q")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VariabilityTest::y"))) (role feature-value))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "VariabilityTest::y"))) (name "y") (declared-name "y") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "v::q")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "VariabilityTest::y"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
       )
     )
   )

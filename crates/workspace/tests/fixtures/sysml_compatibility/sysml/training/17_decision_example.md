@@ -169,7 +169,7 @@ semantic.unresolved_name 'Real'
         (element (kind "import") (id (node (document "d0") (qualified-name "Decision Example::*"))) (name "*") (declared-name "*"))
         (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::AddCharge"))) (name "AddCharge") (declared-name "AddCharge")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::AddCharge::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::AddCharge")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::AddCharge::charge"))) (name "charge") (declared-name "charge") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::AddCharge")))))
           )
         )
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Decision Example::BatteryCharged"))) (name "BatteryCharged") (declared-name "BatteryCharged") (declared (properties (ordered false) (unique true))))
@@ -178,14 +178,14 @@ semantic.unresolved_name 'Real'
             (element (kind "initial") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::_initial"))) (name "_initial") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge"))) (name "addCharge") (declared-name "addCharge") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::AddCharge")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::addCharge::charge"))) (name "charge") (declared-name "charge") (declared (properties (direction "in")) (own-expression (expression (kind "memberAccess") (reference "batteryCharge") (children (expression (kind "featureReference") (reference "monitor")))))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::AddCharge")))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
               )
             )
             (element (kind "merge") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::continueCharging"))) (name "merge") (declared-name "merge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::endCharging"))) (name "endCharging") (declared-name "endCharging") (declared) (effective (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery")))))
             (element (kind "action") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor"))) (name "monitor") (declared-name "monitor") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::ChargeBattery"))))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor::batteryCharge"))) (name "batteryCharge") (declared-name "batteryCharge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::ChargeBattery::monitor::batteryCharge"))) (name "batteryCharge") (declared-name "batteryCharge") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
               )
             )
           )
@@ -193,7 +193,7 @@ semantic.unresolved_name 'Real'
         (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::EndCharging"))) (name "EndCharging") (declared-name "EndCharging"))
         (element (kind "action def") (id (node (document "d0") (qualified-name "Decision Example::MonitorBattery"))) (name "MonitorBattery") (declared-name "MonitorBattery")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::MonitorBattery::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Decision Example::MonitorBattery::charge"))) (name "charge") (declared-name "charge") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Decision Example::MonitorBattery")))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Decision Example::battery"))) (name "battery") (declared-name "battery") (declared (properties (ordered false))))

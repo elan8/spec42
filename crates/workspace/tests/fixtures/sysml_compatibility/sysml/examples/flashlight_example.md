@@ -272,18 +272,18 @@ NIL
             (element (kind "flow") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::onOffCmdFlow"))) (name "onOffCmdFlow") (declared-name "onOffCmdFlow"))
             (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight"))) (name "produceDirectedLight") (declared-name "produceDirectedLight") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::light"))) (name "light") (declared-name "light"))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::onOffCmd"))) (name "onOffCmd") (declared-name "onOffCmd"))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::light"))) (name "light") (declared-name "light") (declared (properties (direction "out"))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::onOffCmd"))) (name "onOffCmd") (declared-name "onOffCmd") (declared (properties (direction "in"))))
               )
             )
             (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight"))) (name "reflectLight") (declared-name "reflectLight") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight::light"))) (name "light") (declared-name "light"))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight::light"))) (name "light") (declared-name "light") (declared (properties (direction "in"))))
               )
             )
             (element (kind "action") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd"))) (name "sendOnOffCmd") (declared-name "sendOnOffCmd") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd::onOffCmd"))) (name "onOffCmd") (declared-name "onOffCmd"))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd::onOffCmd"))) (name "onOffCmd") (declared-name "onOffCmd") (declared (properties (direction "out"))))
               )
             )
           )

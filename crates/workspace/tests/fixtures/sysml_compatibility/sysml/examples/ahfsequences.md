@@ -504,7 +504,7 @@ semantic.unresolved_name 'Return_AllItems'
         (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (name "AHFN_LocalCloudDD_Seqs") (declared-name "AHFN_LocalCloudDD_Seqs") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "AHFNorway_LocalCloudDD")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (role feature-value))))
+        (element (kind "part") (id (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (name "AHFN_LocalCloudDD_Seqs") (declared-name "AHFN_LocalCloudDD_Seqs") (declared (properties (ordered false)) (feature-value (kind bound) (expression (kind "featureReference") (reference "AHFNorway_LocalCloudDD")))) (effective (implied-feature-value-binding (owner (node (document "d0") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs"))) (role feature-value))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
       )
     )
   )

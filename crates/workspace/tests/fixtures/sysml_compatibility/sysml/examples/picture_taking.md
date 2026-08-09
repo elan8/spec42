@@ -78,12 +78,12 @@ semantic.invalid_connection_end_count
         (element (kind "part def") (id (node (document "d0") (qualified-name "PictureTaking::Exposure"))) (name "Exposure") (declared-name "Exposure") (declared))
         (element (kind "action def") (id (node (document "d0") (qualified-name "PictureTaking::Focus"))) (name "Focus") (declared-name "Focus")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (name "xrsl") (declared-name "xrsl") (effective (featuring-type (node (document "d0") (qualified-name "PictureTaking::Focus")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "PictureTaking::Focus::xrsl"))) (name "xrsl") (declared-name "xrsl") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "PictureTaking::Focus")))))
           )
         )
         (element (kind "action def") (id (node (document "d0") (qualified-name "PictureTaking::Shoot"))) (name "Shoot") (declared-name "Shoot")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (name "xsf") (declared-name "xsf") (effective (featuring-type (node (document "d0") (qualified-name "PictureTaking::Shoot")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "PictureTaking::Shoot::xsf"))) (name "xsf") (declared-name "xsf") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "PictureTaking::Shoot")))))
           )
         )
         (element (kind "action") (id (node (document "d0") (qualified-name "PictureTaking::takePicture"))) (name "takePicture") (declared-name "takePicture") (declared)

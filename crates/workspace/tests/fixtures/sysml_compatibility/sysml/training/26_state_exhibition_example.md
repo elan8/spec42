@@ -86,8 +86,8 @@ semantic.unresolved_name 'VehicleController'
             (element (kind "part") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleController"))) (name "vehicleController") (declared-name "vehicleController") (declared (properties (ordered false))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false))))
             (element (kind "state") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates"))) (name "vehicleStates") (declared-name "vehicleStates") (declared) (effective (implied-feature-ownership (composite true) (reference false)))
               (contains
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::controller"))) (name "controller") (declared-name "controller"))
-                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::operatingVehicle"))) (name "operatingVehicle") (declared-name "operatingVehicle"))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::controller"))) (name "controller") (declared-name "controller") (declared (properties (direction "in")) (own-expression (expression (kind "featureReference") (reference "vehicleController")))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
+                (element (kind "in out parameter") (id (node (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleStates::operatingVehicle"))) (name "operatingVehicle") (declared-name "operatingVehicle") (declared (properties (direction "in")) (own-expression (expression (kind "featureReference") (reference "vehicle")))) (evaluation (expression (status "incomplete") (error "expression is incomplete"))))
               )
             )
           )

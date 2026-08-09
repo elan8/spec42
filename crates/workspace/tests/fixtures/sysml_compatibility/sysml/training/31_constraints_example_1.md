@@ -151,7 +151,7 @@ semantic.unresolved_name 'MassValue'
         (element (kind "import") (id (node (document "d0") (qualified-name "Constraints Example-1::*#import"))) (name "*") (declared-name "*"))
         (element (kind "import") (id (node (document "d0") (qualified-name "Constraints Example-1::*#import2"))) (name "*") (declared-name "*"))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Constraints Example-1::Engine"))) (name "Engine") (declared-name "Engine") (declared))
-        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Constraints Example-1::MassConstraint"))) (name "MassConstraint") (declared-name "MassConstraint"))
+        (element (kind "constraint def") (id (node (document "d0") (qualified-name "Constraints Example-1::MassConstraint"))) (name "MassConstraint") (declared-name "MassConstraint") (declared (own-expression (expression (kind "binary") (operator "<=") (children (expression (kind "invocation") (children (expression (kind "featureReference") (reference "sum"))) (arguments (argument (expression (kind "featureReference") (reference "partMasses"))))) (expression (kind "featureReference") (reference "massLimit")))))) (evaluation (expression (status "unresolved") (error "expression has an unresolved reference"))))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Constraints Example-1::Transmission"))) (name "Transmission") (declared-name "Transmission") (declared))
         (element (kind "part def") (id (node (document "d0") (qualified-name "Constraints Example-1::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
           (contains

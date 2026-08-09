@@ -141,7 +141,7 @@ semantic.unresolved_name 'Real'
         (element (kind "import") (id (node (document "d0") (qualified-name "Control Structures Example::*"))) (name "*") (declared-name "*"))
         (element (kind "action def") (id (node (document "d0") (qualified-name "Control Structures Example::AddCharge"))) (name "AddCharge") (declared-name "AddCharge")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Control Structures Example::AddCharge::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Control Structures Example::AddCharge")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Control Structures Example::AddCharge::charge"))) (name "charge") (declared-name "charge") (declared (properties (direction "in"))) (effective (featuring-type (node (document "d0") (qualified-name "Control Structures Example::AddCharge")))))
           )
         )
         (element (kind "attribute def") (id (node (document "d0") (qualified-name "Control Structures Example::BatteryCharged"))) (name "BatteryCharged") (declared-name "BatteryCharged") (declared (properties (ordered false) (unique true))))
@@ -153,7 +153,7 @@ semantic.unresolved_name 'Real'
         (element (kind "action def") (id (node (document "d0") (qualified-name "Control Structures Example::EndCharging"))) (name "EndCharging") (declared-name "EndCharging"))
         (element (kind "action def") (id (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery"))) (name "MonitorBattery") (declared-name "MonitorBattery")
           (contains
-            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery::charge"))) (name "charge") (declared-name "charge") (effective (featuring-type (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery")))))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery::charge"))) (name "charge") (declared-name "charge") (declared (properties (direction "out"))) (effective (featuring-type (node (document "d0") (qualified-name "Control Structures Example::MonitorBattery")))))
           )
         )
         (element (kind "part") (id (node (document "d0") (qualified-name "Control Structures Example::battery"))) (name "battery") (declared-name "battery") (declared (properties (ordered false))))
