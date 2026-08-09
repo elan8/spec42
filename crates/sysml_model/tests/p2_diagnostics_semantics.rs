@@ -556,6 +556,125 @@ fn verification_without_subject_emits_case_subject_diagnostic() {
 }
 
 #[test]
+fn duplicate_subject_members_emit_role_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "duplicate_subject.sysml",
+        r#"package Demo {
+  part def System;
+  requirement def Range {
+    subject primary : System;
+    subject backup : System;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "duplicate_role_member"),
+        "expected duplicate_role_member, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+    let duplicate = diagnostics
+        .iter()
+        .find(|diagnostic| diagnostic.code == "duplicate_role_member")
+        .expect("duplicate subject diagnostic");
+    assert_eq!(
+        duplicate.severity,
+        sysml_diagnostics::DiagnosticSeverity::Warning
+    );
+    assert_eq!(duplicate.range.start.line, 4);
+}
+
+#[test]
+fn subject_after_actor_emits_ordering_diagnostic() {
+    let doc = workspace_doc(
+        "subject_order.sysml",
+        r#"package Demo {
+  part def System;
+  requirement def Range {
+    actor operator : System;
+    subject vehicle : System;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "subject_member_not_first"),
+        "expected subject_member_not_first, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn duplicate_objective_members_emit_role_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "duplicate_objective.sysml",
+        r#"package Demo {
+  requirement def ReqA;
+  verification def Check {
+    subject subject;
+    objective { verify requirement ReqA; }
+    objective { verify requirement ReqA; }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "duplicate_role_member"),
+        "expected duplicate_role_member, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+fn duplicate_view_rendering_members_emit_role_cardinality_diagnostic() {
+    let doc = workspace_doc(
+        "duplicate_rendering.sysml",
+        r#"package Demo {
+  rendering def First;
+  rendering def Second;
+  view def Summary {
+    render first : First;
+    render second : Second;
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
+    let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
+    assert!(
+        has_code(&diagnostics, "duplicate_role_member"),
+        "expected duplicate_role_member, got: {:?}",
+        diagnostics
+            .iter()
+            .map(|d| (&d.code, &d.message))
+            .collect::<Vec<_>>()
+    );
+}
+
+#[test]
+#[ignore = "SKIP: verified-requirement graph nodes retain the verification-case parent, not their containing objective, so placement cannot be diagnosed from authoritative graph facts."]
+fn verification_membership_outside_objective_requires_parentage_fact() {
+    panic!(
+        "Blocked until SemanticGraph preserves the objective membership parent for verified requirements"
+    );
+}
+
+#[test]
 fn viewpoint_unresolved_import_emits_reference_diagnostic() {
     let doc = workspace_doc(
         "viewpoint_import.sysml",

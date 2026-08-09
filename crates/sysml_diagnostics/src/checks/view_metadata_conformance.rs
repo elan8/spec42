@@ -38,6 +38,38 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
     let mut seen = HashSet::new();
 
     for node in graph.nodes_for_uri(uri) {
+        if !matches!(node.element_kind, ElementKind::View | ElementKind::ViewDef)
+            || is_synthetic(node)
+        {
+            continue;
+        }
+        let mut renderings: Vec<_> = graph
+            .children_of(node)
+            .into_iter()
+            .filter(|child| child.element_kind == ElementKind::ViewRendering)
+            .collect();
+        renderings.sort_by_key(|child| (child.range.start.line, child.range.start.character));
+        if renderings.len() <= 1 {
+            continue;
+        }
+        let key = format!("duplicate_rendering|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, renderings[1], None),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "duplicate_role_member",
+            format!(
+                "View '{}' declares more than one rendering member.",
+                node.name
+            ),
+        ));
+    }
+
+    for node in graph.nodes_for_uri(uri) {
         if node.element_kind != ElementKind::View || is_synthetic(node) {
             continue;
         }

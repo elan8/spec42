@@ -85,6 +85,8 @@ Some relationship diagnostics are emitted by graph-builder diagnostic nodes and 
 - `analysis_evaluation_unresolved`
 - `invalid_verdict_value`
 - `objective_binding_unresolved`
+- `duplicate_role_member` — a requirement/case/viewpoint/view has more than one subject/objective/rendering role member.
+- `subject_member_not_first` — a subject member follows another input role member.
 
 **Expression evaluation (June 2026):** `semantic_core::evaluation` now propagates typed
 `analysis` / `verification` usage context after workspace linking, aggregates `assert
@@ -195,6 +197,7 @@ Spec areas: 7.21-7.25, 8.3.21-8.3.25, 8.4.17-8.4.21.
 - Done: `verification_case_invalid_shape` — multiple verdict/return clauses, or verified requirements without objective. Does **not** warn on `then action` without explicit `return` (valid per SysML v2 `CaseBody`; `ResultExpressionMember` is optional — see S42-LIM-003 / robot-vacuum showcase).
 - Done: `use_case_include_invalid_target` — include use case target resolution and kind validation.
 - Done: `case_subject_missing` / `case_objective_binding_cardinality` — subject and analysis-result binding cardinality.
+- Done: `duplicate_role_member` / `subject_member_not_first` — graph-span-backed subject/objective/rendering cardinality and subject ordering.
 
 ### P2: views, viewpoints, renderings, metadata
 
