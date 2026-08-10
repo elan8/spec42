@@ -229,15 +229,30 @@ impl KparArchive {
         // indexes are archive data, so they must never be allowed to escape the
         // caller's materialization root, including on a host with Windows path
         // semantics.
+        //
+        // Tracked by destination -> source archive path, not just a set of destinations: OMG
+        // library indexes legitimately alias a short name and a full name to the same file (for
+        // example "USCU" and "USCustomaryUnits" both mapping to "USCustomaryUnits.sysml"), and
+        // both collapse to the same (destination, archive_path) pair below since neither key is
+        // itself a source-file name. That is two entries agreeing on one file, not a conflict --
+        // only two entries that disagree on which archive content should land at the same
+        // destination are an actual ambiguity.
         let mut planned = Vec::with_capacity(paths.len());
-        let mut materialized_paths = std::collections::HashSet::new();
+        let mut materialized_paths: std::collections::HashMap<String, String> =
+            std::collections::HashMap::new();
         for (logical_path, archive_path) in paths {
             let logical_path = normalize_zip_path(&logical_path)?;
             let archive_path = normalize_zip_path(&archive_path)?;
-            if !materialized_paths.insert(logical_path.clone()) {
-                return Err(KparError::InvalidArchive(format!(
-                    "multiple source entries materialize to '{logical_path}'"
-                )));
+            match materialized_paths.get(&logical_path) {
+                Some(existing) if *existing == archive_path => continue,
+                Some(_) => {
+                    return Err(KparError::InvalidArchive(format!(
+                        "multiple source entries materialize to '{logical_path}'"
+                    )));
+                }
+                None => {
+                    materialized_paths.insert(logical_path.clone(), archive_path.clone());
+                }
             }
             let Some(bytes) = entries.get(&archive_path) else {
                 return Err(KparError::InvalidArchive(format!(
@@ -604,6 +619,93 @@ mod tests {
             materialized.source_files,
             vec![dest.join("ScalarValues.kerml")]
         );
+    }
+
+    /// The real OMG standard library indexes a short alias ("USCU") alongside the full name
+    /// ("USCustomaryUnits") for the same file. Neither key is itself a source-file name, so both
+    /// fall back to materializing under the archive entry's own name -- two index entries
+    /// agreeing on one destination, which must succeed, not be flagged as a conflict.
+    #[test]
+    fn materialize_allows_an_index_alias_for_the_same_archive_entry() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("aliased.kpar");
+        let contents = b"standard library package USCustomaryUnits { }";
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"Quantities and Units","version":"2.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            let meta = format!(
+                r#"{{
+  "index": {{
+    "USCU": "USCustomaryUnits.sysml",
+    "USCustomaryUnits": "USCustomaryUnits.sysml"
+  }},
+  "created": "2025-03-13T00:00:00Z",
+  "checksum": {{
+    "USCustomaryUnits.sysml": {{"value": "{}", "algorithm": "SHA256"}}
+  }}
+}}"#,
+                sha256_hex(contents)
+            );
+            zip.write_all(meta.as_bytes()).expect("meta write");
+            zip.start_file("USCustomaryUnits.sysml", options)
+                .expect("source start");
+            zip.write_all(contents).expect("source write");
+            zip.finish().expect("finish");
+        }
+
+        let bytes = fs::read(&path).expect("read");
+        let dest = source.path().join("out");
+        let materialized = materialize(&bytes, &dest).expect("aliased index must materialize");
+
+        assert!(dest.join("USCustomaryUnits.sysml").is_file());
+        assert_eq!(
+            materialized.source_files,
+            vec![dest.join("USCustomaryUnits.sysml")]
+        );
+    }
+
+    /// Unlike the alias case above, two index *keys* that normalize to the same destination
+    /// while pointing at different archive content are a real ambiguity, not aliasing, and must
+    /// still be rejected: `./Model.sysml` and `Model.sysml` are different JSON keys (so parsing
+    /// them is not itself a conflict) but the same destination once `.` components are dropped.
+    #[test]
+    fn materialize_rejects_an_index_conflict_between_different_archive_entries() {
+        let source = tempdir().expect("tempdir");
+        let path = source.path().join("conflicting.kpar");
+        {
+            use std::io::Write;
+            use zip::write::{SimpleFileOptions, ZipWriter};
+            let file = fs::File::create(&path).expect("create");
+            let mut zip = ZipWriter::new(file);
+            let options = SimpleFileOptions::default();
+            zip.start_file(PROJECT_FILE, options)
+                .expect("project start");
+            zip.write_all(br#"{"name":"Conflicting","version":"1.0.0"}"#)
+                .expect("project write");
+            zip.start_file(META_FILE, options).expect("meta start");
+            zip.write_all(
+                br#"{"index":{"./Model.sysml":"a.sysml","Model.sysml":"b.sysml"},"created":"2025-03-13T00:00:00Z"}"#,
+            )
+            .expect("meta write");
+            zip.start_file("a.sysml", options).expect("a start");
+            zip.write_all(b"package A {}").expect("a write");
+            zip.start_file("b.sysml", options).expect("b start");
+            zip.write_all(b"package B {}").expect("b write");
+            zip.finish().expect("finish");
+        }
+
+        let bytes = fs::read(&path).expect("read");
+        let dest = source.path().join("out");
+        let error = materialize(&bytes, &dest).expect_err("differing archive entries must clash");
+        assert!(matches!(error, KparError::InvalidArchive(_)));
     }
 
     #[test]
