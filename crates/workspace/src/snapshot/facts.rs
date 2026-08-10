@@ -783,10 +783,20 @@ fn membership_kind(
     node: &HostSemanticModelNode,
     owner_kind: Option<&sysml_model::ElementKind>,
 ) -> HostMembershipKind {
-    if let Some(membership) = node.facts.membership.as_ref() {
-        return membership.declared_kind;
-    }
     use sysml_model::ElementKind;
+
+    // KerML's grammar has no dedicated "view rendering membership" production: a `render` usage
+    // parses with the same generic FeatureMembership wrapper as any other feature-owning usage,
+    // and `add_view_rendering_node` correctly registers that declared fact (it also carries real
+    // authored-visibility information, not just a kind). The declared *kind* is still too coarse
+    // here, though -- ElementKind::ViewRendering is the more specific, structurally-determined
+    // classification, so it must win over the generic declared one for the kind specifically,
+    // while the rest of the declared fact (visibility, etc.) is unaffected by this check.
+    if node.element_kind != ElementKind::ViewRendering {
+        if let Some(membership) = node.facts.membership.as_ref() {
+            return membership.declared_kind;
+        }
+    }
 
     if node
         .attributes
@@ -1097,10 +1107,19 @@ mod tests {
 
     #[test]
     fn projection_preserves_exhaustive_evaluation_query_states() {
-        let uri = "file:///workspace/evaluation.sysml";
-        let target = std::path::PathBuf::from("/workspace/evaluation.sysml");
+        // Derived from one real, platform-valid absolute path (never actually read --
+        // `InMemoryDocumentProvider` supplies content directly) rather than a hand-typed `file://`
+        // string and a separately hand-typed path: those only agree by coincidence, and a
+        // Unix-style leading `/` with no drive letter is not a real absolute path on Windows, so
+        // `project_host_semantic_model`'s own path-to-URL conversion (`path_to_file_url`, used
+        // here too) would silently derive a different URL than the literal string on that
+        // platform, and the node lookups below would find nothing.
+        let target = std::env::temp_dir()
+            .join("spec42-evaluation-query-states-test")
+            .join("evaluation.sysml");
+        let uri = path_to_file_url(&target).expect("file url");
         let provider = make_provider(
-            uri,
+            uri.as_str(),
             "package Demo { attribute value = 2; attribute unresolved = missing; }",
         );
         let (mut graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
@@ -2324,7 +2343,12 @@ package Demo {
                 uri: lib_uri,
                 content: lib_content.to_owned(),
                 path_hint: None,
-                source_kind: sysml_model::SysmlDocumentSourceKind::Library,
+                // Not `Library`: the universal-implied-relationship rule (untyped `part def`/
+                // `part` specializing/subsetting the system library's `Parts::Part`/`Parts::parts`)
+                // only treats `StandardLibrary`-tagged document URIs as eligible targets
+                // (`pipeline.rs`'s `set_standard_library_uris`). A plain `Library` document is a
+                // valid target for ordinary typing, but not for this rule specifically.
+                source_kind: sysml_model::SysmlDocumentSourceKind::StandardLibrary,
                 sha256: None,
                 byte_size: None,
             },
@@ -2369,10 +2393,15 @@ package Demo {
             assert_eq!(relationship.metaclass, metaclass);
             assert!(!relationship.target_id.is_empty());
         }
+        // Not "Parts" itself: `project_host_semantic_model`'s one-hop library projection
+        // (S42-005, see its doc comment above) deliberately includes only the directly-referenced
+        // targets ("Parts::Part", "Parts::parts"), not their containing package/parent chain.
+        // "Parts::Part" is exactly the node the implied Subclassification edge above resolved
+        // `target_id` against, so it must be present and marked as a library element.
         assert!(projection
             .nodes
             .iter()
-            .any(|node| { node.qualified_name == "Parts" && node.facts.is_library_element }));
+            .any(|node| { node.qualified_name == "Parts::Part" && node.facts.is_library_element }));
     }
 
     #[test]
