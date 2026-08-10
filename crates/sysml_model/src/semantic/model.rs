@@ -1093,7 +1093,7 @@ impl VisibilityKind {
 }
 
 /// Parser-authored membership facts. An absent `visibility` is deliberately distinct from the
-/// effective private default published by [`SemanticGraph::effective_membership_visibility_for`].
+/// effective private default published by [`crate::SemanticGraph::effective_membership_visibility_for`].
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DeclaredMembershipFacts {
     #[serde(default)]
@@ -1398,7 +1398,7 @@ pub struct ImpliedMultiplicity {
 ///
 /// It has no source range because neither `composite` nor `non-reference` was authored. The
 /// semantic graph computes it only after containment is complete; consumers must obtain the
-/// combined result through [`SemanticGraph::effective_feature_ownership_for`].
+/// combined result through [`crate::SemanticGraph::effective_feature_ownership_for`].
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ImpliedFeatureOwnership {
     pub is_composite: bool,
