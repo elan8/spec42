@@ -154,8 +154,13 @@ mod cache_tests {
             semantic_graph,
             ..ServerState::default()
         };
-        let handle = WorkspaceHandle::spawn(state.clone());
-        (handle, state, workspace_root_uri)
+        let handle = WorkspaceHandle::spawn(state);
+        // `spawn` rekeys the session to a fresh actor-owned identity (invalidating publication
+        // tokens inherited from the pre-spawn seed state), so the state handed back here must be
+        // the post-spawn published snapshot, not the pre-spawn `state` -- otherwise every
+        // `update_render_cache` call keyed off the stale token would silently no-op forever.
+        let published = handle.snapshot();
+        (handle, (*published).clone(), workspace_root_uri)
     }
 
     #[tokio::test]

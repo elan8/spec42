@@ -474,8 +474,12 @@ impl WorkspaceHandle {
                 if !s.session.is_publication_current(&expected_publication) {
                     return Mutation::Unchanged(None);
                 }
+                // Deliberately does not bump the session version: this cache entry is written
+                // *for* the current publication version, so bumping here would make the entry
+                // stale the instant it's written -- the next `cached_response` lookup would read
+                // the bumped version and never match what was just cached. `Mutation::Changed`
+                // alone already signals the actor that a real mutation happened.
                 let value = apply(&mut s.render_cache);
-                s.session.bump_version();
                 Mutation::Changed(Some(value))
             })
             .await

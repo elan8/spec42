@@ -118,79 +118,6 @@ fn evaluation(
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use sysml_model::{
-        build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
-        SysmlDocumentSourceKind,
-    };
-
-    fn graph() -> (SemanticGraph, sysml_model::NodeId) {
-        let document = SysmlDocument::from_memory_path(
-            "inspector-evaluation",
-            "model.sysml",
-            "package Demo { attribute value = 1; part def Empty; }".into(),
-            SysmlDocumentSourceKind::Workspace,
-            None,
-            None,
-        )
-        .expect("document");
-        let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
-        let id = graph
-            .node_ids_by_qualified_name
-            .get("Demo::value")
-            .and_then(|ids| ids.first())
-            .cloned()
-            .expect("value");
-        (graph, id)
-    }
-
-    #[test]
-    fn inspector_evaluation_is_not_run_before_phase() {
-        let (mut graph, id) = graph();
-        graph.invalidate_evaluation_facts();
-        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
-        assert!(matches!(
-            dto.evaluation,
-            SysmlFeatureInspectorEvaluationDto::NotRun
-        ));
-    }
-
-    #[test]
-    fn inspector_evaluation_is_not_applicable_after_phase() {
-        let (mut graph, _) = graph();
-        evaluate_expressions(&mut graph);
-        let id = graph
-            .node_ids_by_qualified_name
-            .get("Demo::Empty")
-            .and_then(|ids| ids.first())
-            .cloned()
-            .expect("empty");
-        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
-        assert!(matches!(
-            dto.evaluation,
-            SysmlFeatureInspectorEvaluationDto::NotApplicable
-        ));
-    }
-
-    #[test]
-    fn inspector_evaluation_projects_completed_typed_result_at_transport_boundary() {
-        let (mut graph, id) = graph();
-        evaluate_expressions(&mut graph);
-        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
-        assert!(matches!(
-            dto.evaluation,
-            SysmlFeatureInspectorEvaluationDto::Result {
-                status: SysmlFeatureInspectorEvaluationStatusDto::Ok,
-                value: Some(serde_json::Value::Number(ref value)),
-                unit: None,
-                ..
-            } if value.as_i64() == Some(1)
-        ));
-    }
-}
-
 pub fn parse_sysml_feature_inspector_params(v: &serde_json::Value) -> Result<(Url, Position)> {
     // vscode-jsonrpc versions can encode `sendRequest(method, params, undefined)`
     // as `[params, null]`. Accept that transition artifact at the protocol boundary
@@ -781,5 +708,78 @@ pub fn build_sysml_feature_inspector_response(
         language_help: None,
         containing_element,
         referenced_element: None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sysml_model::{
+        build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
+        SysmlDocumentSourceKind,
+    };
+
+    fn graph() -> (SemanticGraph, sysml_model::NodeId) {
+        let document = SysmlDocument::from_memory_path(
+            "inspector-evaluation",
+            "model.sysml",
+            "package Demo { attribute value = 1; part def Empty; }".into(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let (graph, _) = build_semantic_graph_from_documents(&[document]).expect("graph");
+        let id = graph
+            .node_ids_by_qualified_name
+            .get("Demo::value")
+            .and_then(|ids| ids.first())
+            .cloned()
+            .expect("value");
+        (graph, id)
+    }
+
+    #[test]
+    fn inspector_evaluation_is_not_run_before_phase() {
+        let (mut graph, id) = graph();
+        graph.invalidate_evaluation_facts();
+        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+        assert!(matches!(
+            dto.evaluation,
+            SysmlFeatureInspectorEvaluationDto::NotRun
+        ));
+    }
+
+    #[test]
+    fn inspector_evaluation_is_not_applicable_after_phase() {
+        let (mut graph, _) = graph();
+        evaluate_expressions(&mut graph);
+        let id = graph
+            .node_ids_by_qualified_name
+            .get("Demo::Empty")
+            .and_then(|ids| ids.first())
+            .cloned()
+            .expect("empty");
+        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+        assert!(matches!(
+            dto.evaluation,
+            SysmlFeatureInspectorEvaluationDto::NotApplicable
+        ));
+    }
+
+    #[test]
+    fn inspector_evaluation_projects_completed_typed_result_at_transport_boundary() {
+        let (mut graph, id) = graph();
+        evaluate_expressions(&mut graph);
+        let dto = feature_inspector_element(&graph, graph.get_node(&id).expect("node"));
+        assert!(matches!(
+            dto.evaluation,
+            SysmlFeatureInspectorEvaluationDto::Result {
+                status: SysmlFeatureInspectorEvaluationStatusDto::Ok,
+                value: Some(serde_json::Value::Number(ref value)),
+                unit: None,
+                ..
+            } if value.as_i64() == Some(1)
+        ));
     }
 }

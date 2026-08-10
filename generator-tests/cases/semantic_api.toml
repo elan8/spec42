@@ -41,7 +41,7 @@ id = "semantic-api/wide-find-all-metered"
 model = "wide"
 plugin = "find_all"
 meter_fuel = true
-assert = { fuel_consumed = 8_391_739, query_count = 1 }
+assert = { fuel_consumed = 8_375_354, query_count = 1 }
 description = """
 The fuel-regression signal, active rather than documented. fuel_consumed is an exact
 instruction count, so an unchanged plugin whose fuel moves means Spec42 changed how much

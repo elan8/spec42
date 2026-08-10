@@ -785,26 +785,43 @@ fn membership_kind(
 ) -> HostMembershipKind {
     use sysml_model::ElementKind;
 
-    // KerML's grammar has no dedicated "view rendering membership" production: a `render` usage
-    // parses with the same generic FeatureMembership wrapper as any other feature-owning usage,
-    // and `add_view_rendering_node` correctly registers that declared fact (it also carries real
-    // authored-visibility information, not just a kind). The declared *kind* is still too coarse
-    // here, though -- ElementKind::ViewRendering is the more specific, structurally-determined
-    // classification, so it must win over the generic declared one for the kind specifically,
-    // while the rest of the declared fact (visibility, etc.) is unaffected by this check.
-    if node.element_kind != ElementKind::ViewRendering {
+    let is_variant = node
+        .attributes
+        .get("isVariant")
+        .and_then(|value| value.as_bool())
+        == Some(true)
+        || node.element_kind.as_str() == "variant";
+
+    // Element kinds whose membership classification is structurally determined by the kind
+    // itself (below), not by whatever the parser's own `Membership` node happened to carry --
+    // so a declared fact must never be allowed to override it, even if one is present.
+    //
+    // ViewRendering and typed variants are *confirmed* live instances of this: KerML's grammar
+    // has no dedicated "view rendering membership" production, so a `render` usage parses with
+    // the same generic FeatureMembership wrapper as any other feature-owning usage (though
+    // `add_view_rendering_node` does correctly register that declared fact); and a typed
+    // `variant part x : Y;` has `materialize_variant_usage` delegate to that usage kind's own
+    // materializer (e.g. `materialize_part_usage`), which registers its own declared fact from
+    // the *inner* usage's generic membership, not the outer `VariantUsage.membership` the parser
+    // genuinely tags `MembershipKind::VariantMembership`. TransitionTrigger/Guard/Effect are not
+    // currently reachable with a declared fact at all (`materialize_transition_features` never
+    // registers one) but are included defensively, on the same reasoning, in case that changes.
+    let has_dedicated_structural_classification = is_variant
+        || matches!(
+            node.element_kind,
+            ElementKind::ViewRendering
+                | ElementKind::TransitionTrigger
+                | ElementKind::TransitionGuard
+                | ElementKind::TransitionEffect
+        );
+
+    if !has_dedicated_structural_classification {
         if let Some(membership) = node.facts.membership.as_ref() {
             return membership.declared_kind;
         }
     }
 
-    if node
-        .attributes
-        .get("isVariant")
-        .and_then(|value| value.as_bool())
-        == Some(true)
-        || node.element_kind.as_str() == "variant"
-    {
+    if is_variant {
         return HostMembershipKind::VariantMembership;
     }
 
@@ -1103,6 +1120,215 @@ mod tests {
             byte_size: None,
         };
         InMemoryDocumentProvider::new(vec![doc])
+    }
+
+    /// Minimal synthetic node for exercising `membership_kind()` directly, without a real
+    /// parse/build/project round trip. Only fields `membership_kind()` actually reads are
+    /// meaningful; everything else is a placeholder.
+    fn membership_kind_test_node(
+        element_kind: ElementKind,
+        declared_kind: Option<HostMembershipKind>,
+    ) -> HostSemanticModelNode {
+        HostSemanticModelNode {
+            semantic_id: String::new(),
+            uri: "file:///test.sysml".to_string(),
+            qualified_name: "Test::node".to_string(),
+            name: "node".to_string(),
+            element_kind,
+            range: sysml_model::TextRange::new(
+                sysml_model::TextPosition::new(0, 0),
+                sysml_model::TextPosition::new(0, 0),
+            ),
+            parent: None,
+            attributes: HashMap::new(),
+            facts: HostElementFacts {
+                membership: declared_kind.map(|declared_kind| HostMembershipFacts {
+                    declared_kind,
+                    authored_visibility: None,
+                    effective_visibility: None,
+                    visibility_provenance: None,
+                    import_shape: None,
+                    import_origin: None,
+                }),
+                ..Default::default()
+            },
+        }
+    }
+
+    /// Regression guard for the bug class behind two confirmed live incidents in this PR:
+    /// `render` (ViewRendering) and a typed `variant part x : Y;` (VariantMembership) each have a
+    /// *structurally*-determined membership kind more specific than the generic Feature/
+    /// OwningMembership their construct's declared fact carries (either because KerML has no
+    /// dedicated grammar production for the construct, like `render`, or because the declared
+    /// fact gets overwritten by a delegated materializer, like typed variants) --
+    /// `membership_kind()` must let the structural classification win regardless of what a
+    /// *coarse* declared kind says. TransitionTrigger/Guard/Effect are included too even though
+    /// no current graph-builder path registers a declared fact for them (confirmed by reading
+    /// `materialize_transition_features`) -- this locks in the same invariant defensively so that
+    /// stays true if a future change adds one, rather than waiting for a fourth incident.
+    #[test]
+    fn membership_kind_element_specific_classification_wins_over_generic_declared_kind() {
+        let cases: &[(ElementKind, HostMembershipKind)] = &[
+            (
+                ElementKind::ViewRendering,
+                HostMembershipKind::ViewRenderingMembership,
+            ),
+            (
+                ElementKind::TransitionTrigger,
+                HostMembershipKind::TransitionFeatureMembership,
+            ),
+            (
+                ElementKind::TransitionGuard,
+                HostMembershipKind::TransitionFeatureMembership,
+            ),
+            (
+                ElementKind::TransitionEffect,
+                HostMembershipKind::TransitionFeatureMembership,
+            ),
+        ];
+
+        for (element_kind, expected) in cases {
+            for coarse_declared_kind in [
+                HostMembershipKind::FeatureMembership,
+                HostMembershipKind::OwningMembership,
+            ] {
+                let node =
+                    membership_kind_test_node(element_kind.clone(), Some(coarse_declared_kind));
+                assert_eq!(
+                    membership_kind(&node, None),
+                    *expected,
+                    "{element_kind:?} with a coarse declared kind of {coarse_declared_kind:?} \
+                     should classify as {expected:?}, not fall back to the declared kind"
+                );
+            }
+            // The same answer must hold with no declared fact registered at all.
+            let node = membership_kind_test_node(element_kind.clone(), None);
+            assert_eq!(
+                membership_kind(&node, None),
+                *expected,
+                "{element_kind:?} with no declared fact"
+            );
+        }
+    }
+
+    /// `InOutParameter`'s classification is owner-context-dependent (KerML ParameterMembership
+    /// for Action/Calc parameters, ordinary FeatureMembership for Port in/out features) rather
+    /// than kind-dedicated, and unlike the cases above, no current graph-builder path registers a
+    /// declared fact for an Action/Calc parameter (confirmed by reading `add_in_out_decl`) -- so
+    /// this only exercises the no-declared-fact path that's actually reachable today, matching
+    /// `projection_membership_kinds_for_import_alias_actor_and_defs`'s real-fixture coverage of
+    /// the same distinction.
+    #[test]
+    fn membership_kind_in_out_parameter_depends_on_owner_kind() {
+        let cases: &[(Option<ElementKind>, HostMembershipKind)] = &[
+            (
+                Some(ElementKind::ActionDef),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::Action),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::CalcDef),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::Calc),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::PortDef),
+                HostMembershipKind::FeatureMembership,
+            ),
+            (None, HostMembershipKind::FeatureMembership),
+        ];
+        for (owner_kind, expected) in cases {
+            let node = membership_kind_test_node(ElementKind::InOutParameter, None);
+            assert_eq!(
+                membership_kind(&node, owner_kind.as_ref()),
+                *expected,
+                "InOutParameter owned by {owner_kind:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn membership_kind_variant_marker_wins_over_generic_declared_kind() {
+        for coarse_declared_kind in [
+            HostMembershipKind::FeatureMembership,
+            HostMembershipKind::OwningMembership,
+        ] {
+            let mut node = membership_kind_test_node(ElementKind::Part, Some(coarse_declared_kind));
+            node.attributes
+                .insert("isVariant".to_string(), serde_json::json!(true));
+            assert_eq!(
+                membership_kind(&node, None),
+                HostMembershipKind::VariantMembership,
+                "isVariant=true with a coarse declared kind of {coarse_declared_kind:?} should \
+                 still classify as VariantMembership"
+            );
+        }
+    }
+
+    /// Real end-to-end regression test for the typed-variant instance of the bug the table above
+    /// exercises synthetically: `materialize_variant_usage` delegates a typed
+    /// `variant part x : Y;` to `materialize_part_usage`, which registers its own declared
+    /// membership fact from the *inner* part usage's generic Feature membership -- not the
+    /// outer `VariantUsage.membership`, which the parser genuinely tags
+    /// `MembershipKind::VariantMembership` -- so before this fix the typed form silently lost
+    /// its VariantMembership classification (the untyped `variant name;` form was unaffected,
+    /// since it registers its own declared fact directly from the correctly-tagged outer
+    /// membership).
+    #[test]
+    fn projection_classifies_typed_variant_usage_as_variant_membership() {
+        let content = r#"
+package P {
+    part def Transmission;
+    part def ManualTransmission :> Transmission;
+    variation part def TransmissionChoices :> Transmission {
+        variant part manual : ManualTransmission;
+        variant untypedChoice;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/variant_membership.sysml"
+        } else {
+            "/workspace/variant_membership.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+
+        let membership_for = |qualified: &str| {
+            projection
+                .relationships
+                .iter()
+                .find(|relationship| relationship.target == qualified)
+                .map(|relationship| relationship.membership_kind)
+        };
+
+        let typed_variant = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::manual"))
+            .expect("typed variant node");
+        assert_eq!(
+            membership_for(&typed_variant.qualified_name),
+            Some(Some(HostMembershipKind::VariantMembership))
+        );
+
+        let untyped_variant = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::untypedChoice"))
+            .expect("untyped variant node");
+        assert_eq!(
+            membership_for(&untyped_variant.qualified_name),
+            Some(Some(HostMembershipKind::VariantMembership))
+        );
     }
 
     #[test]
