@@ -386,10 +386,11 @@ pub fn install_standard_library_from_bytes(
     }
     let staging_version_root = staging_root.join(&config.version);
     let staging_install_path = staging_version_root.join(&normalized_content_path);
-    ensure_directory_path(
-        &staging_install_path,
-        "Managed standard-library staging path",
-    )?;
+    // Not pre-created: `materialize_kpar_bytes` (a real KPAR archive) requires its destination
+    // to not exist yet and creates it itself as part of an atomic publish. Pre-creating it here
+    // would make every KPAR install fail that check against a directory this function just
+    // made. `materialize_embedded_stdlib_kpar_bundle` (the other branch) always creates its own
+    // destination unconditionally, so leaving this to the callee is correct for both.
 
     let project_name = if is_kpar_bytes(archive_bytes) {
         let materialized = materialize_kpar_bytes(archive_bytes, &staging_install_path)?;
