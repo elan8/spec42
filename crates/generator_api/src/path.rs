@@ -127,7 +127,7 @@ impl ArtifactPath {
         &self.0
     }
 
-    pub fn segments(&self) -> impl Iterator<Item = &str> {
+    pub fn segments(&self) -> impl DoubleEndedIterator<Item = &str> {
         self.0.split('/')
     }
 
@@ -489,20 +489,52 @@ mod tests {
         }
     }
 
+    /// Reserved DOS device names the validator rejects for portability, not because current
+    /// Windows necessarily refuses them itself.
+    ///
+    /// Verified directly against a real filesystem (`CreateFileW` via `std::fs::write`, no
+    /// test harness or `tempfile` crate involved, so this isn't a harness artifact): only a
+    /// bare, extension-less `NUL` still redirects to the null device today. `CON`, `COM1`, and
+    /// any reserved name *with* an extension -- including `nul.txt`, `COM¹.txt`, `LPT².log`,
+    /// and even the console-specific `CONIN$`/`CONOUT$` -- write as ordinary files with their
+    /// literal requested name. The rejection is still correct: other tools, older Windows
+    /// versions, network shares, and archive formats can still choke on these names, and an
+    /// output set should not depend on where it ran. But that policy isn't something today's
+    /// Windows will independently confirm for us, so these are checked against the validator
+    /// only, not against a live filesystem oracle.
+    const RESERVED_DEVICE_NAMES_ONLY_THE_VALIDATOR_REJECTS: [&str; 5] = [
+        "nul.txt",
+        "COM1",
+        "COM\u{b9}.txt",
+        "LPT\u{b2}.log",
+        "CONIN$",
+    ];
+
+    #[test]
+    fn reserved_device_names_are_rejected_by_the_validator() {
+        for candidate in RESERVED_DEVICE_NAMES_ONLY_THE_VALIDATOR_REJECTS {
+            assert!(
+                ArtifactPath::parse(candidate).is_err(),
+                "validator accepted `{candidate}`"
+            );
+        }
+    }
+
     /// The other direction: a rejected name must be one Windows would not have stored as
     /// asked. Independently written rather than derived from the validator's own rules, so a
     /// mistake in those rules cannot make this pass vacuously.
+    ///
+    /// Limited to candidates verified to still be genuinely refused or renamed by Windows
+    /// today -- illegal characters, alternate-data-stream colons, trailing dot/space
+    /// stripping, and the segment length ceiling. See
+    /// `RESERVED_DEVICE_NAMES_ONLY_THE_VALIDATOR_REJECTS` above for the reserved-name
+    /// candidates this deliberately excludes.
     #[cfg(windows)]
     #[test]
     fn rejected_paths_would_not_have_been_stored_faithfully() {
         let temp = tempfile::tempdir().unwrap();
         let dangerous = [
             "NUL",
-            "nul.txt",
-            "COM1",
-            "COM\u{b9}.txt",
-            "LPT\u{b2}.log",
-            "CONIN$",
             "report.",
             "report ",
             "a:b",
