@@ -103,19 +103,8 @@ fn build_machine(graph: &SemanticGraph, root: &SemanticNode) -> Option<StateMach
     })
 }
 
-fn normalized_type_name(type_name: &str) -> String {
-    type_name
-        .split("::")
-        .last()
-        .unwrap_or(type_name)
-        .replace([' ', '_'], "")
-        .to_lowercase()
-}
-
 fn is_terminate_state(node: &SemanticNode) -> bool {
-    attr_str(node, "stateType")
-        .map(|value| normalized_type_name(&value))
-        .is_some_and(|value| value == "terminate")
+    node.element_kind == ElementKind::Terminate
 }
 
 fn build_regions(states: &[StateNodeDto]) -> Vec<RegionDto> {

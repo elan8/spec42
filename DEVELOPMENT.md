@@ -395,14 +395,14 @@ The OMG standard library is bundled from `sysml.library.kpar` at the pinned SysM
 For local development, `build.rs` prefers, in order (per managed library):
 
 1. `SPEC42_KPAR_LIBRARY_BUNDLE_<ID>` (path to `.kpar`, CI/release; legacy `SPEC42_DOMAIN_LIBRARIES_BUNDLE_ZIP` still maps to domain)
-2. `SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>` (pack on the fly with `kpar-pack`)
+2. `SPEC42_KPAR_LIBRARY_SOURCE_DIR_<ID>` (pack on the fly with `spec42 bundle`; the source root must contain its authoritative `.project.json`)
 3. A sibling checkout from `pack.siblingRelative` in the library config (packed when no cached bundle exists)
 4. Cached `.cache/<artifact>` from the library pin
 
 Domain library releases are published from [elan8/sysml-domain-libraries](https://github.com/elan8/sysml-domain-libraries) via the `release-kpar` GitHub Action when a `v*` tag is pushed. Pack locally with:
 
 ```bash
-cargo run -p kpar --bin kpar-pack -- --root ../sysml-domain-libraries --version 0.3.0 --output elan8-domain-libraries-0.3.0.kpar
+cargo run -p server --no-default-features --bin spec42 -- bundle ../sysml-domain-libraries -o elan8-domain-libraries-0.3.0.kpar
 ```
 
 `vscode/.gitignore` ignores `vscode/examples` so duplicate checkouts under `vscode/` are not committed. If you see the same example folders twice in the Spec42 **Examples** view, remove the extra copy under `vscode/examples` and keep the root submodule.

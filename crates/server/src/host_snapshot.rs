@@ -40,7 +40,12 @@ pub fn load_snapshot_with_engine(
     workspace_root: Option<&Path>,
     strict_diagnostics: bool,
 ) -> Result<Arc<HostWorkspaceSnapshot>, String> {
-    let provider = HostFilesystemProvider::from_paths(path, workspace_root, engine.package_roots());
+    let provider = HostFilesystemProvider::from_paths_with_standard_library(
+        path,
+        workspace_root,
+        engine.package_roots(),
+        &engine.library_catalog().stdlib.roots,
+    );
     let request = WorkspaceLoadRequest::single_target(path.to_path_buf())
         .with_workspace_root(workspace_root.map(Path::to_path_buf))
         .with_strict_diagnostics(strict_diagnostics)

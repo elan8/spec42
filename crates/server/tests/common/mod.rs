@@ -4,16 +4,6 @@
 //! binary only exercises a subset, so unused-in-this-binary is expected.
 #![allow(dead_code)]
 
-/// Reason string for `#[ignore]` on slow agent-CLI integration tests.
-///
-/// Default `cargo test` skips these; CI and focused runs use `--include-ignored`:
-///
-/// ```bash
-/// cargo test -p spec42 --test cli_ai_tools -- --include-ignored
-/// ```
-pub const AGENT_SURFACE_IGNORE: &str =
-    "agent CLI integration; run: cargo test -p spec42 -- --include-ignored";
-
 use tempfile::TempDir;
 use tokio::sync::Mutex;
 

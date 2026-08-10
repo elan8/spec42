@@ -8,3 +8,7 @@ crates/server/assets/** text eol=lf
 
 # Golden artifacts are compared byte for byte; autocrlf would rewrite them.
 generator-tests/golden/** -text
+
+# Compatibility snapshots are retained byte-for-byte, including source
+# whitespace that is significant to formatter fixtures.
+crates/workspace/tests/fixtures/sysml_compatibility/** -whitespace

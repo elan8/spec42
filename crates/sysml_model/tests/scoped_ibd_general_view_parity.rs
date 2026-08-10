@@ -147,6 +147,7 @@ fn assert_scoped_ibd_parity_for_general_views(workspace: &GeneralViewWorkspace) 
 }
 
 #[test]
+#[ignore = "optional local drill-down; examples/drone is not bundled in this checkout"]
 fn drone_general_view_scoped_ibd_matches_full_workspace_filter() {
     let drone_dir = repo_examples_dir("drone");
     assert!(

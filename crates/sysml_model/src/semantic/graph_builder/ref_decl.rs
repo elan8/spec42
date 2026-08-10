@@ -7,15 +7,18 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_membership_visibility, declared_feature_value, ref_decl_feature_properties,
-    span_to_range, subsetting_target, typing_targets,
+    declared_feature_value, ref_decl_feature_properties, span_to_range, subsetting_target,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
 use super::expressions;
-use super::{add_node_and_recurse, attach_feature_properties, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_subsetting_family, attach_declared_typing_relationship,
+    attach_feature_properties, qualified_name_for_node,
+};
 
 /// Options for context-specific follow-up after the shared ref node is created.
 #[derive(Debug, Clone, Copy, Default)]
@@ -39,7 +42,10 @@ pub(super) fn materialize_ref_decl(
     let range = span_to_range(&wrap.span);
     let mut attrs = HashMap::new();
     attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
@@ -61,6 +67,8 @@ pub(super) fn materialize_ref_decl(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
+    attach_declared_subsetting_family(g, &node_id, None, n.redefines.as_deref(), None, None);
     attach_feature_properties(g, &node_id, ref_decl_feature_properties());
     if let Some(value) = &n.value {
         if let Some(node) = g.get_node_mut(&node_id) {

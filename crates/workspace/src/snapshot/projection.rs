@@ -1,4 +1,4 @@
-﻿//! Host semantic model projection (no LSP transport types).
+//! Host semantic model projection (no LSP transport types).
 //!
 //! This is a 1:1 representation of the semantic graph in a serializable form.
 //! Every field present in [`SemanticNode`] and [`SemanticEdge`] is preserved here;
@@ -44,6 +44,23 @@ pub enum HostRelationshipMetaclass {
     Relationship,
 }
 
+/// Provenance adapted from the graph-owned relationship fact. `is_implied` remains as a
+/// compatibility convenience, but consumers needing rule identity use this typed field.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[serde(rename_all = "camelCase")]
+pub enum HostRelationshipProvenance {
+    #[default]
+    Authored,
+    Implied(HostImpliedRelationshipRule),
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostImpliedRelationshipRule {
+    UniversalStandardLibraryRelationship,
+    EnumerationValueTyping,
+}
+
 /// The KerML membership form used to establish containment.  This is kept
 /// separate from the graph-resolution `RelationshipKind`: a parent/child
 /// relation is a model element in its own right, not merely a display tree.
@@ -87,6 +104,21 @@ pub struct HostElementFacts {
     /// that retained typed parser properties.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub feature_properties: Option<HostFeatureProperties>,
+    /// Canonical ownership after applying an authored `ref` modifier or SysML's contextual
+    /// composite default. Kept separate from [`Self::feature_properties`] so clients can
+    /// distinguish a source fact from an implied semantic result.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub effective_feature_ownership: Option<HostFeatureOwnership>,
+    /// Parser-authored membership visibility and its canonical effective value. This is separate
+    /// from display attributes so relationship projection never recovers membership semantics
+    /// from strings.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub membership: Option<HostMembershipFacts>,
+    /// Canonical result of querying this element's expression evaluation at the graph's
+    /// publication barrier. This is always present so `NotRun` and `NotApplicable` cannot be
+    /// confused with a missing projection field.
+    #[serde(default)]
+    pub evaluation: HostEvaluationQuery,
     /// Semantic ID of this element's own addressable `Expression` content (in
     /// [`HostSemanticProjection::expressions`]), when the element itself directly *is* an
     /// expression (for example a `TransitionGuard`) rather than merely having one attached via
@@ -94,6 +126,138 @@ pub struct HostElementFacts {
     /// "this feature's value is X"; this represents "this element's substance is X".
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_expression_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostMembershipFacts {
+    pub declared_kind: HostMembershipKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub authored_visibility: Option<HostVisibilityKind>,
+    /// `None` is explicit non-applicability for an `Expose` membership, whose scope expansion
+    /// uses the canonical expose resolver rather than Import visibility defaults.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub effective_visibility: Option<HostVisibilityKind>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub visibility_provenance: Option<HostMembershipVisibilityProvenance>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub import_shape: Option<HostImportShape>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub import_origin: Option<HostImportOrigin>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostVisibilityKind {
+    Public,
+    Private,
+    Protected,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostImportShape {
+    Membership,
+    Namespace,
+    FilteredNamespace,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostImportOrigin {
+    Import,
+    Expose,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostMembershipVisibilityProvenance {
+    Authored,
+    Implied,
+}
+
+/// Neutral host projection of the semantic evaluator's exhaustive query result.
+///
+/// The workspace boundary preserves the typed published result while `sysml_model` remains the
+/// authority for evaluation and scalar meaning.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "status")]
+pub enum HostEvaluationQuery {
+    #[default]
+    NotRun,
+    NotApplicable,
+    Result {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        expression: Option<HostExpressionEvaluation>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        analysis: Option<HostAnalysisEvaluation>,
+    },
+}
+
+/// Evaluated expression result, distinct from the publication/query wrapper.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "status")]
+pub enum HostExpressionEvaluation {
+    Ok {
+        value: Option<HostEvaluatedScalar>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        unit: Option<String>,
+    },
+    Unresolved {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Ambiguous {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Malformed {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Incomplete {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    TypeError {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    DivByZero {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Unsupported {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+    Cycle {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        error: Option<String>,
+    },
+}
+
+/// Typed scalar carried by an evaluated host expression. Real values are finite canonical decimal
+/// strings so the DTO remains equality-safe and deterministic across host boundaries.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "kind", content = "value")]
+pub enum HostEvaluatedScalar {
+    Integer(i64),
+    Real(String),
+    Boolean(bool),
+    String(String),
+}
+
+/// Analysis-specific evaluation data. An analysis result must not be collapsed to
+/// `NotApplicable` merely because it has no standalone expression fact.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostAnalysisEvaluation {
+    pub expression: HostExpressionEvaluation,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub passed: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_value: Option<HostEvaluatedScalar>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub computed_unit: Option<String>,
 }
 
 /// Explicit feature/definition modifiers projected from declared semantic facts.
@@ -129,6 +293,22 @@ pub struct HostFeatureProperties {
     pub portion_kind: Option<String>,
 }
 
+/// Canonical feature ownership projected from the semantic graph's effective-facts publication.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct HostFeatureOwnership {
+    pub is_composite: bool,
+    pub is_reference: bool,
+    pub provenance: HostFeatureOwnershipProvenance,
+}
+
+/// Provenance of a projected effective ownership result.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostFeatureOwnershipProvenance {
+    Authored,
+    Implied,
+}
+
 /// A node in the semantic model — maps 1:1 to [`sysml_model::SemanticNode`].
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct HostSemanticModelNode {
@@ -150,7 +330,7 @@ pub struct HostSemanticModelNode {
     pub parent: Option<String>,
     /// Element-specific attributes extracted during graph construction.
     /// Keys and value shapes are kind-dependent (e.g. `"typeRef"`, `"multiplicity"`,
-    /// `"redefines"`, `"evaluatedValue"`, …).
+    /// `"redefines"`, …).
     #[serde(default)]
     pub attributes: HashMap<String, Value>,
     /// Typed identity and containment data consumed by API projections.
@@ -185,6 +365,9 @@ pub struct HostSemanticModelRelationship {
     /// Whether this relationship was implied rather than explicitly declared.
     #[serde(default)]
     pub is_implied: bool,
+    /// Typed provenance from the canonical graph relationship fact.
+    #[serde(default)]
+    pub provenance: HostRelationshipProvenance,
     /// Concrete relationship metaclass; `kind` remains the graph-resolution fact.
     #[serde(default)]
     pub metaclass: HostRelationshipMetaclass,
@@ -287,4 +470,24 @@ pub struct HostConnectorEnd {
     pub target_feature_id: Option<String>,
     pub range: TextRange,
     pub is_implied: bool,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn old_relationship_payload_defaults_provenance_to_authored() {
+        let relationship: HostSemanticModelRelationship =
+            serde_json::from_value(serde_json::json!({
+                "source": "Demo::source",
+                "target": "Demo::target",
+                "kind": "typing"
+            }))
+            .expect("older relationship payload");
+        assert_eq!(
+            relationship.provenance,
+            HostRelationshipProvenance::Authored
+        );
+    }
 }

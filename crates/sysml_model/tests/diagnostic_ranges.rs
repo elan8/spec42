@@ -77,7 +77,32 @@ fn unresolved_specializes_reference_points_at_specializes_target() {
 fn unresolved_import_target_points_at_import_target() {
     let content = "package Demo {\n  import MissingLibrary::*;\n}\n";
     let range = diagnostic_range_for(content, "unresolved_import_target");
-    assert_range_text(content, range, "MissingLibrary::*");
+    assert_range_text(content, range, "MissingLibrary");
+}
+
+#[test]
+fn ambiguous_and_unsupported_imports_have_typed_codes_and_target_ranges() {
+    let ambiguous =
+        "package Source {}\npackage Client {\n  package Source {}\n  import Source::*;\n}\n";
+    let diagnostic = diagnostic_for(ambiguous, "ambiguous_import_target");
+    assert_range_text(ambiguous, diagnostic.range, "Source");
+    assert_eq!(diagnostic.related_information.len(), 2);
+    assert_eq!(
+        diagnostic
+            .related_information
+            .iter()
+            .map(|related| related.message.as_str())
+            .collect::<Vec<_>>(),
+        vec![
+            "Ambiguous import candidate 'Client::Source'.",
+            "Ambiguous import candidate 'Source'.",
+        ],
+        "related candidates must retain the resolution contract's canonical identity ordering"
+    );
+
+    let filtered = "package Source { part def Item; }\npackage Client {\n  import Source [1];\n}\n";
+    let diagnostic = diagnostic_for(filtered, "unsupported_filtered_import");
+    assert_range_text(filtered, diagnostic.range, "Source");
 }
 
 #[test]

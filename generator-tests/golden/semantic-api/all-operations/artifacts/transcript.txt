@@ -87,7 +87,7 @@ relationships(Coverage::Engine::mass): 1 edge(s)
   typing Coverage::Engine::mass -> Coverage::Mass implied=false
 effective_features(Coverage::Engine::mass): 0 element(s)
 children(Coverage::Engine::speed): 0 element(s)
-element(Coverage::Engine::speed): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":20,"character":32},"end":{"line":20,"character":33}},"literal":0,"reference":null,"operator":null,"children":[],"arguments":[]}..?
+element(Coverage::Engine::speed): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":20,"character":32},"end":{"line":20,"character":33}},"literal":{"kind":"integer","value":0},"reference":null,"operator":null,"children":[],"arguments":[]}..?
 typed_by(Coverage::Engine::speed): Coverage::Speed
 relationships(Coverage::Engine::speed): 1 edge(s)
   typing Coverage::Engine::speed -> Coverage::Speed implied=false
@@ -131,7 +131,7 @@ effective_features(Coverage::Vehicle): 3 element(s)
   Coverage::Vehicle::spare [ReferenceUsage] name=spare library=false
   Coverage::Component::mass [AttributeUsage] name=mass library=false
 children(Coverage::Vehicle::engine): 0 element(s)
-element(Coverage::Vehicle::engine): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":24,"character":29},"end":{"line":24,"character":30}},"literal":1,"reference":null,"operator":null,"children":[],"arguments":[]}..{"kind":"integerLiteral","range":{"start":{"line":24,"character":29},"end":{"line":24,"character":30}},"literal":1,"reference":null,"operator":null,"children":[],"arguments":[]}
+element(Coverage::Vehicle::engine): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":24,"character":29},"end":{"line":24,"character":30}},"literal":{"kind":"integer","value":1},"reference":null,"operator":null,"children":[],"arguments":[]}..{"kind":"integerLiteral","range":{"start":{"line":24,"character":29},"end":{"line":24,"character":30}},"literal":{"kind":"integer","value":1},"reference":null,"operator":null,"children":[],"arguments":[]}
 typed_by(Coverage::Vehicle::engine): Coverage::Engine
 relationships(Coverage::Vehicle::engine): 1 edge(s)
   typing Coverage::Vehicle::engine -> Coverage::Engine implied=false
@@ -140,7 +140,7 @@ effective_features(Coverage::Vehicle::engine): 3 element(s)
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Powered::power [AttributeUsage] name=power library=false
 children(Coverage::Vehicle::spare): 0 element(s)
-element(Coverage::Vehicle::spare): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":25,"character":32},"end":{"line":25,"character":33}},"literal":0,"reference":null,"operator":null,"children":[],"arguments":[]}..{"kind":"integerLiteral","range":{"start":{"line":25,"character":35},"end":{"line":25,"character":36}},"literal":1,"reference":null,"operator":null,"children":[],"arguments":[]}
+element(Coverage::Vehicle::spare): definition=false abstract=false derived=false end=false multiplicity={"kind":"integerLiteral","range":{"start":{"line":25,"character":32},"end":{"line":25,"character":33}},"literal":{"kind":"integer","value":0},"reference":null,"operator":null,"children":[],"arguments":[]}..{"kind":"integerLiteral","range":{"start":{"line":25,"character":35},"end":{"line":25,"character":36}},"literal":{"kind":"integer","value":1},"reference":null,"operator":null,"children":[],"arguments":[]}
 typed_by(Coverage::Vehicle::spare): Coverage::Engine
 relationships(Coverage::Vehicle::spare): 1 edge(s)
   typing Coverage::Vehicle::spare -> Coverage::Engine implied=false

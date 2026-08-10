@@ -347,11 +347,9 @@ pub(crate) fn ingest_parsed_scan_entries_batch(
 /// can decide whether a (potentially slow) parse is needed.
 mod edits;
 mod rebuild;
+pub(crate) use edits::{apply_content_changes, apply_parsed_document_update, remove_document};
 #[cfg(test)]
 pub(crate) use edits::{apply_document_changes, apply_document_changes_fast};
-pub(crate) use edits::{
-    apply_document_content_edit, apply_parsed_document_update, remove_document,
-};
 pub(crate) use rebuild::{
     clear_documents_under_roots, index_library_paths_for_search, rebuild_all_document_links,
     rebuild_semantic_graph_staged,

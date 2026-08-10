@@ -5,6 +5,10 @@ use url::Url;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SysmlDocumentSourceKind {
     Workspace,
+    /// Document loaded from the configured canonical SysML standard library.
+    StandardLibrary,
+    /// A dependency or user-supplied library. It is not eligible to satisfy universal
+    /// standard-library relationship rules, even when it declares the same qualified names.
     Library,
     External,
 }

@@ -5,6 +5,7 @@ use sysml_model::semantic::text_span::{TextPosition, TextRange};
 use sysml_model::UnitRegistry;
 
 use super::engine::collect_diagnostics_from_graph_with_unit_registry;
+use super::ordering::canonicalize_diagnostics;
 use super::shared_rules::{
     collect_untyped_part_usage_diagnostics, missing_library_context_diagnostic,
 };
@@ -54,6 +55,7 @@ pub fn collect_document_diagnostics(
         }
     }
 
+    canonicalize_diagnostics(&mut diagnostics);
     diagnostics
 }
 

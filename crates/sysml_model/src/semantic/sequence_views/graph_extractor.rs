@@ -157,12 +157,9 @@ fn collect_part_def_specializes(graph: &SemanticGraph) -> HashMap<String, Vec<St
         }
         let mut bases: Vec<String> = Vec::new();
 
-        // Original (string) `specializes` reference — works even when the base
-        // type cannot be resolved into a concrete graph node.
-        if let Some(spec) = node.attributes.get("specializes").and_then(|v| v.as_str()) {
-            for segment in split_specializes_string(spec) {
-                bases.push(segment);
-            }
+        // Parser-owned specialization targets also preserve unresolved bases.
+        for target in &node.declared_facts.relationships.specializes {
+            bases.push(simple_name(&target.reference));
         }
 
         // Resolved Specializes edges from the graph. These also cover indirect
@@ -218,16 +215,13 @@ fn is_scenario_node(node: &SemanticNode, closures: &NameClosures) -> bool {
             if closures.scenario.contains(&simple) {
                 return true;
             }
-            // Fallback: declared `specializes` string reaches the closure.
-            node.attributes
-                .get("specializes")
-                .and_then(|v| v.as_str())
-                .map(|spec| {
-                    split_specializes_string(spec)
-                        .iter()
-                        .any(|base| closures.scenario.contains(base))
-                })
-                .unwrap_or(false)
+            // A declared specialization reaches the closure even before it resolves.
+            node.declared_facts
+                .relationships
+                .specializes
+                .iter()
+                .map(|target| simple_name(&target.reference))
+                .any(|base| closures.scenario.contains(&base))
         }
         ElementKind::Part => {
             let part_type = node
@@ -627,16 +621,6 @@ fn simple_name(value: &str) -> String {
         .unwrap_or("")
         .trim()
         .to_string()
-}
-
-/// Splits a `specializes` string that may include multiple bases (parser
-/// emits comma-separated entries on rare grammars). Returns simple names.
-fn split_specializes_string(value: &str) -> Vec<String> {
-    value
-        .split(',')
-        .map(simple_name)
-        .filter(|s| !s.is_empty())
-        .collect()
 }
 
 fn range_to_dto(range: &TextRange) -> RangeDto {

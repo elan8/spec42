@@ -13,7 +13,7 @@ use url::Url;
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::is_part_like;
-use crate::semantic::model::{ElementKind, NodeId, SemanticNode};
+use crate::semantic::model::{DeclaredLiteral, ElementKind, NodeId, SemanticNode};
 
 // Re-export the canonical port predicate for consumers of this module.
 pub use crate::semantic::kinds::is_port_like;
@@ -55,8 +55,9 @@ fn declared_expression_atom(
 ) -> Option<String> {
     if let Some(literal) = &expression.literal {
         return Some(match literal {
-            serde_json::Value::String(value) => value.clone(),
-            other => other.to_string(),
+            DeclaredLiteral::Integer(value) => value.to_string(),
+            DeclaredLiteral::Real(value) | DeclaredLiteral::String(value) => value.clone(),
+            DeclaredLiteral::Boolean(value) => value.to_string(),
         });
     }
     if let Some(reference) = expression.reference.as_deref() {
@@ -64,14 +65,22 @@ fn declared_expression_atom(
     }
     expression
         .operator
-        .as_deref()
+        .as_ref()
         .filter(|_| expression.children.is_empty())
-        .map(ToString::to_string)
+        .map(|operator| operator.as_str().to_owned())
 }
 
-pub(crate) fn port_multiplicity_label(node: &SemanticNode) -> String {
+pub(crate) fn port_multiplicity_label(graph: &SemanticGraph, node: &SemanticNode) -> String {
     let Some(multiplicity) = node.declared_facts.multiplicity.as_ref() else {
-        return "[1]".to_string();
+        return graph
+            .effective_facts_for(node)
+            .and_then(|facts| facts.implied_multiplicity)
+            .map(|multiplicity| match multiplicity.upper {
+                Some(upper) if upper == multiplicity.lower => format!("[{}]", multiplicity.lower),
+                Some(upper) => format!("[{}..{}]", multiplicity.lower, upper),
+                None => format!("[{}..*]", multiplicity.lower),
+            })
+            .unwrap_or_else(|| "[?]".to_string());
     };
     let lower = multiplicity
         .lower
@@ -324,11 +333,13 @@ fn collect_inherited_ports(
                     .and_then(|v| v.as_str())
                     .map(String::from),
                 port_type: child
-                    .attributes
-                    .get("portType")
-                    .and_then(|v| v.as_str())
+                    .declared_facts
+                    .relationships
+                    .typing
+                    .first()
+                    .map(|target| target.reference.as_str())
                     .map(String::from),
-                multiplicity: port_multiplicity_label(child),
+                multiplicity: port_multiplicity_label(graph, child),
                 parent_path: parent_path.to_string(),
             });
         }

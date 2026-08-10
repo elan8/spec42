@@ -12,6 +12,8 @@ impl TracksRelink for CounterState {
     fn is_token_current(&self, _token: &RelinkToken) -> bool {
         true
     }
+
+    fn rekey_for_actor(&mut self) {}
 }
 
 /// Proves the actual "readers never block on writers" property with real concurrent tokio

@@ -4,8 +4,8 @@ use sysml_v2_parser::ast::{InterfaceDefBody, PartDefBody, PartDefBodyElement};
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_membership_visibility, attach_short_name_attribute, definition_feature_properties,
-    identification_name, span_to_range, typing_targets,
+    attach_short_name_attribute, definition_feature_properties, identification_name, span_to_range,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId, RelationshipKind};
@@ -20,8 +20,8 @@ use super::port_def::materialize_port_usage;
 use super::state;
 use super::usage_builders;
 use super::{
-    add_node_and_recurse, attach_feature_properties, qualified_name_for_node,
-    resolve_addressable_name,
+    add_node_and_recurse, attach_declared_typing_relationship, attach_feature_properties,
+    qualified_name_for_node, resolve_addressable_name,
 };
 
 pub(super) fn build_from_part_def_body_element(
@@ -39,7 +39,10 @@ pub(super) fn build_from_part_def_body_element(
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
             let mut attrs = HashMap::new();
-            attach_membership_visibility(&mut attrs, &n.membership);
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&n.membership),
+            );
             if let Some(ref t) = n.typing {
                 attrs.insert("attributeType".to_string(), serde_json::json!(t));
             }
@@ -59,6 +62,7 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
+            attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
             attach_feature_properties(
                 g,
                 &node_id,
@@ -115,7 +119,10 @@ pub(super) fn build_from_part_def_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
             let range = span_to_range(&pd_node.span);
             attach_short_name_attribute(&mut attrs, &pd_node.identification);
-            attach_membership_visibility(&mut attrs, &pd_node.membership);
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&pd_node.membership),
+            );
             if let Some(ref p) = pd_node.definition_prefix {
                 attrs.insert(
                     "definitionPrefix".to_string(),
@@ -177,7 +184,10 @@ pub(super) fn build_from_part_def_body_element(
             );
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
             attach_short_name_attribute(&mut attrs, &item_node.identification);
-            attach_membership_visibility(&mut attrs, &item_node.membership);
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&item_node.membership),
+            );
             if let Some(ref s) = item_node.specializes {
                 attrs.insert("specializes".to_string(), serde_json::json!(s));
             }
@@ -281,7 +291,10 @@ pub(super) fn build_from_part_def_body_element(
             let range = span_to_range(&id_node.span);
             let mut attrs = HashMap::new();
             attach_short_name_attribute(&mut attrs, &id_node.identification);
-            attach_membership_visibility(&mut attrs, &id_node.membership);
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&id_node.membership),
+            );
             add_node_and_recurse(
                 g,
                 uri,
@@ -484,7 +497,10 @@ pub(super) fn build_from_part_def_body_element(
             let qualified = qualified_name_for_node(g, uri, container_prefix, name, "enumeration");
             let range = span_to_range(&enum_node.span);
             let mut attrs = HashMap::new();
-            attach_membership_visibility(&mut attrs, &enum_node.membership);
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&enum_node.membership),
+            );
             if let Some(ref t) = enum_node.type_name {
                 attrs.insert("enumerationType".to_string(), serde_json::json!(t));
             }

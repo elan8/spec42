@@ -13,7 +13,7 @@ fn host_artifact_metadata_round_trips_through_json() {
             artifact_metadata_version: 1,
             projection_schema_version: 1,
             renderer_compatibility_version: 1,
-            comparison_schema_version: 1,
+            comparison_schema_version: 2,
         },
         engine_version: "0.33.0".to_string(),
         library_catalog_hash: "catalog-hash".to_string(),
@@ -38,5 +38,6 @@ fn host_artifact_metadata_round_trips_through_json() {
 fn host_schema_versions_current_matches_constants() {
     let versions = HostSchemaVersions::current();
     assert_eq!(versions.artifact_metadata_version, 1);
-    assert_eq!(versions.comparison_schema_version, 1);
+    assert_eq!(versions.projection_schema_version, 17);
+    assert_eq!(versions.comparison_schema_version, 2);
 }

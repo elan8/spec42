@@ -129,11 +129,10 @@ fn multi_file_workspace_single_doc_edit_matches_full_rebuild() {
 /// Regression test for a real bug found while designing Tier 2 Phase 3b (see
 /// shared graph-patch consolidation): `workspace` crate's
 /// graph pipeline never called `evaluate_expressions`, in either the full-build or
-/// incremental-update path, so every attribute's `evaluatedValue`/`evaluationStatus` was
-/// silently absent. Fixed by routing both paths through `sysml_model::finalize_and_evaluate`
+/// incremental-update path, so evaluation facts were silently absent. Fixed by routing both paths through `sysml_model::finalize_and_evaluate`
 /// instead of `finalize_workspace_graph`.
 #[test]
-fn full_build_populates_evaluated_attributes() {
+fn full_build_publishes_typed_evaluation() {
     let cache = tempdir().expect("tempdir");
     let engine = incremental_engine(&cache);
     let content = r#"
@@ -151,16 +150,13 @@ package Demo {
         .into_iter()
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
-    assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(3)),
-        "full build should evaluate expressions; attrs: {:?}",
-        mass.attributes
+    assert!(
+        matches!(snapshot.semantic_graph().expression_evaluation_for(mass), sysml_model::ExpressionEvaluationQuery::Result(result) if result.value == Some(sysml_model::EvaluatedValue::Integer(3)))
     );
 }
 
 #[test]
-fn incremental_update_populates_evaluated_attributes() {
+fn incremental_update_publishes_typed_evaluation() {
     let cache = tempdir().expect("tempdir");
     let engine = incremental_engine(&cache);
     let model_path = cache.path().join("Demo.sysml");
@@ -192,10 +188,7 @@ fn incremental_update_populates_evaluated_attributes() {
         .into_iter()
         .find(|node| node.name == "mass")
         .expect("mass attribute node");
-    assert_eq!(
-        mass.attributes.get("evaluatedValue"),
-        Some(&serde_json::json!(3)),
-        "incremental update should evaluate expressions; attrs: {:?}",
-        mass.attributes
+    assert!(
+        matches!(updated.semantic_graph().expression_evaluation_for(mass), sysml_model::ExpressionEvaluationQuery::Result(result) if result.value == Some(sysml_model::EvaluatedValue::Integer(3)))
     );
 }

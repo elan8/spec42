@@ -5,15 +5,21 @@ use std::collections::{BTreeSet, HashMap, HashSet};
 use sha2::{Digest, Sha256};
 
 use sysml_diagnostics::{DiagnosticSeverity, SemanticDiagnostic};
-use sysml_model::{typed_by_reference, SemanticGraph, SysmlDocument, UnitRegistry};
+use sysml_model::{
+    typed_by_reference, DeclaredLiteral, EvaluationStatus, ExpressionEvaluationQuery,
+    SemanticGraph, SysmlDocument, UnitRegistry,
+};
 use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
-    HostConnectorEnd, HostElementFacts, HostExpression, HostExpressionArgument,
-    HostFeatureProperties, HostFeatureValue, HostMembershipKind, HostMultiplicity,
-    HostRelationshipMetaclass, HostSemanticModelNode, HostSemanticModelRelationship,
-    HostSemanticProjection,
+    HostAnalysisEvaluation, HostConnectorEnd, HostElementFacts, HostEvaluatedScalar,
+    HostEvaluationQuery, HostExpression, HostExpressionArgument, HostExpressionEvaluation,
+    HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
+    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
+    HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity,
+    HostRelationshipMetaclass, HostRelationshipProvenance, HostSemanticModelNode,
+    HostSemanticModelRelationship, HostSemanticProjection, HostVisibilityKind,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
 
@@ -114,7 +120,7 @@ fn build_host_semantic_model_node(
             .map(|parent| parent.qualified_name.clone()),
         attributes,
         facts: HostElementFacts {
-            declared_name: (!node.name.is_empty()).then(|| node.name.clone()),
+            declared_name: node.declared_name.clone(),
             effective_name: node.name.clone(),
             owner_id: None,
             owning_membership_id: None,
@@ -145,8 +151,136 @@ fn build_host_semantic_model_node(
                     is_portion: properties.is_portion,
                     portion_kind: properties.portion_kind.clone(),
                 }),
+            effective_feature_ownership: graph.effective_feature_ownership_for(node).map(
+                |ownership| HostFeatureOwnership {
+                    is_composite: ownership.is_composite,
+                    is_reference: ownership.is_reference,
+                    provenance: match ownership.provenance {
+                        sysml_model::FeatureOwnershipProvenance::Authored => {
+                            HostFeatureOwnershipProvenance::Authored
+                        }
+                        sysml_model::FeatureOwnershipProvenance::Implied => {
+                            HostFeatureOwnershipProvenance::Implied
+                        }
+                    },
+                },
+            ),
+            membership: node.declared_facts.membership.as_ref().map(|membership| {
+                let effective = graph.effective_membership_visibility_for(node);
+                HostMembershipFacts {
+                    declared_kind: host_declared_membership_kind(membership.kind),
+                    authored_visibility: membership.visibility.map(host_visibility_kind),
+                    effective_visibility: effective
+                        .map(|effective| host_visibility_kind(effective.value)),
+                    visibility_provenance: effective.map(|effective| match effective.provenance {
+                        sysml_model::MembershipVisibilityProvenance::Authored => {
+                            HostMembershipVisibilityProvenance::Authored
+                        }
+                        sysml_model::MembershipVisibilityProvenance::Implied => {
+                            HostMembershipVisibilityProvenance::Implied
+                        }
+                    }),
+                    import_shape: membership.import.as_ref().map(|import| match import.shape {
+                        sysml_model::ImportShape::Membership => HostImportShape::Membership,
+                        sysml_model::ImportShape::Namespace => HostImportShape::Namespace,
+                        sysml_model::ImportShape::FilteredNamespace => {
+                            HostImportShape::FilteredNamespace
+                        }
+                    }),
+                    import_origin: membership
+                        .import
+                        .as_ref()
+                        .map(|import| match import.origin {
+                            sysml_model::ImportOrigin::Import => HostImportOrigin::Import,
+                            sysml_model::ImportOrigin::Expose => HostImportOrigin::Expose,
+                        }),
+                }
+            }),
+            evaluation: project_evaluation_query(graph, node),
             content_expression_id: None,
         },
+    }
+}
+
+fn project_evaluated_scalar(value: &sysml_model::EvaluatedValue) -> Option<HostEvaluatedScalar> {
+    match value {
+        sysml_model::EvaluatedValue::Integer(value) => Some(HostEvaluatedScalar::Integer(*value)),
+        sysml_model::EvaluatedValue::Real(value) => value
+            .is_finite()
+            .then(|| HostEvaluatedScalar::Real(value.to_string())),
+        sysml_model::EvaluatedValue::Boolean(value) => Some(HostEvaluatedScalar::Boolean(*value)),
+        sysml_model::EvaluatedValue::String(value) => {
+            Some(HostEvaluatedScalar::String(value.clone()))
+        }
+    }
+}
+
+fn project_expression_evaluation(
+    evaluation: &sysml_model::ExpressionEvaluation,
+) -> HostExpressionEvaluation {
+    match evaluation.status {
+        EvaluationStatus::Ok => HostExpressionEvaluation::Ok {
+            value: evaluation.value.as_ref().and_then(project_evaluated_scalar),
+            unit: evaluation.unit.clone(),
+        },
+        EvaluationStatus::Unresolved => HostExpressionEvaluation::Unresolved {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Ambiguous => HostExpressionEvaluation::Ambiguous {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Malformed => HostExpressionEvaluation::Malformed {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Incomplete => HostExpressionEvaluation::Incomplete {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::TypeError => HostExpressionEvaluation::TypeError {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::DivByZero => HostExpressionEvaluation::DivByZero {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Unsupported => HostExpressionEvaluation::Unsupported {
+            error: evaluation.error.clone(),
+        },
+        EvaluationStatus::Cycle => HostExpressionEvaluation::Cycle {
+            error: evaluation.error.clone(),
+        },
+    }
+}
+
+fn project_evaluation_query(
+    graph: &SemanticGraph,
+    node: &sysml_model::SemanticNode,
+) -> HostEvaluationQuery {
+    match graph.expression_evaluation_for(node) {
+        ExpressionEvaluationQuery::NotRun => HostEvaluationQuery::NotRun,
+        ExpressionEvaluationQuery::NotApplicable | ExpressionEvaluationQuery::Result(_) => {
+            let facts = graph.evaluation_facts_for(node);
+            let expression = facts
+                .and_then(|facts| facts.expression.as_ref())
+                .map(project_expression_evaluation);
+            let analysis = facts
+                .and_then(|facts| facts.analysis.as_ref())
+                .map(|analysis| HostAnalysisEvaluation {
+                    expression: project_expression_evaluation(&analysis.expression),
+                    passed: analysis.passed,
+                    computed_value: analysis
+                        .computed_value
+                        .as_ref()
+                        .and_then(project_evaluated_scalar),
+                    computed_unit: analysis.computed_unit.clone(),
+                });
+            if expression.is_some() || analysis.is_some() {
+                HostEvaluationQuery::Result {
+                    expression,
+                    analysis,
+                }
+            } else {
+                HostEvaluationQuery::NotApplicable
+            }
+        }
     }
 }
 
@@ -202,48 +336,6 @@ pub(crate) fn project_host_semantic_model(
             ));
         }
     }
-    // Include the exact Systems/Kernel Library elements required by SysML's
-    // semantic specialization constraints, plus their namespace ancestry.
-    let implied_targets = nodes
-        .iter()
-        .filter(|node| !node.facts.is_library_element)
-        .filter_map(|node| implied_library_specialization(&node.element_kind))
-        .collect::<BTreeSet<_>>();
-    for qualified_name in implied_targets {
-        let Some(mut candidate_id) = graph
-            .node_ids_for_qualified_name(qualified_name)
-            .and_then(|ids| {
-                ids.iter().find(|id| {
-                    sysml_model::semantic::workspace_uri::uri_under_any_library(
-                        &id.uri,
-                        library_urls,
-                    )
-                })
-            })
-            .cloned()
-        else {
-            continue;
-        };
-        while let Some(candidate) = graph.get_node(&candidate_id) {
-            if included_ids.insert(candidate_id.clone()) {
-                nodes.push(build_host_semantic_model_node(
-                    graph,
-                    candidate,
-                    library_urls,
-                ));
-            }
-            let Some(parent_id) = candidate.parent_id.clone() else {
-                break;
-            };
-            if !sysml_model::semantic::workspace_uri::uri_under_any_library(
-                &parent_id.uri,
-                library_urls,
-            ) {
-                break;
-            }
-            candidate_id = parent_id;
-        }
-    }
     nodes.sort_by(|a, b| {
         a.uri
             .cmp(&b.uri)
@@ -296,6 +388,7 @@ pub(crate) fn project_host_semantic_model(
             related_element_ids: vec![owner_id.clone(), node.semantic_id.clone()],
             range: Some(node.range),
             is_implied: false,
+            provenance: HostRelationshipProvenance::Authored,
             metaclass: membership_relationship_metaclass(node, membership_kind),
             membership_kind: Some(membership_kind),
             visibility: membership_visibility(node),
@@ -347,7 +440,11 @@ pub(crate) fn project_host_semantic_model(
                 .filter(|id| !id.is_empty())
                 .collect(),
                 range: edge.connect.as_ref().map(|detail| detail.range),
-                is_implied: false,
+                is_implied: matches!(
+                    edge.provenance,
+                    sysml_model::RelationshipProvenance::Implied(_)
+                ),
+                provenance: host_relationship_provenance(edge.provenance),
                 metaclass: relationship_metaclass(&edge.kind),
                 membership_kind: None,
                 visibility: None,
@@ -366,53 +463,6 @@ pub(crate) fn project_host_semantic_model(
                 }),
             });
         }
-    }
-    // Materialize a normative implied specialization only when its library
-    // target was actually resolved; deployments without the standard library
-    // do not receive guessed IDs or placeholder elements.
-    for node in &nodes {
-        if node.facts.is_library_element {
-            continue;
-        }
-        let Some(target_name) = implied_library_specialization(&node.element_kind) else {
-            continue;
-        };
-        let Some(target_id) = semantic_ids.get(target_name) else {
-            continue;
-        };
-        let (kind, metaclass) = if node.element_kind.is_definition() {
-            (
-                sysml_model::RelationshipKind::Specializes,
-                HostRelationshipMetaclass::Subclassification,
-            )
-        } else {
-            (
-                sysml_model::RelationshipKind::Subsetting,
-                HostRelationshipMetaclass::Subsetting,
-            )
-        };
-        relationships.push(HostSemanticModelRelationship {
-            semantic_id: semantic_relationship_id(
-                &kind,
-                &node.semantic_id,
-                target_id,
-                "implied-library-specialization".to_owned(),
-            ),
-            source_id: node.semantic_id.clone(),
-            target_id: target_id.clone(),
-            owner_id: Some(node.semantic_id.clone()),
-            related_element_ids: vec![node.semantic_id.clone(), target_id.clone()],
-            range: None,
-            is_implied: true,
-            metaclass,
-            membership_kind: None,
-            visibility: None,
-            source: node.qualified_name.clone(),
-            target: target_name.to_owned(),
-            kind,
-            connect: None,
-            flow: None,
-        });
     }
     // An enumerated value is normatively an EnumerationUsage typed by its
     // owning EnumerationDefinition (SysML v2 8.3.8.2-8.3.8.3).
@@ -440,6 +490,9 @@ pub(crate) fn project_host_semantic_model(
             related_element_ids: vec![node.semantic_id.clone(), parent_id.clone()],
             range: None,
             is_implied: true,
+            provenance: HostRelationshipProvenance::Implied(
+                HostImpliedRelationshipRule::EnumerationValueTyping,
+            ),
             metaclass: HostRelationshipMetaclass::FeatureTyping,
             membership_kind: None,
             visibility: None,
@@ -663,11 +716,14 @@ fn project_expression(
             } => {
                 output.push(HostExpression {
                     semantic_id: id,
-                    kind: node.kind.clone(),
+                    kind: node.kind.as_str().to_owned(),
                     range: node.range,
-                    literal: node.literal.clone(),
+                    literal: node.literal.as_ref().map(project_declared_literal),
                     reference: node.reference.clone(),
-                    operator: node.operator.clone(),
+                    operator: node
+                        .operator
+                        .as_ref()
+                        .map(|operator| operator.as_str().to_owned()),
                     operand_ids,
                     arguments: argument_ids
                         .into_iter()
@@ -679,6 +735,18 @@ fn project_expression(
     }
 
     root_id
+}
+
+/// JSON is a workspace projection concern. The semantic graph keeps declared literals closed and
+/// typed; this adapter preserves the existing host expression protocol without leaking JSON back
+/// into the evaluator.
+fn project_declared_literal(literal: &DeclaredLiteral) -> serde_json::Value {
+    match literal {
+        DeclaredLiteral::Integer(value) => serde_json::Value::Number((*value).into()),
+        DeclaredLiteral::Real(value) => serde_json::Value::String(value.clone()),
+        DeclaredLiteral::String(value) => serde_json::Value::String(value.clone()),
+        DeclaredLiteral::Boolean(value) => serde_json::Value::Bool(*value),
+    }
 }
 
 fn derived_fact_id(kind: &str, owner_id: &str, path: &str) -> String {
@@ -711,92 +779,49 @@ fn relationship_metaclass(kind: &sysml_model::RelationshipKind) -> HostRelations
     }
 }
 
-/// Universal semantic-library specialization required for a concrete SysML
-/// kind. Context-specific constraints are additive to these base semantics.
-fn implied_library_specialization(kind: &sysml_model::ElementKind) -> Option<&'static str> {
-    use sysml_model::ElementKind;
-    match kind {
-        ElementKind::AttributeDef | ElementKind::EnumDef => Some("Base::DataValue"),
-        ElementKind::Attribute | ElementKind::Enumeration | ElementKind::EnumeratedValue => {
-            Some("Base::dataValues")
-        }
-        ElementKind::OccurrenceDef => None,
-        ElementKind::IndividualDef => Some("Occurrences::Life"),
-        ElementKind::Occurrence | ElementKind::Individual => Some("Occurrences::occurrences"),
-        ElementKind::ItemDef => Some("Items::Item"),
-        ElementKind::Item => Some("Items::items"),
-        ElementKind::PartDef => Some("Parts::Part"),
-        ElementKind::Part | ElementKind::Actor | ElementKind::Stakeholder => Some("Parts::parts"),
-        ElementKind::PortDef | ElementKind::ConjugatedPortDefinition => Some("Ports::Port"),
-        ElementKind::Port => Some("Ports::ports"),
-        ElementKind::ConnectionDef => Some("Connections::Connection"),
-        ElementKind::Connection => Some("Connections::connections"),
-        ElementKind::InterfaceDef => Some("Interfaces::Interface"),
-        ElementKind::Interface => Some("Interfaces::interfaces"),
-        ElementKind::AllocationDef => Some("Allocations::Allocation"),
-        ElementKind::Allocation => Some("Allocations::allocations"),
-        ElementKind::FlowDef => Some("Flows::MessageAction"),
-        ElementKind::Flow => Some("Flows::messages"),
-        ElementKind::ActionDef => Some("Actions::Action"),
-        ElementKind::Action | ElementKind::Perform => Some("Actions::actions"),
-        ElementKind::Assign => Some("Actions::assignmentActions"),
-        ElementKind::ForLoop => Some("Actions::forLoopActions"),
-        ElementKind::Terminate => Some("Actions::terminateActions"),
-        ElementKind::While => Some("Actions::whileLoopActions"),
-        ElementKind::If | ElementKind::Else => Some("Actions::ifThenActions"),
-        ElementKind::Transition => Some("Actions::transitionActions"),
-        ElementKind::TransitionTrigger => Some("Actions::acceptActions"),
-        ElementKind::TransitionEffect => Some("Actions::actions"),
-        ElementKind::StateDef => Some("States::StateAction"),
-        ElementKind::State | ElementKind::FinalState => Some("States::stateActions"),
-        ElementKind::CalcDef => Some("Calculations::Calculation"),
-        ElementKind::Calc => Some("Calculations::calculations"),
-        ElementKind::ConstraintDef => Some("Constraints::ConstraintCheck"),
-        ElementKind::Constraint
-        | ElementKind::Assert
-        | ElementKind::AssertConstraint
-        | ElementKind::RequireConstraint => Some("Constraints::constraintChecks"),
-        ElementKind::RequirementDef => Some("Requirements::RequirementCheck"),
-        ElementKind::Requirement | ElementKind::VerifiedRequirement | ElementKind::Objective => {
-            Some("Requirements::requirementChecks")
-        }
-        ElementKind::ConcernDef => Some("Requirements::ConcernCheck"),
-        ElementKind::Concern => Some("Requirements::concernChecks"),
-        ElementKind::CaseDef => Some("Cases::Case"),
-        ElementKind::Case => Some("Cases::cases"),
-        ElementKind::AnalysisDef => Some("AnalysisCases::AnalysisCase"),
-        ElementKind::Analysis => Some("AnalysisCases::analysisCases"),
-        ElementKind::VerificationDef => Some("VerificationCases::VerificationCase"),
-        ElementKind::Verification => Some("VerificationCases::verificationCases"),
-        ElementKind::UseCaseDef => Some("UseCases::UseCase"),
-        ElementKind::UseCase | ElementKind::IncludeUseCase => Some("UseCases::useCases"),
-        ElementKind::RenderingDef => Some("Views::Rendering"),
-        ElementKind::Rendering | ElementKind::ViewRendering => Some("Views::renderings"),
-        ElementKind::ViewDef => Some("Views::View"),
-        ElementKind::View => Some("Views::views"),
-        ElementKind::ViewpointDef => Some("Views::Viewpoint"),
-        ElementKind::Viewpoint => Some("Views::viewpoints"),
-        ElementKind::MetadataDef => Some("Metadata::MetadataItem"),
-        ElementKind::MetadataUsage | ElementKind::MetadataKeyword => {
-            Some("Metadata::metadataItems")
-        }
-        _ => None,
-    }
-}
-
 fn membership_kind(
     node: &HostSemanticModelNode,
     owner_kind: Option<&sysml_model::ElementKind>,
 ) -> HostMembershipKind {
     use sysml_model::ElementKind;
 
-    if node
+    let is_variant = node
         .attributes
         .get("isVariant")
         .and_then(|value| value.as_bool())
         == Some(true)
-        || node.element_kind.as_str() == "variant"
-    {
+        || node.element_kind.as_str() == "variant";
+
+    // Element kinds whose membership classification is structurally determined by the kind
+    // itself (below), not by whatever the parser's own `Membership` node happened to carry --
+    // so a declared fact must never be allowed to override it, even if one is present.
+    //
+    // ViewRendering and typed variants are *confirmed* live instances of this: KerML's grammar
+    // has no dedicated "view rendering membership" production, so a `render` usage parses with
+    // the same generic FeatureMembership wrapper as any other feature-owning usage (though
+    // `add_view_rendering_node` does correctly register that declared fact); and a typed
+    // `variant part x : Y;` has `materialize_variant_usage` delegate to that usage kind's own
+    // materializer (e.g. `materialize_part_usage`), which registers its own declared fact from
+    // the *inner* usage's generic membership, not the outer `VariantUsage.membership` the parser
+    // genuinely tags `MembershipKind::VariantMembership`. TransitionTrigger/Guard/Effect are not
+    // currently reachable with a declared fact at all (`materialize_transition_features` never
+    // registers one) but are included defensively, on the same reasoning, in case that changes.
+    let has_dedicated_structural_classification = is_variant
+        || matches!(
+            node.element_kind,
+            ElementKind::ViewRendering
+                | ElementKind::TransitionTrigger
+                | ElementKind::TransitionGuard
+                | ElementKind::TransitionEffect
+        );
+
+    if !has_dedicated_structural_classification {
+        if let Some(membership) = node.facts.membership.as_ref() {
+            return membership.declared_kind;
+        }
+    }
+
+    if is_variant {
         return HostMembershipKind::VariantMembership;
     }
 
@@ -829,7 +854,10 @@ fn membership_kind(
             _ => HostMembershipKind::FeatureMembership,
         },
         kind if kind.is_definition() => HostMembershipKind::OwningMembership,
-        ElementKind::Package | ElementKind::KermlDecl | ElementKind::Filter => {
+        ElementKind::Package
+        | ElementKind::KermlDecl
+        | ElementKind::ClassifierDecl
+        | ElementKind::Filter => {
             HostMembershipKind::OwningMembership
         }
         ElementKind::Part
@@ -882,10 +910,11 @@ fn membership_relationship_metaclass(
     match kind {
         HostMembershipKind::Import => {
             if node
-                .attributes
-                .get("importAll")
-                .and_then(|value| value.as_bool())
-                == Some(true)
+                .facts
+                .membership
+                .as_ref()
+                .and_then(|membership| membership.import_shape)
+                == Some(HostImportShape::Namespace)
             {
                 HostRelationshipMetaclass::NamespaceImport
             } else {
@@ -898,10 +927,35 @@ fn membership_relationship_metaclass(
 }
 
 fn membership_visibility(node: &HostSemanticModelNode) -> Option<String> {
-    node.attributes
-        .get("visibility")
-        .and_then(|value| value.as_str())
-        .map(|value| value.trim_matches('"').to_owned())
+    node.facts
+        .membership
+        .as_ref()
+        .and_then(|membership| membership.authored_visibility)
+        .map(|visibility| match visibility {
+            HostVisibilityKind::Public => "public".to_owned(),
+            HostVisibilityKind::Private => "private".to_owned(),
+            HostVisibilityKind::Protected => "protected".to_owned(),
+        })
+}
+
+fn host_visibility_kind(visibility: sysml_model::VisibilityKind) -> HostVisibilityKind {
+    match visibility {
+        sysml_model::VisibilityKind::Public => HostVisibilityKind::Public,
+        sysml_model::VisibilityKind::Private => HostVisibilityKind::Private,
+        sysml_model::VisibilityKind::Protected => HostVisibilityKind::Protected,
+    }
+}
+
+fn host_declared_membership_kind(kind: sysml_model::DeclaredMembershipKind) -> HostMembershipKind {
+    match kind {
+        sysml_model::DeclaredMembershipKind::Owning => HostMembershipKind::OwningMembership,
+        sysml_model::DeclaredMembershipKind::Feature => HostMembershipKind::FeatureMembership,
+        sysml_model::DeclaredMembershipKind::Import => HostMembershipKind::Import,
+        sysml_model::DeclaredMembershipKind::Alias => HostMembershipKind::Alias,
+        sysml_model::DeclaredMembershipKind::Variant => HostMembershipKind::VariantMembership,
+        sysml_model::DeclaredMembershipKind::Actor => HostMembershipKind::ActorMembership,
+        sysml_model::DeclaredMembershipKind::Synthesized => HostMembershipKind::OwningMembership,
+    }
 }
 
 /// Distinguishes multiple `Connection` edges between the same endpoint pair (the graph allows
@@ -912,7 +966,8 @@ fn membership_visibility(node: &HostSemanticModelNode) -> Option<String> {
 /// would be an ambiguous duplicate either way), so the discriminator no longer breaks identity on
 /// a position-shifting, non-renaming edit.
 fn edge_identity_discriminator(edge: &sysml_model::SemanticEdge) -> String {
-    edge.connect
+    let connect = edge
+        .connect
         .as_ref()
         .map(|detail| {
             format!(
@@ -920,7 +975,35 @@ fn edge_identity_discriminator(edge: &sysml_model::SemanticEdge) -> String {
                 detail.declaring_uri, detail.source_expression, detail.target_expression
             )
         })
-        .unwrap_or_default()
+        .unwrap_or_default();
+    format!(
+        "{connect}:{}",
+        relationship_provenance_discriminator(edge.provenance)
+    )
+}
+
+fn relationship_provenance_discriminator(
+    provenance: sysml_model::RelationshipProvenance,
+) -> &'static str {
+    match provenance {
+        sysml_model::RelationshipProvenance::Authored => "authored",
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ) => "implied:universal-standard-library-relationship",
+    }
+}
+
+fn host_relationship_provenance(
+    provenance: sysml_model::RelationshipProvenance,
+) -> HostRelationshipProvenance {
+    match provenance {
+        sysml_model::RelationshipProvenance::Authored => HostRelationshipProvenance::Authored,
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ) => HostRelationshipProvenance::Implied(
+            HostImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ),
+    }
 }
 
 /// Hashes `(uri, kind, qualified_name)`, not declaration position: `qualified_name` is already
@@ -1017,8 +1100,15 @@ fn summarize_host_documents(documents: &[HostValidatedDocument]) -> HostValidati
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::snapshot::discovery::path_to_file_url;
-    use sysml_model::{build_semantic_graph_with_provider, InMemoryDocumentProvider};
+    use crate::snapshot::{
+        discovery::path_to_file_url, HostEvaluatedScalar, HostEvaluationQuery,
+        HostExpressionEvaluation,
+    };
+    use sysml_model::{
+        build_semantic_graph_with_provider, evaluate_expressions, AnalysisEvaluation, ElementKind,
+        EvaluatedValue, EvaluationPublicationState, EvaluationStatus, ExpressionEvaluation,
+        InMemoryDocumentProvider, NodeEvaluationFacts, NodeId, SemanticNode,
+    };
 
     fn make_provider(uri: &str, content: &str) -> InMemoryDocumentProvider {
         let doc = sysml_model::SysmlDocument {
@@ -1030,6 +1120,354 @@ mod tests {
             byte_size: None,
         };
         InMemoryDocumentProvider::new(vec![doc])
+    }
+
+    /// Minimal synthetic node for exercising `membership_kind()` directly, without a real
+    /// parse/build/project round trip. Only fields `membership_kind()` actually reads are
+    /// meaningful; everything else is a placeholder.
+    fn membership_kind_test_node(
+        element_kind: ElementKind,
+        declared_kind: Option<HostMembershipKind>,
+    ) -> HostSemanticModelNode {
+        HostSemanticModelNode {
+            semantic_id: String::new(),
+            uri: "file:///test.sysml".to_string(),
+            qualified_name: "Test::node".to_string(),
+            name: "node".to_string(),
+            element_kind,
+            range: sysml_model::TextRange::new(
+                sysml_model::TextPosition::new(0, 0),
+                sysml_model::TextPosition::new(0, 0),
+            ),
+            parent: None,
+            attributes: HashMap::new(),
+            facts: HostElementFacts {
+                membership: declared_kind.map(|declared_kind| HostMembershipFacts {
+                    declared_kind,
+                    authored_visibility: None,
+                    effective_visibility: None,
+                    visibility_provenance: None,
+                    import_shape: None,
+                    import_origin: None,
+                }),
+                ..Default::default()
+            },
+        }
+    }
+
+    /// Regression guard for the bug class behind two confirmed live incidents in this PR:
+    /// `render` (ViewRendering) and a typed `variant part x : Y;` (VariantMembership) each have a
+    /// *structurally*-determined membership kind more specific than the generic Feature/
+    /// OwningMembership their construct's declared fact carries (either because KerML has no
+    /// dedicated grammar production for the construct, like `render`, or because the declared
+    /// fact gets overwritten by a delegated materializer, like typed variants) --
+    /// `membership_kind()` must let the structural classification win regardless of what a
+    /// *coarse* declared kind says. TransitionTrigger/Guard/Effect are included too even though
+    /// no current graph-builder path registers a declared fact for them (confirmed by reading
+    /// `materialize_transition_features`) -- this locks in the same invariant defensively so that
+    /// stays true if a future change adds one, rather than waiting for a fourth incident.
+    #[test]
+    fn membership_kind_element_specific_classification_wins_over_generic_declared_kind() {
+        let cases: &[(ElementKind, HostMembershipKind)] = &[
+            (
+                ElementKind::ViewRendering,
+                HostMembershipKind::ViewRenderingMembership,
+            ),
+            (
+                ElementKind::TransitionTrigger,
+                HostMembershipKind::TransitionFeatureMembership,
+            ),
+            (
+                ElementKind::TransitionGuard,
+                HostMembershipKind::TransitionFeatureMembership,
+            ),
+            (
+                ElementKind::TransitionEffect,
+                HostMembershipKind::TransitionFeatureMembership,
+            ),
+        ];
+
+        for (element_kind, expected) in cases {
+            for coarse_declared_kind in [
+                HostMembershipKind::FeatureMembership,
+                HostMembershipKind::OwningMembership,
+            ] {
+                let node =
+                    membership_kind_test_node(element_kind.clone(), Some(coarse_declared_kind));
+                assert_eq!(
+                    membership_kind(&node, None),
+                    *expected,
+                    "{element_kind:?} with a coarse declared kind of {coarse_declared_kind:?} \
+                     should classify as {expected:?}, not fall back to the declared kind"
+                );
+            }
+            // The same answer must hold with no declared fact registered at all.
+            let node = membership_kind_test_node(element_kind.clone(), None);
+            assert_eq!(
+                membership_kind(&node, None),
+                *expected,
+                "{element_kind:?} with no declared fact"
+            );
+        }
+    }
+
+    /// `InOutParameter`'s classification is owner-context-dependent (KerML ParameterMembership
+    /// for Action/Calc parameters, ordinary FeatureMembership for Port in/out features) rather
+    /// than kind-dedicated, and unlike the cases above, no current graph-builder path registers a
+    /// declared fact for an Action/Calc parameter (confirmed by reading `add_in_out_decl`) -- so
+    /// this only exercises the no-declared-fact path that's actually reachable today, matching
+    /// `projection_membership_kinds_for_import_alias_actor_and_defs`'s real-fixture coverage of
+    /// the same distinction.
+    #[test]
+    fn membership_kind_in_out_parameter_depends_on_owner_kind() {
+        let cases: &[(Option<ElementKind>, HostMembershipKind)] = &[
+            (
+                Some(ElementKind::ActionDef),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::Action),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::CalcDef),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::Calc),
+                HostMembershipKind::ParameterMembership,
+            ),
+            (
+                Some(ElementKind::PortDef),
+                HostMembershipKind::FeatureMembership,
+            ),
+            (None, HostMembershipKind::FeatureMembership),
+        ];
+        for (owner_kind, expected) in cases {
+            let node = membership_kind_test_node(ElementKind::InOutParameter, None);
+            assert_eq!(
+                membership_kind(&node, owner_kind.as_ref()),
+                *expected,
+                "InOutParameter owned by {owner_kind:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn membership_kind_variant_marker_wins_over_generic_declared_kind() {
+        for coarse_declared_kind in [
+            HostMembershipKind::FeatureMembership,
+            HostMembershipKind::OwningMembership,
+        ] {
+            let mut node = membership_kind_test_node(ElementKind::Part, Some(coarse_declared_kind));
+            node.attributes
+                .insert("isVariant".to_string(), serde_json::json!(true));
+            assert_eq!(
+                membership_kind(&node, None),
+                HostMembershipKind::VariantMembership,
+                "isVariant=true with a coarse declared kind of {coarse_declared_kind:?} should \
+                 still classify as VariantMembership"
+            );
+        }
+    }
+
+    /// Real end-to-end regression test for the typed-variant instance of the bug the table above
+    /// exercises synthetically: `materialize_variant_usage` delegates a typed
+    /// `variant part x : Y;` to `materialize_part_usage`, which registers its own declared
+    /// membership fact from the *inner* part usage's generic Feature membership -- not the
+    /// outer `VariantUsage.membership`, which the parser genuinely tags
+    /// `MembershipKind::VariantMembership` -- so before this fix the typed form silently lost
+    /// its VariantMembership classification (the untyped `variant name;` form was unaffected,
+    /// since it registers its own declared fact directly from the correctly-tagged outer
+    /// membership).
+    #[test]
+    fn projection_classifies_typed_variant_usage_as_variant_membership() {
+        let content = r#"
+package P {
+    part def Transmission;
+    part def ManualTransmission :> Transmission;
+    variation part def TransmissionChoices :> Transmission {
+        variant part manual : ManualTransmission;
+        variant untypedChoice;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/variant_membership.sysml"
+        } else {
+            "/workspace/variant_membership.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+
+        let membership_for = |qualified: &str| {
+            projection
+                .relationships
+                .iter()
+                .find(|relationship| relationship.target == qualified)
+                .map(|relationship| relationship.membership_kind)
+        };
+
+        let typed_variant = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::manual"))
+            .expect("typed variant node");
+        assert_eq!(
+            membership_for(&typed_variant.qualified_name),
+            Some(Some(HostMembershipKind::VariantMembership))
+        );
+
+        let untyped_variant = projection
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name.ends_with("::untypedChoice"))
+            .expect("untyped variant node");
+        assert_eq!(
+            membership_for(&untyped_variant.qualified_name),
+            Some(Some(HostMembershipKind::VariantMembership))
+        );
+    }
+
+    #[test]
+    fn projection_preserves_exhaustive_evaluation_query_states() {
+        // Derived from one real, platform-valid absolute path (never actually read --
+        // `InMemoryDocumentProvider` supplies content directly) rather than a hand-typed `file://`
+        // string and a separately hand-typed path: those only agree by coincidence, and a
+        // Unix-style leading `/` with no drive letter is not a real absolute path on Windows, so
+        // `project_host_semantic_model`'s own path-to-URL conversion (`path_to_file_url`, used
+        // here too) would silently derive a different URL than the literal string on that
+        // platform, and the node lookups below would find nothing.
+        let target = std::env::temp_dir()
+            .join("spec42-evaluation-query-states-test")
+            .join("evaluation.sysml");
+        let uri = path_to_file_url(&target).expect("file url");
+        let provider = make_provider(
+            uri.as_str(),
+            "package Demo { attribute value = 2; attribute unresolved = missing; }",
+        );
+        let (mut graph, _) = build_semantic_graph_with_provider(&provider).expect("graph");
+        graph.invalidate_evaluation_facts();
+
+        let before = project_host_semantic_model(&graph, std::slice::from_ref(&target), &[])
+            .expect("not-run projection");
+        let value_before = before
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::value")
+            .expect("value node");
+        assert_eq!(value_before.facts.evaluation, HostEvaluationQuery::NotRun);
+
+        evaluate_expressions(&mut graph);
+        let after =
+            project_host_semantic_model(&graph, &[target], &[]).expect("complete projection");
+        let value = after
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::value")
+            .expect("value node");
+        assert!(matches!(
+            value.facts.evaluation,
+            HostEvaluationQuery::Result {
+                expression: Some(HostExpressionEvaluation::Ok {
+                    value: Some(HostEvaluatedScalar::Integer(2)),
+                    unit: None,
+                }),
+                analysis: None,
+            }
+        ));
+        let package = after
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo")
+            .expect("package node");
+        assert_eq!(package.facts.evaluation, HostEvaluationQuery::NotApplicable);
+        let unresolved = after
+            .nodes
+            .iter()
+            .find(|node| node.qualified_name == "Demo::unresolved")
+            .expect("unresolved node");
+        assert!(matches!(
+            unresolved.facts.evaluation,
+            HostEvaluationQuery::Result {
+                expression: Some(HostExpressionEvaluation::Unresolved { .. }),
+                analysis: None,
+            }
+        ));
+    }
+
+    #[test]
+    fn analysis_evaluation_projects_without_a_standalone_expression_fact() {
+        let uri = url::Url::parse("memory://evaluation/analysis.sysml").expect("uri");
+        let id = NodeId::new(&uri, "Analysis::result");
+        let node = SemanticNode {
+            id: id.clone(),
+            element_kind: ElementKind::Analysis,
+            declared_name: Some("result".to_string()),
+            name: "result".to_string(),
+            range: sysml_model::TextRange::new(
+                sysml_model::TextPosition::new(0, 0),
+                sysml_model::TextPosition::new(0, 0),
+            ),
+            attributes: HashMap::new(),
+            declared_facts: Default::default(),
+            parent_id: None,
+        };
+        let mut graph = SemanticGraph::new();
+        let index = graph.graph.add_node(node);
+        graph.node_index_by_id.insert(id.clone(), index);
+        graph.nodes_by_uri.insert(uri.clone(), vec![id.clone()]);
+        graph
+            .node_ids_by_qualified_name
+            .insert(id.qualified_name.clone(), vec![id.clone()]);
+        graph.evaluation_publication = EvaluationPublicationState::Complete;
+        graph.evaluation_facts_by_node_id.insert(
+            id.clone(),
+            NodeEvaluationFacts {
+                expression: None,
+                analysis: Some(AnalysisEvaluation {
+                    expression: ExpressionEvaluation {
+                        status: EvaluationStatus::Ok,
+                        value: Some(EvaluatedValue::Integer(3)),
+                        unit: None,
+                        error: None,
+                    },
+                    passed: Some(true),
+                    computed_value: Some(EvaluatedValue::Integer(3)),
+                    computed_unit: None,
+                }),
+            },
+        );
+
+        assert!(matches!(
+            project_evaluation_query(&graph, graph.get_node(&id).expect("analysis node")),
+            HostEvaluationQuery::Result {
+                expression: None,
+                analysis: Some(ref analysis),
+            } if analysis.passed == Some(true)
+                && analysis.computed_value == Some(HostEvaluatedScalar::Integer(3))
+                && matches!(analysis.expression, HostExpressionEvaluation::Ok {
+                    value: Some(HostEvaluatedScalar::Integer(3)),
+                    unit: None,
+                })
+        ));
+    }
+
+    #[test]
+    fn evaluation_projection_round_trips_through_serde() {
+        let value = HostEvaluationQuery::Result {
+            expression: Some(HostExpressionEvaluation::Ok {
+                value: Some(HostEvaluatedScalar::Real("2.5".to_string())),
+                unit: Some("m".to_string()),
+            }),
+            analysis: None,
+        };
+        let encoded = serde_json::to_value(&value).expect("serialize host evaluation");
+        assert_eq!(encoded["status"], "result");
+        let decoded: HostEvaluationQuery = serde_json::from_value(encoded).expect("deserialize");
+        assert_eq!(decoded, value);
     }
 
     #[test]
@@ -1069,6 +1507,7 @@ package Demo {
     part def CleaningHead {
         part brushMotor : BrushMotor;
     }
+
     part def Robot {
         part cleaningHead : CleaningHead;
     }
@@ -1169,6 +1608,61 @@ package Demo {
         assert!(!properties.is_abstract);
         assert!(!properties.is_derived);
         assert_eq!(properties.is_ordered, Some(false));
+    }
+
+    #[test]
+    fn projection_keeps_generated_anonymous_name_out_of_declared_name() {
+        let document = sysml_model::SysmlDocument::from_memory_path(
+            "workspace",
+            "anonymous_item.sysml",
+            "package P { item def { attribute id : String; } }".to_string(),
+            sysml_model::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("workspace document");
+        let (graph, _) =
+            sysml_model::build_semantic_graph_from_documents(&[document]).expect("semantic graph");
+        let anonymous = graph
+            .nodes_named("_itemDef")
+            .into_iter()
+            .find(|node| node.element_kind == "item def")
+            .expect("anonymous item definition");
+
+        let projected = build_host_semantic_model_node(&graph, anonymous, &[]);
+        assert_eq!(projected.facts.declared_name, None);
+        assert_eq!(projected.facts.effective_name, "_itemDef");
+    }
+
+    #[test]
+    fn anonymous_graph_nodes_do_not_project_synthetic_names_as_authored() {
+        let content = r#"
+package Demo {
+    action def Step;
+    action def Pipeline {
+        first start;
+        action start : Step;
+    }
+}
+"#;
+        let target = std::path::PathBuf::from(if cfg!(windows) {
+            "c:/workspace/initial.sysml"
+        } else {
+            "/workspace/initial.sysml"
+        });
+        let uri = path_to_file_url(target.as_path()).expect("workspace uri");
+        let provider = make_provider(uri.as_str(), content);
+        let (graph, _docs) = build_semantic_graph_with_provider(&provider).expect("graph");
+
+        let projection = project_host_semantic_model(&graph, &[target], &[]).expect("projection");
+        let initial = projection
+            .nodes
+            .iter()
+            .find(|node| node.element_kind == sysml_model::ElementKind::Initial)
+            .expect("initial node");
+        assert_eq!(initial.name, "_initial");
+        assert_eq!(initial.facts.declared_name, None);
+        assert_eq!(initial.facts.effective_name, "_initial");
     }
 
     #[test]
@@ -1380,7 +1874,7 @@ package Demo {
     }
 
     #[test]
-    fn projection_exposes_ref_ownership_and_composite_usage_defaults() {
+    fn projection_keeps_authored_and_implied_ownership_distinct() {
         let content = r#"
 package Demo {
     part def Tree;
@@ -1412,6 +1906,14 @@ package Demo {
             .expect("ref feature properties");
         assert_eq!(shared_props.is_reference, Some(true));
         assert_eq!(shared_props.is_composite, Some(false));
+        assert_eq!(
+            shared.facts.effective_feature_ownership,
+            Some(HostFeatureOwnership {
+                is_composite: false,
+                is_reference: true,
+                provenance: HostFeatureOwnershipProvenance::Authored,
+            })
+        );
         assert_eq!(shared.facts.element_type.as_deref(), Some("ReferenceUsage"));
         assert_eq!(
             projection
@@ -1436,8 +1938,16 @@ package Demo {
             .feature_properties
             .as_ref()
             .expect("part feature properties");
-        assert_eq!(local_props.is_composite, Some(true));
-        assert_eq!(local_props.is_reference, Some(false));
+        assert!(local_props.is_composite.is_none());
+        assert!(local_props.is_reference.is_none());
+        assert_eq!(
+            local.facts.effective_feature_ownership,
+            Some(HostFeatureOwnership {
+                is_composite: true,
+                is_reference: false,
+                provenance: HostFeatureOwnershipProvenance::Implied,
+            })
+        );
     }
 
     #[test]
@@ -1452,7 +1962,7 @@ package Demo {
         stakeholder holder : Thing;
     }
     use case def Mission {
-        actor operator;
+        actor someActor : Thing;
         objective goal : Req;
     }
     action def Survey {
@@ -1529,19 +2039,18 @@ package Demo {
             ))
         );
 
-        if let Some(actor_node) = projection
+        let actor_node = projection
             .nodes
             .iter()
             .find(|node| node.element_kind == sysml_model::ElementKind::Actor)
-        {
-            assert_eq!(
-                membership_for(&actor_node.qualified_name),
-                Some((
-                    HostRelationshipMetaclass::Membership,
-                    Some(HostMembershipKind::ActorMembership)
-                ))
-            );
-        }
+            .expect("actor node");
+        assert_eq!(
+            membership_for(&actor_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::ActorMembership)
+            ))
+        );
 
         // Regression guard: `subject`/`stakeholder` used to fall into the generic
         // `FeatureMembership` bucket, and `objective` was unhandled entirely (silently defaulted
@@ -2059,7 +2568,12 @@ package Demo {
                 uri: lib_uri,
                 content: lib_content.to_owned(),
                 path_hint: None,
-                source_kind: sysml_model::SysmlDocumentSourceKind::Library,
+                // Not `Library`: the universal-implied-relationship rule (untyped `part def`/
+                // `part` specializing/subsetting the system library's `Parts::Part`/`Parts::parts`)
+                // only treats `StandardLibrary`-tagged document URIs as eligible targets
+                // (`pipeline.rs`'s `set_standard_library_uris`). A plain `Library` document is a
+                // valid target for ordinary typing, but not for this rule specifically.
+                source_kind: sysml_model::SysmlDocumentSourceKind::StandardLibrary,
                 sha256: None,
                 byte_size: None,
             },
@@ -2104,23 +2618,30 @@ package Demo {
             assert_eq!(relationship.metaclass, metaclass);
             assert!(!relationship.target_id.is_empty());
         }
+        // Not "Parts" itself: `project_host_semantic_model`'s one-hop library projection
+        // (S42-005, see its doc comment above) deliberately includes only the directly-referenced
+        // targets ("Parts::Part", "Parts::parts"), not their containing package/parent chain.
+        // "Parts::Part" is exactly the node the implied Subclassification edge above resolved
+        // `target_id` against, so it must be present and marked as a library element.
         assert!(projection
             .nodes
             .iter()
-            .any(|node| { node.qualified_name == "Parts" && node.facts.is_library_element }));
+            .any(|node| { node.qualified_name == "Parts::Part" && node.facts.is_library_element }));
     }
 
     #[test]
     fn project_expression_handles_deeply_nested_declared_expression_without_overflowing_the_stack()
     {
-        use sysml_model::{DeclaredExpression, TextPosition, TextRange};
+        use sysml_model::{
+            DeclaredExpression, DeclaredExpressionKind, DeclaredLiteral, TextPosition, TextRange,
+        };
 
         const DEPTH: usize = 200_000;
         let range = TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 1));
         let mut tree = DeclaredExpression {
-            kind: "integerLiteral".to_string(),
+            kind: DeclaredExpressionKind::IntegerLiteral,
             range,
-            literal: Some(serde_json::json!(1)),
+            literal: Some(DeclaredLiteral::Integer(1)),
             reference: None,
             operator: None,
             children: Vec::new(),
@@ -2128,7 +2649,7 @@ package Demo {
         };
         for _ in 0..DEPTH {
             tree = DeclaredExpression {
-                kind: "parenthesized".to_string(),
+                kind: DeclaredExpressionKind::Parenthesized,
                 range,
                 literal: None,
                 reference: None,

@@ -8,7 +8,8 @@ use url::Url;
 
 use crate::checks::{
     behavior_conformance, connection_conformance, expression_conformance, import_conformance,
-    kind_compatibility, name_resolution, requirement_case_conformance, view_metadata_conformance,
+    kind_compatibility, name_resolution, requirement_case_conformance,
+    structural_feature_conformance, view_metadata_conformance,
 };
 use crate::helpers::*;
 use crate::relationship_endpoint_messages::builder_relationship_diagnostic_to_emit;
@@ -31,6 +32,31 @@ fn is_viewpoint_kind(kind: &sysml_model::ElementKind) -> bool {
         kind,
         sysml_model::ElementKind::Viewpoint | sysml_model::ElementKind::ViewpointDef
     )
+}
+
+/// Whether an analysis evaluation belongs to a directly authored diagnostic owner.
+///
+/// Evaluation facts are intentionally broader: an inherited requirement constraint, for
+/// example, remains queryable from the requirement usage. Reporting its unresolved result as a
+/// diagnostic on every use would turn a reusable/template expression into an apparent local
+/// error. This predicate uses only typed graph facts and keeps that reporting policy in one
+/// place.
+fn analysis_evaluation_diagnostic_applies(
+    graph: &SemanticGraph,
+    node: &sysml_model::SemanticNode,
+) -> bool {
+    matches!(
+        node.element_kind,
+        sysml_model::ElementKind::Analysis | sysml_model::ElementKind::Verification
+    ) || (node.element_kind == sysml_model::ElementKind::Constraint
+        && node.declared_facts.own_expression.is_some())
+        || graph.children_of(node).into_iter().any(|child| {
+            matches!(
+                child.element_kind,
+                sysml_model::ElementKind::AssertConstraint
+                    | sysml_model::ElementKind::RequireConstraint
+            ) && child.declared_facts.own_expression.is_some()
+        })
 }
 
 /// Returns LSP diagnostics for semantic rules in the given document.
@@ -178,8 +204,8 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
             && node.element_kind == sysml_model::ElementKind::Port
             && !is_synthetic(node)
             && is_declaration_port(graph, node)
-            && !node.attributes.contains_key("redefines")
-            && !node.attributes.contains_key("subsetsFeature")
+            && node.declared_facts.relationships.redefinition.is_empty()
+            && node.declared_facts.relationships.subsetting.is_empty()
             && port_anchor_key(node)
                 .as_ref()
                 .is_some_and(|key| !connected_port_keys.contains(key))
@@ -228,15 +254,15 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         diagnostics.len().saturating_sub(d3),
     ));
 
-    // 4) Multiplicity validation (syntax and interval sanity)
+    // 4) Multiplicity validation (parser-backed bounds and interval sanity)
     let t4 = Instant::now();
     let d4 = diagnostics.len();
     for node in &nodes {
-        if let Some(multiplicity) = node.attributes.get("multiplicity").and_then(|v| v.as_str()) {
-            if let Some(message) = multiplicity_issue_message(multiplicity) {
+        if let Some(multiplicity) = node.declared_facts.multiplicity.as_ref() {
+            if let Some(message) = declared_multiplicity_issue_message(multiplicity) {
                 diagnostics.push(diag(
                     uri,
-                    diagnostic_range(graph, node, None),
+                    multiplicity.range,
                     DiagnosticSeverity::Warning,
                     "semantic",
                     "invalid_multiplicity",
@@ -287,33 +313,33 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         diagnostics.len().saturating_sub(d7),
     ));
 
-    // 8) Redefines consistency, when the parser/graph captures a `redefines` attribute.
+    // 8) Redefines consistency, from parser-owned declared relationship facts.
     let t8 = Instant::now();
     let d8 = diagnostics.len();
     for node in &nodes {
-        let Some(redefines_raw) = node.attributes.get("redefines").and_then(|v| v.as_str()) else {
-            continue;
-        };
-        if redefines_raw.trim().is_empty() {
-            diagnostics.push(diag(
-                uri,
-                diagnostic_range(graph, node, None),
-                DiagnosticSeverity::Warning,
-                "semantic",
-                "invalid_redefines_reference",
-                format!("Element '{}' has an empty redefines target.", node.name),
-            ));
-            continue;
-        }
-        if redefines_raw.trim() == node.id.qualified_name {
-            diagnostics.push(diag(
-                uri,
-                diagnostic_range(graph, node, None),
-                DiagnosticSeverity::Warning,
-                "semantic",
-                "invalid_redefines_reference",
-                format!("Element '{}' cannot redefine itself.", node.name),
-            ));
+        for target in &node.declared_facts.relationships.redefinition {
+            let redefines_raw = target.reference.as_str();
+            if redefines_raw.trim().is_empty() {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "invalid_redefines_reference",
+                    format!("Element '{}' has an empty redefines target.", node.name),
+                ));
+                continue;
+            }
+            if redefines_raw.trim() == node.id.qualified_name {
+                diagnostics.push(diag(
+                    uri,
+                    diagnostic_range(graph, node, None),
+                    DiagnosticSeverity::Warning,
+                    "semantic",
+                    "invalid_redefines_reference",
+                    format!("Element '{}' cannot redefine itself.", node.name),
+                ));
+            }
         }
     }
     section_timings.push((
@@ -329,7 +355,9 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         if node.element_kind == sysml_model::ElementKind::Ref {
             continue;
         }
-        if !node.attributes.contains_key("value") || node.attributes.contains_key("redefines") {
+        if !node.attributes.contains_key("value")
+            || !node.declared_facts.relationships.redefinition.is_empty()
+        {
             continue;
         }
         let Some(owner_id) = node.parent_id.as_ref() else {
@@ -440,7 +468,7 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         if node.element_kind != sysml_model::ElementKind::Allocation {
             continue;
         }
-        if node.attributes.contains_key("allocationType")
+        if !node.declared_facts.relationships.typing.is_empty()
             && graph
                 .outgoing_targets_by_kind(node, RelationshipKind::Typing)
                 .iter()
@@ -536,21 +564,17 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
             node.element_kind,
             sysml_model::ElementKind::ConstraintDef | sysml_model::ElementKind::CalcDef
         );
-        if let Some(status) = node
-            .attributes
-            .get("analysisEvaluationStatus")
-            .and_then(|value| value.as_str())
+        if !analysis_evaluation_diagnostic_applies(graph, node) {
+            continue;
+        }
+        if let Some(analysis) = graph
+            .evaluation_facts_for(node)
+            .and_then(|facts| facts.analysis.as_ref())
         {
             if is_analysis_template_def {
                 continue;
             }
-            if status == "failed_constraint"
-                || node
-                    .attributes
-                    .get("analysisConstraintPassed")
-                    .and_then(|value| value.as_bool())
-                    == Some(false)
-            {
+            if analysis.passed == Some(false) {
                 diagnostics.push(diag(
                     uri,
                     diagnostic_range(graph, node, None),
@@ -562,11 +586,11 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
                         node.name
                     ),
                 ));
-            } else if status != "ok" && status != "incomplete" {
-                let detail = node
-                    .attributes
-                    .get("analysisEvaluationError")
-                    .and_then(|value| value.as_str())
+            } else if analysis.expression.status == sysml_model::EvaluationStatus::Unresolved {
+                let detail = analysis
+                    .expression
+                    .error
+                    .as_deref()
                     .unwrap_or("analysis expression could not be evaluated");
                 diagnostics.push(diag(
                     uri,
@@ -672,6 +696,22 @@ pub fn compute_semantic_diagnostics_with_unit_registry(
         "14_connection_conformance".to_string(),
         t14.elapsed().as_millis(),
         diagnostics.len().saturating_sub(d14),
+    ));
+
+    // 14b) KerML feature/end and SysML variation conformance. These rules use
+    // parser-projected feature facts and resolved relationship edges only; in
+    // particular they deliberately do not compare textual type names.
+    let t14b = Instant::now();
+    let d14b = diagnostics.len();
+    diagnostics.extend(
+        structural_feature_conformance::collect_structural_feature_conformance_diagnostics(
+            graph, uri,
+        ),
+    );
+    section_timings.push((
+        "14b_structural_feature_conformance".to_string(),
+        t14b.elapsed().as_millis(),
+        diagnostics.len().saturating_sub(d14b),
     ));
 
     // 15) P1 expression/value/unit conformance.

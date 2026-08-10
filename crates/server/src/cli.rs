@@ -31,6 +31,8 @@ pub struct Cli {
 pub enum Command {
     Lsp,
     Check(CheckArgs),
+    /// Scaffold a validated starter SysML v2 workspace. Existing files are never overwritten.
+    Init(InitArgs),
     /// Run a sandboxed WebAssembly plugin against a resolved semantic model.
     Generate(GenerateArgs),
     Doctor(DoctorArgs),
@@ -38,6 +40,10 @@ pub enum Command {
     ExplainDiagnostic(ExplainDiagnosticArgs),
     /// Compact semantic graph summary.
     ModelSummary(ModelSummaryArgs),
+    /// Create a validated local KPAR archive from a model directory.
+    Bundle(BundleArgs),
+    /// Validate and atomically unpack a local KPAR archive.
+    Unbundle(UnbundleArgs),
     Sysand {
         #[command(subcommand)]
         command: SysandCommand,
@@ -119,6 +125,40 @@ pub struct CheckArgs {
         help = "Legacy check mode: skip semantic diagnostics after parse errors and suppress shadowed unresolved warnings"
     )]
     pub strict_diagnostics: bool,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct InitArgs {
+    /// New or empty directory that will contain the starter workspace.
+    pub path: PathBuf,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct BundleArgs {
+    /// Directory containing SysML or KerML source files.
+    #[arg(default_value = ".")]
+    pub directory: PathBuf,
+    /// Archive file to create. Defaults to `{name}-{version}.kpar` from `.project.json`.
+    #[arg(short = 'o', long = "output")]
+    pub output: Option<PathBuf>,
+    /// Store source bytes without ZIP compression.
+    #[arg(long = "no-compress", default_value_t = false)]
+    pub no_compress: bool,
+    /// Optional archive path prefix for every source file.
+    #[arg(long = "archive-prefix")]
+    pub archive_prefix: Option<String>,
+    /// Archive-path prefix to exclude (repeatable). By default every SysML/KerML file is included.
+    #[arg(long = "exclude", value_name = "PREFIX")]
+    pub excludes: Vec<String>,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct UnbundleArgs {
+    /// Local KPAR archive to unpack.
+    pub archive: PathBuf,
+    /// Destination directory.
+    #[arg(short = 'd', long = "directory")]
+    pub directory: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, Args)]
@@ -308,6 +348,46 @@ mod tests {
                 assert_eq!(args.baseline, Some(PathBuf::from("baseline.json")));
             }
             other => panic!("expected check command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn init_command_requires_a_target_directory() {
+        let cli = Cli::parse_from(["spec42", "init", "starter-model"]);
+        match cli.command {
+            Some(Command::Init(args)) => assert_eq!(args.path, PathBuf::from("starter-model")),
+            other => panic!("expected init command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn bundle_and_unbundle_commands_parse_local_archive_arguments() {
+        let bundle = Cli::parse_from([
+            "spec42",
+            "bundle",
+            "models",
+            "-o",
+            "models.kpar",
+            "--no-compress",
+        ]);
+        match bundle.command {
+            Some(Command::Bundle(args)) => {
+                assert_eq!(args.directory, PathBuf::from("models"));
+                assert_eq!(args.output, Some(PathBuf::from("models.kpar")));
+                assert!(args.no_compress);
+                assert!(args.archive_prefix.is_none());
+                assert!(args.excludes.is_empty());
+            }
+            other => panic!("expected bundle command, got {other:?}"),
+        }
+
+        let unbundle = Cli::parse_from(["spec42", "unbundle", "models.kpar", "-d", "out"]);
+        match unbundle.command {
+            Some(Command::Unbundle(args)) => {
+                assert_eq!(args.archive, PathBuf::from("models.kpar"));
+                assert_eq!(args.directory, Some(PathBuf::from("out")));
+            }
+            other => panic!("expected unbundle command, got {other:?}"),
         }
     }
 

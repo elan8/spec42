@@ -1,6 +1,6 @@
 //! Petgraph-backed semantic graph and query API.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::{Arc, Mutex};
 
 use crate::semantic::text_span::{TextPosition, TextRange};
@@ -12,8 +12,14 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::semantic::model::{
-    node_matches_simple_name, ConnectStatementDetail, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
+    DeclaredMembershipFacts, DerivedRelationshipResolution, EffectiveFeatureOwnership,
+    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, EvaluationPublicationState,
+    ExpressionEvaluationQuery, ExpressionResultId, ExpressionResultRole,
+    FeatureOwnershipProvenance, ImpliedFeatureOwnership, ImpliedFeatureValueBinding,
+    ImpliedMultiplicity, ImpliedRelationshipRule, MembershipVisibilityProvenance,
+    NodeEvaluationFacts, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
+    SemanticNode, VisibilityKind,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -53,11 +59,38 @@ pub struct SemanticGraphData {
     pub node_index_by_id: HashMap<NodeId, NodeIndex>,
     pub nodes_by_uri: HashMap<Url, Vec<NodeId>>,
     pub node_ids_by_qualified_name: HashMap<String, Vec<NodeId>>,
+    /// Document identities admitted as canonical library sources for universal standard-library
+    /// relationship resolution. A workspace declaration with a matching qualified name is never
+    /// a substitute for one of these targets.
+    #[serde(default)]
+    pub standard_library_uris: HashSet<Url>,
     /// Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     pub pending_relationships: Vec<PendingRelationship>,
+    /// Build-local typed handoff from an AST membership adapter to its immediately following
+    /// node materialization. It is never serialized or published as an attribute projection.
+    #[serde(skip)]
+    pub(crate) pending_declared_membership_facts: HashMap<NodeId, DeclaredMembershipFacts>,
+    /// Authoritative effective facts published after semantic linking. Unlike query indexes,
+    /// this is model state: consumers use it instead of re-deriving defaults or closure facts.
+    #[serde(default)]
+    pub effective_facts_by_node_id: HashMap<NodeId, EffectiveSemanticFacts>,
+    /// Graph-owned resolution outcomes for universal implied relationships. This is semantic
+    /// state, not a host projection cache: absent standard-library prerequisites and ambiguity
+    /// remain observable rather than being collapsed into a missing edge.
+    #[serde(default)]
+    pub derived_relationship_resolution_by_source_id:
+        HashMap<NodeId, DerivedRelationshipResolution>,
+    /// Authoritative results from the evaluation phase. Interpret absence through
+    /// `evaluation_publication`: it is `NotRun` before the barrier and `NotApplicable` after.
+    #[serde(default)]
+    pub evaluation_facts_by_node_id: HashMap<NodeId, NodeEvaluationFacts>,
+    /// Completeness marker for `evaluation_facts_by_node_id`. A map with no entries is only
+    /// `NotApplicable` after this barrier is complete; otherwise it is explicitly `NotRun`.
+    #[serde(default)]
+    pub evaluation_publication: EvaluationPublicationState,
     #[serde(skip)]
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
     #[serde(skip)]
@@ -101,9 +134,18 @@ impl Clone for SemanticGraphData {
             node_index_by_id: self.node_index_by_id.clone(),
             nodes_by_uri: self.nodes_by_uri.clone(),
             node_ids_by_qualified_name: self.node_ids_by_qualified_name.clone(),
+            standard_library_uris: self.standard_library_uris.clone(),
             children_by_parent_id: self.children_by_parent_id.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
+            // A cloned/published graph must never inherit an unfinished builder handoff.
+            pending_declared_membership_facts: HashMap::new(),
+            effective_facts_by_node_id: self.effective_facts_by_node_id.clone(),
+            derived_relationship_resolution_by_source_id: self
+                .derived_relationship_resolution_by_source_id
+                .clone(),
+            evaluation_facts_by_node_id: self.evaluation_facts_by_node_id.clone(),
+            evaluation_publication: self.evaluation_publication,
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -126,6 +168,397 @@ impl SemanticGraph {
 
     pub fn into_data(self) -> SemanticGraphData {
         Arc::try_unwrap(self.0).unwrap_or_else(|arc| (*arc).clone())
+    }
+
+    /// Returns the effective facts published for `node` at the graph's current semantic barrier.
+    pub fn effective_facts_for(&self, node: &SemanticNode) -> Option<&EffectiveSemanticFacts> {
+        self.effective_facts_by_node_id.get(&node.id)
+    }
+
+    /// Returns the authored membership visibility or the parser-documented contextual default:
+    /// public for members of a package, private for nested members. KerML `Import` defaults to
+    /// private regardless of owner. `Expose` has a distinct scope/expansion contract, so this
+    /// query returns `None` rather than fabricating an import visibility for it. The source fact
+    /// remains absent when no prefix was written, so consumers can preserve provenance instead
+    /// of mistaking the default for authored source.
+    pub fn effective_membership_visibility_for(
+        &self,
+        node: &SemanticNode,
+    ) -> Option<EffectiveMembershipVisibility> {
+        let membership = node.declared_facts.membership.as_ref()?;
+        if membership
+            .import
+            .as_ref()
+            .is_some_and(|import| import.origin == crate::semantic::model::ImportOrigin::Expose)
+        {
+            return None;
+        }
+        Some(match membership.visibility {
+            Some(value) => EffectiveMembershipVisibility {
+                value,
+                provenance: MembershipVisibilityProvenance::Authored,
+            },
+            None => EffectiveMembershipVisibility {
+                value: if membership.import.is_some() {
+                    // KerML Import's abstract-syntax default is private; it does not inherit
+                    // package-member visibility merely because it is declared in a package.
+                    VisibilityKind::Private
+                } else {
+                    match node
+                        .parent_id
+                        .as_ref()
+                        .and_then(|parent| self.get_node(parent))
+                    {
+                        None => VisibilityKind::Public,
+                        Some(parent) if parent.element_kind == ElementKind::Package => {
+                            VisibilityKind::Public
+                        }
+                        Some(_) => VisibilityKind::Private,
+                    }
+                },
+                provenance: MembershipVisibilityProvenance::Implied,
+            },
+        })
+    }
+
+    /// Returns the graph-published outcome for the universal implied relationship of `node`.
+    /// Non-applicable kinds are explicit, rather than being represented as a successful absence.
+    pub fn universal_relationship_resolution_for(
+        &self,
+        node: &SemanticNode,
+    ) -> DerivedRelationshipResolution {
+        match self
+            .derived_relationship_resolution_by_source_id
+            .get(&node.id)
+        {
+            Some(resolution) => resolution.clone(),
+            None if node
+                .element_kind
+                .universal_standard_library_relationship()
+                .is_some() =>
+            {
+                DerivedRelationshipResolution::NotRun
+            }
+            None => DerivedRelationshipResolution::NotApplicable,
+        }
+    }
+
+    /// Marks document identities that are trusted library sources for the current graph
+    /// publication. This metadata is an input to derived relationship resolution, not a cache.
+    pub fn set_standard_library_uris<I>(&mut self, uris: I)
+    where
+        I: IntoIterator<Item = Url>,
+    {
+        self.standard_library_uris = uris.into_iter().collect();
+        self.derived_relationship_resolution_by_source_id.clear();
+    }
+
+    /// Adds canonical library document identities while preserving any already-merged library
+    /// graph provenance (for example when linking workspace documents onto a cached library).
+    pub fn add_standard_library_uris<I>(&mut self, uris: I)
+    where
+        I: IntoIterator<Item = Url>,
+    {
+        self.standard_library_uris.extend(uris);
+        self.derived_relationship_resolution_by_source_id.clear();
+    }
+
+    /// Recomputes universal standard-library relationships from this coherent graph state.
+    /// It first removes this rule's previous edges and statuses, so merge, patch, and library
+    /// changes cannot publish a stale resolved target.
+    pub fn refresh_universal_standard_library_relationships(&mut self) {
+        let stale_edges = self
+            .graph
+            .edge_references()
+            .filter(|edge| {
+                matches!(
+                    edge.weight().provenance,
+                    RelationshipProvenance::Implied(
+                        ImpliedRelationshipRule::UniversalStandardLibraryRelationship
+                    )
+                )
+            })
+            .map(|edge| edge.id())
+            .collect::<Vec<_>>();
+        for edge in stale_edges {
+            self.graph.remove_edge(edge);
+        }
+        self.derived_relationship_resolution_by_source_id.clear();
+
+        let nodes = self.node_index_by_id.keys().cloned().collect::<Vec<_>>();
+        let mut nodes = nodes;
+        nodes.sort_by(|left, right| {
+            left.uri
+                .as_str()
+                .cmp(right.uri.as_str())
+                .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+        });
+
+        for source_id in nodes {
+            let Some(source) = self.get_node(&source_id) else {
+                continue;
+            };
+            let Some(specification) = source
+                .element_kind
+                .universal_standard_library_relationship()
+            else {
+                continue;
+            };
+            let mut candidates = self
+                .node_ids_for_qualified_name(specification.target.qualified_name())
+                .unwrap_or_default()
+                .to_vec();
+            candidates.retain(|candidate| self.standard_library_uris.contains(&candidate.uri));
+            candidates.sort_by(|left, right| {
+                left.uri
+                    .as_str()
+                    .cmp(right.uri.as_str())
+                    .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+            });
+
+            let non_self_candidates = candidates
+                .iter()
+                .filter(|candidate| **candidate != source_id)
+                .cloned()
+                .collect::<Vec<_>>();
+            let resolution = match non_self_candidates.as_slice() {
+                [] if candidates.iter().any(|candidate| candidate == &source_id) => {
+                    DerivedRelationshipResolution::SelfTargetSuppressed {
+                        target: source_id.clone(),
+                    }
+                }
+                [] => DerivedRelationshipResolution::MissingPrerequisite {
+                    target: specification.target,
+                },
+                [target] => {
+                    let source_index = self.node_index_by_id.get(&source_id).copied();
+                    let target_index = self.node_index_by_id.get(target).copied();
+                    let authored_equivalent_exists = source_index.zip(target_index).is_some_and(
+                        |(source_index, target_index)| {
+                            self.graph
+                                .edges_connecting(source_index, target_index)
+                                .any(|edge| {
+                                    edge.weight().kind == specification.kind
+                                        && edge.weight().provenance
+                                            == RelationshipProvenance::Authored
+                                })
+                        },
+                    );
+                    if !authored_equivalent_exists {
+                        self.insert_workspace_edge(
+                            &source_id,
+                            target,
+                            SemanticEdge::implied(
+                                specification.kind.clone(),
+                                ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+                            ),
+                        );
+                    }
+                    DerivedRelationshipResolution::Resolved {
+                        target: target.clone(),
+                    }
+                }
+                _ => DerivedRelationshipResolution::Ambiguous {
+                    candidates: non_self_candidates,
+                },
+            };
+            self.derived_relationship_resolution_by_source_id
+                .insert(source_id, resolution);
+        }
+        self.invalidate_query_indexes();
+    }
+
+    /// Returns the raw evaluation facts published for `node`. Call
+    /// [`Self::expression_evaluation_for`] when the NotRun/NotApplicable distinction matters.
+    pub fn evaluation_facts_for(&self, node: &SemanticNode) -> Option<&NodeEvaluationFacts> {
+        self.evaluation_facts_by_node_id.get(&node.id)
+    }
+
+    pub fn expression_evaluation_for(&self, node: &SemanticNode) -> ExpressionEvaluationQuery<'_> {
+        if self.evaluation_publication == EvaluationPublicationState::NotRun {
+            return ExpressionEvaluationQuery::NotRun;
+        }
+        self.evaluation_facts_for(node)
+            .and_then(|facts| facts.expression.as_ref())
+            .map(ExpressionEvaluationQuery::Result)
+            .unwrap_or(ExpressionEvaluationQuery::NotApplicable)
+    }
+
+    /// Invalidates the whole atomic evaluation publication after a semantic mutation.
+    pub fn invalidate_evaluation_facts(&mut self) {
+        self.evaluation_facts_by_node_id.clear();
+        self.evaluation_publication = EvaluationPublicationState::NotRun;
+    }
+
+    /// Returns a feature's ownership after applying its parser-backed modifier or the one
+    /// contextual SysML default published at the semantic barrier.
+    ///
+    /// The source fact stays in [`DeclaredFeatureProperties`](crate::semantic::model::DeclaredFeatureProperties).
+    /// Consumers must use this query for ownership semantics rather than treating an absent
+    /// authored modifier as a negative result.
+    pub fn effective_feature_ownership_for(
+        &self,
+        node: &SemanticNode,
+    ) -> Option<EffectiveFeatureOwnership> {
+        let declared = node.declared_facts.feature_properties.as_ref()?;
+        if declared.is_composite.is_some() || declared.is_reference.is_some() {
+            return Some(EffectiveFeatureOwnership {
+                is_composite: declared.is_composite.unwrap_or(false),
+                is_reference: declared.is_reference.unwrap_or(false),
+                provenance: FeatureOwnershipProvenance::Authored,
+            });
+        }
+
+        self.effective_facts_for(node)
+            .and_then(|facts| facts.implied_feature_ownership)
+            .map(|ownership| EffectiveFeatureOwnership {
+                is_composite: ownership.is_composite,
+                is_reference: ownership.is_reference,
+                provenance: FeatureOwnershipProvenance::Implied,
+            })
+    }
+
+    /// Publish all derived effective facts after relationship linking has settled.
+    ///
+    /// This is intentionally a graph-level publication rather than a collection of consumer
+    /// fallbacks: authored facts remain on their nodes, while normalized and implied facts are
+    /// computed once from the complete graph and exposed here with explicit provenance.
+    pub fn refresh_effective_facts(&mut self) {
+        let mut nodes: Vec<SemanticNode> = self.graph.node_weights().cloned().collect();
+        nodes.sort_by(|left, right| {
+            left.id
+                .uri
+                .as_str()
+                .cmp(right.id.uri.as_str())
+                .then_with(|| left.id.qualified_name.cmp(&right.id.qualified_name))
+        });
+
+        let mut effective_facts_by_node_id = HashMap::with_capacity(nodes.len());
+        for node in &nodes {
+            let implied_multiplicity =
+                self.has_implied_exactly_one_multiplicity(node)
+                    .then_some(ImpliedMultiplicity {
+                        lower: 1,
+                        upper: Some(1),
+                        is_ordered: false,
+                        is_unique: None,
+                    });
+            let implied_feature_ownership =
+                self.has_implied_feature_ownership(node)
+                    .then_some(ImpliedFeatureOwnership {
+                        is_composite: true,
+                        is_reference: false,
+                    });
+            let featuring_type = self.nearest_featuring_type(node);
+            let implied_feature_value_binding = node
+                .declared_facts
+                .feature_value
+                .as_ref()
+                .filter(|value| matches!(value.kind, DeclaredFeatureValueKind::Bound))
+                .map(|_| ImpliedFeatureValueBinding {
+                    expression_result: ExpressionResultId {
+                        owner_id: node.id.clone(),
+                        role: ExpressionResultRole::FeatureValue,
+                    },
+                });
+
+            let facts = EffectiveSemanticFacts {
+                implied_multiplicity,
+                featuring_type,
+                implied_feature_value_binding,
+                implied_feature_ownership,
+            };
+            if facts != EffectiveSemanticFacts::default() {
+                effective_facts_by_node_id.insert(node.id.clone(), facts);
+            }
+        }
+        self.effective_facts_by_node_id = effective_facts_by_node_id;
+    }
+
+    /// Whether a feature receives SysML's implicit `[1..1]` multiplicity.
+    ///
+    /// This is deliberately narrower than "any node with feature properties". The default
+    /// belongs to ordinary, owned part/attribute/port usages only. Package members have
+    /// namespace ownership rather than feature ownership, connection usages have their own
+    /// semantics, and a resolved subsetting relationship supplies a different multiplicity
+    /// context. All of those distinctions are graph facts, so this does not inspect display
+    /// text or reconstruct the source declaration.
+    fn has_implied_exactly_one_multiplicity(&self, node: &SemanticNode) -> bool {
+        if node.declared_facts.multiplicity.is_some()
+            || !matches!(
+                node.element_kind,
+                ElementKind::Part | ElementKind::Attribute | ElementKind::Port
+            )
+        {
+            return false;
+        }
+
+        let Some(owner_id) = node.parent_id.as_ref() else {
+            return false;
+        };
+        let Some(owner) = self.get_node(owner_id) else {
+            return false;
+        };
+        if owner.element_kind == ElementKind::Package {
+            return false;
+        }
+
+        self.outgoing_targets_by_kind(node, RelationshipKind::Subsetting)
+            .is_empty()
+    }
+
+    /// Whether an ordinary owned usage receives SysML's contextual composite ownership default.
+    ///
+    /// The rule is deliberately conservative until all feature kinds have a complete typed
+    /// ownership contract: it applies only to the parser-backed ordinary usage kinds below when
+    /// directly owned by a SysML Type context (definition or usage). Namespace/package members, end features, directed
+    /// parameters, and explicit `ref` declarations remain outside the default. Each condition is
+    /// read from typed graph facts, never from display attributes or source text.
+    fn has_implied_feature_ownership(&self, node: &SemanticNode) -> bool {
+        if !node.element_kind.is_composite_by_default_usage() {
+            return false;
+        }
+
+        let Some(properties) = node.declared_facts.feature_properties.as_ref() else {
+            return false;
+        };
+        if properties.is_composite.is_some()
+            || properties.is_reference.is_some()
+            || properties.is_end
+            || properties.direction.is_some()
+        {
+            return false;
+        }
+
+        node.parent_id
+            .as_ref()
+            .and_then(|owner_id| self.get_node(owner_id))
+            .is_some_and(|owner| owner.element_kind.is_type_context())
+    }
+
+    fn nearest_featuring_type(&self, node: &SemanticNode) -> Option<NodeId> {
+        let mut current = node.parent_id.clone();
+        let mut visited = HashSet::new();
+        while let Some(owner_id) = current {
+            if !visited.insert(owner_id.clone()) {
+                return None;
+            }
+            let owner = self.get_node(&owner_id)?;
+            if owner.element_kind.is_definition() {
+                return Some(owner.id.clone());
+            }
+            let typed_owners: Vec<_> = self
+                .outgoing_typing_or_specializes_targets(owner)
+                .into_iter()
+                .filter(|target| target.element_kind.is_definition())
+                .map(|target| target.id.clone())
+                .collect();
+            if typed_owners.len() == 1 {
+                return typed_owners.into_iter().next();
+            }
+            current = owner.parent_id.clone();
+        }
+        None
     }
 }
 
@@ -254,9 +687,15 @@ impl SemanticGraphData {
             node_index_by_id: HashMap::new(),
             nodes_by_uri: HashMap::new(),
             node_ids_by_qualified_name: HashMap::new(),
+            standard_library_uris: HashSet::new(),
             children_by_parent_id: HashMap::new(),
             pending_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
+            pending_declared_membership_facts: HashMap::new(),
+            effective_facts_by_node_id: HashMap::new(),
+            derived_relationship_resolution_by_source_id: HashMap::new(),
+            evaluation_facts_by_node_id: HashMap::new(),
+            evaluation_publication: EvaluationPublicationState::NotRun,
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -410,6 +849,10 @@ impl SemanticGraphData {
 
     /// Removes all nodes (and their incident edges) for the given URI.
     pub fn remove_nodes_for_uri(&mut self, uri: &Url) {
+        // A URI alone is never durable evidence of standard-library provenance. Once its
+        // canonical document is removed, any replacement must be admitted again through the
+        // source-kind-aware build boundary before it can satisfy a universal relationship.
+        self.standard_library_uris.remove(uri);
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
             self.clear_import_lookup_cache();
             return;
@@ -453,6 +896,10 @@ impl SemanticGraphData {
                 }
             }
         }
+        self.effective_facts_by_node_id.clear();
+        self.derived_relationship_resolution_by_source_id.clear();
+        self.evaluation_facts_by_node_id.clear();
+        self.evaluation_publication = EvaluationPublicationState::NotRun;
         self.remove_recorded_cross_document_edges_for_uri(uri);
         self.invalidate_query_indexes();
         self.clear_import_lookup_cache();
@@ -482,6 +929,10 @@ impl SemanticGraphData {
         other: SemanticGraphData,
         shadowed_packages: Option<&std::collections::HashSet<String>>,
     ) {
+        self.effective_facts_by_node_id.clear();
+        self.derived_relationship_resolution_by_source_id.clear();
+        self.evaluation_facts_by_node_id.clear();
+        self.evaluation_publication = EvaluationPublicationState::NotRun;
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships
@@ -492,8 +943,9 @@ impl SemanticGraphData {
                     .node_ids_by_qualified_name
                     .contains_key(&id.qualified_name);
                 let is_package = matches!(node.element_kind, ElementKind::Package);
+                let is_canonical_library_node = self.standard_library_uris.contains(&id.uri);
                 if Self::qualified_name_under_packages(&id.qualified_name, shadowed)
-                    || (exact_name_exists && !is_package)
+                    || (exact_name_exists && !is_package && !is_canonical_library_node)
                 {
                     continue;
                 }
@@ -623,6 +1075,36 @@ impl SemanticGraphData {
             .collect()
     }
 
+    /// Returns directly owned end features in authored source order.
+    ///
+    /// An end is a declared structural fact, not a convention based on its name or its type.
+    /// This is the canonical positional view for connection-like definitions/usages; it includes
+    /// only children whose parser-backed feature properties declare `is_end`, and never invents
+    /// a missing counterpart for an incomplete declaration.
+    pub fn positional_end_features(&self, owner: &SemanticNode) -> Vec<&SemanticNode> {
+        let mut ends: Vec<_> = self
+            .children_of(owner)
+            .into_iter()
+            .filter(|child| {
+                child
+                    .declared_facts
+                    .feature_properties
+                    .as_ref()
+                    .is_some_and(|properties| properties.is_end)
+            })
+            .collect();
+        ends.sort_by_key(|child| {
+            (
+                child.range.start.line,
+                child.range.start.character,
+                child.range.end.line,
+                child.range.end.character,
+                child.id.qualified_name.as_str(),
+            )
+        });
+        ends
+    }
+
     /// Returns the node for the given NodeId, if it exists.
     pub fn get_node(&self, id: &NodeId) -> Option<&SemanticNode> {
         self.node_index_by_id
@@ -634,6 +1116,36 @@ impl SemanticGraphData {
     pub fn get_node_mut(&mut self, id: &NodeId) -> Option<&mut SemanticNode> {
         let idx = *self.node_index_by_id.get(id)?;
         self.graph.node_weight_mut(idx)
+    }
+
+    /// Registers a parser-backed membership fact for the node identity about to be materialized.
+    /// The graph builder consumes it during node insertion; duplicate registration is a builder
+    /// bug because one declaration has exactly one membership fact.
+    pub(crate) fn register_declared_membership_facts(
+        &mut self,
+        id: NodeId,
+        facts: DeclaredMembershipFacts,
+    ) {
+        assert!(
+            self.pending_declared_membership_facts
+                .insert(id, facts)
+                .is_none(),
+            "membership facts registered twice for one node"
+        );
+    }
+
+    pub(crate) fn take_declared_membership_facts(
+        &mut self,
+        id: &NodeId,
+    ) -> Option<DeclaredMembershipFacts> {
+        self.pending_declared_membership_facts.remove(id)
+    }
+
+    pub(crate) fn assert_no_pending_declared_membership_facts(&self) {
+        assert!(
+            self.pending_declared_membership_facts.is_empty(),
+            "all parser-authored membership facts must be consumed before graph publication"
+        );
     }
 
     /// Returns the node whose range contains the given position (first match).
@@ -752,6 +1264,95 @@ impl SemanticGraphData {
             }
         }
         targets
+    }
+
+    /// Returns outgoing targets with both relationship kind and provenance selected. This is the
+    /// provenance-aware companion to [`Self::outgoing_targets_by_kind`]; the latter intentionally
+    /// returns authored and implied facts from the one canonical edge store.
+    pub fn outgoing_targets_by_kind_and_provenance(
+        &self,
+        node: &SemanticNode,
+        kind: RelationshipKind,
+        provenance: RelationshipProvenance,
+    ) -> Vec<&SemanticNode> {
+        let Some(&source_index) = self.node_index_by_id.get(&node.id) else {
+            return Vec::new();
+        };
+        let indexes = self.query_indexes();
+        self.graph
+            .edges_directed(source_index, Direction::Outgoing)
+            .filter(|edge| edge.weight().kind == kind && edge.weight().provenance == provenance)
+            .filter_map(|edge| indexes.index_to_node_id.get(&edge.target()))
+            .filter_map(|target_id| self.get_node(target_id))
+            .collect()
+    }
+
+    /// Returns whether `specific` is identical to, or specializes, `general`.
+    ///
+    /// This follows only resolved `Specializes` relationships.  Callers that
+    /// need type conformance must use this graph fact rather than comparing
+    /// declared type text.
+    pub fn specializes_transitively(
+        &self,
+        specific: &SemanticNode,
+        general: &SemanticNode,
+    ) -> bool {
+        if specific.id == general.id {
+            return true;
+        }
+
+        let mut seen = HashSet::new();
+        let mut pending: VecDeque<NodeId> = self
+            .outgoing_targets_by_kind(specific, RelationshipKind::Specializes)
+            .into_iter()
+            .map(|node| node.id.clone())
+            .collect();
+
+        while let Some(current_id) = pending.pop_front() {
+            if !seen.insert(current_id.clone()) {
+                continue;
+            }
+            if current_id == general.id {
+                return true;
+            }
+            let Some(current) = self.get_node(&current_id) else {
+                continue;
+            };
+            pending.extend(
+                self.outgoing_targets_by_kind(current, RelationshipKind::Specializes)
+                    .into_iter()
+                    .map(|node| node.id.clone()),
+            );
+        }
+
+        false
+    }
+
+    /// Returns whether every resolved type of `specific_feature` conforms to
+    /// the corresponding resolved type of `general_feature`.
+    ///
+    /// An untyped feature inherits the other feature's typing, so it does not
+    /// violate this check.  For each type of the general feature, at least one
+    /// type of the specific feature must be identical to it or specialize it.
+    pub fn feature_typing_conforms(
+        &self,
+        specific_feature: &SemanticNode,
+        general_feature: &SemanticNode,
+    ) -> bool {
+        let specific_types =
+            self.outgoing_targets_by_kind(specific_feature, RelationshipKind::Typing);
+        let general_types =
+            self.outgoing_targets_by_kind(general_feature, RelationshipKind::Typing);
+
+        if specific_types.is_empty() || general_types.is_empty() {
+            return true;
+        }
+
+        general_types.iter().all(|general_type| {
+            specific_types
+                .iter()
+                .any(|specific_type| self.specializes_transitively(specific_type, general_type))
+        })
     }
 
     /// Returns source nodes that have typing/specializes edges to the given node.

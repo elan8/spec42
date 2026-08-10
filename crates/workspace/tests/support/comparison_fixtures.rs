@@ -5,10 +5,9 @@
 use std::sync::Arc;
 
 use tempfile::TempDir;
-use url::Url;
 use workspace::{
-    EngineBuilder, HostContext, HostWorkspaceSnapshot, InMemoryDocumentProvider, Spec42Engine,
-    SysmlDocument, SysmlDocumentSourceKind, WorkspaceLoadRequest,
+    path_to_file_url, EngineBuilder, HostContext, HostWorkspaceSnapshot, InMemoryDocumentProvider,
+    Spec42Engine, SysmlDocument, SysmlDocumentSourceKind, WorkspaceLoadRequest,
 };
 
 pub fn test_engine(cache: &TempDir) -> Spec42Engine {
@@ -20,7 +19,10 @@ pub fn test_engine(cache: &TempDir) -> Spec42Engine {
 }
 
 pub fn memory_document(path: &std::path::Path, content: &str) -> SysmlDocument {
-    let uri = Url::from_file_path(path).expect("file uri");
+    // Match the snapshot target URI's canonicalization (notably macOS's
+    // `/var` -> `/private/var` alias) so projection filters retain the parsed
+    // document's canonical semantic facts.
+    let uri = path_to_file_url(path).expect("file uri");
     SysmlDocument {
         uri,
         content: content.to_string(),

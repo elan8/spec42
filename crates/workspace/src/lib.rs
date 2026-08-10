@@ -18,11 +18,12 @@ pub mod view_cache;
 
 pub use catalog::{HostConfigFile, HostLibraryRequest, LibraryCatalog};
 pub use comparison::{
-    compare_snapshots, HostDiagnosticComparison, HostDiagnosticIdentity,
-    HostDocumentDiagnosticComparison, HostElementChange, HostElementComparison,
-    HostElementFieldChange, HostElementIdentity, HostRelationshipComparison,
-    HostRelationshipIdentity, HostViewCatalogChange, HostViewCatalogEntry,
-    HostViewCatalogFieldChange, HostViewComparison, HostViewPayloadChange,
+    compare_snapshots, HostDerivedFactComparison, HostDiagnosticComparison, HostDiagnosticIdentity,
+    HostDiagnosticRelatedInformation, HostDocumentDiagnosticComparison, HostElementChange,
+    HostElementComparison, HostElementFieldChange, HostElementIdentity, HostRelationshipChange,
+    HostRelationshipComparison, HostRelationshipFieldChange, HostRelationshipIdentity,
+    HostSemanticFactChange, HostSemanticFactComparison, HostViewCatalogChange,
+    HostViewCatalogEntry, HostViewCatalogFieldChange, HostViewComparison, HostViewPayloadChange,
     IdentityPreservationStatus, SemanticComparisonReport,
 };
 pub use engine::{EngineBuilder, HostEngineMetadata, Spec42Engine};
@@ -55,16 +56,19 @@ pub use semantic::{
 };
 pub use sysml_model::ElementKind;
 
-pub use session::{RelinkToken, SessionLifecycle, WorkspaceSession};
+pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};
 pub use snapshot::{
     apply_document_changes, enrich_document_hashes, CancellationToken, DocumentChanges,
-    HostContext, HostElementFacts, HostExpression, HostExpressionArgument, HostFeatureProperties,
-    HostFeatureValue, HostMembershipKind, HostMultiplicity, HostPipelinePhase,
-    HostRelationshipMetaclass, HostResourceLimits, HostSemanticModelNode,
-    HostSemanticModelRelationship, HostSemanticProjection, HostValidatedDocument,
-    HostValidationReport, HostValidationSummary, HostWorkspaceSnapshot, Spec42ProjectionOutput,
-    ValidationTiming, WorkspaceLoadRequest,
+    HostAnalysisEvaluation, HostConnectorEnd, HostContext, HostElementFacts, HostEvaluatedScalar,
+    HostEvaluationQuery, HostExpression, HostExpressionArgument, HostExpressionEvaluation,
+    HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
+    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
+    HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity, HostPipelinePhase,
+    HostRelationshipMetaclass, HostRelationshipProvenance, HostResourceLimits,
+    HostSemanticModelNode, HostSemanticModelRelationship, HostSemanticProjection,
+    HostValidatedDocument, HostValidationReport, HostValidationSummary, HostVisibilityKind,
+    HostWorkspaceSnapshot, Spec42ProjectionOutput, ValidationTiming, WorkspaceLoadRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};
 pub use view_cache::{

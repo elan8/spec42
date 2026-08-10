@@ -71,6 +71,7 @@ fn schedule_semantic_relink_after_change(
             (
                 snap.index.clone(),
                 snap.library_paths.clone(),
+                snap.standard_library_paths.clone(),
                 // Library files are not stored in the index when loaded from the
                 // graph cache (cache hit path). Pass the library graph snapshot so
                 // library types survive the workspace rebuild regardless of whether
@@ -78,7 +79,7 @@ fn schedule_semantic_relink_after_change(
                 snap.library_graph_snapshot.clone(),
             )
         };
-        let (index, library_paths, base_graph) = snapshot;
+        let (index, library_paths, standard_library_paths, base_graph) = snapshot;
         let perf_logging_enabled = runtime_config
             .get()
             .expect("initialize precedes all other LSP requests")
@@ -94,6 +95,7 @@ fn schedule_semantic_relink_after_change(
             crate::workspace::rebuild_semantic_graph_staged(
                 &index,
                 &library_paths,
+                &standard_library_paths,
                 base_graph,
                 false,
             )
@@ -149,8 +151,8 @@ fn schedule_semantic_relink_after_change(
         // `analysis_constraint_failed`, which depends on evaluation having run). Read the
         // version *after* `report_relink_result` above so a superseding edit that arrives
         // between now and Wave 2's debounce firing is correctly detected as stale.
-        let post_relink_version = handle.snapshot().session.version();
-        schedule_expression_evaluation(&client, &handle, &runtime_config, post_relink_version);
+        let post_relink_publication = handle.snapshot().session.publication();
+        schedule_expression_evaluation(&client, &handle, &runtime_config, post_relink_publication);
 
         log_perf(
             &client,
@@ -203,7 +205,7 @@ fn schedule_semantic_relink_after_change(
 /// evaluation against the structural graph Wave 1 (`schedule_semantic_relink_after_change`)
 /// just committed, debounced by `WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS` (reusing the same constant
 /// this file already uses elsewhere for "let things settle before doing more work" — not a new
-/// number). `expected_version` is the session version right after Wave 1 committed; checked
+/// number). `expected_publication` is the owner-scoped session identity right after Wave 1 committed; checked
 /// both before starting evaluation (skip the work entirely if already superseded) and again by
 /// `report_evaluation_result`'s own version gate at commit time (skip publishing a stale
 /// result if a newer edit landed while evaluation was running).
@@ -221,7 +223,7 @@ fn schedule_expression_evaluation(
     client: &Client,
     handle: &WorkspaceHandle,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
-    expected_version: u64,
+    expected_publication: workspace::PublicationToken,
 ) {
     let client = client.clone();
     let handle = handle.clone();
@@ -229,7 +231,11 @@ fn schedule_expression_evaluation(
     tokio::spawn(async move {
         tokio::time::sleep(Duration::from_millis(WORKSPACE_DIAGNOSTICS_DEBOUNCE_MS)).await;
 
-        if handle.snapshot().session.version() != expected_version {
+        if !handle
+            .snapshot()
+            .session
+            .is_publication_current(&expected_publication)
+        {
             return; // superseded before evaluation even started — don't waste the work
         }
         let graph = handle.snapshot().semantic_graph.clone(); // cheap Arc clone
@@ -245,7 +251,7 @@ fn schedule_expression_evaluation(
         };
 
         let committed = handle
-            .report_evaluation_result(expected_version, evaluated_graph)
+            .report_evaluation_result(expected_publication, evaluated_graph)
             .await
             .unwrap_or(false);
         if committed {

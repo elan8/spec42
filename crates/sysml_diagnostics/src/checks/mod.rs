@@ -7,4 +7,5 @@ pub(super) mod import_resolution;
 pub(super) mod kind_compatibility;
 pub(super) mod name_resolution;
 pub(super) mod requirement_case_conformance;
+pub(super) mod structural_feature_conformance;
 pub(super) mod view_metadata_conformance;

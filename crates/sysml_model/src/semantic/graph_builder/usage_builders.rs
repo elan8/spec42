@@ -13,10 +13,10 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_membership_visibility, attribute_usage_feature_properties, connection_end_expression,
-    declared_feature_value, declared_multiplicity, item_usage_feature_properties,
-    occurrence_usage_feature_properties, part_usage_feature_properties, span_to_range,
-    subsetting_target, subsetting_target_display, typing_targets,
+    attribute_usage_feature_properties, connection_end_expression, declared_feature_value,
+    declared_multiplicity, item_usage_feature_properties, occurrence_usage_feature_properties,
+    part_usage_feature_properties, span_to_range, subsetting_target, subsetting_target_display,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -28,7 +28,9 @@ use super::occurrence_body;
 use super::part_usage;
 use super::requirement_body::walk_requirement_def_body;
 use super::{
-    add_node_and_recurse, attach_feature_properties, effective_usage_name, qualified_name_for_node,
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
+    attach_declared_typing_relationship, attach_feature_properties, effective_usage_name,
+    qualified_name_for_node,
 };
 
 /// Builds the `part`-usage node (and recurses into its body), wiring the typing edge. Used by
@@ -53,7 +55,10 @@ pub(super) fn materialize_part_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(ref prefix) = n.usage_prefix {
         attrs.insert(
             "usagePrefix".to_string(),
@@ -102,6 +107,18 @@ pub(super) fn materialize_part_usage(
         parent_id,
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets
+            .as_ref()
+            .map(|(relationship, _)| &relationship.value),
+        n.redefines.as_deref(),
+        None,
+        None,
+    );
+    attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, part_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
@@ -159,7 +176,10 @@ pub(super) fn materialize_attribute_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     let typed_by = typing_targets(n.typing.as_deref());
     if !typed_by.is_empty() {
         attrs.insert(
@@ -199,6 +219,16 @@ pub(super) fn materialize_attribute_usage(
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_typing_relationship(g, &node_id, n.typing.as_deref());
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets.as_deref(),
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
+    );
+    attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, attribute_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
@@ -233,7 +263,10 @@ pub(super) fn materialize_occurrence_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "occurrence");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(ref t) = n.type_name {
         attrs.insert("occurrenceType".to_string(), serde_json::json!(t));
     }
@@ -269,6 +302,14 @@ pub(super) fn materialize_occurrence_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets.as_deref(),
+        n.redefines.as_deref(),
+        n.references.as_deref(),
+        n.crosses.as_deref(),
+    );
     attach_feature_properties(g, &node_id, occurrence_usage_feature_properties(&n.value));
     if let sysml_v2_parser::ast::OccurrenceUsageBody::Brace { elements } = &n.body {
         for child in elements {
@@ -299,7 +340,10 @@ pub(super) fn materialize_requirement_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "requirement");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(ref t) = n.type_name {
         attrs.insert("requirementType".to_string(), serde_json::json!(t));
     }
@@ -321,6 +365,7 @@ pub(super) fn materialize_requirement_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(g, &node_id, n.subsets.as_deref(), None, None, None);
     walk_requirement_def_body(g, uri, container_prefix, &qualified, &node_id, &n.body);
     node_id
 }
@@ -342,7 +387,10 @@ pub(super) fn materialize_item_usage(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "item");
     let range = span_to_range(&n.span);
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(ref t) = n.type_name {
         attrs.insert("itemType".to_string(), serde_json::json!(t));
     }
@@ -369,6 +417,8 @@ pub(super) fn materialize_item_usage(
         Some(parent_id),
     );
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(g, &node_id, None, n.redefines.as_deref(), None, None);
+    attach_declared_name(g, &node_id, &n.name);
     attach_feature_properties(g, &node_id, item_usage_feature_properties(&n.value));
     if let Some(multiplicity) = &n.multiplicity {
         if let Some(node) = g.get_node_mut(&node_id) {
@@ -408,7 +458,10 @@ pub(super) fn materialize_connection_usage(
     let name = declared_name.or(redefine_target).unwrap_or("_connection");
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "connection");
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &n.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&n.membership),
+    );
     if let Some(type_name) = &n.type_name {
         attrs.insert("connectionType".to_string(), serde_json::json!(type_name));
     }
@@ -432,6 +485,14 @@ pub(super) fn materialize_connection_usage(
         add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    attach_declared_subsetting_family(
+        g,
+        &node_id,
+        n.subsets.as_deref(),
+        n.redefines.as_deref(),
+        None,
+        None,
+    );
 
     if let (Some(from), Some(to)) = (&n.connect_from, &n.connect_to) {
         let from_expr = connection_end_expression(from);
@@ -503,8 +564,11 @@ pub(super) fn materialize_variant_usage(
         None => {
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &variant.name, "variant");
-            let mut attrs = HashMap::new();
-            attach_membership_visibility(&mut attrs, &variant.membership);
+            let attrs = HashMap::new();
+            g.register_declared_membership_facts(
+                NodeId::new(uri, &qualified),
+                crate::semantic::ast_util::declared_membership_facts(&variant.membership),
+            );
             add_node_and_recurse(
                 g,
                 uri,

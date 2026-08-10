@@ -30,6 +30,10 @@ pub enum WorkspaceError {
     Cancelled,
     #[error("resource_limit_exceeded: {limit}: {message}")]
     ResourceLimitExceeded { limit: String, message: String },
+    #[error("duplicate_comparison_identity: {category}: {identity}")]
+    DuplicateComparisonIdentity { category: String, identity: String },
+    #[error("missing_comparison_identity: {category}")]
+    MissingComparisonIdentity { category: String },
     #[error("internal_invariant_failure: {message}")]
     InternalInvariantFailure { message: String },
 }
@@ -72,6 +76,22 @@ impl WorkspaceError {
         }
     }
 
+    pub fn duplicate_comparison_identity(
+        category: impl Into<String>,
+        identity: impl Into<String>,
+    ) -> Self {
+        Self::DuplicateComparisonIdentity {
+            category: category.into(),
+            identity: identity.into(),
+        }
+    }
+
+    pub fn missing_comparison_identity(category: impl Into<String>) -> Self {
+        Self::MissingComparisonIdentity {
+            category: category.into(),
+        }
+    }
+
     pub fn internal_invariant_failure(message: impl Into<String>) -> Self {
         Self::InternalInvariantFailure {
             message: message.into(),
@@ -86,6 +106,8 @@ impl WorkspaceError {
             Self::UnsupportedView { .. } => "unsupported_view",
             Self::Cancelled => "cancelled",
             Self::ResourceLimitExceeded { .. } => "resource_limit_exceeded",
+            Self::DuplicateComparisonIdentity { .. } => "duplicate_comparison_identity",
+            Self::MissingComparisonIdentity { .. } => "missing_comparison_identity",
             Self::InternalInvariantFailure { .. } => "internal_invariant_failure",
         }
     }

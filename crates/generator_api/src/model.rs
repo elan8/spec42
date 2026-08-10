@@ -6,8 +6,8 @@ use sha2::{Digest, Sha256};
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use thiserror::Error;
 use workspace::{
-    ElementKind, HostSemanticModelNode, HostWorkspaceSnapshot, NodeId, RelationshipKind,
-    SemanticNode,
+    ElementKind, HostEvaluatedScalar, HostEvaluationQuery, HostExpressionEvaluation,
+    HostSemanticModelNode, HostWorkspaceSnapshot, NodeId, RelationshipKind, SemanticNode,
 };
 
 /// Re-exported from the protocol crate rather than declared again.
@@ -256,6 +256,10 @@ impl GeneratorModelView {
             .unwrap_or(&node.attributes);
         let properties = projected.and_then(|value| value.facts.feature_properties.as_ref());
         let declared_properties = node.declared_facts.feature_properties.as_ref();
+        let ownership = self
+            .snapshot
+            .semantic_graph()
+            .effective_feature_ownership_for(node);
         let multiplicity =
             node.declared_facts
                 .multiplicity
@@ -314,12 +318,8 @@ impl GeneratorModelView {
             conjugated: properties
                 .map(|value| value.is_conjugated)
                 .unwrap_or_else(|| declared_properties.is_some_and(|value| value.is_conjugated)),
-            composite: properties
-                .and_then(|value| value.is_composite)
-                .or_else(|| declared_properties.and_then(|value| value.is_composite)),
-            reference: properties
-                .and_then(|value| value.is_reference)
-                .or_else(|| declared_properties.and_then(|value| value.is_reference)),
+            composite: ownership.map(|value| value.is_composite),
+            reference: ownership.map(|value| value.is_reference),
             end: properties
                 .map(|value| value.is_end)
                 .unwrap_or_else(|| declared_properties.is_some_and(|value| value.is_end)),
@@ -330,7 +330,8 @@ impl GeneratorModelView {
                 .and_then(|value| value.is_unique)
                 .or_else(|| declared_properties.and_then(|value| value.is_unique)),
             multiplicity,
-            evaluated_value: attributes.get("evaluatedValue").map(value_string),
+            evaluated_value: projected
+                .and_then(|value| evaluated_value_string(&value.facts.evaluation)),
         })
     }
 
@@ -668,7 +669,7 @@ fn api_metaclass(kind: &ElementKind) -> Metaclass {
         ElementKind::IndividualDef => Metaclass::IndividualDefinition,
         ElementKind::ConnectionDef => Metaclass::ConnectionDefinition,
         ElementKind::Alias => Metaclass::Alias,
-        ElementKind::KermlDecl => Metaclass::KermlDeclaration,
+        ElementKind::KermlDecl | ElementKind::ClassifierDecl => Metaclass::KermlDeclaration,
         ElementKind::Part => Metaclass::PartUsage,
         ElementKind::Port => Metaclass::PortUsage,
         ElementKind::Item => Metaclass::ItemUsage,
@@ -709,6 +710,12 @@ fn api_metaclass(kind: &ElementKind) -> Metaclass {
         ElementKind::TransitionEffect => Metaclass::TransitionEffect,
         ElementKind::FinalState => Metaclass::FinalState,
         ElementKind::EnumeratedValue => Metaclass::EnumerationUsage,
+        // The textual grammar owns `first <target>;` through `InitialNodeMember`, a
+        // `FeatureMembership` whose member feature is an action step. The semantic graph
+        // preserves that authored marker with `ElementKind::Initial`, but its published SysML
+        // metaclass remains `ActionUsage`; there is no distinct InitialNodeUsage metaclass in
+        // this ABI.
+        ElementKind::Initial => Metaclass::ActionUsage,
         ElementKind::Binding => Metaclass::BindingConnectorUsage,
         ElementKind::Import => Metaclass::Import,
         ElementKind::Dependency => Metaclass::Dependency,
@@ -770,11 +777,23 @@ fn expression_string(value: &impl Serialize) -> String {
     serde_json::to_string(value).unwrap_or_else(|_| "null".to_owned())
 }
 
-fn value_string(value: &serde_json::Value) -> String {
-    match value {
-        serde_json::Value::String(value) => value.clone(),
-        other => other.to_string(),
-    }
+fn evaluated_value_string(evaluation: &HostEvaluationQuery) -> Option<String> {
+    let HostEvaluationQuery::Result {
+        expression:
+            Some(HostExpressionEvaluation::Ok {
+                value: Some(value), ..
+            }),
+        ..
+    } = evaluation
+    else {
+        return None;
+    };
+    Some(match value {
+        HostEvaluatedScalar::Integer(value) => value.to_string(),
+        HostEvaluatedScalar::Real(value) => value.clone(),
+        HostEvaluatedScalar::Boolean(value) => value.to_string(),
+        HostEvaluatedScalar::String(value) => value.clone(),
+    })
 }
 
 #[cfg(test)]
@@ -906,6 +925,28 @@ package P {
                 kind.as_str()
             );
         }
+    }
+
+    #[test]
+    fn standalone_initial_nodes_publish_as_action_usages() {
+        assert_eq!(
+            api_metaclass(&ElementKind::Initial),
+            Metaclass::ActionUsage,
+            "an initial node is the action-step member of an InitialNodeMember"
+        );
+    }
+
+    #[test]
+    fn formats_only_ok_host_evaluation_scalars_at_generator_boundary() {
+        let evaluation = HostEvaluationQuery::Result {
+            expression: Some(HostExpressionEvaluation::Ok {
+                value: Some(HostEvaluatedScalar::Integer(7)),
+                unit: None,
+            }),
+            analysis: None,
+        };
+        assert_eq!(evaluated_value_string(&evaluation).as_deref(), Some("7"));
+        assert_eq!(evaluated_value_string(&HostEvaluationQuery::NotRun), None);
     }
 
     #[test]

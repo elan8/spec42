@@ -47,4 +47,13 @@ The fuel-regression signal, active rather than documented. fuel_consumed is an e
 instruction count, so an unchanged plugin whose fuel moves means Spec42 changed how much
 work a guest does -- which is the alarm the corpus exists to raise. Without a case setting
 meter_fuel every golden records null and the signal is dormant.
+
+fuel_consumed is only ever measured and enforced by the `rust-core` CI job (ubuntu-latest) --
+the windows-latest/macos-latest generator-policy jobs never run this corpus, so this stays
+deterministic in CI itself. It is NOT safe to bless from a non-Linux machine, though:
+`--remap-path-prefix` (scripts/build-generator-plugins.sh) normalizes the remapped path
+*prefix* embedded in the guest .wasm, but not the OS-native separator in the remainder of the
+path (backslash on Windows vs forward slash on Linux), so a Windows-built guest embeds different bytes than a
+Linux one and reports a different exact fuel count for the identical source. Always bless
+this value from CI's own measurement (or a Linux build), never from a local Windows/macOS run.
 """

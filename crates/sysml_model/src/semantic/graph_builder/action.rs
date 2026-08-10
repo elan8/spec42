@@ -9,12 +9,14 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
+use crate::semantic::ast_util::declared_expression;
 use crate::semantic::ast_util::{
-    action_usage_feature_properties, attach_membership_visibility, attach_short_name_attribute,
-    declared_multiplicity, span_to_range, state_usage_feature_properties, subsetting_target,
-    subsetting_targets, typing_targets,
+    action_usage_feature_properties, attach_short_name_attribute, declared_multiplicity,
+    span_to_range, state_usage_feature_properties, subsetting_target, subsetting_targets,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
+use crate::semantic::model::DeclaredFeatureProperties;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 
@@ -22,7 +24,8 @@ use super::expressions;
 use super::payload::insert_action_payload_attrs;
 use super::state;
 use super::{
-    add_node_and_recurse, attach_feature_properties, qualified_name, qualified_name_for_node,
+    add_node_and_recurse, attach_declared_typing_relationship, attach_feature_properties,
+    qualified_name, qualified_name_for_node, resolve_addressable_name,
 };
 
 struct ThenActionChain {
@@ -226,6 +229,21 @@ pub(super) fn add_in_out_decl(
         attrs,
         Some(parent_id),
     );
+    let parameter_id = NodeId::new(uri, &child_qualified);
+    if let Some(node) = g.get_node_mut(&parameter_id) {
+        node.declared_facts.feature_properties = Some(DeclaredFeatureProperties {
+            direction: Some(
+                match parameter.direction {
+                    InOut::In => "in",
+                    InOut::Out => "out",
+                    InOut::InOut => "inout",
+                }
+                .to_string(),
+            ),
+            ..Default::default()
+        });
+        node.declared_facts.own_expression = parameter.value.as_ref().map(declared_expression);
+    }
     add_typing_edge_if_exists(
         g,
         uri,
@@ -340,6 +358,48 @@ fn add_assign_stmt(
     );
 }
 
+/// Materialize the standalone `first <step>;` form as an explicit initial control node.
+///
+/// `first <source> then <target>;` is a succession and is handled as a direct flow edge by the
+/// callers below. Without `then`, the parser distinguishes the form as an initial-node marker;
+/// retaining it as a child node preserves that authored behavior fact and its resolved outgoing
+/// flow without asking downstream projections to rediscover it from syntax.
+fn add_initial_stmt(
+    g: &mut SemanticGraph,
+    uri: &Url,
+    container_prefix: Option<&str>,
+    parent_id: &NodeId,
+    first: &sysml_v2_parser::Node<sysml_v2_parser::ast::FirstStmt>,
+) {
+    let target_expression = expressions::expr_node_to_qualified_string(&first.value.first);
+    let mut attrs = HashMap::new();
+    let addressable_name = resolve_addressable_name("", "initial", &mut attrs);
+    let qualified = qualified_name_for_node(g, uri, container_prefix, &addressable_name, "initial");
+    attrs.insert(
+        "initialTarget".to_string(),
+        serde_json::json!(&target_expression),
+    );
+    add_node_and_recurse(
+        g,
+        uri,
+        &qualified,
+        "initial",
+        addressable_name,
+        span_to_range(&first.span),
+        attrs,
+        Some(parent_id),
+    );
+
+    if target_expression.is_empty() {
+        return;
+    }
+    // `add_edge_if_both_exist` enqueues the relationship when the target declaration follows
+    // this marker. The normal final-link phase then resolves that queued edge against the same
+    // canonical qualified identity used for immediately declared targets.
+    let target = qualified_name(container_prefix, &target_expression);
+    add_edge_if_both_exist(g, uri, &qualified, &target, RelationshipKind::Flow);
+}
+
 fn add_state_usage(
     g: &mut SemanticGraph,
     uri: &Url,
@@ -349,6 +409,10 @@ fn add_state_usage(
 ) {
     let name = &su_node.value.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&su_node.value.membership),
+    );
     let attrs = state_usage_graph_attrs(&su_node.value);
     add_node_and_recurse(
         g,
@@ -472,7 +536,10 @@ fn add_default_reference_usage(
     let value = &node.value;
     let qualified = qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &value.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
     let targets = typing_targets(value.typing.as_deref());
     if !targets.is_empty() {
         attrs.insert(
@@ -498,6 +565,7 @@ fn add_default_reference_usage(
         attrs,
         Some(parent_id),
     );
+    attach_declared_typing_relationship(g, &NodeId::new(uri, &qualified), value.typing.as_deref());
     for target in targets {
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
     }
@@ -632,6 +700,10 @@ fn materialize_nested_action_usage(
 ) -> String {
     let name = &au_node.name;
     let child_qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &child_qualified),
+        crate::semantic::ast_util::declared_membership_facts(&au_node.membership),
+    );
     let mut attrs = action_usage_graph_attrs(au_node);
     insert_action_payload_attrs(&mut attrs, au_node);
     add_node_and_recurse(
@@ -664,7 +736,6 @@ fn materialize_nested_action_usage(
 
 fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &usage.membership);
     attrs.insert(
         "actionType".to_string(),
         serde_json::json!(&usage.type_name),
@@ -692,6 +763,14 @@ fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::
 }
 
 fn attach_action_usage_facts(g: &mut SemanticGraph, node_id: &NodeId, usage: &ActionUsage) {
+    super::attach_declared_subsetting_family(
+        g,
+        node_id,
+        usage.subsets.as_deref(),
+        usage.redefines.as_deref(),
+        None,
+        None,
+    );
     attach_feature_properties(g, node_id, action_usage_feature_properties(usage));
     if let Some(multiplicity) = &usage.multiplicity {
         if let Some(node) = g.get_node_mut(node_id) {
@@ -718,7 +797,6 @@ fn wire_action_usage_typing(
 
 pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, serde_json::Value> {
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &usage.membership);
     if let Some(ref t) = usage.type_name {
         attrs.insert("stateType".to_string(), serde_json::json!(t));
     }
@@ -749,6 +827,14 @@ pub(super) fn attach_state_usage_facts(
     node_id: &NodeId,
     usage: &StateUsage,
 ) {
+    super::attach_declared_subsetting_family(
+        g,
+        node_id,
+        usage.subsets.as_deref(),
+        usage.redefines.as_deref(),
+        None,
+        None,
+    );
     attach_feature_properties(g, node_id, state_usage_feature_properties(usage));
     if let Some(multiplicity) = &usage.multiplicity {
         if let Some(node) = g.get_node_mut(node_id) {
@@ -813,8 +899,6 @@ pub(super) fn build_from_action_def_body(
                 );
             }
             ActionDefBodyElement::FirstStmt(first) => {
-                // `then` is `None` for the standalone initial-node marker `first start;` (§6
-                // G13) -- nothing to connect a Flow edge to in that case.
                 if let Some(then) = &first.value.then {
                     expressions::add_expression_edge_if_both_exist(
                         g,
@@ -824,6 +908,8 @@ pub(super) fn build_from_action_def_body(
                         then,
                         RelationshipKind::Flow,
                     );
+                } else {
+                    add_initial_stmt(g, uri, container_prefix, parent_id, first);
                 }
             }
             ActionDefBodyElement::MergeStmt(merge) => {
@@ -1032,8 +1118,6 @@ pub(super) fn build_from_action_usage_body(
                 );
             }
             ActionUsageBodyElement::FirstStmt(first) => {
-                // `then` is `None` for the standalone initial-node marker `first start;` (§6
-                // G13) -- nothing to connect a Flow edge to in that case.
                 if let Some(then) = &first.value.then {
                     expressions::add_expression_edge_if_both_exist(
                         g,
@@ -1043,6 +1127,8 @@ pub(super) fn build_from_action_usage_body(
                         then,
                         RelationshipKind::Flow,
                     );
+                } else {
+                    add_initial_stmt(g, uri, container_prefix, parent_id, first);
                 }
             }
             ActionUsageBodyElement::MergeStmt(merge) => {
@@ -1224,6 +1310,10 @@ pub(super) fn materialize_top_level_action_usage(
     let usage = &au_node.value;
     let name = &usage.name;
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action");
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&usage.membership),
+    );
     let mut attrs = action_usage_graph_attrs(usage);
     insert_action_payload_attrs(&mut attrs, usage);
     add_node_and_recurse(
@@ -1258,7 +1348,10 @@ pub(super) fn materialize_action_def(
     let action_id = NodeId::new(uri, &qualified);
     let mut attrs = HashMap::new();
     attach_short_name_attribute(&mut attrs, &ad_node.identification);
-    attach_membership_visibility(&mut attrs, &ad_node.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&ad_node.membership),
+    );
     let spec_targets: Vec<&str> = specializes
         .map(|spec| crate::semantic::ast_util::typing_targets(Some(spec)))
         .unwrap_or_default()
@@ -1281,6 +1374,21 @@ pub(super) fn materialize_action_def(
         attrs,
         parent_id,
     );
+    super::attach_declared_relationship_targets(
+        g,
+        &action_id,
+        RelationshipKind::Specializes,
+        spec_targets.iter().copied(),
+    );
+    for target in spec_targets {
+        crate::semantic::relationships::add_specializes_edge_if_exists(
+            g,
+            uri,
+            &qualified,
+            target,
+            container_prefix,
+        );
+    }
     if let ActionDefBody::Brace { elements } = &ad_node.body {
         build_from_action_def_body(elements, uri, Some(&qualified), &action_id, g);
     }

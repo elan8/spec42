@@ -346,6 +346,8 @@ fn pack_library(entry: &LibraryEntry, source_dir: &Path, out_kpar: &Path) {
                 source_roots: Vec::new(),
                 named_source_roots: vec![(prefix, source_dir.to_path_buf())],
                 excludes: kpar::pack::default_domain_excludes(),
+                timestamp: kpar::pack::ArchiveTimestamp::default(),
+                compression: kpar::pack::ArchiveCompression::default(),
             }
         }
         other => {

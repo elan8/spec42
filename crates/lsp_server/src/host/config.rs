@@ -109,6 +109,8 @@ pub struct Spec42Config {
     /// Optional library roots supplied by the host (e.g. materialized standard library), merged
     /// before client `libraryPaths` during LSP initialize / configuration.
     pub default_library_paths: Vec<PathBuf>,
+    /// Canonical standard-library roots, kept distinct from generic host/client libraries.
+    pub standard_library_paths: Vec<PathBuf>,
     /// Optional capability augmenters for additive host composition.
     pub capability_augmenters: Vec<Arc<dyn CapabilityAugmenter>>,
     /// Optional custom-method declaration providers for additive host composition.
@@ -123,6 +125,7 @@ impl std::fmt::Debug for Spec42Config {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Spec42Config")
             .field("default_library_paths", &self.default_library_paths)
+            .field("standard_library_paths", &self.standard_library_paths)
             .field("capability_augmenters", &self.capability_augmenters.len())
             .field(
                 "custom_method_providers",
@@ -166,6 +169,11 @@ impl Spec42Config {
     /// Host-provided library roots (prepended when merging with client `libraryPaths`).
     pub fn with_default_library_paths(mut self, paths: Vec<PathBuf>) -> Self {
         self.default_library_paths = paths;
+        self
+    }
+
+    pub fn with_standard_library_paths(mut self, paths: Vec<PathBuf>) -> Self {
+        self.standard_library_paths = paths;
         self
     }
 

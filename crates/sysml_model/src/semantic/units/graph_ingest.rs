@@ -72,9 +72,11 @@ fn ingest_interval_scale_unit_defs(
 }
 
 fn is_interval_scale_node(node: &SemanticNode) -> bool {
-    node.attributes
-        .get("attributeType")
-        .and_then(|v| v.as_str())
+    node.declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())
         .map(base_type_name)
         == Some("IntervalScale")
 }
@@ -85,9 +87,11 @@ fn is_unit_catalog_element_kind(kind: &crate::ElementKind) -> bool {
 
 fn unit_prefix_from_node(node: &SemanticNode) -> Option<(String, Option<String>, f64)> {
     if node
-        .attributes
-        .get("attributeType")
-        .and_then(|v| v.as_str())
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())
         .map(base_type_name)
         != Some("UnitPrefix")
     {
@@ -108,9 +112,11 @@ fn unit_def_from_graph_node(
     registry: &UnitRegistry,
 ) -> Option<UnitDef> {
     let attribute_type = node
-        .attributes
-        .get("attributeType")
-        .and_then(|v| v.as_str())?;
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.as_str())?;
     let attribute_type_base = base_type_name(attribute_type);
     if attribute_type_base == "UnitPrefix" {
         return None;

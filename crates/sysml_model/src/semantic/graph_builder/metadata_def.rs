@@ -6,7 +6,7 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range};
+use crate::semantic::ast_util::span_to_range;
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::{add_typing_edge_if_exists, wire_metadata_annotated_elements};
@@ -53,7 +53,10 @@ pub(super) fn add_package_metadata_usage_node(
     let ownership_prefix = Some(parent_id.qualified_name.as_str());
     let qualified = qualified_name_for_node(g, uri, ownership_prefix, &mu.name, "metadata usage");
     let mut attrs = HashMap::new();
-    attach_membership_visibility(&mut attrs, &mu.membership);
+    g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&mu.membership),
+    );
     insert_metadata_usage_attrs(
         &mut attrs,
         &mu.name,

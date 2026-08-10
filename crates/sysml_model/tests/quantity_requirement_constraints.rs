@@ -1,6 +1,6 @@
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
+    build_semantic_graph_from_documents, evaluate_expressions, EvaluationStatus, SysmlDocument,
     SysmlDocumentSourceKind,
 };
 use url::Url;
@@ -120,19 +120,18 @@ fn build_graph_from_documents(docs: &[SysmlDocument]) -> sysml_model::SemanticGr
     graph
 }
 
-fn node_attr(graph: &sysml_model::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
+fn analysis_result(
+    graph: &sysml_model::SemanticGraph,
+    qualified: &str,
+) -> Option<(EvaluationStatus, Option<bool>)> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?
         .first()
         .and_then(|node_id| graph.get_node(node_id))
-        .and_then(|node| node.attributes.get(key))
-        .and_then(|value| match value {
-            serde_json::Value::String(text) => Some(text.clone()),
-            serde_json::Value::Number(number) => Some(number.to_string()),
-            serde_json::Value::Bool(flag) => Some(flag.to_string()),
-            _ => None,
-        })
+        .and_then(|node| graph.evaluation_facts_for(node))
+        .and_then(|facts| facts.analysis.as_ref())
+        .map(|analysis| (analysis.expression.status, analysis.passed))
 }
 
 fn has_code(graph: &sysml_model::SemanticGraph, code: &str) -> bool {
@@ -151,12 +150,8 @@ fn has_code(graph: &sysml_model::SemanticGraph, code: &str) -> bool {
 fn requirement_usage_quantity_constraint_passes_when_within_capacity() {
     let graph = build_graph(PASSING_REQUIREMENT_SYSML);
     assert_eq!(
-        node_attr(
-            &graph,
-            "GridRequirements::GridCapacity",
-            "analysisEvaluationStatus"
-        ),
-        Some("ok".to_string())
+        analysis_result(&graph, "GridRequirements::GridCapacity"),
+        Some((EvaluationStatus::Ok, Some(true)))
     );
     assert!(
         !has_code(&graph, "analysis_evaluation_unresolved"),
@@ -168,12 +163,8 @@ fn requirement_usage_quantity_constraint_passes_when_within_capacity() {
 fn requirement_usage_quantity_constraint_fails_when_over_capacity() {
     let graph = build_graph(FAILING_REQUIREMENT_SYSML);
     assert_eq!(
-        node_attr(
-            &graph,
-            "GridRequirements::GridCapacity",
-            "analysisEvaluationStatus"
-        ),
-        Some("failed_constraint".to_string())
+        analysis_result(&graph, "GridRequirements::GridCapacity"),
+        Some((EvaluationStatus::Ok, Some(false)))
     );
     assert!(has_code(&graph, "analysis_constraint_failed"));
 }
@@ -182,24 +173,16 @@ fn requirement_usage_quantity_constraint_fails_when_over_capacity() {
 fn requirement_usage_inherits_require_constraint_from_typed_definition() {
     let graph = build_graph(INHERITED_DEF_CONSTRAINT_SYSML);
     assert_eq!(
-        node_attr(
-            &graph,
-            "GridRequirements::gridCapacity2035",
-            "analysisEvaluationStatus"
-        ),
-        Some("ok".to_string())
+        analysis_result(&graph, "GridRequirements::gridCapacity2035"),
+        Some((EvaluationStatus::Ok, Some(true)))
     );
 }
 
 #[test]
-fn requirement_def_quantity_units_evaluate_in_constraint() {
+fn requirement_def_quantity_units_are_explicitly_unsupported_without_typed_unit_facts() {
     let graph = build_graph_with_units(QUANTITY_UNITS_REQUIREMENT_SYSML);
     assert_eq!(
-        node_attr(
-            &graph,
-            "GridRequirements::GridCapacity",
-            "analysisEvaluationStatus"
-        ),
-        Some("ok".to_string())
+        analysis_result(&graph, "GridRequirements::GridCapacity"),
+        Some((EvaluationStatus::Unsupported, None))
     );
 }

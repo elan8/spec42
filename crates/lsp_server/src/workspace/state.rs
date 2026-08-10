@@ -38,6 +38,7 @@ pub(crate) struct RuntimeConfig {
 pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
+    pub(crate) standard_library_paths: Vec<Url>,
     pub(crate) session: workspace::WorkspaceSession,
     pub(crate) index: std::collections::HashMap<Url, IndexEntry>,
     pub(crate) symbol_table: Vec<SymbolEntry>,
@@ -55,6 +56,10 @@ pub(crate) struct ServerState {
 impl TracksRelink for ServerState {
     fn is_token_current(&self, token: &RelinkToken) -> bool {
         self.session.is_token_current(token)
+    }
+
+    fn rekey_for_actor(&mut self) {
+        self.session.rekey_for_owner();
     }
 }
 

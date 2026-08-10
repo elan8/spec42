@@ -24,15 +24,13 @@
 //! version. Invalidates on path config changes, spec42 binary upgrades, parser AST changes, or
 //! semantic changes to library closure/merging within the same development version.
 //!
-//! **Level 2 — file metadata fingerprint** (inside payload): sorted list of
-//! `(path, size_bytes, mtime_secs)` for every `.sysml`/`.kerml` file under each
-//! library root. Checked with `fs::metadata()` only (no file reads) on every
-//! cache load. Invalidates when the user manually replaces or upgrades library
-//! files in-place.
+//! **Level 2 — content fingerprint** (inside payload): sorted SHA-256 digests
+//! of every `.sysml`/`.kerml` file under each library root. Checked on every
+//! cache load. This rejects in-place replacements even when file paths, sizes,
+//! and modification times are preserved.
 
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-use std::time::SystemTime;
 
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -42,7 +40,9 @@ use crate::semantic::SemanticGraph;
 
 const MAGIC: &[u8; 4] = b"LGCX";
 const VERSION_FIELD_LEN: usize = 20;
-const LIBRARY_GRAPH_SEMANTICS_VERSION: u32 = 2;
+// v5 serializes the closed declared-expression and canonical evaluation publication facts.
+// Older graph payloads must be unreachable even if serde could decode their additive fields.
+const LIBRARY_GRAPH_SEMANTICS_VERSION: u32 = 5;
 
 fn version_field() -> [u8; VERSION_FIELD_LEN] {
     // First 12 bytes: spec42 semver string; then PARSE_AST_VERSION and the graph-semantics
@@ -57,13 +57,15 @@ fn version_field() -> [u8; VERSION_FIELD_LEN] {
     field
 }
 
-/// Per-file metadata snapshot used for Level-2 invalidation.
+/// Per-file content snapshot used for Level-2 invalidation.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-struct FileMetaEntry {
+struct FileFingerprintEntry {
+    /// Canonical URL of the library root containing this file.
+    library_root: String,
     /// Path relative to its library root, forward-slash separated.
     rel_path: String,
-    size_bytes: u64,
-    mtime_secs: u64,
+    /// SHA-256 digest of the source bytes.
+    content_hash: [u8; 32],
 }
 
 /// The serialized payload stored in the cache file.
@@ -71,10 +73,11 @@ struct FileMetaEntry {
 struct LibraryGraphCachePayload {
     /// Sorted list of library root paths (for human-readable validation).
     library_paths: Vec<String>,
+    standard_library_paths: Vec<String>,
     /// Workspace facts that determined the import-scoped library subset.
     closure_seed_signature: Vec<String>,
-    /// Level-2 fingerprint: sorted metadata of all library source files.
-    file_fingerprint: Vec<FileMetaEntry>,
+    /// Level-2 fingerprint: sorted content digests of all library source files.
+    file_fingerprint: Vec<FileFingerprintEntry>,
     /// The fully-built semantic graph for all library files.
     graph: SemanticGraph,
 }
@@ -94,11 +97,19 @@ pub fn default_cache_dir() -> Option<PathBuf> {
 
 /// Try to load a cached [`SemanticGraph`] for the given library paths.
 ///
-/// Returns `None` on any miss, version mismatch, stale file metadata, or
+/// Returns `None` on any miss, version mismatch, stale file content, or
 /// decode error. All failures are silent.
-pub fn load(library_paths: &[Url], closure_seed_signature: &[String]) -> Option<SemanticGraph> {
+pub fn load(
+    library_paths: &[Url],
+    standard_library_paths: &[Url],
+    closure_seed_signature: &[String],
+) -> Option<SemanticGraph> {
     let cache_dir = default_cache_dir()?;
-    let key = cache_key(library_paths, closure_seed_signature);
+    let key = cache_key(
+        library_paths,
+        standard_library_paths,
+        closure_seed_signature,
+    );
     let path = entry_path(&cache_dir, &key);
 
     tracing::debug!(
@@ -147,12 +158,15 @@ pub fn load(library_paths: &[Url], closure_seed_signature: &[String]) -> Option<
         tracing::debug!("library graph cache: workspace closure signature mismatch");
         return None;
     }
+    if payload.standard_library_paths != normalized_paths(standard_library_paths) {
+        return None;
+    }
 
-    // Level-2 check: verify file metadata fingerprint.
+    // Level-2 check: verify file content fingerprint.
     if !fingerprint_valid(&payload.file_fingerprint, library_paths) {
         tracing::debug!(
             stored_entries = payload.file_fingerprint.len(),
-            "library graph cache: file metadata fingerprint mismatch"
+            "library graph cache: file content fingerprint mismatch"
         );
         return None;
     }
@@ -168,9 +182,19 @@ pub fn load(library_paths: &[Url], closure_seed_signature: &[String]) -> Option<
 ///
 /// Creates the cache directory if needed. Silently ignores all errors —
 /// caching is always best-effort.
-pub fn store(library_paths: &[Url], closure_seed_signature: &[String], graph: &SemanticGraph) {
+pub fn store(
+    library_paths: &[Url],
+    standard_library_paths: &[Url],
+    closure_seed_signature: &[String],
+    graph: &SemanticGraph,
+) {
     tracing::debug!("library graph cache: attempting store");
-    if let Err(e) = store_inner(library_paths, closure_seed_signature, graph) {
+    if let Err(e) = store_inner(
+        library_paths,
+        standard_library_paths,
+        closure_seed_signature,
+        graph,
+    ) {
         tracing::warn!("library graph cache store failed: {e}");
     } else {
         tracing::debug!("library graph cache: store succeeded");
@@ -235,14 +259,21 @@ pub fn evict_stale_entries() {
 /// Level-1 cache key: SHA-256 of sorted library paths, workspace closure seeds, binary
 /// version, parser AST schema version, and graph-semantics version (so either kind of semantic
 /// change gets a fresh filename too, not just a header mismatch -- see `version_field`).
-fn cache_key(library_paths: &[Url], closure_seed_signature: &[String]) -> [u8; 32] {
+fn cache_key(
+    library_paths: &[Url],
+    standard_library_paths: &[Url],
+    closure_seed_signature: &[String],
+) -> [u8; 32] {
     let mut hasher = Sha256::new();
     hasher.update(env!("CARGO_PKG_VERSION").as_bytes());
     hasher.update(sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
     hasher.update(LIBRARY_GRAPH_SEMANTICS_VERSION.to_le_bytes());
-    let mut sorted: Vec<&str> = library_paths.iter().map(|u| u.as_str()).collect();
-    sorted.sort_unstable();
-    for path in sorted {
+    for path in normalized_paths(library_paths) {
+        hasher.update(path.as_bytes());
+        hasher.update(b"\0");
+    }
+    hasher.update(b"standard-library-roots-v1\0");
+    for path in normalized_paths(standard_library_paths) {
         hasher.update(path.as_bytes());
         hasher.update(b"\0");
     }
@@ -254,6 +285,13 @@ fn cache_key(library_paths: &[Url], closure_seed_signature: &[String]) -> [u8; 3
         hasher.update(b"\0");
     }
     hasher.finalize().into()
+}
+
+fn normalized_paths(paths: &[Url]) -> Vec<String> {
+    let mut paths = paths.iter().map(ToString::to_string).collect::<Vec<_>>();
+    paths.sort_unstable();
+    paths.dedup();
+    paths
 }
 
 fn normalized_signature(signature: &[String]) -> Vec<String> {
@@ -268,9 +306,12 @@ fn entry_path(cache_dir: &Path, key: &[u8; 32]) -> PathBuf {
     cache_dir.join(format!("{hex}.bin"))
 }
 
-/// Build a metadata fingerprint by walking all library root directories.
+/// Build a content fingerprint by walking all library root directories.
 /// Only `.sysml` and `.kerml` files are included.
-fn build_fingerprint(library_paths: &[Url]) -> Vec<FileMetaEntry> {
+///
+/// `None` means a source file could not be read, so the caller must not treat
+/// the resulting graph as a dependency-complete cached result.
+fn build_fingerprint(library_paths: &[Url]) -> Option<Vec<FileFingerprintEntry>> {
     let mut entries = Vec::new();
     for root_url in library_paths {
         let Ok(root_path) = root_url.to_file_path() else {
@@ -279,54 +320,52 @@ fn build_fingerprint(library_paths: &[Url]) -> Vec<FileMetaEntry> {
         let walker = walkdir::WalkDir::new(&root_path)
             .follow_links(false)
             .sort_by_file_name();
-        for entry in walker.into_iter().flatten() {
+        for entry in walker {
+            let entry = entry.ok()?;
             let ext = entry.path().extension().and_then(|e| e.to_str());
             if !matches!(ext, Some("sysml") | Some("kerml")) {
                 continue;
             }
-            let Ok(meta) = entry.metadata() else {
-                continue;
-            };
-            let mtime_secs = meta
-                .modified()
-                .ok()
-                .and_then(|t| t.duration_since(SystemTime::UNIX_EPOCH).ok())
-                .map(|d| d.as_secs())
-                .unwrap_or(0);
             let rel_path = entry
                 .path()
                 .strip_prefix(&root_path)
                 .unwrap_or(entry.path())
                 .to_string_lossy()
                 .replace('\\', "/");
-            entries.push(FileMetaEntry {
+            let content_hash = crate::parse_cache::content_hash(&std::fs::read(entry.path()).ok()?);
+            entries.push(FileFingerprintEntry {
+                library_root: root_url.as_str().to_owned(),
                 rel_path,
-                size_bytes: meta.len(),
-                mtime_secs,
+                content_hash,
             });
         }
     }
-    entries.sort_by(|a, b| a.rel_path.cmp(&b.rel_path));
-    entries
+    entries.sort_by(|a, b| {
+        a.library_root
+            .cmp(&b.library_root)
+            .then_with(|| a.rel_path.cmp(&b.rel_path))
+    });
+    Some(entries)
 }
 
 /// Check that the stored fingerprint still matches current disk state.
-fn fingerprint_valid(stored: &[FileMetaEntry], library_paths: &[Url]) -> bool {
-    let current = build_fingerprint(library_paths);
-    stored == current.as_slice()
+fn fingerprint_valid(stored: &[FileFingerprintEntry], library_paths: &[Url]) -> bool {
+    build_fingerprint(library_paths).is_some_and(|current| stored == current)
 }
 
 fn store_inner(
     library_paths: &[Url],
+    standard_library_paths: &[Url],
     closure_seed_signature: &[String],
     graph: &SemanticGraph,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let cache_dir = default_cache_dir().ok_or("no cache dir")?;
     std::fs::create_dir_all(&cache_dir)?;
 
-    let file_fingerprint = build_fingerprint(library_paths);
+    let file_fingerprint = build_fingerprint(library_paths).ok_or("library source unavailable")?;
     let payload = LibraryGraphCachePayload {
         library_paths: library_paths.iter().map(|u| u.to_string()).collect(),
+        standard_library_paths: normalized_paths(standard_library_paths),
         closure_seed_signature: normalized_signature(closure_seed_signature),
         file_fingerprint,
         graph: graph.clone(),
@@ -334,7 +373,11 @@ fn store_inner(
 
     let payload_bytes = serde_json::to_vec(&payload)?;
 
-    let key = cache_key(library_paths, closure_seed_signature);
+    let key = cache_key(
+        library_paths,
+        standard_library_paths,
+        closure_seed_signature,
+    );
     let path = entry_path(&cache_dir, &key);
     let mut file = std::fs::File::create(&path)?;
     file.write_all(MAGIC)?;
@@ -372,12 +415,12 @@ mod tests {
         let a = Url::parse("file:///lib/a").unwrap();
         let b = Url::parse("file:///lib/b").unwrap();
         let signature = vec!["import:ScalarValues::*".to_string()];
-        let key1 = cache_key(&[a.clone(), b.clone()], &signature);
-        let key2 = cache_key(&[b.clone(), a.clone()], &signature);
+        let key1 = cache_key(&[a.clone(), b.clone()], &[], &signature);
+        let key2 = cache_key(&[b.clone(), a.clone()], &[], &signature);
         assert_eq!(key1, key2, "cache key must be order-independent");
 
         let c = Url::parse("file:///lib/c").unwrap();
-        let key3 = cache_key(&[a, b, c], &signature);
+        let key3 = cache_key(&[a, b, c], &[], &signature);
         assert_ne!(key1, key3, "different paths must produce different keys");
     }
 
@@ -391,18 +434,32 @@ mod tests {
         ];
 
         assert_ne!(
-            cache_key(std::slice::from_ref(&library), &without_metadata),
-            cache_key(std::slice::from_ref(&library), &with_metadata),
+            cache_key(std::slice::from_ref(&library), &[], &without_metadata),
+            cache_key(std::slice::from_ref(&library), &[], &with_metadata),
             "a graph without ModelingMetadata must not satisfy a workspace that imports it"
         );
     }
 
     #[test]
+    fn cache_key_changes_with_standard_library_classification() {
+        let library = Url::parse("file:///lib").unwrap();
+        let signature = vec!["import:Parts::*".to_string()];
+        assert_ne!(
+            cache_key(std::slice::from_ref(&library), &[], &signature),
+            cache_key(
+                std::slice::from_ref(&library),
+                std::slice::from_ref(&library),
+                &signature,
+            ),
+        );
+    }
+
+    #[test]
     fn fingerprint_detects_missing_directory() {
-        let stored = vec![FileMetaEntry {
+        let stored = vec![FileFingerprintEntry {
+            library_root: "file:///nonexistent/lib".into(),
             rel_path: "Foo.sysml".into(),
-            size_bytes: 42,
-            mtime_secs: 1000,
+            content_hash: crate::parse_cache::content_hash(b"contents"),
         }];
         // Non-existent library path → current fingerprint is empty → mismatch.
         let bogus = Url::parse("file:///nonexistent/lib").unwrap();
@@ -411,8 +468,56 @@ mod tests {
 
     #[test]
     fn empty_library_paths_produces_empty_fingerprint() {
-        let fp = build_fingerprint(&[]);
+        let fp = build_fingerprint(&[]).unwrap();
         assert!(fp.is_empty());
+    }
+
+    #[test]
+    fn fingerprint_accepts_unchanged_library_contents() {
+        let dir = tempdir().unwrap();
+        std::fs::write(dir.path().join("Library.sysml"), b"package Library {}").unwrap();
+        let library = Url::from_directory_path(dir.path()).unwrap();
+        let stored = build_fingerprint(std::slice::from_ref(&library)).unwrap();
+
+        assert!(
+            fingerprint_valid(&stored, &[library]),
+            "unchanged library bytes must keep the cache valid"
+        );
+    }
+
+    #[test]
+    fn fingerprint_rejects_same_size_and_mtime_content_replacement() {
+        let dir = tempdir().unwrap();
+        let source = dir.path().join("Library.sysml");
+        let original = b"package First {}";
+        let replacement = b"package Other {}";
+        assert_eq!(original.len(), replacement.len());
+
+        std::fs::write(&source, original).unwrap();
+        let original_metadata = std::fs::metadata(&source).unwrap();
+        let original_mtime = original_metadata.modified().unwrap();
+        let library = Url::from_directory_path(dir.path()).unwrap();
+        let stored = build_fingerprint(std::slice::from_ref(&library)).unwrap();
+
+        std::fs::write(&source, replacement).unwrap();
+        // `set_times` needs `FILE_WRITE_ATTRIBUTES` on Windows, which a read-only handle from
+        // plain `File::open` does not carry -- only `write(true)` grants it there. Linux allows
+        // an owned file's mtime to change through a read-only descriptor, which is why this was
+        // easy to miss on that platform.
+        std::fs::File::options()
+            .write(true)
+            .open(&source)
+            .unwrap()
+            .set_times(std::fs::FileTimes::new().set_modified(original_mtime))
+            .unwrap();
+        let replacement_metadata = std::fs::metadata(&source).unwrap();
+        assert_eq!(replacement_metadata.len(), original_metadata.len());
+        assert_eq!(replacement_metadata.modified().unwrap(), original_mtime);
+
+        assert!(
+            !fingerprint_valid(&stored, &[library]),
+            "a byte replacement must invalidate the cache even with equal size and mtime"
+        );
     }
 
     #[test]
@@ -445,6 +550,7 @@ mod tests {
         let graph = SemanticGraph::default();
         let payload = LibraryGraphCachePayload {
             library_paths: vec![],
+            standard_library_paths: vec![],
             closure_seed_signature: vec![],
             file_fingerprint: vec![],
             graph: graph.clone(),
@@ -473,5 +579,23 @@ mod tests {
 
         assert_eq!(decoded.library_paths, Vec::<String>::new());
         assert_eq!(decoded.graph.graph.node_count(), 0);
+    }
+
+    #[test]
+    fn prior_semantics_version_is_stale_before_payload_decode() {
+        let dir = tempdir().unwrap();
+        let path = dir.path().join("v4.bin");
+        let mut prior_version = version_field();
+        prior_version[16..20].copy_from_slice(&4u32.to_le_bytes());
+        let mut file = std::fs::File::create(&path).unwrap();
+        file.write_all(MAGIC).unwrap();
+        file.write_all(&prior_version).unwrap();
+        file.write_all(b"not-a-current-payload").unwrap();
+        drop(file);
+
+        assert!(
+            is_stale(&path),
+            "a v4 library graph must be unreachable before attempting payload decode"
+        );
     }
 }

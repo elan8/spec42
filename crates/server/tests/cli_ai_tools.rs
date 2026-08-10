@@ -33,7 +33,6 @@ fn run_spec42_json(args: &[&str]) -> Value {
 }
 
 #[test]
-#[ignore = "agent CLI integration; run: cargo test -p spec42 -- --include-ignored"]
 fn cli_explain_diagnostic_returns_catalog_entry() {
     with_isolated_data_dir(|| {
         let cli = run_spec42_json(&[
@@ -57,7 +56,6 @@ fn cli_explain_diagnostic_returns_catalog_entry() {
 }
 
 #[test]
-#[ignore = "agent CLI integration; run: cargo test -p spec42 -- --include-ignored"]
 fn cli_model_summary_respects_max_nodes() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();

@@ -22,9 +22,9 @@
 mod actor;
 mod snapshot;
 
-pub use actor::{MutatePanicked, SessionActor, TracksRelink};
+pub use actor::{MutatePanicked, Mutation, MutationOutcome, SessionActor, TracksRelink};
 pub use snapshot::SnapshotHandle;
 
 // Re-exported so callers building `report_job_result` call sites don't need a direct
 // `workspace` dependency just for the token type.
-pub use workspace::RelinkToken;
+pub use workspace::{PublicationToken, RelinkToken};

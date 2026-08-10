@@ -1,6 +1,7 @@
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, RelationshipKind, SysmlDocument, SysmlDocumentSourceKind,
+    build_semantic_graph_from_documents, ElementKind, RelationshipKind, SysmlDocument,
+    SysmlDocumentSourceKind,
 };
 
 fn workspace_doc(path: &str, content: &str) -> SysmlDocument {
@@ -83,6 +84,74 @@ fn action_def_then_action_chain_emits_flow_edges() {
     assert!(
         has_edge("::step1", "::step2", RelationshipKind::Flow),
         "expected Flow between then-action steps"
+    );
+}
+
+#[test]
+fn standalone_first_materializes_anonymous_initial_nodes_and_forward_flows() {
+    let doc = workspace_doc(
+        "initial_action.sysml",
+        r#"package P {
+  action def Step;
+  action def Pipeline {
+    first start;
+    action start : Step;
+    action invocation {
+      first nestedStart;
+      action nestedStart : Step;
+    }
+  }
+}"#,
+    );
+    let uri = doc.uri.clone();
+    let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("semantic graph");
+
+    let pipeline = graph
+        .nodes_named("Pipeline")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::ActionDef)
+        .expect("pipeline action definition");
+    let initial = graph
+        .children_of(pipeline)
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Initial)
+        .expect("initial control node");
+    assert_eq!(initial.name, "_initial");
+    assert_eq!(initial.attributes["isAnonymous"], true);
+    assert_eq!(initial.attributes["initialTarget"], "start");
+    assert!(
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(source, target, kind, _)| {
+                source == &initial.id.qualified_name
+                    && target.ends_with("::Pipeline::start")
+                    && *kind == RelationshipKind::Flow
+            }),
+        "expected initial control flow to start"
+    );
+
+    let invocation = graph
+        .nodes_named("invocation")
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Action)
+        .expect("nested action usage");
+    let nested_initial = graph
+        .children_of(invocation)
+        .into_iter()
+        .find(|node| node.element_kind == ElementKind::Initial)
+        .expect("nested initial control node");
+    assert_eq!(nested_initial.attributes["isAnonymous"], true);
+    assert!(
+        graph
+            .edges_for_uri_as_strings(&uri)
+            .iter()
+            .any(|(source, target, kind, _)| {
+                source == &nested_initial.id.qualified_name
+                    && target.ends_with("::Pipeline::invocation::nestedStart")
+                    && *kind == RelationshipKind::Flow
+            }),
+        "expected nested action initial control flow to nestedStart"
     );
 }
 

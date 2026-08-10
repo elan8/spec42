@@ -1,4 +1,8 @@
 use super::*;
+use crate::semantic::model::{
+    DeclaredBinaryOperator, DeclaredExpression, DeclaredExpressionKind, DeclaredExpressionOperator,
+    DeclaredLiteral, DeclaredUnaryOperator, EvaluatedValue, RelationshipKind,
+};
 
 pub(crate) struct EvalEngine<'a> {
     pub(crate) graph: &'a SemanticGraph,
@@ -19,18 +23,67 @@ impl<'a> EvalEngine<'a> {
         }
     }
 
-    pub(crate) fn node_source_value(&self, node_id: &NodeId) -> Option<Value> {
+    /// Evaluation accepts only normalized parser facts. Presentation projections are not semantic
+    /// input and cannot affect an evaluation result.
+    pub(crate) fn node_expression(&self, node_id: &NodeId) -> Option<DeclaredExpression> {
         let node = self.graph.get_node(node_id)?;
-        EVALUATION_SOURCE_KEYS
-            .iter()
-            .find_map(|key| node.attributes.get(*key).cloned())
+        node.declared_facts
+            .feature_value
+            .as_ref()
+            .map(|value| value.expression.clone())
+            .or_else(|| node.declared_facts.own_expression.clone())
+            .or_else(|| {
+                self.graph
+                    .children_of(node)
+                    .into_iter()
+                    .find(|child| {
+                        matches!(
+                            child.element_kind,
+                            ElementKind::AnalysisResult
+                                | ElementKind::Verdict
+                                | ElementKind::AssertConstraint
+                                | ElementKind::RequireConstraint
+                        )
+                    })
+                    .and_then(child_expression)
+            })
+            .or_else(|| self.typed_case_expression(node))
+            .or_else(|| self.typed_requirement_constraint_expression(node))
+    }
+
+    fn typed_case_expression(&self, node: &SemanticNode) -> Option<DeclaredExpression> {
+        let definition_id = typed_case_definition_id(self.graph, node)?;
+        let definition = self.graph.get_node(&definition_id)?;
+        self.graph
+            .children_of(definition)
+            .into_iter()
+            .find(|child| {
+                matches!(
+                    child.element_kind,
+                    ElementKind::AnalysisResult | ElementKind::Verdict
+                )
+            })
+            .and_then(child_expression)
+    }
+
+    fn typed_requirement_constraint_expression(
+        &self,
+        node: &SemanticNode,
+    ) -> Option<DeclaredExpression> {
+        let definition_id = typed_requirement_definition_id(self.graph, node)?;
+        let definition = self.graph.get_node(&definition_id)?;
+        self.graph
+            .children_of(definition)
+            .into_iter()
+            .find(|child| child.element_kind == ElementKind::RequireConstraint)
+            .and_then(child_expression)
     }
 
     pub(crate) fn evaluate_node(&mut self, node_id: &NodeId) -> EvalOutcome {
-        if let Some(cached) = self.memoized.get(node_id) {
-            return cached.clone();
+        if let Some(outcome) = self.memoized.get(node_id) {
+            return outcome.clone();
         }
-        if self.active_stack.contains(node_id) {
+        if !self.active_stack.insert(node_id.clone()) {
             return EvalOutcome::error(
                 EvalStatus::Cycle,
                 format!(
@@ -39,744 +92,642 @@ impl<'a> EvalEngine<'a> {
                 ),
             );
         }
-        let Some(raw_value) = self.node_source_value(node_id) else {
-            return EvalOutcome::error(
-                EvalStatus::Incomplete,
-                format!(
-                    "no evaluable expression source found for '{}'",
-                    node_id.qualified_name
-                ),
-            );
-        };
-        self.active_stack.insert(node_id.clone());
-        let outcome = self.evaluate_json_value(node_id, &raw_value);
+        let outcome = self.node_expression(node_id).map_or_else(
+            || EvalOutcome::error(EvalStatus::Incomplete, "no declared expression"),
+            |expression| self.evaluate_declared_expression(node_id, &expression),
+        );
         self.active_stack.remove(node_id);
         self.memoized.insert(node_id.clone(), outcome.clone());
         outcome
     }
 
-    pub(crate) fn evaluate_json_value(&mut self, node_id: &NodeId, value: &Value) -> EvalOutcome {
-        match value {
-            Value::Bool(v) => EvalOutcome::ok(Value::Bool(*v), None),
-            Value::Number(v) => EvalOutcome::ok(Value::Number(v.clone()), None),
-            Value::String(s) => self.evaluate_expression_text(node_id, s),
-            Value::Null => EvalOutcome::error(EvalStatus::Unknown, "no expression value"),
-            _ => EvalOutcome::error(
-                EvalStatus::Unsupported,
-                "expression value type is not supported",
-            ),
-        }
-    }
-
-    pub(crate) fn evaluate_expression_text(&mut self, node_id: &NodeId, raw: &str) -> EvalOutcome {
-        let normalized = normalize_unit_brackets(raw.trim());
-        let text = normalized.as_str();
-        if text.is_empty() {
-            return EvalOutcome::error(EvalStatus::Unknown, "empty expression");
-        }
-        if text.eq_ignore_ascii_case("true") {
-            return EvalOutcome::ok(Value::Bool(true), None);
-        }
-        if text.eq_ignore_ascii_case("false") {
-            return EvalOutcome::ok(Value::Bool(false), None);
-        }
-        if let Ok(parsed_string) = serde_json::from_str::<String>(text) {
-            return EvalOutcome::ok(Value::String(parsed_string), None);
-        }
-        if let Some(identifier) = parse_standalone_identifier(text) {
-            return self.resolve_identifier_value(node_id, identifier);
-        }
-
-        match self.evaluate_quantity_expression(node_id, text) {
-            Ok(quantity) => EvalOutcome::from_quantity(quantity),
-            Err(EvalStatus::DivByZero) => {
-                EvalOutcome::error(EvalStatus::DivByZero, "division by zero")
-            }
-            Err(EvalStatus::Cycle) => {
-                EvalOutcome::error(EvalStatus::Cycle, "cyclic reference detected")
-            }
-            Err(EvalStatus::TypeError) => EvalOutcome::error(
-                EvalStatus::TypeError,
-                "expression has type or unit mismatch for arithmetic",
-            ),
-            Err(EvalStatus::Unknown) => {
-                EvalOutcome::error(EvalStatus::Unknown, "expression could not be resolved")
-            }
-            Err(EvalStatus::Incomplete) => EvalOutcome::error(
-                EvalStatus::Incomplete,
-                "expression depends on unevaluated value",
-            ),
-            Err(EvalStatus::Unsupported) | Err(EvalStatus::Ok) => {
-                EvalOutcome::error(EvalStatus::Unsupported, "expression form is not supported")
-            }
-        }
-    }
-
-    pub(crate) fn evaluate_quantity_expression(
+    pub(crate) fn evaluate_declared_expression(
         &mut self,
         node_id: &NodeId,
-        expression: &str,
-    ) -> Result<Quantity, EvalStatus> {
-        let units = self.units.clone();
-        let mut parser = QuantityParser::new(expression, &units, |name, args| {
-            if let Some(arg_list) = args {
-                self.evaluate_invocation_quantity(node_id, name, arg_list)
-            } else {
-                self.resolve_identifier_quantity(node_id, name)
-            }
-        });
-        let quantity = parser.parse_expression()?;
-        parser.skip_ws();
-        if !parser.is_eof() {
-            return Err(EvalStatus::Unsupported);
-        }
-        Ok(quantity)
-    }
-
-    pub(crate) fn resolve_identifier_value(
-        &mut self,
-        node_id: &NodeId,
-        identifier: &str,
+        expression: &DeclaredExpression,
     ) -> EvalOutcome {
-        let referenced_id = match self.resolve_identifier_node(node_id, identifier) {
-            Ok(found) => found,
-            Err(outcome) => return outcome,
-        };
-        self.evaluate_node(&referenced_id)
+        self.evaluate_value(node_id, expression)
+            .unwrap_or_else(|status| EvalOutcome::error(status, status_message(status)))
     }
 
-    pub(crate) fn resolve_identifier_quantity(
+    fn evaluate_value(
         &mut self,
         node_id: &NodeId,
-        identifier: &str,
-    ) -> Result<Quantity, EvalStatus> {
-        if let Some(bound) = self.lookup_bound_value(identifier) {
-            return match bound {
-                BoundValue::Quantity(q) => Ok(q),
-                BoundValue::Collection(_) => Err(EvalStatus::TypeError),
+        expression: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        match expression.kind {
+            DeclaredExpressionKind::IntegerLiteral => match expression.literal.as_ref() {
+                Some(DeclaredLiteral::Integer(value)) => {
+                    Ok(EvalOutcome::ok(EvaluatedValue::Integer(*value), None))
+                }
+                _ => Err(EvalStatus::Malformed),
+            },
+            DeclaredExpressionKind::RealLiteral => expression
+                .literal
+                .as_ref()
+                .and_then(|literal| match literal {
+                    DeclaredLiteral::Real(value) => real_literal(value),
+                    DeclaredLiteral::Integer(_)
+                    | DeclaredLiteral::String(_)
+                    | DeclaredLiteral::Boolean(_) => None,
+                })
+                .map(Quantity::scalar)
+                .map(EvalOutcome::from_quantity)
+                .ok_or(EvalStatus::Malformed),
+            DeclaredExpressionKind::StringLiteral => match expression.literal.as_ref() {
+                Some(DeclaredLiteral::String(value)) => {
+                    Ok(EvalOutcome::ok(EvaluatedValue::String(value.clone()), None))
+                }
+                _ => Err(EvalStatus::Malformed),
+            },
+            DeclaredExpressionKind::BooleanLiteral => match expression.literal.as_ref() {
+                Some(DeclaredLiteral::Boolean(value)) => {
+                    Ok(EvalOutcome::ok(EvaluatedValue::Boolean(*value), None))
+                }
+                _ => Err(EvalStatus::Malformed),
+            },
+            DeclaredExpressionKind::Null => Err(EvalStatus::Incomplete),
+            DeclaredExpressionKind::FeatureReference | DeclaredExpressionKind::FeatureChain => {
+                let reference = expression
+                    .reference
+                    .as_deref()
+                    .ok_or(EvalStatus::Malformed)?;
+                if let Some(value) = self.bound_value(reference) {
+                    return Ok(EvalOutcome::from_quantity(value));
+                }
+                self.resolve_identifier(node_id, reference)
+                    .map(|id| self.evaluate_node(&id))
+                    .and_then(outcome_result)
+            }
+            DeclaredExpressionKind::Parenthesized
+            | DeclaredExpressionKind::Bracket
+            | DeclaredExpressionKind::MetadataAccess => {
+                self.evaluate_single_child(node_id, expression)
+            }
+            DeclaredExpressionKind::LiteralWithUnit => {
+                self.evaluate_literal_with_unit(node_id, expression)
+            }
+            DeclaredExpressionKind::Unary => self.evaluate_unary(node_id, expression),
+            DeclaredExpressionKind::Binary => self.evaluate_binary(node_id, expression),
+            DeclaredExpressionKind::Invocation => self.evaluate_invocation(node_id, expression),
+            DeclaredExpressionKind::MemberAccess => {
+                self.evaluate_member_access(node_id, expression)
+            }
+            _ => Err(EvalStatus::Unsupported),
+        }
+    }
+
+    fn evaluate_single_child(
+        &mut self,
+        node_id: &NodeId,
+        expression: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let [child] = expression.children.as_slice() else {
+            return Err(EvalStatus::Malformed);
+        };
+        self.evaluate_value(node_id, child)
+    }
+
+    fn evaluate_literal_with_unit(
+        &mut self,
+        node_id: &NodeId,
+        expression: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let [value, unit] = expression.children.as_slice() else {
+            return Err(EvalStatus::Malformed);
+        };
+        let value = outcome_quantity(self.evaluate_value(node_id, value)?)?;
+        let unit = unit_reference(unit).ok_or(EvalStatus::Malformed)?;
+        // Typed unit metadata has not been published on the semantic graph yet. The default
+        // registry deliberately has no display-attribute fallback, so any otherwise valid
+        // unit-bearing literal is a capability boundary rather than an unknown reference.
+        let _ = (value, unit);
+        Err(EvalStatus::Unsupported)
+    }
+
+    fn evaluate_unary(
+        &mut self,
+        node_id: &NodeId,
+        expression: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let value = self.evaluate_single_child(node_id, expression)?;
+        match expression.operator.as_ref() {
+            Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Plus)) => Ok(value),
+            Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Minus)) => {
+                let value = outcome_quantity(value)?;
+                Ok(EvalOutcome::from_quantity(Quantity {
+                    value: -value.value,
+                    unit: value.unit,
+                }))
+            }
+            Some(DeclaredExpressionOperator::Unary(DeclaredUnaryOperator::Not)) => value
+                .value
+                .as_ref()
+                .and_then(EvaluatedValue::as_boolean)
+                .map(|value| EvalOutcome::ok(EvaluatedValue::Boolean(!value), None))
+                .ok_or(EvalStatus::TypeError),
+            Some(DeclaredExpressionOperator::Unary(_)) => Err(EvalStatus::Unsupported),
+            Some(_) => Err(EvalStatus::Malformed),
+            None => Err(EvalStatus::Malformed),
+        }
+    }
+
+    fn evaluate_binary(
+        &mut self,
+        node_id: &NodeId,
+        expression: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let [left, right] = expression.children.as_slice() else {
+            return Err(EvalStatus::Malformed);
+        };
+        let Some(DeclaredExpressionOperator::Binary(binary_operator)) =
+            expression.operator.as_ref()
+        else {
+            return Err(EvalStatus::Malformed);
+        };
+        if matches!(
+            binary_operator,
+            DeclaredBinaryOperator::And | DeclaredBinaryOperator::Or
+        ) {
+            let left = bool_outcome(self.evaluate_value(node_id, left)?)?;
+            if matches!(binary_operator, DeclaredBinaryOperator::And) && !left {
+                return Ok(EvalOutcome::ok(EvaluatedValue::Boolean(false), None));
+            }
+            if matches!(binary_operator, DeclaredBinaryOperator::Or) && left {
+                return Ok(EvalOutcome::ok(EvaluatedValue::Boolean(true), None));
+            }
+            return Ok(EvalOutcome::ok(
+                EvaluatedValue::Boolean(bool_outcome(self.evaluate_value(node_id, right)?)?),
+                None,
+            ));
+        }
+        let left = self.evaluate_value(node_id, left)?;
+        let right = self.evaluate_value(node_id, right)?;
+        match binary_operator {
+            DeclaredBinaryOperator::Add
+            | DeclaredBinaryOperator::Subtract
+            | DeclaredBinaryOperator::Multiply
+            | DeclaredBinaryOperator::Divide => self.arithmetic(binary_operator, left, right),
+            DeclaredBinaryOperator::Less
+            | DeclaredBinaryOperator::LessOrEqual
+            | DeclaredBinaryOperator::Greater
+            | DeclaredBinaryOperator::GreaterOrEqual
+            | DeclaredBinaryOperator::Equal
+            | DeclaredBinaryOperator::NotEqual => self.comparison(binary_operator, left, right),
+            _ => Err(EvalStatus::Unsupported),
+        }
+    }
+
+    fn arithmetic(
+        &self,
+        binary_operator: &DeclaredBinaryOperator,
+        left: EvalOutcome,
+        right: EvalOutcome,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let left = outcome_quantity(left)?;
+        let right = outcome_quantity(right)?;
+        let value = match binary_operator {
+            DeclaredBinaryOperator::Add => add_quantities(&self.units, left, right)?,
+            DeclaredBinaryOperator::Subtract => add_quantities(
+                &self.units,
+                left,
+                Quantity {
+                    value: -right.value,
+                    unit: right.unit,
+                },
+            )?,
+            DeclaredBinaryOperator::Multiply | DeclaredBinaryOperator::Divide => {
+                if matches!(binary_operator, DeclaredBinaryOperator::Divide) && right.value == 0.0 {
+                    return Err(EvalStatus::DivByZero);
+                }
+                let (value, unit) = self
+                    .units
+                    .compose_product(
+                        left.value,
+                        left.unit.as_deref(),
+                        right.value,
+                        right.unit.as_deref(),
+                        matches!(binary_operator, DeclaredBinaryOperator::Divide),
+                    )
+                    .map_err(unit_error)?;
+                Quantity { value, unit }
+            }
+            _ => return Err(EvalStatus::Unsupported),
+        };
+        Ok(EvalOutcome::from_quantity(value))
+    }
+
+    fn comparison(
+        &self,
+        binary_operator: &DeclaredBinaryOperator,
+        left: EvalOutcome,
+        right: EvalOutcome,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        if matches!(
+            binary_operator,
+            DeclaredBinaryOperator::Equal | DeclaredBinaryOperator::NotEqual
+        ) && left.unit.is_none()
+            && right.unit.is_none()
+        {
+            let equal = left.value == right.value;
+            return Ok(EvalOutcome::ok(
+                EvaluatedValue::Boolean(
+                    if matches!(binary_operator, DeclaredBinaryOperator::Equal) {
+                        equal
+                    } else {
+                        !equal
+                    },
+                ),
+                None,
+            ));
+        }
+        let left = outcome_quantity(left)?;
+        let right = outcome_quantity(right)?;
+        let right = match (&left.unit, &right.unit) {
+            (None, None) => right.value,
+            (Some(left_unit), Some(right_unit)) => self
+                .units
+                .convert_value(right.value, right_unit, left_unit)
+                .map_err(unit_error)?,
+            _ => return Err(EvalStatus::TypeError),
+        };
+        let value = match binary_operator {
+            DeclaredBinaryOperator::Less => left.value < right,
+            DeclaredBinaryOperator::LessOrEqual => left.value <= right,
+            DeclaredBinaryOperator::Greater => left.value > right,
+            DeclaredBinaryOperator::GreaterOrEqual => left.value >= right,
+            DeclaredBinaryOperator::Equal => (left.value - right).abs() < 1e-9,
+            DeclaredBinaryOperator::NotEqual => (left.value - right).abs() >= 1e-9,
+            _ => return Err(EvalStatus::Unsupported),
+        };
+        Ok(EvalOutcome::ok(EvaluatedValue::Boolean(value), None))
+    }
+
+    fn evaluate_invocation(
+        &mut self,
+        context_id: &NodeId,
+        expression: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let callable = expression
+            .children
+            .first()
+            .and_then(|child| child.reference.as_deref())
+            .ok_or(EvalStatus::Malformed)?;
+        let args = expression
+            .arguments
+            .iter()
+            .map(|argument| self.evaluate_value(context_id, &argument.value))
+            .collect::<Result<Vec<_>, _>>()?;
+        match callable {
+            "count" if !args.is_empty() => Ok(EvalOutcome::from_quantity(Quantity::scalar(
+                args.len() as f64,
+            ))),
+            "sum" | "min" | "max" | "avg" => self.builtin(callable, args),
+            _ => self.invoke_callable(context_id, callable, expression),
+        }
+    }
+
+    fn builtin(&self, name: &str, args: Vec<EvalOutcome>) -> Result<EvalOutcome, EvalStatus> {
+        let mut values = args.into_iter().map(outcome_quantity);
+        let Some(mut result) = values.next().transpose()? else {
+            return Err(EvalStatus::Malformed);
+        };
+        let mut count = 1usize;
+        for value in values {
+            let value = value?;
+            count += 1;
+            match name {
+                "sum" | "avg" => result = add_quantities(&self.units, result, value)?,
+                "min" | "max" => {
+                    let converted = match (&result.unit, &value.unit) {
+                        (None, None) => value.value,
+                        (Some(result_unit), Some(value_unit)) => self
+                            .units
+                            .convert_value(value.value, value_unit, result_unit)
+                            .map_err(unit_error)?,
+                        _ => return Err(EvalStatus::TypeError),
+                    };
+                    if (name == "min" && converted < result.value)
+                        || (name == "max" && converted > result.value)
+                    {
+                        result.value = converted;
+                    }
+                }
+                _ => return Err(EvalStatus::Unsupported),
+            }
+        }
+        if name == "avg" {
+            result.value /= count as f64;
+        }
+        Ok(EvalOutcome::from_quantity(result))
+    }
+
+    fn invoke_callable(
+        &mut self,
+        context_id: &NodeId,
+        callable: &str,
+        invocation: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let callable_id = self.resolve_identifier(context_id, callable)?;
+        let (body, parameters) = {
+            let node = self
+                .graph
+                .get_node(&callable_id)
+                .ok_or(EvalStatus::Unresolved)?;
+            if !matches!(
+                node.element_kind,
+                ElementKind::CalcDef | ElementKind::ConstraintDef
+            ) {
+                return Err(EvalStatus::TypeError);
+            }
+            let body = node
+                .declared_facts
+                .own_expression
+                .clone()
+                .ok_or(EvalStatus::Incomplete)?;
+            let parameters = self
+                .graph
+                .children_of(node)
+                .into_iter()
+                .filter(|parameter| {
+                    matches!(
+                        parameter
+                            .declared_facts
+                            .feature_properties
+                            .as_ref()
+                            .and_then(|facts| facts.direction.as_deref()),
+                        Some("in") | Some("inout")
+                    )
+                })
+                .map(|parameter| parameter.name.clone())
+                .collect::<Vec<_>>();
+            (body, parameters)
+        };
+        if invocation.arguments.len() != parameters.len() {
+            return Err(EvalStatus::Malformed);
+        }
+        let named = invocation
+            .arguments
+            .iter()
+            .any(|argument| argument.name.is_some());
+        if named
+            && invocation
+                .arguments
+                .iter()
+                .any(|argument| argument.name.is_none())
+        {
+            return Err(EvalStatus::Malformed);
+        }
+        let mut bindings = HashMap::new();
+        for (index, parameter) in parameters.iter().enumerate() {
+            let argument = if named {
+                invocation
+                    .arguments
+                    .iter()
+                    .find(|argument| argument.name.as_deref() == Some(parameter))
+                    .ok_or(EvalStatus::Malformed)?
+            } else {
+                &invocation.arguments[index]
             };
+            bindings.insert(
+                parameter.to_string(),
+                BoundValue(outcome_quantity(
+                    self.evaluate_value(context_id, &argument.value)?,
+                )?),
+            );
         }
-        let referenced_id = self
-            .resolve_identifier_node(node_id, identifier)
-            .map_err(|outcome| outcome.status)?;
-        let outcome = self.evaluate_node(&referenced_id);
-        if outcome.status != EvalStatus::Ok {
-            return Err(outcome.status);
-        }
-        let Some(value) = outcome.value else {
-            return Err(EvalStatus::Unknown);
+        self.parameter_bindings.push(bindings);
+        let result = self.evaluate_value(&callable_id, &body);
+        self.parameter_bindings.pop();
+        result
+    }
+
+    fn evaluate_member_access(
+        &mut self,
+        node_id: &NodeId,
+        expression: &DeclaredExpression,
+    ) -> Result<EvalOutcome, EvalStatus> {
+        let [base] = expression.children.as_slice() else {
+            return Err(EvalStatus::Malformed);
         };
-        let Some(number) = json_value_to_f64(&value) else {
-            return Err(EvalStatus::TypeError);
-        };
-        Ok(Quantity {
-            value: number,
-            unit: outcome.unit,
+        let member = expression
+            .reference
+            .as_deref()
+            .ok_or(EvalStatus::Malformed)?;
+        let path = reference_path(base).ok_or(EvalStatus::Unsupported)?;
+        self.resolve_identifier(node_id, &format!("{path}.{member}"))
+            .map(|id| self.evaluate_node(&id))
+            .and_then(outcome_result)
+    }
+
+    fn bound_value(&self, reference: &str) -> Option<Quantity> {
+        self.parameter_bindings.iter().rev().find_map(|bindings| {
+            bindings
+                .get(reference)
+                .cloned()
+                .or_else(|| {
+                    reference
+                        .rsplit("::")
+                        .next()
+                        .and_then(|tail| bindings.get(tail).cloned())
+                })
+                .map(|value| value.0)
         })
     }
 
-    pub(crate) fn lookup_bound_value(&self, identifier: &str) -> Option<BoundValue> {
-        self.parameter_bindings.iter().rev().find_map(|scope| {
-            scope.get(identifier).cloned().or_else(|| {
-                identifier
-                    .rsplit("::")
-                    .next()
-                    .and_then(|tail| scope.get(tail).cloned())
-            })
-        })
-    }
-
-    pub(crate) fn resolve_identifier_node(
+    fn resolve_identifier(
         &self,
         current_id: &NodeId,
-        identifier: &str,
-    ) -> Result<NodeId, EvalOutcome> {
-        if let Some((head, rest)) = identifier.split_once('.') {
-            let mut current = self.resolve_identifier_node(current_id, head)?;
-            for seg in rest.split('.') {
-                let qualified = format!("{}::{seg}", current.qualified_name);
-                let candidates = self.lookup_qualified_candidates(&qualified);
-                if !candidates.is_empty() {
-                    current = choose_candidate(self.graph, candidates, seg)?;
-                    continue;
-                }
-                let Some(owner) = self.graph.get_node(&current) else {
-                    return Err(EvalOutcome::error(
-                        EvalStatus::Unknown,
-                        format!("unresolved reference '{identifier}'"),
-                    ));
+        reference: &str,
+    ) -> Result<NodeId, EvalStatus> {
+        if let Some((head, rest)) = reference.split_once('.') {
+            let mut current = self.resolve_identifier(current_id, head)?;
+            for segment in rest.split('.') {
+                let qualified = format!("{}::{segment}", current.qualified_name);
+                let candidates = self.lookup_candidates(&qualified);
+                current = if candidates.is_empty() {
+                    let owner = self
+                        .graph
+                        .get_node(&current)
+                        .ok_or(EvalStatus::Unresolved)?;
+                    match resolve_member_via_type(self.graph, owner, segment) {
+                        ResolveResult::Resolved(id) => id,
+                        ResolveResult::Ambiguous => return Err(EvalStatus::Ambiguous),
+                        ResolveResult::Unresolved => return Err(EvalStatus::Unresolved),
+                    }
+                } else {
+                    resolve_unique(candidates)?
                 };
-                match resolve_member_via_type(self.graph, owner, seg) {
-                    ResolveResult::Resolved(member_id) => current = member_id,
-                    ResolveResult::Ambiguous => {
-                        return Err(EvalOutcome::error(
-                            EvalStatus::Unknown,
-                            format!("ambiguous reference '{seg}'"),
-                        ));
-                    }
-                    ResolveResult::Unresolved => {
-                        return Err(EvalOutcome::error(
-                            EvalStatus::Unknown,
-                            format!("unresolved reference '{identifier}'"),
-                        ));
-                    }
-                }
             }
             return Ok(current);
         }
-        let Some(current) = self.graph.get_node(current_id) else {
-            return Err(EvalOutcome::error(
-                EvalStatus::Unknown,
-                format!("unknown evaluation node '{}'", current_id.qualified_name),
-            ));
-        };
-        let scoped_candidates = self.scoped_candidates(current, identifier);
-        if !scoped_candidates.is_empty() {
-            return choose_candidate(self.graph, scoped_candidates, identifier);
+        let current = self
+            .graph
+            .get_node(current_id)
+            .ok_or(EvalStatus::Unresolved)?;
+        if reference.contains("::") {
+            return resolve_unique(self.lookup_candidates(reference));
         }
-        let fallback_candidates = self.fallback_candidates(current, identifier);
-        if !fallback_candidates.is_empty() {
-            return choose_candidate(self.graph, fallback_candidates, identifier);
-        }
-        Err(EvalOutcome::error(
-            EvalStatus::Unknown,
-            format!("unresolved reference '{identifier}'"),
-        ))
-    }
-
-    pub(crate) fn scoped_candidates(
-        &self,
-        current: &SemanticNode,
-        identifier: &str,
-    ) -> Vec<NodeId> {
-        let mut candidates = Vec::new();
-        let mut prefixes = scope_prefixes(self.graph, current);
-        prefixes.insert(0, current.id.qualified_name.clone());
-        prefixes.extend(typed_case_definition_scope_prefixes(self.graph, current));
-        prefixes.extend(typed_requirement_definition_scope_prefixes(
+        let mut scopes = scope_prefixes(self.graph, current);
+        scopes.insert(0, current.id.qualified_name.clone());
+        scopes.extend(typed_case_definition_scope_prefixes(self.graph, current));
+        scopes.extend(typed_requirement_definition_scope_prefixes(
             self.graph, current,
         ));
-        for scope_prefix in prefixes {
-            let qualified = format!("{scope_prefix}::{identifier}");
-            candidates.extend(self.lookup_qualified_candidates(&qualified));
+        for scope in scopes {
+            let candidates = dedupe(self.lookup_candidates(&format!("{scope}::{reference}")));
+            if !candidates.is_empty() {
+                return resolve_unique(candidates);
+            }
         }
-        dedupe_node_ids(candidates)
+        let mut fallback = self
+            .graph
+            .nodes_for_uri(&current.id.uri)
+            .into_iter()
+            .filter(|node| node.name == reference)
+            .map(|node| node.id.clone())
+            .collect::<Vec<_>>();
+        fallback.extend(self.lookup_candidates(reference));
+        resolve_unique(dedupe(fallback))
     }
 
-    pub(crate) fn fallback_candidates(
-        &self,
-        current: &SemanticNode,
-        identifier: &str,
-    ) -> Vec<NodeId> {
-        let mut candidates = Vec::new();
-        if identifier.contains("::") {
-            candidates.extend(self.lookup_qualified_candidates(identifier));
-        } else {
-            let same_uri_named = self
-                .graph
-                .nodes_for_uri(&current.id.uri)
-                .into_iter()
-                .filter(|node| node.name == identifier)
-                .map(|node| node.id.clone())
-                .collect::<Vec<_>>();
-            candidates.extend(same_uri_named);
-            candidates.extend(self.lookup_qualified_candidates(identifier));
-        }
-        dedupe_node_ids(candidates)
-    }
-
-    pub(crate) fn lookup_qualified_candidates(&self, qualified_name: &str) -> Vec<NodeId> {
+    fn lookup_candidates(&self, qualified: &str) -> Vec<NodeId> {
         self.graph
             .node_ids_by_qualified_name
-            .get(qualified_name)
+            .get(qualified)
             .into_iter()
             .flatten()
             .cloned()
             .collect()
     }
-
-    pub(crate) fn evaluate_invocation_quantity(
-        &mut self,
-        context_id: &NodeId,
-        callable_name: &str,
-        args: &[&str],
-    ) -> Result<Quantity, EvalStatus> {
-        let normalized_args = normalize_invocation_args(args);
-        if callable_name == "sum" {
-            return self.evaluate_builtin_sum(context_id, &normalized_args);
-        }
-        if callable_name == "count" {
-            return self.evaluate_builtin_count(&normalized_args);
-        }
-        if callable_name == "min" {
-            return self.evaluate_builtin_min_max(context_id, &normalized_args, true);
-        }
-        if callable_name == "max" {
-            return self.evaluate_builtin_min_max(context_id, &normalized_args, false);
-        }
-        if callable_name == "avg" {
-            return self.evaluate_builtin_avg(context_id, &normalized_args);
-        }
-        let callable_id = self
-            .resolve_callable_node(context_id, callable_name)
-            .ok_or(EvalStatus::Unknown)?;
-        let callable = self
-            .graph
-            .get_node(&callable_id)
-            .ok_or(EvalStatus::Unknown)?;
-        if callable.element_kind != ElementKind::CalcDef {
-            return Err(EvalStatus::TypeError);
-        }
-        let expression = callable
-            .attributes
-            .get(ANALYSIS_EXPRESSION_KEY)
-            .and_then(Value::as_str)
-            .ok_or(EvalStatus::Unknown)?
-            .to_string();
-        let mut param_names = in_parameter_names(callable);
-        if param_names.is_empty() && !normalized_args.is_empty() {
-            let inferred = infer_parameter_names_from_expression(&expression);
-            if inferred.len() == normalized_args.len() {
-                param_names = inferred;
-            }
-        }
-        let bindings =
-            self.bind_invocation_parameters(context_id, callable, &param_names, &normalized_args)?;
-        self.parameter_bindings.push(bindings);
-        let result = self.evaluate_quantity_expression(&callable_id, &expression);
-        self.parameter_bindings.pop();
-        result
-    }
-
-    pub(crate) fn evaluate_builtin_count(
-        &self,
-        normalized_args: &[&str],
-    ) -> Result<Quantity, EvalStatus> {
-        if normalized_args.is_empty() {
-            return Err(EvalStatus::Unsupported);
-        }
-        Ok(Quantity::scalar(normalized_args.len() as f64))
-    }
-
-    pub(crate) fn evaluate_builtin_avg(
-        &mut self,
-        context_id: &NodeId,
-        normalized_args: &[&str],
-    ) -> Result<Quantity, EvalStatus> {
-        if normalized_args.is_empty() {
-            return Err(EvalStatus::Unsupported);
-        }
-        let sum = self.evaluate_builtin_sum(context_id, normalized_args)?;
-        let denom = normalized_args.len() as f64;
-        Ok(Quantity {
-            value: sum.value / denom,
-            unit: sum.unit,
-        })
-    }
-
-    pub(crate) fn evaluate_builtin_min_max(
-        &mut self,
-        context_id: &NodeId,
-        normalized_args: &[&str],
-        is_min: bool,
-    ) -> Result<Quantity, EvalStatus> {
-        if normalized_args.is_empty() {
-            return Err(EvalStatus::Unsupported);
-        }
-        let mut it = normalized_args.iter();
-        let first_expr = it.next().expect("non-empty args");
-        let mut best = self.evaluate_quantity_expression(context_id, first_expr)?;
-        for expr in it {
-            let candidate = self.evaluate_quantity_expression(context_id, expr)?;
-            let candidate_value = match (&best.unit, &candidate.unit) {
-                (None, None) => candidate.value,
-                (Some(best_unit), Some(candidate_unit)) => {
-                    let converted =
-                        self.units
-                            .convert_value(candidate.value, candidate_unit, best_unit);
-                    converted.map_err(map_unit_error)?
-                }
-                (Some(unit), None) | (None, Some(unit)) => {
-                    if !self.units.has_symbol(unit) {
-                        return Err(EvalStatus::Unknown);
-                    }
-                    return Err(EvalStatus::TypeError);
-                }
-            };
-            let take = if is_min {
-                candidate_value < best.value
-            } else {
-                candidate_value > best.value
-            };
-            if take {
-                best.value = candidate_value;
-            }
-        }
-        Ok(best)
-    }
-
-    pub(crate) fn collect_member_paths_for_sum_projection(
-        &self,
-        context_id: &NodeId,
-        head: &str,
-        rest: &str,
-    ) -> Vec<String> {
-        let Some(context) = self.graph.get_node(context_id) else {
-            return Vec::new();
-        };
-        let part_child_names: Vec<String> = self
-            .graph
-            .children_of(context)
-            .into_iter()
-            .filter(|child| child.element_kind == ElementKind::Part)
-            .map(|child| child.name.clone())
-            .collect();
-        let named_matches: Vec<_> = part_child_names
-            .iter()
-            .filter(|name| name.as_str() == head)
-            .collect();
-        if named_matches.len() == 1 {
-            return vec![format!("{head}.{rest}")];
-        }
-        if named_matches.len() > 1 {
-            return named_matches
-                .iter()
-                .map(|name| format!("{name}.{rest}"))
-                .collect();
-        }
-        if part_child_names.len() > 1 {
-            return part_child_names
-                .iter()
-                .map(|name| format!("{name}.{rest}"))
-                .collect();
-        }
-        Vec::new()
-    }
-
-    pub(crate) fn evaluate_builtin_sum(
-        &mut self,
-        context_id: &NodeId,
-        normalized_args: &[&str],
-    ) -> Result<Quantity, EvalStatus> {
-        if normalized_args.is_empty() {
-            return Err(EvalStatus::Unsupported);
-        }
-        if normalized_args.len() == 1 {
-            let needle = normalized_args[0].trim();
-            if let Some((head, rest)) = needle.split_once('.') {
-                if let Some(BoundValue::Collection(items)) = self.lookup_bound_value(head) {
-                    let mut acc: Option<Quantity> = None;
-                    for item in items {
-                        let projected = format!("{item}.{rest}");
-                        let q = self.resolve_identifier_quantity(context_id, &projected)?;
-                        acc = Some(match acc {
-                            None => q,
-                            Some(prev) => add_quantities_with_units(&self.units, prev, q)?,
-                        });
-                    }
-                    return acc.ok_or(EvalStatus::Unsupported);
-                }
-                let member_paths =
-                    self.collect_member_paths_for_sum_projection(context_id, head, rest);
-                if !member_paths.is_empty() {
-                    let mut acc: Option<Quantity> = None;
-                    for path in member_paths {
-                        let q = self.resolve_identifier_quantity(context_id, &path)?;
-                        acc = Some(match acc {
-                            None => q,
-                            Some(prev) => add_quantities_with_units(&self.units, prev, q)?,
-                        });
-                    }
-                    return acc.ok_or(EvalStatus::Unsupported);
-                }
-            }
-        }
-        let mut it = normalized_args.iter();
-        let first = it.next().expect("non-empty args").to_string();
-        let mut acc = self.evaluate_quantity_expression(context_id, &first)?;
-        for arg in it {
-            let evaluated = self.evaluate_quantity_expression(context_id, arg)?;
-            acc = add_quantities_with_units(&self.units, acc, evaluated)?;
-        }
-        Ok(acc)
-    }
-
-    pub(crate) fn evaluate_invocation_bool(
-        &mut self,
-        context_id: &NodeId,
-        callable_name: &str,
-        args: &[&str],
-    ) -> Result<bool, AnalysisEvalError> {
-        let normalized_args = normalize_invocation_args(args);
-        let callable_id = self
-            .resolve_callable_node(context_id, callable_name)
-            .ok_or_else(|| {
-                AnalysisEvalError::with_message(
-                    EvalStatus::Unknown,
-                    format!("unresolved callable '{callable_name}'"),
-                )
-            })?;
-        let callable = self.graph.get_node(&callable_id).ok_or_else(|| {
-            AnalysisEvalError::with_message(
-                EvalStatus::Unknown,
-                format!("unresolved callable '{callable_name}'"),
-            )
-        })?;
-        let expression = callable
-            .attributes
-            .get(ANALYSIS_EXPRESSION_KEY)
-            .and_then(Value::as_str)
-            .ok_or_else(|| {
-                AnalysisEvalError::with_message(
-                    EvalStatus::Incomplete,
-                    format!("callable '{callable_name}' has no analysis expression"),
-                )
-            })?
-            .to_string();
-        let mut param_names = in_parameter_names(callable);
-        if param_names.is_empty() && !normalized_args.is_empty() {
-            let inferred = infer_parameter_names_from_expression(&expression);
-            if inferred.len() == normalized_args.len() {
-                param_names = inferred;
-            }
-        }
-        let bindings = self
-            .bind_invocation_parameters(context_id, callable, &param_names, &normalized_args)
-            .map_err(AnalysisEvalError::from_status)?;
-        self.parameter_bindings.push(bindings);
-        let result = evaluate_analysis_expression(self, &callable_id, &expression);
-        self.parameter_bindings.pop();
-        result
-    }
-
-    pub(crate) fn bind_invocation_parameters(
-        &mut self,
-        context_id: &NodeId,
-        callable: &SemanticNode,
-        param_names: &[String],
-        normalized_args: &[&str],
-    ) -> Result<HashMap<String, BoundValue>, EvalStatus> {
-        let collection_params = callable_collection_params(callable);
-        let parsed = parse_invocation_args(normalized_args)?;
-        match parsed {
-            InvocationArgs::Positional(args) => {
-                if param_names.len() != args.len() {
-                    return Err(EvalStatus::Unsupported);
-                }
-                let mut bindings = HashMap::new();
-                for (name, arg_expr) in param_names.iter().zip(args.iter()) {
-                    let bound = if collection_params.contains(name) {
-                        BoundValue::Collection(parse_tuple_identifier_list(arg_expr)?)
-                    } else {
-                        BoundValue::Quantity(
-                            self.evaluate_quantity_expression(context_id, arg_expr)?,
-                        )
-                    };
-                    bindings.insert(name.clone(), bound);
-                }
-                Ok(bindings)
-            }
-            InvocationArgs::Named(named) => {
-                if param_names.is_empty() {
-                    return Err(EvalStatus::Unsupported);
-                }
-                // Reject unknown names to avoid silent typos.
-                if named.len() != param_names.len() {
-                    return Err(EvalStatus::Unsupported);
-                }
-                let mut bindings = HashMap::new();
-                for param in param_names {
-                    let Some(expr) = named.get(param) else {
-                        return Err(EvalStatus::Unsupported);
-                    };
-                    let bound = if collection_params.contains(param) {
-                        BoundValue::Collection(parse_tuple_identifier_list(expr)?)
-                    } else {
-                        BoundValue::Quantity(self.evaluate_quantity_expression(context_id, expr)?)
-                    };
-                    bindings.insert(param.clone(), bound);
-                }
-                Ok(bindings)
-            }
-        }
-    }
-
-    pub(crate) fn resolve_callable_node(
-        &self,
-        context_id: &NodeId,
-        callable_name: &str,
-    ) -> Option<NodeId> {
-        let current = self.graph.get_node(context_id)?;
-        let mut candidates = Vec::new();
-        for scope_prefix in scope_prefixes(self.graph, current) {
-            let qualified = format!("{scope_prefix}::{callable_name}");
-            candidates.extend(self.lookup_callable_candidates(&qualified));
-        }
-        if callable_name.contains("::") {
-            candidates.extend(self.lookup_callable_candidates(callable_name));
-        } else {
-            candidates.extend(
-                self.graph
-                    .nodes_for_uri(&current.id.uri)
-                    .into_iter()
-                    .filter(|node| {
-                        node.name == callable_name
-                            && matches!(
-                                node.element_kind,
-                                ElementKind::CalcDef | ElementKind::ConstraintDef
-                            )
-                    })
-                    .map(|node| node.id.clone()),
-            );
-            candidates.extend(self.lookup_callable_candidates(callable_name));
-        }
-        dedupe_node_ids(candidates).into_iter().next()
-    }
-
-    pub(crate) fn lookup_callable_candidates(&self, qualified_name: &str) -> Vec<NodeId> {
-        self.graph
-            .node_ids_by_qualified_name
-            .get(qualified_name)
-            .into_iter()
-            .flatten()
-            .filter_map(|node_id| {
-                let node = self.graph.get_node(node_id)?;
-                matches!(
-                    node.element_kind,
-                    ElementKind::CalcDef | ElementKind::ConstraintDef
-                )
-                .then_some(node_id.clone())
-            })
-            .collect()
-    }
 }
 
-pub(crate) fn scope_prefixes(graph: &SemanticGraph, current: &SemanticNode) -> Vec<String> {
-    let mut prefixes = Vec::new();
-    if let Some(parent) = graph.parent_of(current) {
-        prefixes.push(parent.id.qualified_name.clone());
-    }
-    for ancestor in graph.ancestors_of(current) {
-        prefixes.push(ancestor.id.qualified_name.clone());
-    }
-    prefixes
+fn child_expression(node: &SemanticNode) -> Option<DeclaredExpression> {
+    node.declared_facts
+        .feature_value
+        .as_ref()
+        .map(|value| value.expression.clone())
+        .or_else(|| node.declared_facts.own_expression.clone())
 }
 
-pub(crate) fn choose_candidate(
-    graph: &SemanticGraph,
-    candidates: Vec<NodeId>,
-    identifier: &str,
-) -> Result<NodeId, EvalOutcome> {
-    if candidates.len() == 1 {
-        return Ok(candidates[0].clone());
-    }
-    let mut sorted = candidates;
-    sorted.sort_by(|left, right| {
-        candidate_preference_score(graph, left)
-            .cmp(&candidate_preference_score(graph, right))
-            .reverse()
-            .then_with(|| left.qualified_name.len().cmp(&right.qualified_name.len()))
-    });
-    let best = sorted[0].clone();
-    let best_score = candidate_preference_score(graph, &best);
-    let best_len = best.qualified_name.len();
-    let ambiguous = sorted.iter().skip(1).any(|candidate| {
-        let score = candidate_preference_score(graph, candidate);
-        if score < best_score {
-            return false;
-        }
-        score == best_score && candidate.qualified_name.len() == best_len
-    });
-    if !ambiguous {
-        return Ok(best);
-    }
-    Err(EvalOutcome::error(
-        EvalStatus::Unknown,
-        format!("ambiguous reference '{identifier}'"),
-    ))
+fn real_literal(value: &str) -> Option<f64> {
+    value.parse().ok().filter(|value: &f64| value.is_finite())
 }
-
-pub(crate) fn candidate_preference_score(graph: &SemanticGraph, candidate: &NodeId) -> u8 {
-    let Some(node) = graph.get_node(candidate) else {
-        return 0;
-    };
-    let has_evaluable_source = EVALUATION_SOURCE_KEYS.iter().any(|key| {
-        node.attributes
-            .get(*key)
-            .is_some_and(value_has_evaluable_content)
-    });
-    if has_evaluable_source {
-        2
+fn bool_outcome(outcome: EvalOutcome) -> Result<bool, EvalStatus> {
+    outcome_result(outcome)?
+        .value
+        .as_ref()
+        .and_then(EvaluatedValue::as_boolean)
+        .ok_or(EvalStatus::TypeError)
+}
+fn outcome_result(outcome: EvalOutcome) -> Result<EvalOutcome, EvalStatus> {
+    if outcome.status == EvalStatus::Ok {
+        Ok(outcome)
     } else {
-        0
+        Err(outcome.status)
     }
 }
-
-pub(crate) fn value_has_evaluable_content(value: &Value) -> bool {
-    match value {
-        Value::Null => false,
-        Value::String(text) => !text.trim().is_empty(),
-        _ => true,
-    }
+fn outcome_quantity(outcome: EvalOutcome) -> Result<Quantity, EvalStatus> {
+    let outcome = outcome_result(outcome)?;
+    Ok(Quantity {
+        value: outcome
+            .value
+            .as_ref()
+            .and_then(EvaluatedValue::as_f64)
+            .ok_or(EvalStatus::TypeError)?,
+        unit: outcome.unit,
+    })
 }
 
-pub(crate) fn dedupe_node_ids(ids: Vec<NodeId>) -> Vec<NodeId> {
-    let mut seen = HashSet::new();
-    let mut out = Vec::new();
-    for id in ids {
-        if seen.insert(id.clone()) {
-            out.push(id);
+fn unit_reference(expression: &DeclaredExpression) -> Option<String> {
+    match expression.kind {
+        DeclaredExpressionKind::FeatureReference | DeclaredExpressionKind::FeatureChain => {
+            expression.reference.clone()
         }
+        DeclaredExpressionKind::Bracket | DeclaredExpressionKind::Parenthesized => expression
+            .children
+            .as_slice()
+            .first()
+            .and_then(unit_reference),
+        _ => None,
     }
-    out
 }
 
-pub(crate) fn in_parameter_names(node: &SemanticNode) -> Vec<String> {
-    node.attributes
-        .get("parameters")
-        .and_then(Value::as_array)
+fn reference_path(expression: &DeclaredExpression) -> Option<String> {
+    match expression.kind {
+        DeclaredExpressionKind::FeatureReference | DeclaredExpressionKind::FeatureChain => {
+            expression.reference.clone()
+        }
+        DeclaredExpressionKind::MemberAccess => Some(format!(
+            "{}.{}",
+            reference_path(expression.children.first()?)?,
+            expression.reference.as_deref()?
+        )),
+        DeclaredExpressionKind::Bracket | DeclaredExpressionKind::Parenthesized => {
+            reference_path(expression.children.first()?)
+        }
+        _ => None,
+    }
+}
+
+fn scope_prefixes(graph: &SemanticGraph, current: &SemanticNode) -> Vec<String> {
+    graph
+        .parent_of(current)
         .into_iter()
-        .flatten()
-        .filter_map(|entry| {
-            let direction = entry.get("direction").and_then(Value::as_str)?;
-            let name = entry.get("name").and_then(Value::as_str)?;
-            matches!(direction, "in" | "inout").then_some(name.to_string())
-        })
+        .chain(graph.ancestors_of(current))
+        .map(|node| node.id.qualified_name.clone())
         .collect()
 }
 
-pub(crate) fn infer_parameter_names_from_expression(expression: &str) -> Vec<String> {
-    let mut names = Vec::new();
-    let mut seen = HashSet::new();
-    let chars: Vec<char> = expression.chars().collect();
-    let mut i = 0usize;
-    while i < chars.len() {
-        let ch = chars[i];
-        if ch.is_ascii_alphabetic() || ch == '_' {
-            let start = i;
-            i += 1;
-            while i < chars.len() {
-                let c = chars[i];
-                if c.is_ascii_alphanumeric() || c == '_' {
-                    i += 1;
-                    continue;
-                }
-                if i + 1 < chars.len() && c == ':' && chars[i + 1] == ':' {
-                    i += 2;
-                    continue;
-                }
-                break;
-            }
-            let token: String = chars[start..i].iter().collect();
-            if token.eq_ignore_ascii_case("true") || token.eq_ignore_ascii_case("false") {
-                continue;
-            }
-            if seen.insert(token.clone()) {
-                names.push(token);
-            }
-            continue;
-        }
-        i += 1;
+fn typed_case_definition_id(graph: &SemanticGraph, usage: &SemanticNode) -> Option<NodeId> {
+    let expected = match usage.element_kind {
+        ElementKind::Analysis => ElementKind::AnalysisDef,
+        ElementKind::Verification => ElementKind::VerificationDef,
+        _ => return None,
+    };
+    graph
+        .outgoing_targets_by_kind(usage, RelationshipKind::Typing)
+        .into_iter()
+        .find(|candidate| candidate.element_kind == expected)
+        .map(|candidate| candidate.id.clone())
+}
+
+fn typed_requirement_definition_id(graph: &SemanticGraph, usage: &SemanticNode) -> Option<NodeId> {
+    (usage.element_kind == ElementKind::Requirement)
+        .then(|| {
+            graph
+                .outgoing_targets_by_kind(usage, RelationshipKind::Typing)
+                .into_iter()
+                .find(|candidate| candidate.element_kind == ElementKind::RequirementDef)
+                .map(|candidate| candidate.id.clone())
+        })
+        .flatten()
+}
+
+fn resolve_unique(candidates: Vec<NodeId>) -> Result<NodeId, EvalStatus> {
+    match candidates.as_slice() {
+        [] => Err(EvalStatus::Unresolved),
+        [candidate] => Ok(candidate.clone()),
+        _ => Err(EvalStatus::Ambiguous),
     }
-    names
+}
+fn dedupe(ids: Vec<NodeId>) -> Vec<NodeId> {
+    let mut seen = HashSet::new();
+    ids.into_iter()
+        .filter(|id| seen.insert(id.clone()))
+        .collect()
+}
+
+fn status_message(status: EvalStatus) -> &'static str {
+    match status {
+        EvalStatus::Ok => "expression evaluated",
+        EvalStatus::Unresolved => "expression has an unresolved reference",
+        EvalStatus::Ambiguous => "expression has an ambiguous reference",
+        EvalStatus::Malformed => "expression is malformed or recovered",
+        EvalStatus::Incomplete => "expression is incomplete",
+        EvalStatus::TypeError => "expression has a type or unit mismatch",
+        EvalStatus::DivByZero => "expression divides by zero",
+        EvalStatus::Unsupported => "declared expression form is not supported",
+        EvalStatus::Cycle => "expression has a cyclic dependency",
+    }
 }

@@ -19,7 +19,8 @@ pub use crate::semantic::kinds::{
     ANNOTATED_ELEMENT_TARGET_KINDS, SPECIALIZES_TARGET_KINDS, TYPING_TARGET_KINDS,
 };
 use crate::semantic::model::{
-    ConnectStatementDetail, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    ConnectStatementDetail, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type, ResolveResult,
@@ -92,63 +93,57 @@ impl TypeReferenceTarget for Node<TypingRelationship> {
     }
 }
 
-pub const TYPE_REFERENCE_ATTR_KEYS: &[&str] = &[
-    "partType",
-    "refType",
-    "attributeType",
-    "portType",
-    "actionType",
-    "actorType",
-    "itemType",
-    "occurrenceType",
-    "flowType",
-    "allocationType",
-    "stateType",
-    "requirementType",
-    "useCaseType",
-    "concernType",
-    "viewType",
-    "viewpointType",
-    "renderingType",
-    "subjectType",
-    "analysisType",
-    "verificationType",
-    "connectionType",
-    "metadataType",
-    "keywordType",
-];
-
-fn split_specializes_refs(raw: &str) -> Vec<String> {
-    raw.split(',')
-        .map(str::trim)
-        .filter(|item| !item.is_empty())
-        .map(normalize_declared_type_ref)
-        .filter(|item| !item.is_empty())
-        .collect()
-}
-
-fn specializes_refs_from_value(value: &serde_json::Value) -> Vec<String> {
-    match value {
-        serde_json::Value::String(raw) => split_specializes_refs(raw),
-        serde_json::Value::Array(items) => items
-            .iter()
-            .filter_map(|item| item.as_str())
-            .flat_map(split_specializes_refs)
-            .collect(),
-        _ => Vec::new(),
+fn record_declared_relationship_target(
+    g: &mut SemanticGraph,
+    source_id: &NodeId,
+    kind: RelationshipKind,
+    reference: &str,
+) {
+    let reference = reference.trim();
+    if reference.is_empty() {
+        return;
     }
+    let Some(node) = g.get_node_mut(source_id) else {
+        return;
+    };
+    let has_spanned_parser_facts = match kind {
+        RelationshipKind::Typing => node
+            .declared_facts
+            .relationships
+            .typing
+            .iter()
+            .any(|target| target.range.is_some()),
+        RelationshipKind::Specializes => node
+            .declared_facts
+            .relationships
+            .specializes
+            .iter()
+            .any(|target| target.range.is_some()),
+        _ => false,
+    };
+    if has_spanned_parser_facts {
+        return;
+    }
+    node.declared_facts.relationships.record_target(
+        &kind,
+        DeclaredRelationshipTarget {
+            reference: reference.to_string(),
+            range: None,
+        },
+    );
 }
 
-/// Resolve a `subsetsFeature` / `redefines` attribute value to a target node id.
+/// Resolve a subsetting-family attribute value to a target node id.
 /// Prefers a direct qualified-name hit, then inherited-member resolution via the owner.
-fn resolve_subsets_or_redefines_target(
+fn resolve_subsetting_family_target(
     g: &SemanticGraph,
     owner: Option<&SemanticNode>,
+    source_id: &NodeId,
     attribute_value: &str,
 ) -> Option<NodeId> {
     let qualified = attribute_value.replace('.', "::");
     if let Some(node_ids) = g.node_ids_by_qualified_name.get(&qualified) {
-        if let Some(id) = node_ids.first() {
+        if let Some(id) = node_ids.iter().find(|id| **id != *source_id) {
             return Some(id.clone());
         }
     }
@@ -157,16 +152,23 @@ fn resolve_subsets_or_redefines_target(
         .split("::")
         .last()
         .unwrap_or(attribute_value);
+    let local_matches: Vec<NodeId> = g
+        .child_named(&owner.id, member)
+        .into_iter()
+        .filter(|candidate| candidate.id != *source_id)
+        .map(|candidate| candidate.id.clone())
+        .collect();
+    if local_matches.len() == 1 {
+        return local_matches.into_iter().next();
+    }
     match resolve_inherited_member_via_type(g, owner, member) {
         ResolveResult::Resolved(target_id) => Some(target_id),
         _ => None,
     }
 }
 
-/// Wires every subsetting-family clause on a node to a real edge: `subsets`/`:>`, `redefines`/
-/// `:>>`, and -- KerML 8.3.4.4/8.3.4.5 `ReferenceSubsetting`/`CrossSubsetting`, S42-002 --
-/// `references`/`::>` and `crosses`/`=>`. All four resolve identically (same attribute-value ->
-/// target lookup), only the resulting `RelationshipKind` differs.
+/// Wires every parser-authored subsetting-family target to a resolved edge.
+/// Presentation attributes are deliberately not consulted here.
 fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId) {
     let Some(node) = g.get_node(node_id).cloned() else {
         return;
@@ -176,21 +178,57 @@ fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId
         .as_ref()
         .and_then(|pid| g.get_node(pid))
         .cloned();
-    for (attribute_key, kind) in [
-        ("subsetsFeature", RelationshipKind::Subsetting),
-        ("redefines", RelationshipKind::Redefinition),
-        ("referencesFeature", RelationshipKind::ReferenceSubsetting),
-        ("crossesFeature", RelationshipKind::CrossSubsetting),
+    for (targets, kind) in [
+        (
+            &node.declared_facts.relationships.subsetting,
+            RelationshipKind::Subsetting,
+        ),
+        (
+            &node.declared_facts.relationships.redefinition,
+            RelationshipKind::Redefinition,
+        ),
+        (
+            &node.declared_facts.relationships.reference_subsetting,
+            RelationshipKind::ReferenceSubsetting,
+        ),
+        (
+            &node.declared_facts.relationships.cross_subsetting,
+            RelationshipKind::CrossSubsetting,
+        ),
     ] {
-        if let Some(attr) = node
-            .attributes
-            .get(attribute_key)
-            .and_then(|value| value.as_str())
-        {
-            if let Some(target_id) = resolve_subsets_or_redefines_target(g, owner.as_ref(), attr) {
-                add_semantic_edge_once(g, node_id, &target_id, SemanticEdge::plain(kind));
+        for target in targets {
+            if let Some(target_id) =
+                resolve_subsetting_family_target(g, owner.as_ref(), node_id, &target.reference)
+            {
+                add_semantic_edge_once(g, node_id, &target_id, SemanticEdge::plain(kind.clone()));
             }
         }
+    }
+}
+
+fn sorted_node_ids(g: &SemanticGraph) -> Vec<NodeId> {
+    let mut node_ids = g.node_index_by_id.keys().cloned().collect::<Vec<_>>();
+    node_ids.sort_by(|left, right| {
+        left.uri
+            .as_str()
+            .cmp(right.uri.as_str())
+            .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+    });
+    node_ids
+}
+
+fn link_workspace_relationships_pass(g: &mut SemanticGraph) {
+    for node_id in sorted_node_ids(g) {
+        let Some(node) = g.get_node(&node_id).cloned() else {
+            continue;
+        };
+        for target in &node.declared_facts.relationships.typing {
+            add_typing_edge_for_node(g, &node_id, &target.reference);
+        }
+        for target in &node.declared_facts.relationships.specializes {
+            add_specializes_edges_for_node(g, &node_id, &target.reference);
+        }
+        link_subsetting_family_edges_for_node(g, &node_id);
     }
 }
 
@@ -324,7 +362,9 @@ pub fn add_semantic_edge_once(
             return AddSemanticEdgeResult::Added;
         }
         for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
-            if existing.weight().kind == edge.kind {
+            if existing.weight().kind == edge.kind
+                && existing.weight().provenance == edge.provenance
+            {
                 return AddSemanticEdgeResult::SkippedSameKind;
             }
         }
@@ -332,7 +372,7 @@ pub fn add_semantic_edge_once(
         return AddSemanticEdgeResult::Added;
     }
     for existing in g.graph.edges_connecting(src_idx, tgt_idx) {
-        if existing.weight().kind == edge.kind {
+        if existing.weight().kind == edge.kind && existing.weight().provenance == edge.provenance {
             return AddSemanticEdgeResult::SkippedSameKind;
         }
     }
@@ -396,7 +436,9 @@ pub fn add_typing_edge_if_exists<T: TypeReferenceTarget + ?Sized>(
         return;
     }
     let _ = container_prefix;
-    add_typing_edge_for_node(g, &source_id, type_ref.type_reference_target());
+    let reference = type_ref.type_reference_target();
+    record_declared_relationship_target(g, &source_id, RelationshipKind::Typing, reference);
+    add_typing_edge_for_node(g, &source_id, reference);
 }
 
 /// Adds a specializes edge if source exists and target can be resolved. Same resolution as typing:
@@ -415,7 +457,9 @@ pub fn add_specializes_edge_if_exists<T: TypeReferenceTarget + ?Sized>(
         return;
     }
     let _ = container_prefix;
-    add_specializes_edges_for_node(g, &source_id, specializes_ref.type_reference_target());
+    let reference = specializes_ref.type_reference_target();
+    record_declared_relationship_target(g, &source_id, RelationshipKind::Specializes, reference);
+    add_specializes_edges_for_node(g, &source_id, reference);
 }
 
 pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_ref: &str) {
@@ -476,56 +520,50 @@ pub fn add_specializes_edges_for_node(
     let Some(source_node) = g.get_node(source_id).cloned() else {
         return;
     };
-    for normalized in split_specializes_refs(specializes_ref) {
-        let Some(target_id) = resolve_type_target_in_workspace(
-            g,
-            &source_node,
-            &normalized,
-            SPECIALIZES_TARGET_KINDS,
-        ) else {
-            continue;
-        };
-        add_semantic_edge_once(
-            g,
-            source_id,
-            &target_id,
-            SemanticEdge::plain(RelationshipKind::Specializes),
-        );
+    let normalized = normalize_declared_type_ref(specializes_ref);
+    if !normalized.is_empty() {
+        if let Some(target_id) =
+            resolve_type_target_in_workspace(g, &source_node, &normalized, SPECIALIZES_TARGET_KINDS)
+        {
+            add_semantic_edge_once(
+                g,
+                source_id,
+                &target_id,
+                SemanticEdge::plain(RelationshipKind::Specializes),
+            );
+        }
     }
 }
 
 pub fn link_workspace_relationships(g: &mut SemanticGraph) {
-    let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
-    for node_id in node_ids {
-        let Some(node) = g.get_node(&node_id).cloned() else {
-            continue;
-        };
-        for key in TYPE_REFERENCE_ATTR_KEYS {
-            if let Some(type_ref) = node.attributes.get(*key).and_then(|value| value.as_str()) {
-                add_typing_edge_for_node(g, &node_id, type_ref);
-            }
+    // Typing and inherited-member resolution are mutually dependent for nested
+    // redefinitions. Iterate to the monotonic edge-set fixed point rather than
+    // letting hash-map traversal decide which prerequisites happen to exist first.
+    // A bound exhaustion is a failed semantic publication, never a silently
+    // incomplete graph.
+    let max_passes = g.graph.node_count().saturating_add(1);
+    let mut converged = false;
+    for _ in 0..max_passes {
+        let edge_count = g.graph.edge_count();
+        link_workspace_relationships_pass(g);
+        if g.graph.edge_count() == edge_count {
+            converged = true;
+            break;
         }
-        let specializes_refs = node
-            .attributes
-            .get("specializes")
-            .map(specializes_refs_from_value)
-            .unwrap_or_default();
-        for specializes_ref in specializes_refs {
-            add_specializes_edges_for_node(g, &node_id, &specializes_ref);
-        }
-        link_subsetting_family_edges_for_node(g, &node_id);
     }
+    assert!(
+        converged,
+        "workspace relationship linking did not converge within {max_passes} passes; semantic graph was not published"
+    );
 
     // Per-document graph build cannot see imported elements from other files; re-wire after merge.
-    let connection_ids: Vec<NodeId> = g
-        .node_index_by_id
-        .keys()
+    let connection_ids: Vec<NodeId> = sorted_node_ids(g)
+        .into_iter()
         .filter(|node_id| {
             g.get_node(node_id)
                 .map(|node| node.element_kind == ElementKind::DerivationConnection)
                 .unwrap_or(false)
         })
-        .cloned()
         .collect();
     for connection_id in connection_ids {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
@@ -546,15 +584,13 @@ pub fn link_workspace_relationships(g: &mut SemanticGraph) {
 /// The incremental update path (single-file change) still needs the full
 /// [`link_workspace_relationships`] because only one URI's edges were refreshed.
 pub fn link_workspace_derivations(g: &mut SemanticGraph) {
-    let connection_ids: Vec<NodeId> = g
-        .node_index_by_id
-        .keys()
+    let connection_ids: Vec<NodeId> = sorted_node_ids(g)
+        .into_iter()
         .filter(|node_id| {
             g.get_node(node_id)
                 .map(|node| node.element_kind == ElementKind::DerivationConnection)
                 .unwrap_or(false)
         })
-        .cloned()
         .collect();
     for connection_id in connection_ids {
         try_wire_derivation_connection(g, &connection_id.uri, &connection_id);
@@ -562,8 +598,20 @@ pub fn link_workspace_derivations(g: &mut SemanticGraph) {
     // Full parallel builds resolve typing/specializes/subject in
     // `resolve_cross_document_edges_for_uri`; subsetting/redefinition still need
     // a whole-graph pass after merge (same shape as derivation rewiring).
-    let node_ids: Vec<NodeId> = g.node_index_by_id.keys().cloned().collect();
-    for node_id in node_ids {
-        link_subsetting_family_edges_for_node(g, &node_id);
+    let max_passes = g.graph.node_count().saturating_add(1);
+    let mut converged = false;
+    for _ in 0..max_passes {
+        let edge_count = g.graph.edge_count();
+        for node_id in sorted_node_ids(g) {
+            link_subsetting_family_edges_for_node(g, &node_id);
+        }
+        if g.graph.edge_count() == edge_count {
+            converged = true;
+            break;
+        }
     }
+    assert!(
+        converged,
+        "workspace derivation linking did not converge within {max_passes} passes; semantic graph was not published"
+    );
 }

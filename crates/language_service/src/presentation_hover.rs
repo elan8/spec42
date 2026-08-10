@@ -1,4 +1,13 @@
-﻿use sysml_model::{SemanticGraph, SemanticNode};
+use sysml_model::{EvaluatedValue, SemanticGraph, SemanticNode};
+
+fn evaluated_value_to_inline_text(value: &EvaluatedValue) -> String {
+    match value {
+        EvaluatedValue::Integer(value) => value.to_string(),
+        EvaluatedValue::Real(value) => value.to_string(),
+        EvaluatedValue::Boolean(value) => value.to_string(),
+        EvaluatedValue::String(value) => value.clone(),
+    }
+}
 
 fn attr_str<'a>(node: &'a SemanticNode, key: &str) -> Option<&'a str> {
     node.attributes.get(key).and_then(|value| value.as_str())
@@ -364,8 +373,21 @@ pub fn hover_markdown_for_node(
 
     append_attribute_value(&mut body, node, "Multiplicity", &["multiplicity"]);
     append_attribute_value(&mut body, node, "Value", &["value", "defaultValue"]);
-    append_attribute_value(&mut body, node, "Evaluated value", &["evaluatedValue"]);
-    append_attribute_value(&mut body, node, "Unit", &["evaluatedUnit"]);
+    if let Some(evaluation) = graph
+        .evaluation_facts_for(node)
+        .and_then(|facts| facts.expression.as_ref())
+    {
+        if let Some(value) = evaluation
+            .value
+            .as_ref()
+            .map(evaluated_value_to_inline_text)
+        {
+            append_field(&mut body, "Evaluated value", &value);
+        }
+        if let Some(unit) = evaluation.unit.as_deref().filter(|unit| !unit.is_empty()) {
+            append_field(&mut body, "Unit", unit);
+        }
+    }
 
     if show_location {
         append_plain_field(&mut body, "Defined in", node.id.uri.path());

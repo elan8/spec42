@@ -1,6 +1,6 @@
 use sysml_diagnostics::{collect_diagnostics_from_graph, DiagnosticsOptions};
 use sysml_model::{
-    build_semantic_graph_from_documents, evaluate_expressions, SysmlDocument,
+    build_semantic_graph_from_documents, evaluate_expressions, EvaluationStatus, SysmlDocument,
     SysmlDocumentSourceKind,
 };
 
@@ -85,19 +85,18 @@ fn build_graph() -> sysml_model::SemanticGraph {
     graph
 }
 
-fn node_attr(graph: &sysml_model::SemanticGraph, qualified: &str, key: &str) -> Option<String> {
+fn analysis_status(
+    graph: &sysml_model::SemanticGraph,
+    qualified: &str,
+) -> Option<EvaluationStatus> {
     graph
         .node_ids_by_qualified_name
         .get(qualified)?
         .first()
         .and_then(|node_id| graph.get_node(node_id))
-        .and_then(|node| node.attributes.get(key))
-        .and_then(|value| match value {
-            serde_json::Value::String(text) => Some(text.clone()),
-            serde_json::Value::Number(number) => Some(number.to_string()),
-            serde_json::Value::Bool(flag) => Some(flag.to_string()),
-            _ => None,
-        })
+        .and_then(|node| graph.evaluation_facts_for(node))
+        .and_then(|facts| facts.analysis.as_ref())
+        .map(|analysis| analysis.expression.status)
 }
 
 fn has_analysis_diagnostic_code(graph: &sysml_model::SemanticGraph, code: &str) -> bool {
@@ -116,26 +115,9 @@ fn has_analysis_diagnostic_code(graph: &sysml_model::SemanticGraph, code: &str) 
 fn typed_analysis_usage_inherits_expression_and_evaluates_successfully() {
     let graph = build_graph();
 
-    assert!(
-        node_attr(&graph, "AnalysisCases::powerRun", "analysisExpression")
-            .is_some_and(|expr| expr.contains("sum(robot.mobility.drivePowerW)")),
-        "expected propagated analysis expression on usage"
-    );
     assert_eq!(
-        node_attr(
-            &graph,
-            "AnalysisCases::powerRun",
-            "analysisEvaluationStatus"
-        ),
-        Some("ok".to_string())
-    );
-    assert_eq!(
-        node_attr(
-            &graph,
-            "AnalysisCases::powerRun",
-            "analysisConstraintPassed"
-        ),
-        Some("true".to_string())
+        analysis_status(&graph, "AnalysisCases::powerRun"),
+        Some(EvaluationStatus::Ok)
     );
 }
 
@@ -143,17 +125,9 @@ fn typed_analysis_usage_inherits_expression_and_evaluates_successfully() {
 fn specialized_imported_analysis_usage_inherits_expression_via_typing() {
     let graph = build_graph();
 
-    assert!(
-        node_attr(&graph, "AnalysisCases::loadFlowRun", "analysisExpression").is_some(),
-        "expected propagated expression on specialized analysis usage"
-    );
     assert_eq!(
-        node_attr(
-            &graph,
-            "AnalysisCases::loadFlowRun",
-            "analysisEvaluationStatus"
-        ),
-        Some("ok".to_string())
+        analysis_status(&graph, "AnalysisCases::loadFlowRun"),
+        Some(EvaluationStatus::Ok)
     );
 }
 

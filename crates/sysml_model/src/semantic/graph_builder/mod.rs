@@ -7,10 +7,14 @@ use sysml_v2_parser::ast::{RootElement, SubsettingRelationship, TypingRelationsh
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_targets};
+use crate::semantic::ast_util::{
+    declared_subsetting_targets, declared_typing_targets, span_to_range, subsetting_target,
+    typing_targets,
+};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
-    DeclaredFeatureProperties, ElementKind, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    DeclaredFeatureProperties, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 use crate::semantic::relationships::add_semantic_edge_once;
 
@@ -55,64 +59,98 @@ pub struct MaterializeContext<'a> {
 pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
     let mut g = SemanticGraph::new();
     for node in &root.elements {
-        let (elements, pkg_qualified, pkg_name_display, pkg_span) =
-            match crate::root_element_body(&node.value) {
-                Some(t) => t,
-                None => continue,
-            };
-        let pkg_qualified_disambiguated = qualified_name_for_node(
-            &g,
-            uri,
-            None,
-            if pkg_name_display == "(top level)" {
-                ""
-            } else {
-                &pkg_name_display
-            },
-            "package",
-        );
-        let pkg_qualified_final = if pkg_qualified_disambiguated.is_empty() {
-            pkg_qualified.clone()
-        } else {
-            pkg_qualified_disambiguated
-        };
-        let is_standard_library = matches!(
-            &node.value,
-            RootElement::LibraryPackage(lp) if lp.is_standard
-        );
-        let mut root_attrs = HashMap::new();
-        if is_standard_library {
-            root_attrs.insert("isStandardLibrary".to_string(), serde_json::json!(true));
-        }
-        add_node_and_recurse(
-            &mut g,
-            uri,
-            &pkg_qualified_final,
-            "package",
-            pkg_name_display,
-            span_to_range(pkg_span),
-            root_attrs,
-            None,
-        );
-        let package_node_id = NodeId::new(uri, &pkg_qualified_final);
-        let child_prefix = if pkg_qualified == "(top level)" || pkg_qualified.is_empty() {
-            None
-        } else {
-            Some(pkg_qualified_final.as_str())
-        };
-        for el in elements {
-            package_body::build_from_package_body_element(
-                el,
-                uri,
-                child_prefix,
-                Some(&package_node_id),
-                root,
-                &mut g,
-            );
+        match &node.value {
+            // A RootNamespace is a sequence of PackageBodyElements. Packages, namespaces, and
+            // library packages own an explicit body; materialize that body beneath the declared
+            // namespace node as before.
+            RootElement::Package(_)
+            | RootElement::Namespace(_)
+            | RootElement::LibraryPackage(_) => {
+                build_root_container(&mut g, root, uri, &node.value);
+            }
+            // The parser preserves legal package-body members at file scope as `Member` rather
+            // than inventing an implicit package. The root dispatcher admits only members with
+            // parser-published semantic fields; it leaves opaque fallback declarations explicit
+            // rather than deriving facts from source text. Keeping the absent parent preserves
+            // authored root scope and avoids a synthetic namespace becoming a second authority.
+            RootElement::Member(member) => {
+                package_body::build_from_root_member(member, uri, root, &mut g);
+            }
+            // Imports are dedicated root variants, not `Member`s. They are still real authored
+            // semantic elements and use the same materializer as package-body imports.
+            RootElement::Import(import) => {
+                package_body::materialize_import(&mut g, uri, None, None, import);
+            }
         }
     }
     crate::semantic::relationships::resolve_pending_relationships_for_uri(&mut g, uri);
+    // Keep a standalone document graph semantically equivalent to the local portion of a
+    // workspace graph. In particular, verified requirements owned by objectives link their
+    // resolved target back to the enclosing verification case after the whole document exists.
+    crate::semantic::relationships::link_case_subject_relationships(&mut g);
+    g.assert_no_pending_declared_membership_facts();
     g
+}
+
+fn build_root_container(
+    g: &mut SemanticGraph,
+    root: &RootNamespace,
+    uri: &Url,
+    root_element: &RootElement,
+) {
+    let (elements, pkg_qualified, pkg_name_display, pkg_span) =
+        crate::root_element_body(root_element)
+            .expect("package, namespace, and library package have a root body");
+    let pkg_qualified_disambiguated = qualified_name_for_node(
+        g,
+        uri,
+        None,
+        if pkg_name_display == "(top level)" {
+            ""
+        } else {
+            &pkg_name_display
+        },
+        "package",
+    );
+    let pkg_qualified_final = if pkg_qualified_disambiguated.is_empty() {
+        pkg_qualified.clone()
+    } else {
+        pkg_qualified_disambiguated
+    };
+    let is_standard_library = matches!(
+        root_element,
+        RootElement::LibraryPackage(lp) if lp.is_standard
+    );
+    let mut root_attrs = HashMap::new();
+    if is_standard_library {
+        root_attrs.insert("isStandardLibrary".to_string(), serde_json::json!(true));
+    }
+    add_node_and_recurse(
+        g,
+        uri,
+        &pkg_qualified_final,
+        "package",
+        pkg_name_display,
+        span_to_range(pkg_span),
+        root_attrs,
+        None,
+    );
+    let package_node_id = NodeId::new(uri, &pkg_qualified_final);
+    let child_prefix = if pkg_qualified == "(top level)" || pkg_qualified.is_empty() {
+        None
+    } else {
+        Some(pkg_qualified_final.as_str())
+    };
+    for el in elements {
+        package_body::build_from_package_body_element(
+            el,
+            uri,
+            child_prefix,
+            Some(&package_node_id),
+            root,
+            g,
+        );
+    }
 }
 
 pub(crate) fn qualified_name(container_prefix: Option<&str>, name: &str) -> String {
@@ -221,13 +259,22 @@ pub(super) fn add_node_and_recurse(
     parent_id: Option<&NodeId>,
 ) {
     let node_id = NodeId::new(uri, qualified);
+    let declared_membership = g.take_declared_membership_facts(&node_id);
+    let is_anonymous = attrs
+        .get("isAnonymous")
+        .and_then(serde_json::Value::as_bool)
+        .unwrap_or(false);
     let node = SemanticNode {
         id: node_id.clone(),
         element_kind: ElementKind::from(kind),
+        declared_name: (!is_anonymous && !name.is_empty()).then(|| name.clone()),
         name,
         range,
         attributes: attrs,
-        declared_facts: Default::default(),
+        declared_facts: crate::semantic::model::DeclaredSemanticFacts {
+            membership: declared_membership,
+            ..Default::default()
+        },
         parent_id: parent_id.cloned(),
     };
     // Also index the node under its short-name-qualified variant (if any), so
@@ -256,6 +303,17 @@ pub(super) fn add_node_and_recurse(
     g.invalidate_query_indexes();
 }
 
+/// Records the AST-authored name separately from the node's effective name.
+///
+/// Anonymous redefinitions inherit an effective name for identity and
+/// resolution, but must remain observably anonymous to consumers that need
+/// authored-vs-derived provenance.
+pub(super) fn attach_declared_name(g: &mut SemanticGraph, node_id: &NodeId, declared: &str) {
+    if let Some(node) = g.get_node_mut(node_id) {
+        node.declared_name = (!declared.trim().is_empty()).then(|| declared.to_string());
+    }
+}
+
 /// Records typed declaration modifiers on a semantic node.
 pub(super) fn attach_feature_properties(
     g: &mut SemanticGraph,
@@ -264,6 +322,77 @@ pub(super) fn attach_feature_properties(
 ) {
     if let Some(node) = g.get_node_mut(node_id) {
         node.declared_facts.feature_properties = Some(properties);
+    }
+}
+
+/// Records parser-authored relationship targets on the node that owns the
+/// declaration. Linking consumes these facts; `attributes` only projects them.
+pub(super) fn attach_declared_relationship_targets<'a>(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    kind: RelationshipKind,
+    targets: impl IntoIterator<Item = &'a str>,
+) {
+    let Some(node) = g.get_node_mut(node_id) else {
+        return;
+    };
+    for target in targets {
+        node.declared_facts
+            .relationships
+            .record_reference(&kind, target);
+    }
+}
+
+fn attach_declared_relationship_target_facts(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    kind: RelationshipKind,
+    targets: impl IntoIterator<Item = DeclaredRelationshipTarget>,
+) {
+    let Some(node) = g.get_node_mut(node_id) else {
+        return;
+    };
+    for target in targets {
+        node.declared_facts
+            .relationships
+            .record_target(&kind, target);
+    }
+}
+
+pub(super) fn attach_declared_typing_relationship(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    typing: Option<&TypingRelationship>,
+) {
+    attach_declared_relationship_target_facts(
+        g,
+        node_id,
+        RelationshipKind::Typing,
+        declared_typing_targets(typing),
+    );
+}
+
+/// Records all four parser-owned subsetting-family clauses for a declaration.
+pub(super) fn attach_declared_subsetting_family(
+    g: &mut SemanticGraph,
+    node_id: &NodeId,
+    subsets: Option<&SubsettingRelationship>,
+    redefines: Option<&SubsettingRelationship>,
+    references: Option<&SubsettingRelationship>,
+    crosses: Option<&SubsettingRelationship>,
+) {
+    for (kind, relationship) in [
+        (RelationshipKind::Subsetting, subsets),
+        (RelationshipKind::Redefinition, redefines),
+        (RelationshipKind::ReferenceSubsetting, references),
+        (RelationshipKind::CrossSubsetting, crosses),
+    ] {
+        attach_declared_relationship_target_facts(
+            g,
+            node_id,
+            kind,
+            declared_subsetting_targets(relationship),
+        );
     }
 }
 
@@ -339,6 +468,13 @@ pub(super) fn wire_def_specialization_edge(
     container_prefix: Option<&str>,
     specializes: Option<&TypingRelationship>,
 ) {
+    let node_id = NodeId::new(uri, qualified);
+    attach_declared_relationship_target_facts(
+        g,
+        &node_id,
+        RelationshipKind::Specializes,
+        declared_typing_targets(specializes),
+    );
     for target in typing_targets(specializes) {
         crate::semantic::relationships::add_specializes_edge_if_exists(
             g,
@@ -460,5 +596,114 @@ mod anonymous_name_tests {
             "_itemDef"
         );
         assert_eq!(attrs.get("isAnonymous"), Some(&serde_json::json!(true)));
+    }
+}
+
+#[cfg(test)]
+mod root_namespace_tests {
+    use url::Url;
+
+    use super::build_graph_from_doc;
+    use crate::semantic::graph::SemanticGraph;
+    use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+    use crate::semantic::pipeline::{build_and_link_graph, patch_graph_for_document};
+    use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
+
+    fn parse(source: &str) -> sysml_v2_parser::RootNamespace {
+        sysml_v2_parser::parse(source).expect("root namespace parses")
+    }
+
+    #[test]
+    fn root_members_use_the_existing_typed_package_body_materializers() {
+        let source = "import Catalog::*; part def Base; part item : Base;";
+        let uri = Url::parse("file:///root-members.sysml").expect("URI");
+        let graph = build_graph_from_doc(&parse(source), &uri);
+
+        let base_id = NodeId::new(&uri, "Base");
+        let base = graph.get_node(&base_id).expect("root part definition");
+        assert_eq!(base.element_kind, ElementKind::PartDef);
+        assert_eq!(
+            base.parent_id, None,
+            "root member keeps authored root scope"
+        );
+
+        let item_id = NodeId::new(&uri, "item");
+        let item = graph.get_node(&item_id).expect("root part usage");
+        assert_eq!(item.element_kind, ElementKind::Part);
+        assert_eq!(
+            item.parent_id, None,
+            "root member keeps authored root scope"
+        );
+        assert!(graph
+            .outgoing_targets_by_kind(item, RelationshipKind::Typing)
+            .iter()
+            .any(|target| target.id == base_id));
+
+        let import = graph
+            .nodes_for_uri(&uri)
+            .into_iter()
+            .find(|node| node.element_kind == ElementKind::Import)
+            .expect("root import");
+        assert_eq!(
+            import.parent_id, None,
+            "root import keeps authored root scope"
+        );
+        assert_eq!(
+            import
+                .declared_facts
+                .membership
+                .as_ref()
+                .and_then(|membership| membership.import.as_ref())
+                .map(|facts| facts.target.reference.as_str()),
+            Some("Catalog::*")
+        );
+    }
+
+    #[test]
+    fn opaque_root_declarations_do_not_invent_semantic_facts_from_source_text() {
+        let uri = Url::parse("file:///root-kerml.sysml").expect("URI");
+        let graph = build_graph_from_doc(
+            &parse("class Camera { feature focusedState : Camera; } feature state : Camera;"),
+            &uri,
+        );
+        assert_eq!(graph.graph.node_count(), 0);
+        assert_eq!(graph.graph.edge_count(), 0);
+
+        let behavior_graph = build_graph_from_doc(
+            &parse("behavior TakePicture { succession first then second; }"),
+            &uri,
+        );
+        assert_eq!(behavior_graph.graph.node_count(), 0);
+        assert_eq!(behavior_graph.graph.edge_count(), 0);
+    }
+
+    #[test]
+    fn root_comments_do_not_materialize_semantic_facts() {
+        let uri = Url::parse("file:///root-comment.sysml").expect("URI");
+        let graph = build_graph_from_doc(&parse("// source comment only\n"), &uri);
+        assert_eq!(graph.graph.node_count(), 0);
+        assert_eq!(graph.graph.edge_count(), 0);
+    }
+
+    #[test]
+    fn root_member_full_and_incremental_construction_match() {
+        let source = "import Catalog::*; part def Base; part item : Base;";
+        let document = SysmlDocument::from_memory_path(
+            "workspace",
+            "root-member-parity.sysml",
+            source.to_string(),
+            SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("document");
+        let uri = document.uri.clone();
+        let parsed = parse(source);
+        let (full, _) = build_and_link_graph(&[document]).expect("full graph");
+
+        let mut incremental = SemanticGraph::new();
+        patch_graph_for_document(&mut incremental, &uri, Some(&parsed), true);
+
+        assert_eq!(full.to_semantic_sexpr(), incremental.to_semantic_sexpr());
     }
 }

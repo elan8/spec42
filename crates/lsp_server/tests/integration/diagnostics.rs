@@ -1116,14 +1116,22 @@ fn unresolved_specializes_reference_is_emitted_for_multi_base_with_missing_targe
         .find(|node| node.element_kind == "part def" && node.name == "InspectionRover")
         .map(|node| node.id.clone())
         .expect("inspection rover node");
+    // `declared_specializes_refs` (crates/sysml_diagnostics/src/helpers.rs) reads
+    // `declared_facts.relationships.specializes`, the typed-facts representation -- not the
+    // `specializes` display attribute this used to inject into, which nothing production reads
+    // anymore.
     graph
         .get_node_mut(&child_id)
         .expect("mutable inspection rover node")
-        .attributes
-        .insert(
-            "specializes".to_string(),
-            serde_json::json!(["RobotPlatform", "MissingBase", "MissionProfile"]),
-        );
+        .declared_facts
+        .relationships
+        .specializes = ["RobotPlatform", "MissingBase", "MissionProfile"]
+        .into_iter()
+        .map(|reference| sysml_model::DeclaredRelationshipTarget {
+            reference: reference.to_string(),
+            range: None,
+        })
+        .collect();
     lsp_server::semantic::add_cross_document_edges_for_uri(&mut graph, &uri);
     let diagnostics = lsp_server::compute_semantic_diagnostics(&graph, &uri);
     let found_unresolved_specializes = diagnostics.iter().any(|diagnostic| {

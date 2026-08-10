@@ -40,6 +40,9 @@ Owned by `sysml-v2-parser` and surfaced as source `sysml`.
 - `unresolved_type_reference`: usage or feature type reference does not resolve.
 - `unresolved_ref_type_reference`: `ref` type reference does not resolve.
 - `unresolved_import_target`: import target does not resolve to a known namespace/member.
+- `ambiguous_import_target`: import target resolves to multiple semantic candidates; related locations identify them in canonical order.
+- `unsupported_filtered_import`: filtered namespace import is parsed but has no semantic expansion yet.
+- `invalid_import_target`: import declaration has no applicable typed target-resolution shape.
 - `unresolved_specializes_reference`: specializes target does not resolve (includes `analysis def`, `verification def`, `metadata def`, and other case kinds via `SPECIALIZES_TARGET_KINDS`).
 - `unresolved_pending_relationship`: deferred cross-document relationship did not resolve after graph construction.
 - `unresolved_pending_expression_relationship`: deferred expression relationship did not resolve after graph construction.
@@ -57,6 +60,11 @@ Owned by `sysml-v2-parser` and surfaced as source `sysml`.
 - `invalid_redefines_reference`: empty or self-referential redefines target.
 - `implicit_redefinition_without_operator`: inherited feature receives a value without explicit `:>>` / redefinition.
 - `inherited_attribute_value_type_mismatch`: inherited enum-typed attribute is assigned an incompatible string literal.
+- `redefinition_end_mismatch`: a redefinition of an end must also be an end feature.
+- `redefinition_direction_mismatch`: explicit directions differ across a redefinition.
+- `subsetting_uniqueness_mismatch`: a non-unique feature subsets an explicitly unique feature.
+- `end_feature_has_direction` / `end_feature_invalid_restrictions`: end feature modifiers violate KerML §8.3.3.3.1.
+- `invalid_variation_member_kind`: a typed variant's usage kind does not match its variation.
 
 ### Relationships and viewpoints
 
@@ -80,6 +88,8 @@ Some relationship diagnostics are emitted by graph-builder diagnostic nodes and 
 - `analysis_evaluation_unresolved`
 - `invalid_verdict_value`
 - `objective_binding_unresolved`
+- `duplicate_role_member` — a requirement/case/viewpoint/view has more than one subject/objective/rendering role member.
+- `subject_member_not_first` — a subject member follows another input role member.
 
 **Expression evaluation (June 2026):** `semantic_core::evaluation` now propagates typed
 `analysis` / `verification` usage context after workspace linking, aggregates `assert
@@ -120,6 +130,8 @@ Spec areas: 7.5, 8.3.5, 8.4.2.
 - Done: `invalid_qualified_name_segment` — intermediate qualified-name segment is not a namespace.
 - Done: `import_kind_mismatch` — namespace vs membership import target mismatch.
 - Done: `invalid_recursive_import` — recursive import targets a non-namespace.
+- Done: `ambiguous_import_target` — import target has deterministic related candidate identities.
+- Partial: `unsupported_filtered_import` — parser-recognized filtered namespace imports remain explicitly unsupported.
 - Removed: `visibility_violation` — previously warned on all `private import …::*`; private wildcard imports are valid for internal use in SysML v2.
 - Done: `invalid_import_filter` — import filter expression is not Boolean-valued.
 
@@ -133,6 +145,7 @@ Spec areas: 7.6, 8.2.2.6, 8.4.2.
 - Done: `unresolved_redefines_target` — redefines target does not resolve on specializing owners.
 - Done: `redefinition_multiplicity_widened` — redefinition loosens inherited multiplicity.
 - Done: `redefinition_type_incompatible` — redefinition type/value not conformant with inherited feature.
+- Done: `subsetting_type_incompatible` — subsetting feature type not conformant with subsetted feature.
 - Done: `specialization_cycle` — specializes chain contains a cycle.
 
 ### P1: expressions, values, units, and multiplicity
@@ -156,6 +169,8 @@ Spec areas: 7.12-7.16, 8.3.12-8.3.16, 8.4.8-8.4.12.
 - Done: `connection_context_invalid` — endpoints not connectable in structural context.
 - Done: `binding_connector_incompatible` — binding ends with incompatible value types.
 - Done: `interface_end_invalid` — interface end missing/empty port type.
+- Done: `incomplete_connection_like_end_pair` — a connection-like definition declares one direct end without an inherited end fact.
+- Done: `invalid_binary_connection_like_end_count` — a flow or allocation definition declares more than two direct ends.
 - Done: `flow_direction_incompatible` — port feature direction mismatch (extends port compatibility).
 - Done: `flow_item_type_incompatible` — incompatible port definition pairing.
 - Done: `conjugated_port_inconsistent` — both connected ports share conjugation.
@@ -190,6 +205,7 @@ Spec areas: 7.21-7.25, 8.3.21-8.3.25, 8.4.17-8.4.21.
 - Done: `verification_case_invalid_shape` — multiple verdict/return clauses, or verified requirements without objective. Does **not** warn on `then action` without explicit `return` (valid per SysML v2 `CaseBody`; `ResultExpressionMember` is optional — see S42-LIM-003 / robot-vacuum showcase).
 - Done: `use_case_include_invalid_target` — include use case target resolution and kind validation.
 - Done: `case_subject_missing` / `case_objective_binding_cardinality` — subject and analysis-result binding cardinality.
+- Done: `duplicate_role_member` / `subject_member_not_first` — graph-span-backed subject/objective/rendering cardinality and subject ordering.
 
 ### P2: views, viewpoints, renderings, metadata
 
@@ -214,7 +230,7 @@ Tracked limitations (`S42-LIM-*`) addressed in this cycle:
 
 - `S42-LIM-001`: cross-package `verify requirement` resolves via imports (`requirement_body.rs`, `relationships.rs`).
 - `S42-LIM-002`: `then done` succession accepts `verdict` endpoints (`behavior_conformance.rs`).
-- `S42-LIM-004`: `VerdictKind::pass` evaluates to `analysisEvaluationStatus = ok` (`evaluation/mod.rs`).
+- `S42-LIM-004`: `VerdictKind::pass` publishes `EvaluationStatus::Ok` through the canonical typed analysis fact (`evaluation/mod.rs`).
 - `S42-LIM-007`: named `transition … first source then target` no longer counts as initial (`sysml-v2-parser` + `state.rs`).
 - `S42-LIM-008`: cyclic state machines suppress `missing_final_state` guidance (`behavior_conformance.rs`).
 - `S42-LIM-009`: bundled `MonetaryUnits` indexed for `[EUR]` (`evaluation/units.rs`).

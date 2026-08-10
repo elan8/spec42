@@ -10,7 +10,7 @@ use super::requirement_body::{add_verified_requirement_node, verify_requirement_
 use super::use_case::{self, add_include_use_case_node};
 use super::{add_node_and_recurse, expressions, qualified_name_for_node};
 use crate::semantic::analysis_typing::strip_analysis_return_body;
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, typing_targets};
+use crate::semantic::ast_util::{declared_expression, span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -184,7 +184,7 @@ pub(super) fn build_from_verification_body(
                                 g,
                                 uri,
                                 container_prefix,
-                                parent_id,
+                                &NodeId::new(uri, &qualified),
                                 &requirement_ref,
                                 verify_node.value.explicit_requirement_keyword,
                                 span_to_range(&verify_node.span),
@@ -276,6 +276,11 @@ pub(super) fn build_from_verification_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expression) = value.return_expression.as_ref().map(declared_expression) {
+                    if let Some(verdict) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        verdict.declared_facts.own_expression = Some(expression);
+                    }
+                }
                 let expression = strip_analysis_return_body(value.body.as_str());
                 if !expression.is_empty() {
                     if let Some(parent_node) = g.get_node_mut(parent_id) {
@@ -316,7 +321,10 @@ pub(super) fn build_from_verification_body(
                     "attribute def",
                 );
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
+                g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
                 let typed_by = typing_targets(value.typing.as_deref());
                 if !typed_by.is_empty() {
                     attrs.insert(

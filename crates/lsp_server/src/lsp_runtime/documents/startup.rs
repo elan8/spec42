@@ -15,6 +15,11 @@ pub(crate) async fn initialize(
         &config.default_library_paths,
         client_library_paths,
     );
+    let standard_library_paths = config
+        .standard_library_paths
+        .iter()
+        .filter_map(|path| Url::from_file_path(path).ok())
+        .collect::<Vec<_>>();
     let startup_trace_id =
         util::parse_startup_trace_id_from_value(params.initialization_options.as_ref());
     let code_lens_enabled =
@@ -44,7 +49,10 @@ pub(crate) async fn initialize(
             diagnose_library_paths,
         })
         .expect("initialize called twice");
-    handle.set_startup_config(roots, library_paths).await.ok();
+    handle
+        .set_startup_config(roots, library_paths, standard_library_paths.clone())
+        .await
+        .ok();
     Ok(InitializeResult {
         server_info: Some(ServerInfo {
             name: server_name.to_string(),
@@ -60,9 +68,13 @@ pub(crate) async fn initialized(
     server_name: &str,
     runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
 ) {
-    let (workspace_roots, library_paths) = {
+    let (workspace_roots, library_paths, standard_library_paths) = {
         let snap = handle.snapshot();
-        (snap.workspace_roots.clone(), snap.library_paths.clone())
+        (
+            snap.workspace_roots.clone(),
+            snap.library_paths.clone(),
+            snap.standard_library_paths.clone(),
+        )
     };
     let cfg = runtime_config
         .get()
@@ -165,15 +177,17 @@ pub(crate) async fn initialized(
         // disk I/O, parsing, and graph construction.
         // Keep a clone for the post-rebuild cache store call (cache miss path).
         let library_paths_for_store = library_paths_for_closure.clone();
+        let standard_library_paths_for_store = standard_library_paths.clone();
         let closure_seed_signature_for_store = closure_seed_signature.clone();
         let library_graph_cache_hit =
             if !crate::workspace::library_closure::library_full_scan_enabled()
                 && !library_paths_for_closure.is_empty()
             {
                 let lp = library_paths_for_closure.clone();
+                let standard = standard_library_paths.clone();
                 let signature = closure_seed_signature.clone();
                 tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::load(&lp, &signature)
+                    crate::workspace::library_graph_cache::load(&lp, &standard, &signature)
                 })
                 .await
                 .ok()
@@ -280,8 +294,12 @@ pub(crate) async fn initialized(
             // Snapshot index/library_paths (a plain `Arc` read, no lock) before running the
             // expensive rebuild off the actor so semantic-token and hover requests can proceed
             // concurrently instead of queueing behind anything.
-            let (snapshot_version, index_snapshot, library_paths_snapshot) =
-                handle.relink_snapshot();
+            let (
+                snapshot_publication,
+                index_snapshot,
+                library_paths_snapshot,
+                standard_library_paths_snapshot,
+            ) = handle.relink_snapshot();
             let base_graph_for_rebuild =
                 library_graph_cache_was_hit.then(|| handle.snapshot().semantic_graph.clone());
             let (new_graph, new_symbols, staged_relink_metrics) =
@@ -289,6 +307,7 @@ pub(crate) async fn initialized(
                     crate::workspace::rebuild_semantic_graph_staged(
                         &index_snapshot,
                         &library_paths_snapshot,
+                        &standard_library_paths_snapshot,
                         base_graph_for_rebuild,
                         true, // startup: settle fully before first use, not the live-edit fast path
                     )
@@ -297,7 +316,7 @@ pub(crate) async fn initialized(
                 .unwrap_or_else(|e| panic!("startup relink task panicked: {e:?}"));
 
             let outcome = handle
-                .commit_startup_relink_or_stale(snapshot_version, new_graph, new_symbols)
+                .commit_startup_relink_or_stale(snapshot_publication, new_graph, new_symbols)
                 .await;
             match outcome {
                 Ok(crate::workspace::handle::StartupRelinkOutcome::Committed) => {
@@ -328,9 +347,15 @@ pub(crate) async fn initialized(
                     .semantic_graph
                     .extract_library_subgraph(&snap.library_paths);
                 let lp = library_paths_for_store.clone();
+                let standard = standard_library_paths_for_store.clone();
                 let signature = closure_seed_signature_for_store.clone();
                 tokio::task::spawn_blocking(move || {
-                    crate::workspace::library_graph_cache::store(&lp, &signature, &graph_to_cache);
+                    crate::workspace::library_graph_cache::store(
+                        &lp,
+                        &standard,
+                        &signature,
+                        &graph_to_cache,
+                    );
                 });
             }
 

@@ -39,9 +39,11 @@ petgraph = { workspace = true }
 tracing = "0.1"
 bincode = { version = "2", features = ["serde"] }
 rayon = "1.12"
+tempfile = "3"
 
 [dev-dependencies]
-tempfile = "3"
+syn = { version = "2", features = ["full", "visit"] }
+proc-macro2 = { version = "1", features = ["span-locations"] }
 
 [[test]]
 name = "dependency_guardrails"
@@ -122,6 +124,14 @@ path = "tests/deferred_validation.rs"
 [[test]]
 name = "robot_vacuum_performance"
 path = "tests/robot_vacuum_performance.rs"
+
+[[test]]
+name = "sysml_compatibility_corpus"
+path = "tests/sysml_compatibility_corpus.rs"
+
+[[test]]
+name = "skip_guardrails"
+path = "tests/skip_guardrails.rs"
 
 [[example]]
 name = "profile_robot_vacuum"

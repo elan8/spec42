@@ -4,11 +4,13 @@ use sysml_v2_parser::ast::{UseCaseDefBody, UseCaseDefBodyElement};
 use url::Url;
 
 use super::use_case;
-use super::{add_node_and_recurse, expressions, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_typing_relationship, expressions, qualified_name_for_node,
+};
 use crate::semantic::analysis_typing::{
     inherited_case_expression, inherited_case_result_qualified, strip_analysis_return_body,
 };
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, typing_targets};
+use crate::semantic::ast_util::{declared_expression, span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId};
 use crate::semantic::relationships::add_typing_edge_if_exists;
@@ -77,6 +79,10 @@ pub(super) fn build_from_analysis_body(
             }
             UseCaseDefBodyElement::ReturnRef(return_ref) => {
                 let value = &return_ref.value;
+                let declared_return_expression = value
+                    .return_expression
+                    .as_ref()
+                    .map(declared_expression);
                 let qualified = qualified_name_for_node(
                     g,
                     uri,
@@ -106,6 +112,11 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expression) = declared_return_expression {
+                    if let Some(result) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        result.declared_facts.own_expression = Some(expression);
+                    }
+                }
                 if analysis_result_qualified.is_none() {
                     analysis_result_qualified = Some(qualified);
                     let expression = strip_analysis_return_body(value.body.as_str());
@@ -145,6 +156,10 @@ pub(super) fn build_from_analysis_body(
                     .value
                     .as_ref()
                     .map(|v| expressions::expression_to_debug_string(&v.value.expression));
+                let declared_return_expression = value
+                    .value
+                    .as_ref()
+                    .map(|value| declared_expression(&value.value.expression));
                 if let Some(expression) = expression.as_deref() {
                     attrs.insert("value".to_string(), serde_json::json!(expression));
                 }
@@ -158,6 +173,11 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expression) = declared_return_expression {
+                    if let Some(result) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        result.declared_facts.own_expression = Some(expression);
+                    }
+                }
                 if let Some(type_name) = value.type_name.as_deref() {
                     add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
                 }
@@ -255,7 +275,10 @@ pub(super) fn build_from_analysis_body(
                     "attribute def",
                 );
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
+                g.register_declared_membership_facts(
+        NodeId::new(uri, &qualified),
+        crate::semantic::ast_util::declared_membership_facts(&value.membership),
+    );
                 let typed_by = typing_targets(value.typing.as_deref());
                 if !typed_by.is_empty() {
                     attrs.insert(
@@ -290,6 +313,11 @@ pub(super) fn build_from_analysis_body(
                     span_to_range(&attribute.span),
                     attrs,
                     Some(parent_id),
+                );
+                attach_declared_typing_relationship(
+                    g,
+                    &NodeId::new(uri, &qualified),
+                    value.typing.as_deref(),
                 );
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);

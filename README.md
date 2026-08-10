@@ -66,6 +66,14 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 2. Open a `.sysml` / `.kerml` file, or try the bundled **timer** example from the Spec42 sidebar.
 3. Follow the full walkthrough in **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
 
+To start a clean multi-file workspace from the CLI, run:
+
+```bash
+spec42 init my-model
+```
+
+The target must be new or empty; `init` never overwrites existing files and validates the generated workspace before reporting success.
+
 CLI and CI users can download platform archives from [GitHub Releases](https://github.com/elan8/spec42/releases). Setup details for Actions, assistants, and troubleshooting live in the docs linked below.
 
 ## Documentation

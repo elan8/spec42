@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use url::Url;
 
-use crate::checks::import_resolution::import_target_resolves;
+use crate::checks::import_resolution::import_target;
 use crate::helpers::{
     diag, diagnostic_range, is_synthetic, is_unknown_range, parse_attribute_text_range,
 };
@@ -15,7 +15,10 @@ use sysml_model::semantic::relationships::{
 };
 use sysml_model::semantic::standard_views::is_non_standard_explicit_view_type;
 use sysml_model::semantic::text_span::TextRange;
-use sysml_model::{element_type_matches_all_filters, parse_filter_text, FilterExpr, SemanticGraph};
+use sysml_model::{
+    element_type_matches_all_filters, parse_filter_text, resolve_import_target, FilterExpr,
+    ImportTargetResolution, SemanticGraph,
+};
 
 const BUILTIN_MODELED_DECL_KEYWORDS: &[&str] = &[
     "feature",
@@ -38,13 +41,49 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
     let mut seen = HashSet::new();
 
     for node in graph.nodes_for_uri(uri) {
+        if !matches!(node.element_kind, ElementKind::View | ElementKind::ViewDef)
+            || is_synthetic(node)
+        {
+            continue;
+        }
+        let mut renderings: Vec<_> = graph
+            .children_of(node)
+            .into_iter()
+            .filter(|child| {
+                child.element_kind == ElementKind::ViewRendering && !is_synthetic(child)
+            })
+            .collect();
+        renderings.sort_by_key(|child| (child.range.start.line, child.range.start.character));
+        if renderings.len() <= 1 {
+            continue;
+        }
+        let key = format!("duplicate_rendering|{}", node.id.qualified_name);
+        if !seen.insert(key) {
+            continue;
+        }
+        diagnostics.push(diag(
+            uri,
+            diagnostic_range(graph, renderings[1], None),
+            DiagnosticSeverity::Warning,
+            "semantic",
+            "duplicate_role_member",
+            format!(
+                "View '{}' declares more than one rendering member.",
+                node.name
+            ),
+        ));
+    }
+
+    for node in graph.nodes_for_uri(uri) {
         if node.element_kind != ElementKind::View || is_synthetic(node) {
             continue;
         }
         if let Some(view_type) = node
-            .attributes
-            .get("viewType")
-            .and_then(|value| value.as_str())
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.as_str())
         {
             if is_non_standard_explicit_view_type(view_type) {
                 let key = format!(
@@ -254,11 +293,14 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             continue;
         }
         let allowed = [ElementKind::RenderingDef, ElementKind::Rendering];
-        let type_ref = node
-            .attributes
-            .get("renderingType")
-            .and_then(|v| v.as_str());
-        let Some(type_ref) = type_ref.map(str::trim).filter(|value| !value.is_empty()) else {
+        let Some(type_ref) = node
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .map(|target| target.reference.trim())
+            .filter(|value| !value.is_empty())
+        else {
             continue;
         };
         if resolve_type_target_in_workspace(graph, node, type_ref, &allowed).is_some() {
@@ -286,10 +328,11 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             continue;
         }
         if node
-            .attributes
-            .get("metadataType")
-            .and_then(|v| v.as_str())
-            .is_some_and(|value| !value.trim().is_empty())
+            .declared_facts
+            .relationships
+            .typing
+            .first()
+            .is_some_and(|target| !target.reference.trim().is_empty())
         {
             continue;
         }
@@ -334,14 +377,19 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
             {
                 continue;
             }
-            if import_target_resolves(graph, node) {
-                continue;
+            match resolve_import_target(graph, node) {
+                ImportTargetResolution::Resolved { .. } => continue,
+                // Import conformance owns exact ambiguity, unsupported-filter, and malformed
+                // import diagnostics. This viewpoint rule adds only the distinct unresolved
+                // reference diagnostic rather than collapsing typed resolution states.
+                ImportTargetResolution::Ambiguous { .. }
+                | ImportTargetResolution::UnsupportedFiltered
+                | ImportTargetResolution::NotApplicable => continue,
+                ImportTargetResolution::Unresolved => {}
             }
-            let target = node
-                .attributes
-                .get("importTarget")
-                .and_then(|v| v.as_str())
-                .unwrap_or("import");
+            let Some(target) = import_target(node) else {
+                continue;
+            };
             (target.to_string(), "viewpoint_import")
         } else if matches!(
             node.element_kind,
@@ -716,24 +764,22 @@ fn annotated_element_restriction_type(
         return None;
     }
     let is_annotated_element_restriction = child
-        .attributes
-        .get("redefines")
-        .and_then(|v| v.as_str())
-        .is_some_and(|r| r.contains("annotatedElement"))
-        || child
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|v| v.as_str())
-            .is_some_and(|r| r.contains("annotatedElement"))
+        .declared_facts
+        .relationships
+        .redefinition
+        .iter()
+        .chain(child.declared_facts.relationships.subsetting.iter())
+        .any(|target| target.reference.contains("annotatedElement"))
         || child.name == "annotatedElement";
     if !is_annotated_element_restriction {
         return None;
     }
     child
-        .attributes
-        .get("attributeType")
-        .and_then(|v| v.as_str())
-        .map(str::to_string)
+        .declared_facts
+        .relationships
+        .typing
+        .first()
+        .map(|target| target.reference.clone())
 }
 
 fn expose_target_entry_range(

@@ -9,17 +9,20 @@ use sysml_v2_parser::ast::{
 };
 use url::Url;
 
-use crate::semantic::ast_util::{attach_membership_visibility, span_to_range, text_range_to_json};
+use crate::semantic::ast_util::{
+    declared_expression, declared_feature_value, span_to_range, text_range_to_json,
+};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::import_resolution::resolve_type_reference_targets;
-use crate::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
 use crate::semantic::text_span::TextRange;
 
 use super::expressions::expression_to_debug_string;
 use super::metadata_keyword::add_metadata_keyword_node;
-use super::{add_node_and_recurse, qualified_name_for_node};
+use super::{
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family,
+    qualified_name_for_node,
+};
 use crate::semantic::ast_util::identification_name;
 
 const REQUIREMENT_CONSTRAINTS_ATTR: &str = "requirementConstraints";
@@ -145,6 +148,18 @@ fn require_constraint_display_lines(body: &RequireConstraintBody) -> Vec<String>
     }
 }
 
+fn declared_require_constraint_expression(
+    body: &RequireConstraintBody,
+) -> Option<crate::semantic::model::DeclaredExpression> {
+    let RequireConstraintBody::Brace { elements } = body else {
+        return None;
+    };
+    elements.iter().find_map(|element| match &element.value {
+        ConstraintDefBodyElement::Expression(expression) => Some(declared_expression(expression)),
+        _ => None,
+    })
+}
+
 fn require_constraint_structured(
     uri: &Url,
     body: &RequireConstraintBody,
@@ -209,18 +224,6 @@ fn require_constraint_structured(
     })
 }
 
-fn fallback_verified_requirement_target(parent_id: &NodeId, requirement_ref: &str) -> String {
-    if requirement_ref.contains("::") {
-        requirement_ref.to_string()
-    } else {
-        parent_id
-            .qualified_name
-            .rsplit_once("::")
-            .map(|(owner, _)| format!("{owner}::{requirement_ref}"))
-            .unwrap_or_else(|| requirement_ref.to_string())
-    }
-}
-
 pub(super) fn verify_requirement_target(member: &VerifyRequirementMember) -> Option<String> {
     if let Some(requirement) = member.requirement.as_ref() {
         if let Some(type_name) = requirement.value.type_name.as_deref() {
@@ -276,28 +279,18 @@ pub(super) fn add_verified_requirement_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        // The parser currently retains verified-requirement targets as strings,
+        // not target nodes, so the target range is explicitly unavailable.
+        node.declared_facts.relationships.record_target(
+            &RelationshipKind::Subject,
+            DeclaredRelationshipTarget {
+                reference: requirement_ref.to_string(),
+                range: None,
+            },
+        );
+    }
     add_typing_edge_if_exists(g, uri, &qualified, requirement_ref, container_prefix);
-    let requirement_target = if let Some(parent) = g.get_node(parent_id) {
-        resolve_type_reference_targets(
-            g,
-            parent,
-            requirement_ref,
-            VERIFIED_REQUIREMENT_TARGET_KINDS,
-        )
-        .into_iter()
-        .next()
-        .map(|id| id.qualified_name.clone())
-        .unwrap_or_else(|| fallback_verified_requirement_target(parent_id, requirement_ref))
-    } else {
-        fallback_verified_requirement_target(parent_id, requirement_ref)
-    };
-    add_edge_if_both_exist(
-        g,
-        uri,
-        &parent_id.qualified_name,
-        &requirement_target,
-        RelationshipKind::Subject,
-    );
 }
 
 pub(super) fn import_member_label(target: &str) -> String {
@@ -511,6 +504,11 @@ pub(super) fn walk_requirement_def_body(
                     Some(parent_id),
                 );
                 let constraint_id = NodeId::new(uri, &qualified);
+                if let Some(expression) = declared_require_constraint_expression(&rc.value.body) {
+                    if let Some(constraint) = g.get_node_mut(&constraint_id) {
+                        constraint.declared_facts.own_expression = Some(expression);
+                    }
+                }
                 super::metadata_def::wire_require_constraint_body_metadata(
                     g,
                     uri,
@@ -558,11 +556,11 @@ pub(super) fn walk_requirement_def_body(
                     &name,
                     "import",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert("importTarget".to_string(), serde_json::json!(&v.target));
-                attrs.insert("importAll".to_string(), serde_json::json!(v.is_import_all));
-                attach_membership_visibility(&mut attrs, &v.membership);
-                attrs.insert("recursive".to_string(), serde_json::json!(v.is_recursive));
+                let attrs = HashMap::new();
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_import_membership_facts(imp),
+                );
                 add_node_and_recurse(
                     g,
                     uri,
@@ -613,6 +611,13 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
+                let attribute_id = NodeId::new(uri, &qualified);
+                if let Some(feature_value) = &attr_def.value.value {
+                    if let Some(attribute) = g.get_node_mut(&attribute_id) {
+                        attribute.declared_facts.feature_value =
+                            Some(declared_feature_value(feature_value));
+                    }
+                }
                 for target in
                     crate::semantic::ast_util::typing_targets(attr_def.value.typing.as_deref())
                 {
@@ -660,6 +665,22 @@ pub(super) fn walk_requirement_def_body(
                     span_to_range(&attr_usage.span),
                     attrs,
                     Some(parent_id),
+                );
+                let attribute_id = NodeId::new(uri, &qualified);
+                attach_declared_name(g, &attribute_id, &attr_usage.value.name);
+                if let Some(feature_value) = &attr_usage.value.value {
+                    if let Some(attribute) = g.get_node_mut(&attribute_id) {
+                        attribute.declared_facts.feature_value =
+                            Some(declared_feature_value(feature_value));
+                    }
+                }
+                attach_declared_subsetting_family(
+                    g,
+                    &attribute_id,
+                    attr_usage.value.subsets.as_deref(),
+                    attr_usage.value.redefines.as_deref(),
+                    attr_usage.value.references.as_deref(),
+                    attr_usage.value.crosses.as_deref(),
                 );
                 for target in
                     crate::semantic::ast_util::typing_targets(attr_usage.value.typing.as_deref())

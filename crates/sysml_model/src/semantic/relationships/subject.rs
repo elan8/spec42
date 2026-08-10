@@ -85,6 +85,56 @@ pub fn add_subject_relationship_to_declared_type_if_resolved(
     );
 }
 
+/// Resolves the requirement targets named by verified-requirement members owned by a case.
+///
+/// Verification members are structurally owned by an [`ElementKind::Objective`], while their
+/// resulting subject relationship belongs to the enclosing verification case.  Requirement
+/// cases own their verified-requirement members directly.  Keeping this traversal here lets
+/// every relationship-linking path derive the same case-level fact from the owned declared
+/// subject target without inspecting a projection attribute.
+pub(crate) fn resolved_verified_requirement_targets_for_case(
+    g: &SemanticGraph,
+    case_node: &SemanticNode,
+) -> Vec<NodeId> {
+    let mut targets = Vec::new();
+    let verified_requirements = g.children_of(case_node).into_iter().flat_map(|child| {
+        if child.element_kind == ElementKind::Objective {
+            g.children_of(child)
+        } else {
+            vec![child]
+        }
+    });
+
+    for verified_requirement in
+        verified_requirements.filter(|child| child.element_kind == ElementKind::VerifiedRequirement)
+    {
+        let Some(requirement_ref) = verified_requirement
+            .declared_facts
+            .relationships
+            .subject
+            .first()
+            .map(|target| target.reference.as_str())
+        else {
+            continue;
+        };
+        let Some(target_id) = resolve_type_reference_targets(
+            g,
+            verified_requirement,
+            requirement_ref,
+            VERIFIED_REQUIREMENT_TARGET_KINDS,
+        )
+        .into_iter()
+        .next() else {
+            continue;
+        };
+        if !targets.contains(&target_id) {
+            targets.push(target_id);
+        }
+    }
+
+    targets
+}
+
 pub(crate) fn link_case_subject_relationships(g: &mut SemanticGraph) {
     const CASE_KINDS: &[ElementKind] = &[
         ElementKind::AnalysisDef,
@@ -112,14 +162,24 @@ pub(crate) fn link_case_subject_relationships(g: &mut SemanticGraph) {
             .filter(|child| child.element_kind == ElementKind::Subject)
             .filter_map(|child| {
                 child
-                    .attributes
-                    .get("subjectType")
-                    .and_then(|value| value.as_str())
+                    .declared_facts
+                    .relationships
+                    .typing
+                    .first()
+                    .map(|target| target.reference.as_str())
                     .map(str::to_string)
             })
             .collect();
         for type_ref in subject_type_refs {
             add_subject_relationship_to_declared_type_if_resolved(g, &node_id, &type_ref);
+        }
+        for target_id in resolved_verified_requirement_targets_for_case(g, &case_node) {
+            add_semantic_edge_once(
+                g,
+                &node_id,
+                &target_id,
+                SemanticEdge::plain(RelationshipKind::Subject),
+            );
         }
     }
 }

@@ -64,6 +64,21 @@ impl HostFilesystemProvider {
             library_paths,
         )
     }
+
+    /// Like [`Self::from_paths`], with the canonical standard-library roots kept distinct from
+    /// arbitrary dependency roots for graph-owned implied relationship resolution.
+    pub fn from_paths_with_standard_library(
+        target: &Path,
+        workspace_root: Option<&Path>,
+        library_paths: &[PathBuf],
+        standard_library_paths: &[PathBuf],
+    ) -> Self {
+        let mut provider = Self::from_paths(target, workspace_root, library_paths);
+        provider.inner = provider
+            .inner
+            .with_standard_library_paths(standard_library_paths.to_vec());
+        provider
+    }
 }
 
 impl SysmlDocumentProvider for HostFilesystemProvider {

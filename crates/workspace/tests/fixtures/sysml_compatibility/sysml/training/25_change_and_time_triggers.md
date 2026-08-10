@@ -1,0 +1,342 @@
+# META
+~~~ini
+description=SysML Training 25 (Transitions): Change and Time Triggers
+type=file
+~~~
+# SOURCE
+~~~sysml
+package 'Change and Time Triggers' {
+	private import ISQ::TemperatureValue;
+	private import ISQ::DurationValue;
+	private import Time::TimeInstantValue;
+	private import SI::h;
+	
+	attribute def OverTemp;
+	
+	part def Vehicle {
+		attribute maintenanceTime : TimeInstantValue;
+		attribute maintenanceInterval : DurationValue;
+		attribute maxTemperature : TemperatureValue;
+	}
+	
+	part def VehicleController;
+	
+	action senseTemperature { out temp : TemperatureValue; }
+	
+	state healthStates {
+		in vehicle : Vehicle;
+		in controller : VehicleController;
+		
+		entry; then normal;
+		do senseTemperature;
+		
+		state normal;
+		accept at vehicle.maintenanceTime
+			then maintenance;
+		accept when senseTemperature.temp > vehicle.maxTemperature
+			do send new OverTemp() to controller 
+			then degraded;
+		
+		state maintenance {
+			entry assign vehicle.maintenanceTime := vehicle.maintenanceTime + vehicle.maintenanceInterval;
+		}
+		accept after 48 [h]
+			then normal;
+		
+		state degraded;
+		accept when senseTemperature.temp <= vehicle.maxTemperature
+			then normal;
+	}
+}
+~~~
+# TOKENS
+~~~zig
+KwPackage,UnrestrictedName,OpenCurly,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwAttribute,KwDef,Ident,Semicolon,
+KwPart,KwDef,Ident,OpenCurly,
+KwAttribute,Ident,Colon,Ident,Semicolon,
+KwAttribute,Ident,Colon,Ident,Semicolon,
+KwAttribute,Ident,Colon,Ident,Semicolon,
+CloseCurly,
+KwPart,KwDef,Ident,Semicolon,
+KwAction,Ident,OpenCurly,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
+KwState,Ident,OpenCurly,
+KwIn,Ident,Colon,Ident,Semicolon,
+KwIn,Ident,Colon,Ident,Semicolon,
+KwEntry,Semicolon,KwThen,Ident,Semicolon,
+KwDo,Ident,Semicolon,
+KwState,Ident,Semicolon,
+KwAccept,Ident,Ident,Dot,Ident,
+KwThen,Ident,Semicolon,
+KwAccept,KwWhen,Ident,Dot,Ident,CloseAngle,Ident,Dot,Ident,
+KwDo,KwSend,Ident,Ident,OpenParen,CloseParen,KwTo,Ident,
+KwThen,Ident,Semicolon,
+KwState,Ident,OpenCurly,
+KwEntry,KwAssign,Ident,Dot,Ident,ColonEq,Ident,Dot,Ident,Plus,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwAccept,KwAfter,DecimalValue,OpenSquare,Ident,CloseSquare,
+KwThen,Ident,Semicolon,
+KwState,Ident,Semicolon,
+KwAccept,KwWhen,Ident,Dot,Ident,LtEq,Ident,Dot,Ident,
+KwThen,Ident,Semicolon,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def ''Change and Time Triggers''
+    (import_decl private 'ISQ::TemperatureValue')
+    (import_decl private 'ISQ::DurationValue')
+    (import_decl private 'Time::TimeInstantValue')
+    (import_decl private 'SI::h')
+    (attribute_def 'OverTemp')
+    (part_def 'Vehicle'
+      (attribute_usage 'maintenanceTime' : 'TimeInstantValue')
+      (attribute_usage 'maintenanceInterval' : 'DurationValue')
+      (attribute_usage 'maxTemperature' : 'TemperatureValue'))
+    (part_def 'VehicleController')
+    (action_usage 'senseTemperature'
+      (default_ref_usage out 'temp' : 'TemperatureValue'))
+    (state_usage 'healthStates'
+      (default_ref_usage in 'vehicle' : 'Vehicle')
+      (default_ref_usage in 'controller' : 'VehicleController')
+      (entry_action)
+      (source_succession
+        (default_ref_usage 'normal'))
+      (do_action 'senseTemperature')
+      (state_usage 'normal')
+      (target_transition)
+      (target_transition)
+      (state_usage 'maintenance'
+        (malformed)
+        (target_transition)
+        (state_usage 'degraded')
+        (target_transition)))))
+~~~
+# FORMAT
+~~~sysml
+package 'Change and Time Triggers' {
+    private import ISQ::TemperatureValue;
+    private import ISQ::DurationValue;
+    private import Time::TimeInstantValue;
+    private import SI::h;
+
+    attribute def OverTemp;
+
+    part def Vehicle {
+        attribute maintenanceTime : TimeInstantValue;
+        attribute maintenanceInterval : DurationValue;
+        attribute maxTemperature : TemperatureValue;
+    }
+
+    part def VehicleController;
+
+    action senseTemperature { out temp : TemperatureValue; }
+
+    state healthStates {
+        in vehicle : Vehicle;
+        in controller : VehicleController;
+
+        entry; then normal;
+        do senseTemperature;
+
+        state normal;
+        accept at vehicle.maintenanceTime
+        then maintenance;
+        accept when senseTemperature.temp > vehicle.maxTemperature
+        do send new OverTemp() to controller
+        then degraded;
+
+        state maintenance {
+            entry assign vehicle.maintenanceTime := vehicle.maintenanceTime + vehicle.maintenanceInterval;
+        }
+        accept after 48 [h]
+        then normal;
+
+        state degraded;
+        accept when senseTemperature.temp <= vehicle.maxTemperature
+        then normal;
+    }
+}
+
+~~~
+# EXPECTED
+~~~
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+semantic.duplicate_name 'normal'
+semantic.unresolved_name 'TimeInstantValue'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'TemperatureValue'
+semantic.unresolved_name 'TemperatureValue'
+~~~
+# PROBLEMS
+~~~
+parse.expected_semicolon_or_body
+parse.expected_close_curly
+semantic.duplicate_name 'normal'
+semantic.unresolved_name 'TimeInstantValue'
+semantic.unresolved_name 'DurationValue'
+semantic.unresolved_name 'TemperatureValue'
+semantic.unresolved_name 'TemperatureValue'
+~~~
+# SMG
+~~~
+(semantic-graph
+  (containment
+    (element (kind "package") (id (node (document "d0") (qualified-name "Change and Time Triggers"))) (name "Change and Time Triggers") (declared-name "Change and Time Triggers")
+      (contains
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::DurationValue"))) (name "DurationValue") (declared-name "DurationValue"))
+        (element (kind "attribute def") (id (node (document "d0") (qualified-name "Change and Time Triggers::OverTemp"))) (name "OverTemp") (declared-name "OverTemp") (declared (properties (ordered false) (unique true))))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::TemperatureValue"))) (name "TemperatureValue") (declared-name "TemperatureValue"))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::TimeInstantValue"))) (name "TimeInstantValue") (declared-name "TimeInstantValue"))
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
+          (contains
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))) (name "maintenanceInterval") (declared-name "maintenanceInterval") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime"))) (name "maintenanceTime") (declared-name "maintenanceTime") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+            (element (kind "attribute") (id (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maxTemperature"))) (name "maxTemperature") (declared-name "maxTemperature") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle")))))
+          )
+        )
+        (element (kind "part def") (id (node (document "d0") (qualified-name "Change and Time Triggers::VehicleController"))) (name "VehicleController") (declared-name "VehicleController") (declared))
+        (element (kind "import") (id (node (document "d0") (qualified-name "Change and Time Triggers::h"))) (name "h") (declared-name "h"))
+        (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (name "healthStates") (declared-name "healthStates") (declared)
+          (contains
+            (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_do"))) (name "do") (declared-name "do"))
+            (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_entry"))) (name "entry") (declared-name "entry"))
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::controller"))) (name "controller") (declared-name "controller") (declared (properties (direction "in"))))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::degraded"))) (name "degraded") (declared-name "degraded"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::maintenance"))) (name "maintenance") (declared-name "maintenance"))
+            (element (kind "state") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))) (name "normal") (declared-name "normal"))
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded"))) (name "transition_healthStates_to_degraded") (declared-name "transition_healthStates_to_degraded")
+              (contains
+                (element (kind "transition effect") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded::effect"))) (name "effect") (declared-name "effect"))
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_maintenance"))) (name "transition_healthStates_to_maintenance") (declared-name "transition_healthStates_to_maintenance")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_maintenance::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal"))) (name "transition_healthStates_to_normal") (declared-name "transition_healthStates_to_normal")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "transition") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal#transition"))) (name "transition_healthStates_to_normal") (declared-name "transition_healthStates_to_normal")
+              (contains
+                (element (kind "transition trigger") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal#transition::trigger"))) (name "trigger") (declared-name "trigger"))
+              )
+            )
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (name "vehicle") (declared-name "vehicle") (declared (properties (direction "in"))))
+          )
+        )
+        (element (kind "action") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature"))) (name "senseTemperature") (declared-name "senseTemperature") (declared)
+          (contains
+            (element (kind "in out parameter") (id (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature::temp"))) (name "temp") (declared-name "temp") (declared (properties (direction "out"))))
+          )
+        )
+      )
+    )
+  )
+  (relationships
+    (initialState (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))) (provenance authored))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::degraded"))) (provenance authored))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::maintenance"))) (provenance authored))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))) (provenance authored))
+    (transition (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::controller"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::VehicleController"))) (provenance authored))
+    (typing (status resolved) (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::vehicle"))) (to (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle"))) (provenance authored))
+  )
+  (pending-relationships
+  )
+  (pending-expression-relationships
+  )
+  (derived-relationship-resolutions
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::OverTemp"))) (status missing-prerequisite) (target "Base::DataValue"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maxTemperature"))) (status missing-prerequisite) (target "Base::dataValues"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::VehicleController"))) (status missing-prerequisite) (target "Parts::Part"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates"))) (status missing-prerequisite) (target "States::stateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_do"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::_entry"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::degraded"))) (status missing-prerequisite) (target "States::stateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::maintenance"))) (status missing-prerequisite) (target "States::stateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::normal"))) (status missing-prerequisite) (target "States::stateActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded"))) (status missing-prerequisite) (target "Actions::transitionActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded::effect"))) (status missing-prerequisite) (target "Actions::actions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_degraded::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_maintenance"))) (status missing-prerequisite) (target "Actions::transitionActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_maintenance::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal"))) (status missing-prerequisite) (target "Actions::transitionActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal#transition"))) (status missing-prerequisite) (target "Actions::transitionActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal#transition::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::healthStates::transition_healthStates_to_normal::trigger"))) (status missing-prerequisite) (target "Actions::acceptActions"))
+    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Change and Time Triggers::senseTemperature"))) (status missing-prerequisite) (target "Actions::actions"))
+  )
+)
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml/training/25_change_and_time_triggers.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 37))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 16) (end 3 38))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 4 16) (end 4 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 9 2) (end 9 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 10 2) (end 10 48))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 11 2) (end 11 46))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 16 27) (end 16 55))
+      )
+    )
+  )
+)
+~~~

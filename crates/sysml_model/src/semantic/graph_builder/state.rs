@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use sysml_v2_parser::ast::{StateDefBody, StateDefBodyElement, TransitionAccept, TransitionEffect};
 use url::Url;
 
-use crate::semantic::ast_util::{attach_membership_visibility, declared_expression, span_to_range};
+use crate::semantic::ast_util::{declared_expression, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::{add_edge_if_both_exist, add_typing_edge_if_exists};
@@ -219,7 +219,10 @@ pub(super) fn build_from_state_body(
                 let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
                 let range = span_to_range(&state_node.span);
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &state_node.membership);
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&state_node.membership),
+                );
                 if let Some(ref t) = state_node.type_name {
                     attrs.insert("stateType".to_string(), serde_json::json!(t));
                 }

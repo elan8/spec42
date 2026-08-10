@@ -75,12 +75,21 @@ fn requirement_verify_member_materializes_verified_requirement_node() {
         .find(|node| node.element_kind == "requirement def")
         .expect("verification requirement def");
 
-    assert!(
-        graph
-            .children_of(verify_def)
+    let verified_requirement = graph
+        .children_of(verify_def)
+        .into_iter()
+        .find(|child| child.element_kind == "verified requirement")
+        .expect("verified requirement child on requirement def");
+    assert_eq!(
+        verified_requirement
+            .declared_facts
+            .relationships
+            .subject
             .iter()
-            .any(|child| child.element_kind == "verified requirement"),
-        "expected verified requirement child on requirement def"
+            .map(|target| (target.reference.as_str(), target.range))
+            .collect::<Vec<_>>(),
+        vec![("BatteryRuntime", None)],
+        "verified requirement target must be an owned declared fact; the parser currently exposes only its string spelling"
     );
 
     let has_subject_to_runtime =
@@ -163,6 +172,32 @@ fn verification_case_cross_package_verify_requirement_resolves_via_import() {
     assert!(
         has_subject_to_requirement,
         "expected Subject edge from verification case to imported requirement"
+    );
+}
+
+#[test]
+fn standalone_verification_graph_links_objective_verified_requirement_to_case() {
+    let source = r#"package P {
+  requirement def ReqA;
+  verification def Check {
+    objective { verify requirement ReqA; }
+  }
+}"#;
+    let parsed = sysml_v2_parser::parse(source).expect("parse");
+    let uri = url::Url::parse("file:///verification.sysml").expect("uri");
+    let graph = sysml_model::build_graph_from_doc(&parsed, &uri);
+
+    let case_subject_edges: Vec<_> = graph
+        .edges_for_uri_as_strings(&uri)
+        .into_iter()
+        .filter(|(source, target, kind, _)| {
+            source == "P::Check" && target == "P::ReqA" && *kind == RelationshipKind::Subject
+        })
+        .collect();
+    assert_eq!(
+        case_subject_edges.len(),
+        1,
+        "standalone graph construction must not omit or duplicate the verification case edge"
     );
 }
 

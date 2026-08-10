@@ -28,7 +28,7 @@ use crate::error::WorkspaceResult;
 use crate::parse_cache;
 use crate::semantic::{
     build_and_link_graph_parallel, link_parsed_documents_parallel_from, patch_graph_for_document,
-    SemanticGraph, WorkspaceParsedDocument,
+    patch_graph_for_document_scoped, SemanticGraph, WorkspaceParsedDocument,
 };
 use crate::snapshot::{HostSemanticProjection, HostValidationReport};
 use crate::{SysmlDocument, SysmlDocumentSourceKind};
@@ -261,7 +261,11 @@ impl IncrementalWorkspace {
         let parse_ms = elapsed_ms(parse_start);
 
         let build_start = Instant::now();
-        patch_graph_for_document(&mut self.graph, &document.uri, parsed.as_ref(), true);
+        // The semantic pipeline owns the frontier calculation and its parity guarantees. A
+        // single-document patch can therefore relink only the changed document and the
+        // documents that explicitly depend on it, while preserving the same settled graph as
+        // a full relink.
+        patch_graph_for_document_scoped(&mut self.graph, &document.uri, parsed.as_ref(), true);
         let graph_update_ms = elapsed_ms(build_start);
 
         match parsed {
@@ -727,7 +731,7 @@ package Architecture {
         assert!(metrics.parse_ms >= 1);
     }
 
-    /// Same parity check, but for the evaluated-attribute side effect specifically — the
+    /// Same parity check, but for the canonical evaluation publication specifically — the
     /// exact class of bug (`evaluate_expressions` silently skipped) Tier 2 Phase 3b Steps
     /// 1-4 found in the two hand-written pipelines this engine is designed to replace.
     #[test]
@@ -754,8 +758,13 @@ package Architecture {
             .find(|node| node.name == "mass")
             .expect("mass attribute node");
         assert_eq!(
-            mass.attributes.get("evaluatedValue"),
-            Some(&serde_json::json!(3))
+            graph.expression_evaluation_for(mass),
+            sysml_model::ExpressionEvaluationQuery::Result(&sysml_model::ExpressionEvaluation {
+                status: sysml_model::EvaluationStatus::Ok,
+                value: Some(sysml_model::EvaluatedValue::Integer(3)),
+                unit: None,
+                error: None,
+            })
         );
     }
 

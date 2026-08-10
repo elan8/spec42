@@ -1,54 +1,60 @@
 use super::*;
 
+#[cfg(test)]
 pub(crate) fn apply_document_content_edit(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
     version: i32,
     content_changes: Vec<TextDocumentContentChangeEvent>,
 ) -> (bool, Vec<(MessageType, String)>) {
-    let mut runtime_warnings = Vec::new();
-    let content_changed = if let Some(entry) = state.index_mut().get_mut(uri_norm) {
-        let mut content_changed = false;
-        for change in content_changes {
-            if let Some(range) = change.range {
-                if let Some(new_text) =
-                    util::apply_incremental_change(&entry.content, &range, &change.text)
-                {
-                    if new_text != entry.content {
-                        entry.content = new_text;
-                        content_changed = true;
-                    }
-                } else {
-                    runtime_warnings.push((
-                        MessageType::WARNING,
-                        format!(
-                            "didChange: ignored invalid incremental edit for {} at {}:{}..{}:{} (version {}).",
-                            uri_norm,
-                            range.start.line,
-                            range.start.character,
-                            range.end.line,
-                            range.end.character,
-                            version,
-                        ),
-                    ));
-                }
-            } else if entry.content != change.text {
-                entry.content = change.text;
-                content_changed = true;
-            }
-        }
-        content_changed
-    } else {
-        runtime_warnings.push((
-            MessageType::WARNING,
-            format!(
-                "didChange: document {} was not in the server index (version {}). Change was ignored until a full open/watch refresh occurs.",
-                uri_norm, version
-            ),
-        ));
-        false
+    let Some(entry) = state.index_mut().get_mut(uri_norm) else {
+        return (
+            false,
+            vec![(
+                MessageType::WARNING,
+                format!(
+                    "didChange: document {} was not in the server index (version {}). Change was ignored until a full open/watch refresh occurs.",
+                    uri_norm, version
+                ),
+            )],
+        );
     };
-    (content_changed, runtime_warnings)
+    let (content, changed, warnings) =
+        apply_content_changes(&entry.content, uri_norm, version, content_changes);
+    if changed {
+        entry.content = content;
+    }
+    (changed, warnings)
+}
+
+/// Applies LSP changes to an owned prospective text value without publishing it.
+pub(crate) fn apply_content_changes(
+    current: &str,
+    uri_norm: &Url,
+    version: i32,
+    content_changes: Vec<TextDocumentContentChangeEvent>,
+) -> (String, bool, Vec<(MessageType, String)>) {
+    let mut runtime_warnings = Vec::new();
+    let mut content = current.to_string();
+    for change in content_changes {
+        if let Some(range) = change.range {
+            if let Some(new_text) = util::apply_incremental_change(&content, &range, &change.text) {
+                content = new_text;
+            } else {
+                runtime_warnings.push((
+                    MessageType::WARNING,
+                    format!(
+                        "didChange: ignored invalid incremental edit for {} at {}:{}..{}:{} (version {}).",
+                        uri_norm, range.start.line, range.start.character, range.end.line, range.end.character, version,
+                    ),
+                ));
+            }
+        } else {
+            content = change.text;
+        }
+    }
+    let changed = content != current;
+    (content, changed, runtime_warnings)
 }
 
 /// Applies an already-computed parse result (produced off the write lock, e.g.

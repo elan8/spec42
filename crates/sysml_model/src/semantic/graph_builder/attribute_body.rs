@@ -6,11 +6,10 @@ use sysml_v2_parser::ast::{AttributeBody, AttributeBodyElement};
 use url::Url;
 
 use super::{
-    add_node_and_recurse, expressions, qualified_name_for_node, unit_metadata, usage_builders,
+    add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family, expressions,
+    qualified_name_for_node, unit_metadata, usage_builders,
 };
-use crate::semantic::ast_util::{
-    attach_membership_visibility, span_to_range, subsetting_target, typing_targets,
-};
+use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_targets};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -49,7 +48,10 @@ pub(super) fn build_from_attribute_body(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute def");
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&value.membership),
+                );
                 let targets = typing_targets(value.typing.as_deref());
                 if !targets.is_empty() {
                     attrs.insert(
@@ -85,7 +87,10 @@ pub(super) fn build_from_attribute_body(
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, name, "attribute");
                 let mut attrs = HashMap::new();
-                attach_membership_visibility(&mut attrs, &value.membership);
+                g.register_declared_membership_facts(
+                    NodeId::new(uri, &qualified),
+                    crate::semantic::ast_util::declared_membership_facts(&value.membership),
+                );
                 let targets = typing_targets(value.typing.as_deref());
                 if !targets.is_empty() {
                     attrs.insert(
@@ -123,6 +128,15 @@ pub(super) fn build_from_attribute_body(
                     span_to_range(&attribute.span),
                     attrs,
                     Some(parent_id),
+                );
+                attach_declared_name(g, &NodeId::new(uri, &qualified), &value.name);
+                attach_declared_subsetting_family(
+                    g,
+                    &NodeId::new(uri, &qualified),
+                    value.subsets.as_deref(),
+                    value.redefines.as_deref(),
+                    value.references.as_deref(),
+                    value.crosses.as_deref(),
                 );
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);

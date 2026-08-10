@@ -14,16 +14,19 @@ pub mod kpar_libraries;
 pub mod library_bundle;
 pub mod library_status_rpc;
 pub mod reports;
+pub mod starter_workspace;
 pub mod stdlib;
 pub mod sysand;
 
+use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
 use ai_tools::{perform_explain_diagnostic, perform_model_summary};
 use cli::{
-    CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs, LibrariesCommand,
-    ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
+    BundleArgs, CheckArgs, Cli, Command, DiagramsCommand, DoctorArgs, ExplainDiagnosticArgs,
+    InitArgs, LibrariesCommand, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand,
+    UnbundleArgs,
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
@@ -180,10 +183,13 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         None => run_lsp(&cli).await,
         Some(Command::Lsp) => run_lsp(&cli).await,
         Some(Command::Check(args)) => run_check(&cli, args),
+        Some(Command::Init(args)) => run_init(&cli, args),
         Some(Command::Generate(args)) => generation::run_generate(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
         Some(Command::ExplainDiagnostic(args)) => run_explain_diagnostic(&cli, args),
         Some(Command::ModelSummary(args)) => run_model_summary(&cli, args),
+        Some(Command::Bundle(args)) => run_bundle(args),
+        Some(Command::Unbundle(args)) => run_unbundle(args),
         Some(Command::Sysand { command }) => run_sysand(command),
         Some(Command::Stdlib { command }) => run_stdlib(&cli, command),
         Some(Command::Libraries { command }) => run_libraries(&cli, command),
@@ -191,11 +197,115 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
     }
 }
 
+fn run_bundle(args: &BundleArgs) -> Result<ExitCode, String> {
+    if !args.directory.is_dir() {
+        return Err(format!(
+            "bundle source directory does not exist: {}",
+            args.directory.display()
+        ));
+    }
+    let project_path = args.directory.join(kpar::PROJECT_FILE);
+    let project_bytes = std::fs::read(&project_path).map_err(|error| {
+        format!(
+            "bundle requires {} as the project metadata authority: {error}",
+            project_path.display()
+        )
+    })?;
+    let project: kpar::Project = serde_json::from_slice(&project_bytes).map_err(|error| {
+        format!(
+            "bundle could not parse required project metadata {}: {error}",
+            project_path.display()
+        )
+    })?;
+    project
+        .validate_identity()
+        .map_err(|error| error.to_string())?;
+    let output = args
+        .output
+        .clone()
+        .unwrap_or_else(|| PathBuf::from(format!("{}-{}.kpar", project.name, project.version)));
+    kpar::build_kpar(
+        &kpar::PackOptions {
+            project,
+            source_roots: Vec::new(),
+            named_source_roots: vec![(
+                (args.archive_prefix.clone().unwrap_or_default()),
+                args.directory.clone(),
+            )],
+            excludes: args.excludes.clone(),
+            timestamp: kpar::ArchiveTimestamp::default(),
+            compression: if args.no_compress {
+                kpar::ArchiveCompression::Stored
+            } else {
+                kpar::ArchiveCompression::Deflated
+            },
+        },
+        &output,
+    )
+    .map_err(|error| error.to_string())?;
+    println!(
+        "Bundled {} into {}",
+        args.directory.display(),
+        output.display()
+    );
+    Ok(ExitCode::SUCCESS)
+}
+
+fn run_unbundle(args: &UnbundleArgs) -> Result<ExitCode, String> {
+    let archive = kpar::open_kpar_path(&args.archive).map_err(|error| error.to_string())?;
+    archive
+        .project()
+        .validate_identity()
+        .map_err(|error| error.to_string())?;
+    let directory = args
+        .directory
+        .clone()
+        .unwrap_or_else(|| PathBuf::from(&archive.project().name));
+    let materialized = archive
+        .materialize_to(&directory)
+        .map_err(|error| error.to_string())?;
+    println!(
+        "Unbundled {} source file(s) into {}",
+        materialized.source_files.len(),
+        materialized.root.display()
+    );
+    Ok(ExitCode::SUCCESS)
+}
+
+fn run_init(cli: &Cli, args: &InitArgs) -> Result<ExitCode, String> {
+    let scaffold = starter_workspace::scaffold(&args.path)?;
+    let validation_args = CheckArgs {
+        path: scaffold.root.clone(),
+        workspace_root: Some(scaffold.root.clone()),
+        format: OutputFormat::Text,
+        warnings_as_errors: false,
+        baseline: None,
+        strict_diagnostics: false,
+    };
+    let report = perform_check(cli, &validation_args)?;
+    if report.summary.error_count > 0 {
+        let _ = emit_validation_report(&report, OutputFormat::Text);
+        return Err(format!(
+            "starter workspace was created at {} but failed validation with {} error(s)",
+            scaffold.root.display(),
+            report.summary.error_count
+        ));
+    }
+
+    println!(
+        "Created starter SysML v2 workspace at {} ({} files; validation passed).",
+        scaffold.root.display(),
+        scaffold.files_written
+    );
+    Ok(ExitCode::SUCCESS)
+}
+
 async fn run_lsp(cli: &Cli) -> Result<ExitCode, String> {
     let environment = resolve_environment(cli)?;
     let config = Arc::new(
         lsp_server::default_server_config()
             .with_default_library_paths(environment.library_paths.clone())
+            .with_standard_library_paths(environment.stdlib_roots.clone())
             .with_custom_rpc_provider(library_status_rpc::library_status_rpc_provider(
                 environment.standard_library.clone(),
                 environment.standard_library_paths.clone(),

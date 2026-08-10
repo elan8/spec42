@@ -30,7 +30,8 @@ pub use semantic::ibd::{
     merge_ibd_payloads_for_workspace_finalize, IbdDataDto,
 };
 pub use semantic::import_resolution::{
-    resolve_imported_node_ids_for_simple_name, resolve_type_reference_targets,
+    import_target_range, resolve_import_target, resolve_imported_node_ids_for_simple_name,
+    resolve_type_reference_targets, ImportTargetResolution,
 };
 pub use semantic::interconnection_elk::build_elk_graph_from_scene;
 pub use semantic::interconnection_projection::{
@@ -43,8 +44,20 @@ pub use semantic::library_loader::{
     LibraryClosureOptions, LoadedLibraryFile, WorkspaceSource,
 };
 pub use semantic::model::{
-    ConnectStatementDetail, DeclaredExpression, ElementKind, FlowStatementDetail, NodeId,
-    RelationshipKind, SemanticEdge, SemanticNode,
+    AnalysisEvaluation, ConnectStatementDetail, DeclaredBinaryOperator, DeclaredCollectionOperator,
+    DeclaredExpression, DeclaredExpressionKind, DeclaredExpressionOperator,
+    DeclaredFeatureProperties, DeclaredImportFacts, DeclaredImportTarget, DeclaredLiteral,
+    DeclaredMembershipFacts, DeclaredMembershipKind, DeclaredMultiplicity,
+    DeclaredMultiplicityBound, DeclaredMultiplicityBounds, DeclaredRelationshipFacts,
+    DeclaredRelationshipTarget, DeclaredSemanticFacts, DeclaredTypeCheckOperator,
+    DeclaredUnaryOperator, DerivedRelationshipResolution, EffectiveFeatureOwnership,
+    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, EvaluatedValue,
+    EvaluationPublicationState, EvaluationStatus, ExpressionEvaluation, ExpressionEvaluationQuery,
+    ExpressionResultId, ExpressionResultRole, FeatureOwnershipProvenance, FlowStatementDetail,
+    ImpliedFeatureOwnership, ImpliedFeatureValueBinding, ImpliedMultiplicity,
+    ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance,
+    NodeEvaluationFacts, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
+    SemanticNode, StandardLibraryElement, UniversalStandardLibraryRelationship, VisibilityKind,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,
@@ -64,7 +77,6 @@ pub use semantic::reference_resolution::{
 pub use semantic::relationships::{
     add_cross_document_edges_for_uri, link_workspace_derivations, link_workspace_relationships,
     resolve_cross_document_edges_for_uri, resolve_workspace_pending_relationships,
-    TYPE_REFERENCE_ATTR_KEYS,
 };
 pub use semantic::relationships::{add_semantic_edge_once, AddSemanticEdgeResult};
 pub use semantic::render_snapshot::{

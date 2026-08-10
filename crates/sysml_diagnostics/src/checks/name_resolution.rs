@@ -1,17 +1,18 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use url::Url;
 
 use crate::checks::import_resolution::has_import_in_scope;
 use crate::helpers::{
-    declared_specializes_refs, declared_type_ref, diag, diagnostic_range, is_builtin_type_ref,
-    is_synthetic, normalize_declared_type_ref, unresolved_type_diagnostic_range,
+    declared_specializes_refs, diag, diagnostic_range, is_builtin_type_ref, is_synthetic,
+    normalize_declared_type_ref, unresolved_type_diagnostic_range,
 };
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
 use sysml_model::semantic::import_resolution::resolve_imported_node_ids_for_simple_name;
 use sysml_model::semantic::kinds::{
-    is_metadata_restriction_attribute, is_namespace, RULE6_ALLOWED_KINDS,
+    is_metadata_restriction_attribute, is_namespace,
+    namespace_member_names_must_be_distinguishable, RULE6_ALLOWED_KINDS,
 };
 use sysml_model::semantic::model::node_matches_simple_name;
 use sysml_model::semantic::relationships::SPECIALIZES_TARGET_KINDS;
@@ -119,16 +120,22 @@ fn collect_duplicate_namespace_members(
 ) {
     let mut seen: HashSet<String> = HashSet::new();
     for node in graph.nodes_for_uri(uri) {
-        if !matches!(
-            node.element_kind,
-            sysml_model::ElementKind::Package
-                | sysml_model::ElementKind::PartDef
-                | sysml_model::ElementKind::RequirementDef
-                | sysml_model::ElementKind::UseCaseDef
-        ) {
+        if is_synthetic(node)
+            || !matches!(
+                node.element_kind,
+                sysml_model::ElementKind::Package
+                    | sysml_model::ElementKind::PartDef
+                    | sysml_model::ElementKind::RequirementDef
+                    | sysml_model::ElementKind::UseCaseDef
+            )
+        {
             continue;
         }
-        let mut counts: HashMap<(String, String), usize> = HashMap::new();
+        // A graph member's primary name and declared short name are both names by
+        // which resolution can address it. Keep these semantic identifier facts
+        // distinct from presentation labels. The model's kind policy owns which
+        // cross-category members share a namespace identity domain.
+        let mut members_by_identifier: BTreeMap<String, Vec<&SemanticNode>> = BTreeMap::new();
         for child in graph.children_of(node) {
             if matches!(
                 child.element_kind,
@@ -139,33 +146,74 @@ fn collect_duplicate_namespace_members(
             {
                 continue;
             }
-            if child.name.trim().is_empty() || child.name.starts_with('_') {
+            if is_synthetic(child) || child.name.trim().is_empty() || child.name.starts_with('_') {
                 continue;
             }
             if child.element_kind == sysml_model::ElementKind::Alias {
                 continue;
             }
-            *counts
-                .entry((child.name.clone(), child.element_kind.as_str().to_string()))
-                .or_default() += 1;
+            members_by_identifier
+                .entry(child.name.clone())
+                .or_default()
+                .push(child);
+            if let Some(short_name) = child
+                .attributes
+                .get("shortName")
+                .and_then(serde_json::Value::as_str)
+                .filter(|short_name| !short_name.trim().is_empty() && *short_name != child.name)
+            {
+                members_by_identifier
+                    .entry(short_name.to_string())
+                    .or_default()
+                    .push(child);
+            }
         }
-        for ((name, kind), count) in counts {
-            if count < 2 {
+        for (name, mut members) in members_by_identifier {
+            if members.len() < 2 {
                 continue;
             }
-            let key = format!("{}|{}|{}|{}", node.id.qualified_name, name, kind, count);
+            members.sort_by(|left, right| {
+                (
+                    left.range.start.line,
+                    left.range.start.character,
+                    left.range.end.line,
+                    left.range.end.character,
+                )
+                    .cmp(&(
+                        right.range.start.line,
+                        right.range.start.character,
+                        right.range.end.line,
+                        right.range.end.character,
+                    ))
+                    .then_with(|| left.id.uri.as_str().cmp(right.id.uri.as_str()))
+                    .then_with(|| left.id.qualified_name.cmp(&right.id.qualified_name))
+            });
+            let Some(duplicate_index) = (1..members.len()).find(|&index| {
+                members[..index].iter().any(|previous| {
+                    namespace_member_names_must_be_distinguishable(
+                        &node.element_kind,
+                        &previous.element_kind,
+                        &members[index].element_kind,
+                    )
+                })
+            }) else {
+                continue;
+            };
+            let key = format!("{}|{}", node.id.qualified_name, name);
             if !seen.insert(key) {
                 continue;
             }
+            let duplicate = members[duplicate_index];
             diagnostics.push(diag(
                 uri,
-                diagnostic_range(graph, node, None),
+                diagnostic_range(graph, duplicate, None),
                 DiagnosticSeverity::Warning,
                 "semantic",
                 "duplicate_namespace_member",
                 format!(
-                    "Namespace '{}' declares '{}' ({}) {} times; member names must be unique within a namespace.",
-                    node.name, name, kind, count
+                    "Namespace '{}' declares '{}' more than once; member names must be unique within a namespace.",
+                    node.name,
+                    name,
                 ),
             ));
         }
@@ -191,9 +239,11 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if is_synthetic(node) {
             continue;
         }
-        let Some(type_ref) = declared_type_ref(node) else {
+        let Some(type_target) = node.declared_facts.relationships.typing.first() else {
             continue;
         };
+        let type_ref = type_target.reference.as_str();
+        let target_range = type_target.range;
         let normalized_type_ref = normalize_declared_type_ref(type_ref);
         if is_builtin_type_ref(&normalized_type_ref) {
             continue;
@@ -206,7 +256,8 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if let Some((segment, reason)) = invalid_qualified_name_segment(graph, type_ref) {
             let key = format!("{}|{}|{}", node.id.qualified_name, type_ref, segment);
             if invalid_qn_seen.insert(key) {
-                let range = unresolved_type_diagnostic_range(node, type_ref)
+                let range = target_range
+                    .or_else(|| unresolved_type_diagnostic_range(node, type_ref))
                     .unwrap_or_else(|| diagnostic_range(graph, node, None));
                 diagnostics.push(diag(
                     uri,
@@ -264,7 +315,8 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if is_ambiguous_simple_name(graph, node, lookup_name) {
             let key = format!("{}|{}", node.id.qualified_name, lookup_name);
             if ambiguous_seen.insert(key) {
-                let range = unresolved_type_diagnostic_range(node, type_ref)
+                let range = target_range
+                    .or_else(|| unresolved_type_diagnostic_range(node, type_ref))
                     .unwrap_or_else(|| diagnostic_range(graph, node, None));
                 diagnostics.push(diag(
                     uri,
@@ -281,7 +333,8 @@ pub(crate) fn collect_name_resolution_diagnostics(
             continue;
         }
 
-        let Some(range) = unresolved_type_diagnostic_range(node, type_ref) else {
+        let Some(range) = target_range.or_else(|| unresolved_type_diagnostic_range(node, type_ref))
+        else {
             continue;
         };
         let key = format!(
@@ -297,13 +350,7 @@ pub(crate) fn collect_name_resolution_diagnostics(
         if !unresolved_seen.insert(key) {
             continue;
         }
-        let is_ref_usage = node
-            .attributes
-            .get("refType")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())
-            .is_some();
+        let is_ref_usage = node.element_kind == sysml_model::ElementKind::Ref;
         let (code, message) = if is_ref_usage {
             (
                 "unresolved_ref_type_reference",

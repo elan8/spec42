@@ -45,6 +45,9 @@ jobs:
       - name: Extension versions match Cargo workspace
         run: node scripts/sync-workspace-version.mjs --check
 
+      - name: SysML reference tooling smoke checks
+        run: python3 -m unittest tools/sysml_reference/test_tools.py
+
       - name: Prepare SysML stdlib bundle
         run: |
           VERSION=$(node -p "require('./config/standard-library.json').version")
@@ -125,6 +128,9 @@ jobs:
           # produce flaky failures that don't reproduce locally. Run it serially here instead.
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server --lib
+
+      - name: SysML fuzz seed regression corpus
+        run: cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
 
       - name: Generator conformance corpus
         run: |
