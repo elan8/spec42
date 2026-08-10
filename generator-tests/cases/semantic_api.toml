@@ -53,7 +53,7 @@ the windows-latest/macos-latest generator-policy jobs never run this corpus, so 
 deterministic in CI itself. It is NOT safe to bless from a non-Linux machine, though:
 `--remap-path-prefix` (scripts/build-generator-plugins.sh) normalizes the remapped path
 *prefix* embedded in the guest .wasm, but not the OS-native separator in the remainder of the
-path (`\` on Windows vs `/` on Linux), so a Windows-built guest embeds different bytes than a
+path (backslash on Windows vs forward slash on Linux), so a Windows-built guest embeds different bytes than a
 Linux one and reports a different exact fuel count for the identical source. Always bless
 this value from CI's own measurement (or a Linux build), never from a local Windows/macOS run.
 """
