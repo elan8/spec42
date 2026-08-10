@@ -37,7 +37,7 @@ walkdir = "2"
 sysml-v2-parser = { workspace = true }
 petgraph = { workspace = true }
 tracing = "0.1"
-bincode = { version = "2", features = ["serde"] }
+postcard = { workspace = true }
 rayon = "1.12"
 tempfile = "3"
 

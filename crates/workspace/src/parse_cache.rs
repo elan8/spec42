@@ -10,11 +10,11 @@
 //!
 //! ```text
 //! [magic:   4 bytes  "KPC\0"]
-//! [version: 16 bytes spec42 semver string, zero-padded]
-//! [payload: remainder — bincode-encoded RootNamespace]
+//! [version: 20 bytes spec42 semver string, zero-padded]
+//! [payload: remainder — postcard-encoded RootNamespace]
 //! ```
 //!
-//! The 20-byte header allows fast staleness detection without decoding the tree.
+//! The 24-byte header allows fast staleness detection without decoding the tree.
 //! The version field is taken from this crate's Cargo version (shared across the
 //! whole workspace via `version.workspace = true`), so every release automatically
 //! invalidates the cache without any manual bump.
@@ -26,17 +26,22 @@ use sha2::{Digest, Sha256};
 use sysml_v2_parser::RootNamespace;
 
 const MAGIC: &[u8; 4] = b"KPC\0";
-const VERSION_FIELD_LEN: usize = 16;
+const VERSION_FIELD_LEN: usize = 20;
+// v2: switched the payload encoding from bincode (RUSTSEC-2025-0141: unmaintained) to postcard.
+// Bumping this makes a v1 (bincode) cache entry unreachable rather than misdecoded.
+const PARSE_CACHE_ENCODING_VERSION: u32 = 2;
 
 fn version_field() -> [u8; VERSION_FIELD_LEN] {
-    // First 12 bytes: spec42 semver string; last 4 bytes: PARSE_AST_VERSION (le).
-    // Incorporating the parser schema version invalidates caches when the AST
-    // schema changes between parser releases, even within a single spec42 version.
+    // First 12 bytes: spec42 semver string; next 4 bytes: PARSE_AST_VERSION (le); last 4
+    // bytes: PARSE_CACHE_ENCODING_VERSION (le). Incorporating the parser schema version and
+    // the on-disk encoding version invalidates caches when either changes, even within a
+    // single spec42 version.
     let spec42 = env!("CARGO_PKG_VERSION").as_bytes();
     let mut field = [0u8; VERSION_FIELD_LEN];
     let spec42_len = spec42.len().min(12);
     field[..spec42_len].copy_from_slice(&spec42[..spec42_len]);
     field[12..16].copy_from_slice(&sysml_v2_parser::PARSE_AST_VERSION.to_le_bytes());
+    field[16..20].copy_from_slice(&PARSE_CACHE_ENCODING_VERSION.to_le_bytes());
     field
 }
 
@@ -79,10 +84,7 @@ pub fn load(cache_dir: &Path, hash: &[u8; 32]) -> Option<RootNamespace> {
     let mut payload = Vec::new();
     file.read_to_end(&mut payload).ok()?;
 
-    let config = bincode::config::standard();
-    bincode::serde::decode_from_slice::<RootNamespace, _>(&payload, config)
-        .ok()
-        .map(|(root, _)| root)
+    postcard::from_bytes::<RootNamespace>(&payload).ok()
 }
 
 /// Write a freshly parsed [`RootNamespace`] to the cache.
@@ -133,8 +135,7 @@ fn store_inner(
 ) -> Result<(), Box<dyn std::error::Error>> {
     std::fs::create_dir_all(cache_dir)?;
 
-    let config = bincode::config::standard();
-    let payload = bincode::serde::encode_to_vec(root, config)?;
+    let payload = postcard::to_allocvec(root)?;
 
     let path = entry_path(cache_dir, hash);
     let mut file = std::fs::File::create(&path)?;
@@ -199,8 +200,7 @@ mod tests {
 
         // Write with a deliberately wrong version
         let path = entry_path(dir.path(), &hash);
-        let config = bincode::config::standard();
-        let payload = bincode::serde::encode_to_vec(&root, config).unwrap();
+        let payload = postcard::to_allocvec(&root).unwrap();
         let mut f = std::fs::File::create(&path).unwrap();
         f.write_all(MAGIC).unwrap();
         f.write_all(&[0u8; VERSION_FIELD_LEN]).unwrap(); // all-zero != any real version
