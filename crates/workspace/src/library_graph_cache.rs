@@ -14,7 +14,7 @@
 //! [magic:       4 bytes  "LGCX"]
 //! [version:    20 bytes  spec42 semver (12 bytes, zero-padded) + PARSE_AST_VERSION (4 bytes, le)
 //!                       + library-graph semantics version (4 bytes, le)]
-//! [payload:    remainder — bincode-encoded LibraryGraphCachePayload]
+//! [payload:    remainder — JSON-encoded LibraryGraphCachePayload]
 //! ```
 //!
 //! # Invalidation (two-level)
