@@ -1,0 +1,11 @@
+[package]
+name = "spec42-conformance-empty"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+spec42-generator-sdk = { workspace = true }

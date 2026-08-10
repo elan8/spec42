@@ -1,0 +1,15 @@
+{
+  "outcome": {
+    "kind": "failure",
+    "category": "outputpolicy",
+    "phase": "artifact-validation",
+    "message": "artifact path `.spec42-generator-manifest.json` is reserved by Spec42 or by the filesystem"
+  },
+  "artifacts": {},
+  "diagnostics": [],
+  "query_count": 0,
+  "fuel_consumed": null,
+  "peak_memory_bytes": 0,
+  "output_files": 0,
+  "output_bytes": 0
+}

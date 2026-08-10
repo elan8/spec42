@@ -1,0 +1,21 @@
+info: model_digest=<present> spec42_version=<present> semantic_api_version=0.1.0
+roots: 1 element(s)
+  Minimal [Package] name=Minimal library=false
+find(None): 2 element(s)
+  Minimal [Package] name=Minimal library=false
+  Minimal::Widget [PartDefinition] name=Widget library=false
+find(PartDefinition): 1 element(s)
+  Minimal::Widget [PartDefinition] name=Widget library=false
+children(Minimal): 1 element(s)
+  Minimal::Widget [PartDefinition] name=Widget library=false
+element(Minimal): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Minimal): <untyped>
+relationships(Minimal): 1 edge(s)
+  reference Minimal -> Minimal::Widget implied=false
+effective_features(Minimal): 0 element(s)
+children(Minimal::Widget): 0 element(s)
+element(Minimal::Widget): definition=true abstract=false derived=false end=false multiplicity=<none>
+typed_by(Minimal::Widget): <untyped>
+relationships(Minimal::Widget): 0 edge(s)
+effective_features(Minimal::Widget): 0 element(s)
+element(<bogus>): error

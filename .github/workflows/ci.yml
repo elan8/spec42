@@ -103,6 +103,12 @@ jobs:
       - name: Conformance matrix is current
         run: node scripts/generate-conformance-matrix.mjs --check
 
+      - name: Generator ABI manifest and specification are current
+        run: |
+          cargo run -p spec42-generator-protocol --example abi-manifest > docs/generation/generator-abi.json
+          git diff --exit-code docs/generation/generator-abi.json
+          node scripts/sync-generator-abi.mjs --check
+
       - name: Requirements slice integration checks
         run: |
           cargo test -p lsp_server --test lsp_integration integration::model::lsp_sysml_model_graph_resolves_requirement_usage_typing_same_file
@@ -119,6 +125,23 @@ jobs:
           # produce flaky failures that don't reproduce locally. Run it serially here instead.
           cargo test -p lsp_server --test lsp_integration -- --test-threads=1
           cargo test -p server --lib
+
+      - name: Generator conformance corpus
+        run: |
+          scripts/build-generator-plugins.sh
+          cargo run -p generator_conformance --bin generator-conformance
+          # A blessed golden must be committed, never produced by CI.
+          git diff --exit-code generator-tests/golden
+          # Subprocess layer: exit codes, the output transaction and cross-process
+          # determinism, none of which the in-process corpus can observe. Must run after the
+          # plugins are built or it skips itself.
+          cargo test -p server --test generator_cli
+
+      - name: Sandboxed Rust generator smoke
+        run: |
+          cargo build --release --manifest-path generator-examples/rust/Cargo.toml --target wasm32-unknown-unknown
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
+          cargo run -p server --bin spec42 -- --no-stdlib generate generator-examples/rust/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
 
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests +
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates
@@ -570,3 +593,37 @@ jobs:
 
       - name: cargo check (zed extension)
         run: cargo check --manifest-path zed/Cargo.toml --target wasm32-wasip2 --release
+
+  generator-policy-platforms:
+    name: Generator policy (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      # Only the crates whose behaviour depends on the filesystem: artifact path validation
+      # (case folding, Unicode normalization, device names, alternate data streams) and the
+      # transaction planner and executor. On Windows this also runs the differential test
+      # that uses the platform itself as the oracle for what a valid filename is.
+      #
+      # `server`'s default features re-enable `workspace`'s embedded stdlib/KPAR libraries
+      # (correct for the shipped CLI, irrelevant to path/transaction-policy behaviour), and this
+      # job never fetches those bundles -- `--no-default-features` keeps it building the
+      # lightweight path this job actually needs, matching what its own tests exercise.
+      - name: Artifact path and transaction policy
+        run: |
+          cargo test -p generator_api --lib path
+          cargo test -p generator_api --lib artifacts
+          cargo test -p server --lib generation::plan --no-default-features
+          cargo test -p server --lib generation::apply --no-default-features

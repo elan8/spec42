@@ -1,0 +1,46 @@
+# Artifact path validation, driven from arguments so one plugin covers every rejection.
+
+[defaults]
+model = "minimal"
+plugin = "artifact_paths"
+
+[[case]]
+id = "artifact-paths/accepted"
+args = ["path=README.md", "path=nested/dir/file.txt"]
+expect = "success"
+assert = { output_files = 2 }
+
+[[case]]
+id = "artifact-paths/parent-escape"
+args = ["path=../escape.txt"]
+expect = "failure"
+failure = { category = "outputpolicy", message_contains = "forbidden component" }
+
+[[case]]
+id = "artifact-paths/absolute"
+args = ["path=/etc/passwd"]
+expect = "failure"
+failure = { category = "outputpolicy", message_contains = "absolute" }
+
+[[case]]
+id = "artifact-paths/case-collision"
+args = ["path=README.md", "path=readme.md"]
+expect = "failure"
+failure = { category = "outputpolicy", message_contains = "collides" }
+description = """
+Case-insensitive filesystems would make these one file, so the second write would win and
+every later run would conflict with no way to converge. Refused up front instead.
+"""
+
+[[case]]
+id = "artifact-paths/reserved-manifest"
+args = ["path=.spec42-generator-manifest.json"]
+expect = "failure"
+failure = { category = "outputpolicy", message_contains = "reserved" }
+
+[[case]]
+id = "artifact-paths/too-many-files"
+args = ["path=a.txt", "path=b.txt", "path=c.txt"]
+artifact_limits = { max_files = 2 }
+expect = "failure"
+failure = { category = "outputpolicy", message_contains = "the limit is 2" }

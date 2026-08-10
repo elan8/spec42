@@ -154,7 +154,11 @@ fetch_one() {
 
 ids=("$@")
 if [[ ${#ids[@]} -eq 0 ]]; then
-  mapfile -t ids < <(list_library_ids)
+  while IFS= read -r id; do
+    if [[ -n "${id}" ]]; then
+      ids+=("${id}")
+    fi
+  done < <(list_library_ids)
 fi
 
 for id in "${ids[@]}"; do

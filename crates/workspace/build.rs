@@ -314,7 +314,7 @@ fn pack_or_copy_library(entry: &LibraryEntry, out_kpar: &Path) {
         entry.id, entry.version
     );
     eprintln!(
-        "workspace build: set {env_source}, place sibling {}, or run scripts/fetch-kpar-library-bundle.sh {}",
+        "workspace build: set {env_source}, place sibling {}, or run scripts/fetch-kpar-libraries-bundle.sh {}",
         entry.pack.sibling_relative, entry.id
     );
     let _ = entry.config_path;

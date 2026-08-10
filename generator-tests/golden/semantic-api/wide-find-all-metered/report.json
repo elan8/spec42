@@ -1,0 +1,17 @@
+{
+  "outcome": {
+    "kind": "success"
+  },
+  "artifacts": {
+    "count.txt": {
+      "bytes": 5,
+      "text": "1201\n"
+    }
+  },
+  "diagnostics": [],
+  "query_count": 1,
+  "fuel_consumed": 8375354,
+  "peak_memory_bytes": 1703936,
+  "output_files": 1,
+  "output_bytes": 5
+}

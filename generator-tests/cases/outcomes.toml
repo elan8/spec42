@@ -1,0 +1,17 @@
+# Guest outcomes other than plain success.
+
+[[case]]
+id = "outcomes/generator-error"
+model = "minimal"
+plugin = "error_guest"
+args = ["because", "reasons"]
+expect = "failure"
+failure = { category = "generatorerror", phase = "guest-execution", message_contains = "deliberate failure" }
+description = "A guest returning Err fails the run and writes nothing."
+
+[[case]]
+id = "outcomes/no-artifacts"
+model = "minimal"
+plugin = "empty"
+description = "A generator may legitimately produce nothing."
+assert = { output_files = 0, output_bytes = 0 }

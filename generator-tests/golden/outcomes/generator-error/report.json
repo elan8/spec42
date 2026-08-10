@@ -1,0 +1,15 @@
+{
+  "outcome": {
+    "kind": "failure",
+    "category": "generatorerror",
+    "phase": "guest-execution",
+    "message": "deliberate failure: because reasons"
+  },
+  "artifacts": {},
+  "diagnostics": [],
+  "query_count": 0,
+  "fuel_consumed": null,
+  "peak_memory_bytes": 0,
+  "output_files": 0,
+  "output_bytes": 0
+}

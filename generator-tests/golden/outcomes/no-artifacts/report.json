@@ -1,0 +1,12 @@
+{
+  "outcome": {
+    "kind": "success"
+  },
+  "artifacts": {},
+  "diagnostics": [],
+  "query_count": 0,
+  "fuel_consumed": null,
+  "peak_memory_bytes": 1179648,
+  "output_files": 0,
+  "output_bytes": 0
+}

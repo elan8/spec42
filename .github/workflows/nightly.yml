@@ -283,3 +283,54 @@ jobs:
 
       - name: Check drone interconnection performance budgets
         run: node scripts/check-perf-budgets.mjs target/spec42-perf/drone-interconnection-performance.json
+
+  generator-exploratory:
+    name: Generator fuzzing and mutation (exploratory)
+    runs-on: ubuntu-latest
+    # Informational, not a gate. Neither fuzzing nor a mutation score can gate a PR: they are
+    # not reproducible from the same inputs twice, and required CI must be. What lasts from a
+    # run is a minimal input -- turn findings into deterministic regressions in
+    # crates/generator_api/tests/path_fuzz_corpus.rs and let those gate instead.
+    #
+    # Steps fail visibly rather than being swallowed by `|| true`: a missing tool or a broken
+    # target should be obvious, and `continue-on-error` already keeps the job advisory.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Rust nightly
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-fuzz
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-fuzz
+
+      - name: Install cargo-mutants
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+
+      - name: Fuzz artifact path parsing
+        run: cargo fuzz run artifact_path -- -max_total_time=300 -print_final_stats=1
+
+      - name: Fuzz ABI payload decoding
+        run: cargo fuzz run abi_decode -- -max_total_time=300 -print_final_stats=1
+
+      - name: Mutation-test the transaction planner
+        run: |
+          cargo mutants --package server --file 'src/generation/plan.rs' \
+            --timeout 60 --output target/mutants
+
+      - name: Upload exploratory artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generator-exploratory
+          if-no-files-found: ignore
+          path: |
+            fuzz/artifacts/**
+            target/mutants/**
