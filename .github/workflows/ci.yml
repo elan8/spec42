@@ -616,9 +616,14 @@ jobs:
       # (case folding, Unicode normalization, device names, alternate data streams) and the
       # transaction planner and executor. On Windows this also runs the differential test
       # that uses the platform itself as the oracle for what a valid filename is.
+      #
+      # `server`'s default features re-enable `workspace`'s embedded stdlib/KPAR libraries
+      # (correct for the shipped CLI, irrelevant to path/transaction-policy behaviour), and this
+      # job never fetches those bundles -- `--no-default-features` keeps it building the
+      # lightweight path this job actually needs, matching what its own tests exercise.
       - name: Artifact path and transaction policy
         run: |
           cargo test -p generator_api --lib path
           cargo test -p generator_api --lib artifacts
-          cargo test -p server --lib generation::plan
-          cargo test -p server --lib generation::apply
+          cargo test -p server --lib generation::plan --no-default-features
+          cargo test -p server --lib generation::apply --no-default-features
