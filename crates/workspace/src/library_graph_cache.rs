@@ -500,7 +500,13 @@ mod tests {
         let stored = build_fingerprint(std::slice::from_ref(&library)).unwrap();
 
         std::fs::write(&source, replacement).unwrap();
-        std::fs::File::open(&source)
+        // `set_times` needs `FILE_WRITE_ATTRIBUTES` on Windows, which a read-only handle from
+        // plain `File::open` does not carry -- only `write(true)` grants it there. Linux allows
+        // an owned file's mtime to change through a read-only descriptor, which is why this was
+        // easy to miss on that platform.
+        std::fs::File::options()
+            .write(true)
+            .open(&source)
             .unwrap()
             .set_times(std::fs::FileTimes::new().set_modified(original_mtime))
             .unwrap();
