@@ -1736,7 +1736,7 @@ package Demo {
         stakeholder holder : Thing;
     }
     use case def Mission {
-        actor operator;
+        actor someActor : Thing;
         objective goal : Req;
     }
     action def Survey {
@@ -1813,19 +1813,18 @@ package Demo {
             ))
         );
 
-        if let Some(actor_node) = projection
+        let actor_node = projection
             .nodes
             .iter()
             .find(|node| node.element_kind == sysml_model::ElementKind::Actor)
-        {
-            assert_eq!(
-                membership_for(&actor_node.qualified_name),
-                Some((
-                    HostRelationshipMetaclass::Membership,
-                    Some(HostMembershipKind::ActorMembership)
-                ))
-            );
-        }
+            .expect("actor node");
+        assert_eq!(
+            membership_for(&actor_node.qualified_name),
+            Some((
+                HostRelationshipMetaclass::Membership,
+                Some(HostMembershipKind::ActorMembership)
+            ))
+        );
 
         // Regression guard: `subject`/`stakeholder` used to fall into the generic
         // `FeatureMembership` bucket, and `objective` was unhandled entirely (silently defaulted

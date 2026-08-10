@@ -264,9 +264,10 @@ fn visit_repository_rust_files(root: &Path, visit: &mut impl FnMut(&Path)) {
 }
 
 fn is_presentation_only_membership_key_owner(path: &Path) -> bool {
-    matches!(
-        path.to_string_lossy().as_ref(),
-        value if value.ends_with("crates/language_service/src/presentation_hover.rs")
-            || value.ends_with("crates/workspace/src/comparison/relationships.rs")
-    )
+    // Compare against a `/`-normalized path so this matches on Windows too,
+    // where `path` carries `\` separators but the allowlist below is written
+    // with `/` (matching the crate-relative form used everywhere else in this file).
+    let normalized = path.to_string_lossy().replace('\\', "/");
+    normalized.ends_with("crates/language_service/src/presentation_hover.rs")
+        || normalized.ends_with("crates/workspace/src/comparison/relationships.rs")
 }

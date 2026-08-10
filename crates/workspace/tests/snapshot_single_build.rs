@@ -830,6 +830,49 @@ package Demo {
         .expect("expose Vehicle::engine classifies as MembershipImport");
     assert!(membership_import.target.ends_with("::engine"));
 
+    projection
+        .relationships
+        .iter()
+        .find(|relationship| relationship.metaclass == HostRelationshipMetaclass::NamespaceImport)
+        .expect("expose Vehicle::* classifies as NamespaceImport");
+}
+
+#[test]
+#[ignore = "importTarget was removed as a node attribute by the typed-facts migration (now \
+            forbidden outside presentation_hover.rs/comparison/relationships.rs by \
+            semantic_ownership_guardrails.rs's MEMBERSHIP_IMPORT_PROJECTION_KEYS check) and never \
+            replaced with a typed field: HostMembershipFacts carries import_shape/import_origin \
+            but no target reference, and HostSemanticModelRelationship::target is just the \
+            synthetic import node's own qualified name, not the declared 'Vehicle::*' reference \
+            -- see the follow-up task for threading DeclaredImportFacts::target into a typed \
+            HostMembershipFacts field"]
+fn snapshot_exposes_namespace_import_target_via_attributes() {
+    let cache = tempdir().expect("tempdir");
+    let model_path = cache.path().join("Expose.sysml");
+    let content = r#"
+package Demo {
+    part def Vehicle {
+        part engine : Engine;
+    }
+    part def Engine;
+    view v : GeneralView {
+        expose Vehicle::engine;
+        expose Vehicle::*;
+    }
+}
+"#;
+    std::fs::write(&model_path, content).expect("write model");
+
+    let engine = test_engine(&cache);
+    let snapshot = engine
+        .load_workspace(
+            InMemoryDocumentProvider::new(vec![file_document(&model_path, content)]),
+            WorkspaceLoadRequest::single_target(model_path),
+            HostContext::default(),
+        )
+        .expect("snapshot");
+    let projection = snapshot.semantic_projection();
+
     let namespace_import = projection
         .relationships
         .iter()

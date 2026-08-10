@@ -50,7 +50,9 @@ fn checked_in_fixture_skip_metadata_has_a_complete_contract() {
     let mut violations = Vec::new();
     visit_markdown(Path::new(FIXTURES), &mut |path| {
         let bytes = fs::read(path).expect("read fixture");
-        let fixture = String::from_utf8_lossy(&bytes);
+        // `fenced_section`'s markers are LF-only; normalize so a Windows checkout
+        // (CRLF line endings) doesn't make every fixture look like it has no META section.
+        let fixture = String::from_utf8_lossy(&bytes).replace("\r\n", "\n");
         if let Err(message) = validate_fixture_skip_metadata(&fixture) {
             violations.push(format!("{}: {message}", path.display()));
         }
