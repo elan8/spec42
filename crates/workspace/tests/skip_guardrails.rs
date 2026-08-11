@@ -207,13 +207,26 @@ fn visit_rust_files(root: &Path, visit: &mut dyn FnMut(&Path)) {
         let path = entry.path();
         let name = entry.file_name();
         if path.is_dir() {
-            if !matches!(name.to_str(), Some(".git" | "target" | "node_modules")) {
+            if !matches!(name.to_str(), Some(".git" | "target" | "node_modules"))
+                && !is_nested_checkout(&path)
+            {
                 visit_rust_files(&path, visit);
             }
         } else if path.extension().is_some_and(|extension| extension == "rs") {
             visit(&path);
         }
     }
+}
+
+/// Reports whether `path` is the root of a checkout other than this one — a submodule, or a
+/// linked worktree.
+///
+/// This guardrail asserts a contract about Rust sources this repository owns. A nested checkout
+/// carries its own copy of the tree, so descending into one both double-reports this checkout's
+/// files and attributes another checkout's violations to this one. Submodules have a `.git`
+/// directory and linked worktrees have a `.git` file, so testing for either covers both.
+fn is_nested_checkout(path: &Path) -> bool {
+    path.join(".git").exists()
 }
 
 fn visit_markdown(root: &Path, visit: &mut dyn FnMut(&Path)) {
