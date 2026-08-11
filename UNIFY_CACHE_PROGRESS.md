@@ -22,8 +22,8 @@ separately and must not be "fixed" by weakening assertions in passing.
 | # | Plan step | Status | Owner |
 |---|-----------|--------|-------|
 | 1 | Round-trip prerequisites, incl. attribute-bag removal | in progress | see B9 table |
-| 2 | Typed BLAKE3 identities, exact source snapshots, metadata v2 | not started | blocked on 3 |
-| 3 | Lock-free sharded store, postcard/zstd envelope, capacity, management API | in progress | `feat/cache-store-foundation` |
+| 2 | Typed BLAKE3 identities, exact source snapshots, metadata v2 | in progress | `feat/source-identity-blake3` |
+| 3 | Lock-free sharded store, postcard/zstd envelope, capacity, management API | done | merged |
 | 4 | Parse, library-index, closure, library-graph, workspace-graph artifacts | not started | blocked on 2, 3 |
 | 5 | `SemanticBuildService`, route every production surface through it | not started | blocked on 4 |
 | 6 | CLI management and observability | not started | blocked on 5 |
@@ -48,11 +48,29 @@ the same files; ownership is per key, not per file.
 |-------|------|--------|--------|
 | A | `shortName` | in progress | `feat/b9-shortname-units` |
 | B | unit prefix/conversion/value-expression metadata | in progress | `feat/b9-shortname-units` |
-| C | state machine: `source`, `target`, `isInitial`, `targetIsDone`, `stateName`, `finalStateCount` | in progress | `feat/b9-state-facts` |
-| D | source fidelity: `doc`, `body`, `text`, `language`, `metaclassRole`, `keyword` (hover use) | in progress | `feat/b9-source-fidelity` |
+| C | state machine: `source`, `target`, `isInitial`, `targetIsDone`, `stateName`, `finalStateCount` | merged | `feat/b9-state-facts` |
+| D | source fidelity: `doc`, `body`, `text`, `language`, `keyword` (hover use) | merged | `feat/b9-source-fidelity` |
 | E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | not started | |
-| F | relationship endpoints and type classification: `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes`, `endType`, the `*Type` family, `keyword` (metadata-view use) | not started | |
+| F | relationship endpoints, type classification, and semantic classification keys: `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes`, `endType`, the `*Type` family, `metaclassRole`, `keyword` (metadata-view use) | not started | |
 | G | presentation cutover and field deletion: `generalView*` rollups, remaining `lsp_server`/`server`/`generator_api`/`workspace` consumers, then delete the field | not started | |
+
+Chunk C additionally deleted `stateName` outright as a redundant duplicate of the node's own
+name, and replaced the `finalStateCount`/`doneTransitionCount` visit counters with a derivation
+over the graph rather than storing a counter as a fact.
+
+Chunk D reclassified `metaclassRole`: it has no documentation or hover consumer at all, and its
+only two readers make a genuine semantic classification decision, so it moved to chunk F.
+
+### Transitional dual population
+
+Chunk D leaves its producers writing *both* the typed `SourceTextFacts` and the legacy attribute
+entries for keys whose remaining consumers have not migrated yet. Every read it owns goes through
+the typed fact, so there is no dual-read path, but the legacy write is a second writer and must
+not outlive the migration.
+
+Chunk G is responsible for deleting those writes along with the field. A chunk that removes the
+last consumer of a key must also remove that key's legacy write; the attribute bag is not
+considered gone while any producer still populates it.
 
 Chunk E is the largest and is best split into a producer-side pass in `sysml_model` followed by a
 consumer-side pass in `sysml_diagnostics`. Chunks E and F both touch `graph_builder/action.rs`,
