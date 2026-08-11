@@ -13,12 +13,12 @@ use url::Url;
 
 use super::discovery::path_to_file_url;
 use super::projection::{
-    HostAnalysisEvaluation, HostConnectorEnd, HostElementFacts, HostEvaluatedScalar,
-    HostEvaluationQuery, HostExpression, HostExpressionArgument, HostExpressionEvaluation,
-    HostFeatureOwnership, HostFeatureOwnershipProvenance, HostFeatureProperties, HostFeatureValue,
-    HostImpliedRelationshipRule, HostImportOrigin, HostImportShape, HostMembershipFacts,
-    HostMembershipKind, HostMembershipVisibilityProvenance, HostMultiplicity,
-    HostRelationshipMetaclass, HostRelationshipProvenance, HostSemanticModelNode,
+    HostAnalysisEvaluation, HostConnectorEnd, HostDerivedRelationshipRule, HostElementFacts,
+    HostEvaluatedScalar, HostEvaluationQuery, HostExpression, HostExpressionArgument,
+    HostExpressionEvaluation, HostFeatureOwnership, HostFeatureOwnershipProvenance,
+    HostFeatureProperties, HostFeatureValue, HostImpliedRelationshipRule, HostImportOrigin,
+    HostImportShape, HostMembershipFacts, HostMembershipKind, HostMembershipVisibilityProvenance,
+    HostMultiplicity, HostRelationshipMetaclass, HostRelationshipProvenance, HostSemanticModelNode,
     HostSemanticModelRelationship, HostSemanticProjection, HostVisibilityKind,
 };
 use super::validation::{HostValidatedDocument, HostValidationReport, HostValidationSummary};
@@ -990,6 +990,9 @@ fn relationship_provenance_discriminator(
         sysml_model::RelationshipProvenance::Implied(
             sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
         ) => "implied:universal-standard-library-relationship",
+        sysml_model::RelationshipProvenance::Derived(
+            sysml_model::DerivedRelationshipRule::CaseSubjectFromTypedSubject,
+        ) => "derived:case-subject-from-typed-subject",
     }
 }
 
@@ -1002,6 +1005,11 @@ fn host_relationship_provenance(
             sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
         ) => HostRelationshipProvenance::Implied(
             HostImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ),
+        sysml_model::RelationshipProvenance::Derived(
+            sysml_model::DerivedRelationshipRule::CaseSubjectFromTypedSubject,
+        ) => HostRelationshipProvenance::Derived(
+            HostDerivedRelationshipRule::CaseSubjectFromTypedSubject,
         ),
     }
 }

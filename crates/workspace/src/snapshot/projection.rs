@@ -52,6 +52,7 @@ pub enum HostRelationshipProvenance {
     #[default]
     Authored,
     Implied(HostImpliedRelationshipRule),
+    Derived(HostDerivedRelationshipRule),
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -59,6 +60,12 @@ pub enum HostRelationshipProvenance {
 pub enum HostImpliedRelationshipRule {
     UniversalStandardLibraryRelationship,
     EnumerationValueTyping,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub enum HostDerivedRelationshipRule {
+    CaseSubjectFromTypedSubject,
 }
 
 /// The KerML membership form used to establish containment.  This is kept
