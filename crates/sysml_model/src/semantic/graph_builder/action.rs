@@ -131,7 +131,7 @@ impl ThenActionChain {
             "action",
         );
         let mut attrs = HashMap::new();
-        insert_action_payload_attrs(&mut attrs, action);
+        let payload_type_refs = insert_action_payload_attrs(&mut attrs, action);
         add_node_and_recurse(
             g,
             uri,
@@ -142,6 +142,7 @@ impl ThenActionChain {
             attrs,
             Some(parent_id),
         );
+        super::payload::apply_payload_type_refs(g, uri, &action_qualified, &payload_type_refs);
         add_typing_edge_if_exists(
             g,
             uri,
@@ -203,10 +204,6 @@ pub(super) fn add_in_out_decl(
             InOut::Out => "out",
             InOut::InOut => "inout",
         }),
-    );
-    attrs.insert(
-        "parameterType".to_string(),
-        serde_json::json!(&parameter.type_name),
     );
     add_node_and_recurse(
         g,
@@ -521,18 +518,12 @@ fn add_default_reference_usage(
 ) {
     let value = &node.value;
     let qualified = qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute");
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&value.membership),
     );
     let targets = typing_targets(value.typing.as_deref());
-    if !targets.is_empty() {
-        attrs.insert(
-            "attributeType".to_string(),
-            serde_json::json!(targets.join(", ")),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -693,7 +684,7 @@ fn materialize_nested_action_usage(
         crate::semantic::ast_util::declared_membership_facts(&au_node.membership),
     );
     let mut attrs = action_usage_graph_attrs(au_node);
-    insert_action_payload_attrs(&mut attrs, au_node);
+    let payload_type_refs = insert_action_payload_attrs(&mut attrs, au_node);
     add_node_and_recurse(
         g,
         uri,
@@ -704,6 +695,7 @@ fn materialize_nested_action_usage(
         attrs,
         Some(parent_id),
     );
+    super::payload::apply_payload_type_refs(g, uri, &child_qualified, &payload_type_refs);
     let action_id = NodeId::new(uri, &child_qualified);
     attach_action_usage_facts(g, &action_id, au_node);
     wire_action_usage_typing(g, uri, &child_qualified, au_node, container_prefix);
@@ -1276,7 +1268,7 @@ pub(super) fn materialize_top_level_action_usage(
         crate::semantic::ast_util::declared_membership_facts(&usage.membership),
     );
     let mut attrs = action_usage_graph_attrs(usage);
-    insert_action_payload_attrs(&mut attrs, usage);
+    let payload_type_refs = insert_action_payload_attrs(&mut attrs, usage);
     add_node_and_recurse(
         g,
         uri,
@@ -1287,6 +1279,7 @@ pub(super) fn materialize_top_level_action_usage(
         attrs,
         parent_id,
     );
+    super::payload::apply_payload_type_refs(g, uri, &qualified, &payload_type_refs);
     let action_id = NodeId::new(uri, &qualified);
     attach_action_usage_facts(g, &action_id, usage);
     wire_action_usage_typing(g, uri, &qualified, usage, container_prefix);

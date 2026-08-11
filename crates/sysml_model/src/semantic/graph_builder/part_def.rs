@@ -37,14 +37,11 @@ pub(super) fn build_from_part_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, name, "attribute def");
             let range = span_to_range(&n.span);
-            let mut attrs = HashMap::new();
+            let attrs = HashMap::new();
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&n.membership),
             );
-            if let Some(ref t) = n.typing {
-                attrs.insert("attributeType".to_string(), serde_json::json!(t));
-            }
             add_node_and_recurse(
                 g,
                 uri,

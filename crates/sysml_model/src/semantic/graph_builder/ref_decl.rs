@@ -39,8 +39,7 @@ pub(super) fn materialize_ref_decl(
     let n = &wrap.value;
     let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "ref");
     let range = span_to_range(&wrap.span);
-    let mut attrs = HashMap::new();
-    attrs.insert("refType".to_string(), serde_json::json!(&n.type_name));
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),

@@ -46,7 +46,7 @@ pub(super) fn build_from_attribute_body(
                 let value = &attribute.value;
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, &value.name, "attribute def");
-                let mut attrs = HashMap::new();
+                let attrs = HashMap::new();
                 g.register_declared_membership_facts(
                     NodeId::new(uri, &qualified),
                     crate::semantic::ast_util::declared_membership_facts(&value.membership),
@@ -55,12 +55,6 @@ pub(super) fn build_from_attribute_body(
                     g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
                 }
                 let targets = typing_targets(value.typing.as_deref());
-                if !targets.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(targets.join(", ")),
-                    );
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -83,7 +77,7 @@ pub(super) fn build_from_attribute_body(
                         node.expression_text.default_value = Some(rendered);
                     }
                 }
-                for target in typing_targets(value.typing.as_deref()) {
+                for target in targets.iter().copied() {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
                 attach_nested_doc_comments(g, &node_id, &value.body);
@@ -93,18 +87,12 @@ pub(super) fn build_from_attribute_body(
                 let name = super::effective_usage_name(&value.name, value.redefines.as_deref());
                 let qualified =
                     qualified_name_for_node(g, uri, container_prefix, name, "attribute");
-                let mut attrs = HashMap::new();
+                let attrs = HashMap::new();
                 g.register_declared_membership_facts(
                     NodeId::new(uri, &qualified),
                     crate::semantic::ast_util::declared_membership_facts(&value.membership),
                 );
                 let targets = typing_targets(value.typing.as_deref());
-                if !targets.is_empty() {
-                    attrs.insert(
-                        "attributeType".to_string(),
-                        serde_json::json!(targets.join(", ")),
-                    );
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -144,7 +132,7 @@ pub(super) fn build_from_attribute_body(
                 if let Some(node) = g.get_node_mut(&node_id) {
                     node.declared_facts.unit = unit_metadata::attribute_usage_unit_facts(value);
                 }
-                for target in typing_targets(value.typing.as_deref()) {
+                for target in targets.iter().copied() {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
                 attach_nested_doc_comments(g, &node_id, &value.body);

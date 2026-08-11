@@ -33,7 +33,7 @@ pub(super) fn add_end_decl(
     let n = &wrap.value;
     let range = span_to_range(&wrap.span);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "interface end");
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     if subsetting_target(n.references.as_deref()).is_none() {
         // spec42#1/#2: `::>`/`references` names a reference (KerML `ReferenceSubsetting`), not a
         // type. Previously this always also set `portType`, which feeds the generic
@@ -44,7 +44,6 @@ pub(super) fn add_end_decl(
         // `link_subsetting_family_edges_for_node` already resolves into a proper
         // `ReferenceSubsetting` edge the same way attribute/occurrence usages' `references`
         // clauses do.
-        attrs.insert("portType".to_string(), serde_json::json!(&n.type_name));
     }
     add_node_and_recurse(
         g,

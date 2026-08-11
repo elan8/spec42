@@ -1225,6 +1225,40 @@ pub struct DeclaredSemanticFacts {
     /// `UNIFY_CACHE_PROGRESS.md` chunk F).
     #[serde(default)]
     pub modeled_keyword: Option<String>,
+    /// Authored payload-typing display text for an action/transition `accept`/`send` clause
+    /// (`accept x : T` / `send x : T`), deliberately kept OUT of `relationships.typing`. Routing
+    /// it there would send it through the over-broad workspace-wide
+    /// `link_workspace_relationships_pass`, which resolves references without the KerML
+    /// namespace-containment/visibility scoping the specification requires -- a semantic defect
+    /// tracked in `RESOLUTION_LAYER_INVESTIGATION.md` ("type-reference resolution ignores KerML
+    /// scoping"), not specific to payload clauses. Migrate into `relationships.typing` once that
+    /// defect is fixed. Distinct from a named flow's own payload feature typing, which already
+    /// resolves through an ordinary `Typing` edge (was `attributes["payloadType"]` for
+    /// accept/send clauses only; the named-flow-payload use of the same key was a pure duplicate
+    /// of its `Typing` edge and was retired, not migrated).
+    #[serde(default)]
+    pub payload_type_reference: Option<String>,
+    /// Authored payload-typing display text for an action/transition `accept` clause
+    /// specifically, kept separate from `payload_type_reference` because an `accept` clause
+    /// publishes both an accept-specific name/type pair and the general payload name/type pair
+    /// (see `graph_builder::payload::insert_payload_clause_attrs`). Same resolution-scoping
+    /// rationale as `payload_type_reference` (was `attributes["acceptType"]`).
+    #[serde(default)]
+    pub accept_type_reference: Option<String>,
+}
+
+impl DeclaredRelationshipFacts {
+    /// The first authored typing target's display text, if any. Several element kinds
+    /// (`part`/`port`/`ref`/`in out parameter`) used to duplicate this into a `*Type` attribute
+    /// map entry alongside the real `Typing` edge/declared fact; this accessor is their single
+    /// replacement (`UNIFY_CACHE_PROGRESS.md` B9 chunk-G-remaining `partType`/`portType`/
+    /// `refType`/`parameterType` rewiring).
+    pub fn typing_display(&self) -> Option<&str> {
+        self.typing
+            .first()
+            .map(|target| target.reference.as_str())
+            .filter(|reference| !reference.trim().is_empty())
+    }
 }
 
 impl DeclaredSemanticFacts {
