@@ -25,13 +25,13 @@ struct Cli {
     #[command(subcommand)]
     command: Command,
     /// Root directory containing Markdown snapshots.
-    #[arg(long, default_value = "test/snapshots")]
+    #[arg(long, default_value = "test/snapshots", global = true)]
     root: PathBuf,
     /// Restrict the operation to one path relative to --root (or an explicit path).
-    #[arg(long)]
+    #[arg(long, global = true)]
     fixture: Option<PathBuf>,
     /// Construction strategy used for the immutable semantic publication.
-    #[arg(long, value_enum, default_value_t = Strategy::Sequential)]
+    #[arg(long, value_enum, default_value_t = Strategy::Sequential, global = true)]
     strategy: Strategy,
 }
 
