@@ -103,8 +103,46 @@ SysML producer but still have presentation consumers
 `lsp_server/src/lsp_runtime/symbols.rs`'s `attributeType`/`dataType`/`type` fallback) was reverted
 after it changed a semantic-graph golden fixture: `link_workspace_relationships_pass` republishes
 edges from every populated `relationships.typing` entry using workspace-wide resolution, which
-resolved an edge the corpus fixture expects to stay unresolved. That interaction needs a
-deliberate design decision, not a drive-by fix, before attribute typing can move.
+resolved an edge the corpus fixture expects to stay unresolved. That interaction has now been
+settled normatively — see below.
+
+## Finding: type-reference resolution ignores KerML scoping
+
+Investigated against the OMG pilot implementation. This is a semantic defect in Spec42, not a
+cache or attribute-bag question, and it is not specific to attributes.
+
+**Attribute typing is an ordinary `FeatureTyping`.** `AttributeUsage`, `PartUsage`, `PortUsage`
+and `ItemUsage` all route through one shared grammar chain ending at
+`org.omg.sysml.xtext/.../SysML.xtext:437-444`; there is no attribute-specific typing rule.
+`AttributeUsage.java:32` extends `Usage`, and `Feature.java:549` (`getOwnedTyping`) and `:418`
+(`getType`) are inherited uniformly. The DataType restriction is enforced *after* resolution by a
+separate validator (`SysMLValidator.xtend:559-562`, `checkAttributeUsage`), and the pilot's own
+expectation test `AttributeUsage_invalid.sysml.xt:37-61` shows `attribute a : A;` with `A` a
+`part def` resolving successfully and only then failing validation. So recording attribute typing
+in `relationships.typing` is correct, and the untyped-string treatment is the artifact.
+
+**But `link_workspace_relationships_pass` resolves type references workspace-wide, where the
+specification requires namespace-containment walking with visibility and import filtering.** The
+pilot routes `FeatureTyping` through `KerMLScopeProvider.xtend:96-97` to
+`scope_nonExpressionNamespace`, which descends `scope_Namespace → scopeFor` (`:137-173`), walking
+up `NamespaceUtil.getParentNamespaceOf` and only falling back to the global index at the namespace
+root (`:166-167`). `SysMLScopeProvider.xtend:55-78` inherits this for attributes unchanged.
+
+This affects **every** typing kind, not attributes specifically. The golden fixture that flipped
+was exposing a pre-existing scoping gap; it is evidence for the scoping bug, not against recording
+attribute typing.
+
+Consequences: the attribute-typing rewire and the `symbols.rs` fallback are blocked on fixing the
+scoping, not on a design decision about attributes. The fix belongs to the resolution pass and
+must be scoped to all typing kinds. It is not yet scheduled, and it should be sequenced against
+B3, which is auditing the same layer for ordering determinism. Until then the corpus fixture must
+not be changed.
+
+This matters for the cache beyond correctness: the plan requires full, incremental, cached and
+parallel paths to be observably equivalent, which is only meaningful once resolution itself is
+well defined. Together with B1's finding that whole-graph and incremental linking are two
+independently implemented resolution engines, the resolution layer is the least settled part of
+this work.
 
 ### Resolving normative language questions
 
@@ -181,3 +219,15 @@ Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemantic
 | B9 | Attribute bag removed | in progress |
 | B10 | Decode bounds; no stack overflow on hostile nesting | in progress (store layer) |
 | B11 | `GraphStateFingerprint` plus query and post-edit differential suites | not started |
+
+## Semantic defects found while doing this work
+
+These are pre-existing correctness problems surfaced by the cache effort, not caused by it. They
+are listed separately because they are not cache work and outlive it.
+
+| Defect | Status |
+|--------|--------|
+| Cross-document edge ownership was not reconstructible; a stale edge could survive an edit beside its replacement | fixed by B1 |
+| Whole-graph linking and the scoped/incremental resolver are two independently implemented resolution engines | open, unscheduled |
+| Type-reference resolution is workspace-wide where KerML requires containment, visibility and import scoping; affects all typing kinds | open, unscheduled |
+| 22 pre-existing `snapshot_single_build` failures on `main` | open, out of scope for this effort |
