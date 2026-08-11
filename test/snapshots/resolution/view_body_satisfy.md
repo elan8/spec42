@@ -23,17 +23,6 @@ package ViewCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ViewCoverage {
-    viewpoint def ArchitectureViewpoint;
-    view def ArchitectureView;
-    view architecture : ArchitectureView {
-        satisfy ArchitectureViewpoint;
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

@@ -54,37 +54,6 @@ package CoverageIndividual {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package CoverageIndividual {
-    individual def D1;
-    individual occurrence def D2;
-    individual item def D3;
-    individual part def D4;
-    individual action def D5;
-    individual state def D6;
-    individual connection def D7;
-    individual calc def D8;
-    individual constraint def D9;
-    individual requirement def D10;
-    individual concern def D11;
-    individual case def D12;
-    individual analysis def D13;
-    individual verification def D14;
-    individual view def D15;
-    individual viewpoint def D16;
-    individual rendering def D17;
-
-    individual p1;
-    individual occurrence o1;
-    individual item i1;
-    individual part p2;
-    individual port po1;
-    individual action a1;
-    individual state s1;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

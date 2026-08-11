@@ -18,13 +18,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    feature g featured by c = 42;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

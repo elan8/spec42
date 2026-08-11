@@ -45,34 +45,6 @@ package ExpressionCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ExpressionCoverage {
-    classifier Vehicle;
-    classifier Item;
-
-    feature s = "hello";
-    feature r = 3.14;
-    feature r2 = .5;
-    feature n = null;
-    feature inf = *;
-
-    feature items : Item[*];
-    feature arr = items[0];
-    feature h = items#(0);
-    feature all_v = all Vehicle;
-
-    feature coll = items.{in i; i};
-    feature sel = items.?{in i; i != null};
-
-    feature seq = (1, 2, 3);
-
-    feature cond = if true ? 1 else 0;
-
-    feature meta_access = Vehicle.metadata;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

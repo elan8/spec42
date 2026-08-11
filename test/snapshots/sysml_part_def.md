@@ -16,11 +16,6 @@ part def Vehicle { }
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-part def Vehicle { }
-
-~~~
 # SMG
 ~~~
 (semantic-model

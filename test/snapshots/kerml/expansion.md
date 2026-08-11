@@ -31,14 +31,6 @@ package Expansion {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Expansion {
-    private import ControlFunctions::select;
-    feature x = x->select {in y; in w; in z; w+1};
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

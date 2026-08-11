@@ -18,13 +18,6 @@ package Foo {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Foo {
-    feature x;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

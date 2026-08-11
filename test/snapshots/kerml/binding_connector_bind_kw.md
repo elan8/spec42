@@ -27,22 +27,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    class C {
-        feature x;
-        feature y;
-        feature startShot;
-        feature endShot;
-        feature baseEdges;
-
-        binding [1] bind [0..*] x = [0..*] y;
-        binding b bind lhs = rhs;
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

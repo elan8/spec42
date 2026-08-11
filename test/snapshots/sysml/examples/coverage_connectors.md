@@ -37,26 +37,6 @@ part def System {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-part def A { port p1; port p2; }
-part def B { port q1; port q2; }
-
-part def System {
-    part a : A;
-    part b : B;
-
-    connector c1 from a.p1 to b.q1;
-    connector c2 :> c1 from a.p2 to b.q2;
-
-    binding b1 of a.p1 = b.q1;
-    binding of a.p2 = b.q2;
-
-    ref part engine : A;
-    individual part myA : A;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

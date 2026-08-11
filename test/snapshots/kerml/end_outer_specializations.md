@@ -34,26 +34,6 @@ assoc JustOutsideOf specializes OutsideOf {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-assoc HappensDuring specializes HappensLink {
-	end feature shorterOccurrence: Occurrence redefines sourceOccurrence crosses longerOccurrence.timeEnclosedOccurrences;
-	end happensDuring [1..*] subsets timeCoincidentOccurrences feature thatOccurrence: Occurrence redefines longerOccurrence;
-}
-
-assoc PortionOf specializes Within {
-	end portionWithin subsets portionOf feature portionedOccurrence: Occurrence redefines largerOccurrence;
-}
-
-assoc WithinBoth specializes Within {
-	end withinBoth subsets spaceTimeCoincidentOccurrences feature thatOccurrence redefines largerOccurrence;
-}
-
-assoc JustOutsideOf specializes OutsideOf {
-	end feature redefines separateSpaceToo: Occurrence crosses separateSpace.justOutsideOfOccurrences;
-	end feature redefines separateSpace: Occurrence crosses separateSpaceToo.justOutsideOfOccurrences;
-}
-~~~
 # SMG
 ~~~
 (semantic-model

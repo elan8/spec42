@@ -47,30 +47,6 @@ abstract part def Container {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-abstract part def AbstractVehicle;
-abstract attribute def Weight;
-abstract item def AbstractWidget;
-abstract port def AbstractPort;
-abstract enum def AbstractPriority;
-abstract individual def AbstractPerson;
-abstract occurrence def AbstractEvent;
-
-variation part def EngineChoices {
-    variant part fourCyl;
-    variant part sixCyl;
-}
-
-abstract part def Container {
-    abstract attribute def InnerWeight;
-    abstract enum def InnerColor;
-    abstract item def InnerWidget;
-    abstract part def InnerPart;
-    abstract port def InnerPort;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

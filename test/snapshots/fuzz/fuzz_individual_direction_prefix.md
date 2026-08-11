@@ -24,11 +24,6 @@ in individual it;
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-in individual it;
-
-~~~
 # SMG
 ~~~
 (semantic-model

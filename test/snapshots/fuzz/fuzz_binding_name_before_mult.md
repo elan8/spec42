@@ -24,13 +24,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    binding b [5] of a = c;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

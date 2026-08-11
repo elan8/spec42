@@ -23,18 +23,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    class Container {
-        step a1 : Action1;
-        succession a1 then a2;
-        flow a1.y to a2.x;
-        succession flow=sf from a1.y to a2.x;
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

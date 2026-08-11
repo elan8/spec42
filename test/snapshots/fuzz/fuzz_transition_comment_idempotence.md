@@ -34,21 +34,6 @@ state def S {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package j {
-    state def S {
-        entry; then off;
-        state off;
-        transition t first accept X state package Timebehavior TakePicture          //ce [0..1];
-        member step 'm' : ControlPerformances::MergePerformance [0..1] featured by TakePicture_snapshoure {
-            public import 'merge';
-        }
-    }
-
-    // var step focus [0..1];               member step package RiskMetadataExEmple {
-
-~~~
 # SMG
 ~~~
 (semantic-model

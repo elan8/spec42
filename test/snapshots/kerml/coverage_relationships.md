@@ -46,35 +46,6 @@ package RelationshipCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package RelationshipCoverage {
-    type A;
-    type B;
-    type C;
-    type D;
-    feature f;
-    feature g;
-    feature parent;
-    feature child;
-
-    disjoining d1 disjoint A from B;
-    disjoint C from D;
-
-    typing t1 typing f typed by B;
-    typing g : A;
-
-    subset parent subsets f;
-
-    redefinition child :>> parent;
-    redefinition f redefines g;
-
-    type UnionType unions A, B;
-    type InterType intersects A, B;
-    type DiffType differences A, B;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

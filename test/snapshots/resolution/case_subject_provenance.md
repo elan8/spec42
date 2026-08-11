@@ -21,16 +21,6 @@ package M {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package M {
-    part def P;
-    analysis def A {
-        subject s : P;
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

@@ -18,11 +18,6 @@ class B :> A { }
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-class B :> A { }
-
-~~~
 # SMG
 ~~~
 (semantic-model

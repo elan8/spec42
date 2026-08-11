@@ -22,11 +22,6 @@ package MyPkg { }; in newX : Real;
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package MyPkg { }; in newX : Real;
-
-~~~
 # SMG
 ~~~
 (semantic-model

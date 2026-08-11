@@ -31,14 +31,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    part bad_first : MissingFirst;
-    part bad_second : MissingSecond;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

@@ -19,14 +19,6 @@ state def SD {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-state def SD {
-    step s;
-    step s2 subsets step;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

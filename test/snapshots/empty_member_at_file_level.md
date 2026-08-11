@@ -24,11 +24,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-; in v : SpeedVal
-
-~~~
 # SMG
 ~~~
 (semantic-model

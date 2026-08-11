@@ -27,16 +27,6 @@ package 'αβ' {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package 'αβ' {
-    class '漢字';
-    type '🧪' :> Base::Anything;
-    class 'é';
-    class 'Ω' :> Pkg::'β';
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

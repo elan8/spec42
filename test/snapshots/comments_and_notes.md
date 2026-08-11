@@ -31,12 +31,6 @@ y
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-x /* comment */ // note
-y
-
-~~~
 # SMG
 ~~~
 (semantic-model

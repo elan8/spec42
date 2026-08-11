@@ -27,16 +27,6 @@ package BindingNamedMult {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package BindingNamedMult {
-    binding instant[instantNum] of startShot = endShot;
-    binding all startShot = endShot;
-    binding x bind a = b;
-    binding [0..1] a = b;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

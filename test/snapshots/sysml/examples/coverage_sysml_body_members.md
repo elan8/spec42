@@ -87,40 +87,6 @@ part def Outer {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-part def Outer {
-    attribute def InnerAttr;
-    enum def InnerEnum { enum value a; enum value b; }
-    occurrence def InnerOccurrence;
-    individual def InnerIndividual;
-    item def InnerItem;
-    part def InnerPart;
-    port def InnerPort;
-
-    attribute x : Integer;
-    enum e : InnerEnum;
-    occurrence o1;
-    individual ind1 : InnerIndividual;
-    item it1 : InnerItem;
-    part p1 : InnerPart;
-    port pt1 : InnerPort;
-
-    event occurrence ev1;
-    ref r1 : InnerPart;
-    snapshot snap1;
-    timeslice ts1;
-
-    in attribute inAttr : Integer;
-    out attribute outAttr : Integer;
-    inout attribute inoutAttr : Integer;
-
-    derived attribute derivedAttr : Integer;
-    const attribute constAttr : Integer = 42;
-    end feature endFeat;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

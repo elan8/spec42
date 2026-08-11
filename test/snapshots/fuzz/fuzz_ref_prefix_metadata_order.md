@@ -20,15 +20,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    class C {
-        ref #MyAnnotation self : C;
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

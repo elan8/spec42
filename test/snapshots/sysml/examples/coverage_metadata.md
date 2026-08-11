@@ -42,25 +42,6 @@ package Annotated {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-metadata def Classified;
-metadata def Approval;
-
-package Annotated {
-    @ Classified about Annotated;
-
-    part def Vehicle;
-    part def Engine;
-
-    metadata m : Classified about Vehicle, Engine;
-
-    #Classified part def AnnotatedPart;
-
-    #Approval #Classified part def MultiAnnotated;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

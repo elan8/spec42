@@ -18,11 +18,6 @@ feature x : Integer;
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-feature x : Integer;
-
-~~~
 # SMG
 ~~~
 (semantic-model

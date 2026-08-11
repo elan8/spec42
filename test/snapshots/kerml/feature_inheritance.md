@@ -22,16 +22,6 @@ package FeatureInheritance {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package FeatureInheritance {
-	feature s {
-		feature t : ISQ::TorqueValue;
-	}
-	
-	feature u subsets s;
-}
-~~~
 # SMG
 ~~~
 (semantic-model

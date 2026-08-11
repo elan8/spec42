@@ -36,25 +36,6 @@ package FeatureSubDeclCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package FeatureSubDeclCoverage {
-    feature a [1];
-    feature b [0..*];
-    feature c = 42;
-    feature d := 99;
-    feature e default = 0;
-    feature f default := 1;
-    feature g featured by T;
-    feature h inverse of g;
-
-    inverse f of g;
-    inverting myInv inverse f of g;
-    featuring f by T;
-    featuring myFeat of f by T;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

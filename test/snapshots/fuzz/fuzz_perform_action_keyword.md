@@ -30,19 +30,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    action def A {
-        for x in seq {
-            perform action doStuff : DoStuff {
-                for y in items { }
-            }
-        }
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

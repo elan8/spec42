@@ -25,20 +25,6 @@ package FuncSpec {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package FuncSpec {
-    function F specializes Base::G { }
-    function H :> Base::I, Base::J { }
-    abstract function K :> Base::L;
-    predicate P specializes Base::Q { }
-    predicate R :> Base::S;
-    function FI specializes Base::G intersects Base::H { }
-    predicate PI specializes Base::Q intersects Base::R, Base::S { }
-    inv I { not x }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

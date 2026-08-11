@@ -16,11 +16,6 @@ package P { action def ExecuteMission { action validateRoute; action startMissio
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P { action def ExecuteMission { action validateRoute; action startMission; first validateRoute then startMission; } }
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

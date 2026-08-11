@@ -44,17 +44,6 @@ package Use {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package A { part def Thing; }
-package B { part def Thing; }
-package Use {
-    import A::*;
-    import B::*;
-    part usage : Thing;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

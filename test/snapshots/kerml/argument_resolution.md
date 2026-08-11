@@ -32,26 +32,6 @@ package ArgumentResolutionBug {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ArgumentResolutionBug {
-	class A {
-		feature x;
-	}
-	
-	behavior B  {
-		in feature x;
-		out feature : A = new A(x);
-	}
-	
-	class C {
-		feature a : A;
-		feature b : B;
-		
-		connector a ::> a.x to b;
-	}
-}
-~~~
 # SMG
 ~~~
 (semantic-model

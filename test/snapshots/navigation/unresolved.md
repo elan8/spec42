@@ -24,13 +24,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    part engine : MissingEngine;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

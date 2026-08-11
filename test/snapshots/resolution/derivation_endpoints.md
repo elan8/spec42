@@ -24,18 +24,6 @@ package DerivationCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package DerivationCoverage {
-    requirement def ParentRequirement;
-    requirement def ChildRequirement;
-    #derivation connection {
-        end #original ::> ParentRequirement;
-        end #derive ::> ChildRequirement;
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

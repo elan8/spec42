@@ -24,19 +24,6 @@ package FeatureDeclCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package FeatureDeclCoverage {
-    classifier Base;
-    feature f;
-    step s :> f;
-    expr e :> f;
-    bool b :> f;
-    inv i :> f;
-    step s2 [0..1] = 42;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

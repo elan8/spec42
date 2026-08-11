@@ -23,17 +23,6 @@ package ion {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ion {
-  class A {
-    in f;
-  }
-
-  class A { in #su<f;
-  }
-}
-~~~
 # SMG
 ~~~
 (semantic-model

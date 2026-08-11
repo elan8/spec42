@@ -34,23 +34,6 @@ package Demo {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Demo {
-    enum def StateCode {
-        enum approved;
-    }
-    part def StatusNamedType;
-    part def Base {
-        attribute value : StatusNamedType;
-    }
-    part def Derived :> Base;
-    part host : Derived {
-        attribute value = "approved";
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

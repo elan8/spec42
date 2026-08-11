@@ -16,11 +16,6 @@ package M { part def System { part a; part b; connect a to b; } }
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package M { part def System { part a; part b; connect a to b; } }
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

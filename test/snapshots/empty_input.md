@@ -15,11 +15,6 @@ type=file
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-
-
-~~~
 # SMG
 ~~~
 (semantic-model

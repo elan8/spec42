@@ -41,22 +41,6 @@ er E specializes C intersects A, B;
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ers {
-	//*>> baseTyclassifier A;,	classifier B;
-
-	specializaaaaaaaaaaaaaaaaaaaaaaaaaaA specializes B;
-	specialization swbclassifier B :> A;
-
-	Uubclassifier C s cializes A;
-	subclassifier C speciaer D disjoint fr_m C differecializes A, B;
-		caassifier D disjoint fr_m C differences A, B;
-	cla[sifie Conjugation {
-er E specializes C intersects A, B;
-	classifier F union^ A unions B;
-}
-~~~
 # SMG
 ~~~
 (semantic-model

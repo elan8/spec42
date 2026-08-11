@@ -21,15 +21,6 @@ package DependencyCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package DependencyCoverage {
-    part def Source;
-    part def Target;
-    dependency from Source to Target;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

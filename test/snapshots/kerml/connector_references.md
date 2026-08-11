@@ -27,19 +27,6 @@ class A {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-class A {
-	feature self : A;
-	feature this : A;
-	connector :HappensDuring
-		from [1] self references self
-		to [1] this references this;
-	connector :InsideOf
-		from [0..*] smallerOccurrence references elements
-		to [1] largerOccurrence references union;
-}
-~~~
 # SMG
 ~~~
 (semantic-model

@@ -57,40 +57,6 @@ package FeatureAdvancedCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package FeatureAdvancedCoverage {
-    type T;
-
-    feature <f> myFeature : T;
-    package <pkg> MyPackage;
-
-    feature fIn {
-        in feature input : T;
-    }
-    feature fOut ~ fIn;
-    feature fConj conjugates fIn;
-
-    feature x subsets myFeature;
-    feature y references myFeature;
-    feature z :>> myFeature;
-    feature w redefines myFeature;
-
-    #Safety feature z1 : T;
-
-    class C {
-        end feature port1 : T;
-        end const feature constPort : T;
-        member feature m : T;
-    }
-
-    namespace NS;
-
-    all import C::*;
-    import C::**;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

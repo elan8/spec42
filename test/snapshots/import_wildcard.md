@@ -28,11 +28,6 @@ import ScalarValues::*;
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-import ScalarValues::*;
-
-~~~
 # SMG
 ~~~
 (semantic-model

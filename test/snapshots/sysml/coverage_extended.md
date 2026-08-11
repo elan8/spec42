@@ -80,21 +80,6 @@ package ExtendedExamples {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ExtendedExamples {
-    #situation def Failure;
-    #situation def Failure :> Base;
-    abstract #situation def AbstractFailure;
-    #SecurityRelated #situation def Vulnerability;
-    #situation def Failure { part p; }
-    #situation batteryLow;
-    #situation x : T;
-    #situation x : T { }
-    variation #situation def V;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

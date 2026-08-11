@@ -22,16 +22,6 @@ package ConjugatedTypingCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ConjugatedTypingCoverage {
-    port def InputPort;
-    port def OutputPort;
-    port source : ~InputPort;
-    port target : ~OutputPort;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

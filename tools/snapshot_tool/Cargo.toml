@@ -11,7 +11,6 @@ path = "src/main.rs"
 
 [dependencies]
 clap.workspace = true
-language_service = { path = "../../crates/language_service" }
 rayon = "1.12"
 sysml_query = { path = "../../crates/sysml_query" }
 

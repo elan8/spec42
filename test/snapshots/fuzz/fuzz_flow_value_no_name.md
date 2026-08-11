@@ -42,19 +42,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    part vehicle : Vehicle {
-        part eng : Engine;
-
-        flow = FuelFlow of Fuel
-        from tank.fuelSupply
-        to eng.engineFuelPort;
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

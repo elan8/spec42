@@ -20,15 +20,6 @@ package InvalidMult {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package InvalidMult {
-    classifier Bad [3..1];
-    classifier AlsoBad [*..5];
-    classifier Valid [1..3];
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

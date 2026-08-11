@@ -25,14 +25,6 @@ package Foo {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Foo {
-    + bad stuff;
-    part def Bar;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

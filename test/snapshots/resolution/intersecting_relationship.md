@@ -22,16 +22,6 @@ package IntersectCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package IntersectCoverage {
-    part def Base;
-    attribute a;
-    attribute b;
-    attribute reading : Base intersects a, b;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

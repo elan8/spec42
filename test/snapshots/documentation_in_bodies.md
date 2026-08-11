@@ -44,39 +44,6 @@ package DocTests {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package DocTests {
-    doc /* Package-level documentation. */
-
-    part def Vehicle {
-        doc /* Part def documentation. */
-        attribute speed;
-    }
-
-    attribute def Speed {
-        doc DocName /* Named documentation. */
-    }
-
-    enum def Color {
-        doc /* Enum def documentation. */
-        enum red;
-    }
-
-    part vehicle : Vehicle {
-        doc /* Usage-level documentation. */
-    }
-
-    item def Payload {
-        doc <shortName> PayloadDoc locale "en" /* Full form doc with short name and locale. */
-    }
-
-    alias Car for Vehicle {
-        doc /* Alias documentation. */
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

@@ -74,25 +74,6 @@ package Use {
   )
 )
 ~~~
-# FORMAT
-## A.sysml
-~~~sysml
-package Shared { part def Thing; }
-
-~~~
-## B.sysml
-~~~sysml
-package Shared { part def Thing; }
-
-~~~
-## Use.sysml
-~~~sysml
-package Use {
-    import Shared::*;
-    part usage : Thing;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

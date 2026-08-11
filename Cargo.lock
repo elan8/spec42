@@ -1852,7 +1852,6 @@ name = "spec42-snapshot"
 version = "0.50.0"
 dependencies = [
  "clap",
- "language_service",
  "rayon",
  "sysml_query",
  "tempfile",

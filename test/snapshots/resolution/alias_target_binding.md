@@ -21,15 +21,6 @@ package AliasCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package AliasCoverage {
-    part def Device;
-    alias DeviceAlias for Device;
-    part device : DeviceAlias;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

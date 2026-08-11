@@ -36,19 +36,6 @@ perform action doS : Dff {     for y // ndent g {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    action def A {
-        for
-        perform action doS : Dff {     for y // ndent g {
-            //'//ug {
-            // port for HTTPprin items { }
-        }
-} }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

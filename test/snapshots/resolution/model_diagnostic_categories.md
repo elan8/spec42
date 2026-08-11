@@ -54,31 +54,6 @@ package Demo {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Demo {
-    part def Controller;
-    part def Sensor;
-    part controller : Controller;
-    part sensor : Sensor;
-    connect controller to sensor;
-
-    action def Process;
-    part process : Process;
-    perform process;
-
-    requirement def Requirement;
-    part system;
-    satisfy system;
-
-    view def ArchitectureView;
-    viewpoint def ArchitectureViewpoint;
-    view architecture : ArchitectureView {
-        satisfy ArchitectureViewpoint;
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

@@ -19,14 +19,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    part def Engine;
-    part engine : Engine;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

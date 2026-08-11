@@ -34,29 +34,6 @@ package ClassifierCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ClassifierCoverage {
-    datatype Scalar;
-    class Entity;
-    struct Vector;
-    assoc Relationship;
-    assoc struct AssocStruct;
-    metaclass MetaEntity;
-
-    datatype D specializes Scalar;
-    class C :> Entity;
-    struct S specializes Vector;
-    assoc A :> Relationship;
-    metaclass M specializes MetaEntity;
-
-    abstract datatype AbstractScalar;
-    abstract struct AbstractVector;
-    abstract assoc AbstractRel;
-    abstract metaclass AbstractMeta;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

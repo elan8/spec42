@@ -17,12 +17,6 @@ part p : Foo;
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-attribute def Foo {}
-part p : Foo;
-
-~~~
 # SMG
 ~~~
 (semantic-model

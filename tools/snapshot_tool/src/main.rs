@@ -9,7 +9,6 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand};
-use language_service::{format_document_text, FormatOptions};
 use rayon::prelude::*;
 use sysml_query::{
     build as build_published_model, BuildRequest, ConstructionStrategy, PublishedModel,
@@ -205,15 +204,11 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
     )?;
     ensure_strategy_parity(path, &sequential, &parallel)?;
 
-    let format = render_format(&documents);
-
     let fixture = replace_or_insert_section(fixture, "SMG", &sequential.smg)
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &sequential.diagnostics)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &sequential.navigation)
-        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
-    let fixture = replace_or_insert_full_section(&fixture, "FORMAT", &format)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     Ok(canonicalize_sections(&fixture))
 }
@@ -315,29 +310,6 @@ fn render_diagnostics(
     Ok(rendered)
 }
 
-fn render_format(documents: &[SourceDocument]) -> String {
-    let options = FormatOptions {
-        tab_size: 4,
-        insert_spaces: true,
-    };
-    if documents.len() == 1 {
-        return format!(
-            "~~~sysml\n{}\n~~~\n",
-            format_document_text(&documents[0].text, options)
-        );
-    }
-    documents
-        .iter()
-        .map(|document| {
-            format!(
-                "## {}\n~~~sysml\n{}\n~~~\n",
-                document.name,
-                format_document_text(&document.text, options)
-            )
-        })
-        .collect()
-}
-
 fn parse_source_documents(
     fixture: &str,
     fallback_name: &str,
@@ -396,39 +368,9 @@ fn replace_or_insert_section(fixture: &str, name: &str, replacement: &str) -> Op
     Some(updated)
 }
 
-fn replace_or_insert_full_section(fixture: &str, name: &str, replacement: &str) -> Option<String> {
-    let marker = format!("# {name}\n");
-    if let Some(start) = fixture.find(&marker) {
-        let content_start = start + marker.len();
-        let end = fixture[content_start..]
-            .find("\n# ")
-            .map_or(fixture.len(), |index| content_start + index);
-        let mut updated = String::with_capacity(fixture.len() + replacement.len());
-        updated.push_str(&fixture[..content_start]);
-        // Keep the formatter's canonical trailing newline. Dropping it makes update/check
-        // alternate forever for a snapshot whose FORMAT section is last in the file.
-        updated.push_str(replacement);
-        updated.push_str(&fixture[end..]);
-        return Some(updated);
-    }
-    let section = format!("\n# {name}\n{}", replacement.trim_end_matches('\n'));
-    let mut updated = String::with_capacity(fixture.len() + section.len());
-    updated.push_str(fixture.trim_end());
-    updated.push_str(&section);
-    updated.push('\n');
-    Some(updated)
-}
-
 /// Canonical top-level Markdown order. SOURCE is authored; the other sections are owned by this
 /// runner. Canonicalization drops sections outside this ownership contract.
-const SECTION_ORDER: &[&str] = &[
-    "META",
-    "SOURCE",
-    "DIAGNOSTICS",
-    "FORMAT",
-    "SMG",
-    "NAVIGATION",
-];
+const SECTION_ORDER: &[&str] = &["META", "SOURCE", "DIAGNOSTICS", "SMG", "NAVIGATION"];
 
 fn canonicalize_sections(fixture: &str) -> String {
     let mut sections = Vec::<(&str, &str, usize)>::new();
@@ -590,25 +532,19 @@ mod tests {
         let first = replace_or_insert_section(fixture, "SMG", "model").unwrap();
         let first = replace_or_insert_section(&first, "DIAGNOSTICS", "diagnostics").unwrap();
         let first = replace_or_insert_section(&first, "NAVIGATION", "navigation").unwrap();
-        let first =
-            replace_or_insert_full_section(&first, "FORMAT", "~~~sysml\npackage A {}\n~~~\n")
-                .unwrap();
         let second = replace_or_insert_section(&first, "SMG", "model").unwrap();
         let second = replace_or_insert_section(&second, "DIAGNOSTICS", "diagnostics").unwrap();
         let second = replace_or_insert_section(&second, "NAVIGATION", "navigation").unwrap();
-        let second =
-            replace_or_insert_full_section(&second, "FORMAT", "~~~sysml\npackage A {}\n~~~\n")
-                .unwrap();
         assert_eq!(first, second);
     }
 
     #[test]
     fn canonicalizes_shuffled_top_level_sections() {
-        let fixture = "# SMG\nold\n# NAVIGATION\nnav\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# META\nmeta\n# DIAGNOSTICS\ndiag\n# FORMAT\nformat\n";
+        let fixture = "# SMG\nold\n# NAVIGATION\nnav\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# META\nmeta\n# DIAGNOSTICS\ndiag\n";
         let canonical = canonicalize_sections(fixture);
         assert_eq!(
             canonical,
-            "# META\nmeta\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# DIAGNOSTICS\ndiag\n# FORMAT\nformat\n# SMG\nold\n# NAVIGATION\nnav\n"
+            "# META\nmeta\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# DIAGNOSTICS\ndiag\n# SMG\nold\n# NAVIGATION\nnav\n"
         );
         assert_eq!(canonicalize_sections(&canonical), canonical);
     }
@@ -619,10 +555,11 @@ mod tests {
         let canonical = canonicalize_sections(fixture);
         assert_eq!(
             canonical,
-            "# META\nmeta\n# SOURCE\nsource\n# DIAGNOSTICS\ndiag\n# FORMAT\nformat\n# SMG\nsmg\n"
+            "# META\nmeta\n# SOURCE\nsource\n# DIAGNOSTICS\ndiag\n# SMG\nsmg\n"
         );
         assert!(!canonical.contains("# EXTRA\n"));
         assert!(!canonical.contains("# NOTES\n"));
+        assert!(!canonical.contains("# FORMAT\n"));
         assert_eq!(canonicalize_sections(&canonical), canonical);
     }
 }

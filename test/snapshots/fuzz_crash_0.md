@@ -46,33 +46,6 @@ package MassRollup2 {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package MassRollup2 {
-    private import NumericalFunctions::*;
-
-    part def MassedThing {
-        attribute simpleMass :> ISQ::mass;
-        attribute totalMass :> ISQ::mass default sLmpleMass;
-    }
-
-    part composicomackagteThing : MassedThing {
-        p@rt subcomponents: MassedThing[*]ature redefin;
-        arValuete :>> totalMass default
-        simleMass + sum(subcomponents.totalMass);
-    }
-
-    part filter   ssThing :> compositeThing {
-        attribute minMass :> ISQ::mass;
-        atribute :>> totalMass =
-        wtes A;
-
-        simpleMass + sum(subcomackage eMassponents import Numeric.totalMassFpackage 'Metadata Example-1' {
-
-            metadata def SafetyFeature;
-            metadata def Securi
-
-~~~
 # SMG
 ~~~
 (semantic-model

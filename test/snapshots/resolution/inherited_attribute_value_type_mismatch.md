@@ -40,23 +40,6 @@ package Demo {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Demo {
-    enum def RequirementStatusKind {
-        enum approved;
-    }
-    requirement def ManagedRequirement {
-        attribute status : RequirementStatusKind;
-    }
-    requirement def UserRequirement :> ManagedRequirement;
-    requirement def Need :> UserRequirement;
-    requirement need : Need {
-        attribute status = "approved";
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

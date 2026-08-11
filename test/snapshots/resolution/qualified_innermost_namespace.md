@@ -24,19 +24,6 @@ package C {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package A {
-    part def T;
-}
-package C {
-    package A {
-        part def T;
-    }
-    part p : A::T;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

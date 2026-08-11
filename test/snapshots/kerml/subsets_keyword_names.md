@@ -20,13 +20,6 @@ feature f2 subsets do, step;
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-step s1 subsets step;
-feature f1 redefines step;
-feature f2 subsets do, step;
-
-~~~
 # SMG
 ~~~
 (semantic-model

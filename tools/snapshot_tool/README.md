@@ -4,9 +4,9 @@
 command-line runner, not a Rust integration test and not an `insta` assertion layer.
 
 Each Markdown file is a test case. The runner reads its `# SOURCE` section, builds the opaque
-published model through `sysml_query`, and rewrites the owned `SMG`, `DIAGNOSTICS`, `NAVIGATION`,
-and `FORMAT` sections. Its manifest has no direct semantic-model or diagnostics implementation
-dependency. The facade streams canonical semantic, diagnostic, and navigation S-expressions
+published model through `sysml_query`, and rewrites the owned `SMG`, `DIAGNOSTICS`, and
+`NAVIGATION` sections. Its manifest has no direct semantic-model, diagnostics, or formatter
+implementation dependency. The facade streams canonical semantic, diagnostic, and navigation S-expressions
 through caller-provided writers; the runner cannot obtain graph nodes, resolution indexes, or fact
 collections and never rebuilds a mutable graph for validation.
 
@@ -17,8 +17,7 @@ location-sensitive and in `NAVIGATION` when source-to-target mapping is under te
 source span is rendered in `SMG` only when the span itself is a named semantic fact that cannot be
 observed through those sections. This keeps formatting-only movement from obscuring semantic diffs.
 
-The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `FORMAT`, `SMG`,
-`NAVIGATION`.
+The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `SMG`, `NAVIGATION`.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
 Only sections in this contract are retained during normalization. Unknown or future sections
 should be added to the explicit ordering table before they become part of the corpus contract.

@@ -90,49 +90,6 @@ part def Vehicle {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-part def Sensor;
-part def Engine;
-part def DataPort;
-part def Widget;
-part def Color;
-enum def Priority { enum value low; enum value medium; enum value high; }
-
-part def Vehicle {
-    in attribute speed : Integer;
-    out attribute temp : Integer;
-    inout attribute velocity : Integer;
-
-    attribute mass : Integer = 100;
-    attribute weights[3] : Integer;
-
-    enum color : Color;
-
-    occurrence event1;
-    individual person1 : Sensor;
-
-    item payload : Widget;
-    port out1 : DataPort;
-
-    event occurrence startEvent;
-
-    snapshot s1;
-    timeslice ts1;
-
-    ref r1 : Sensor;
-    ref attribute refAttr : Integer;
-    ref item refItem : Widget;
-    ref part refPart : Engine;
-    ref event occurrence refEvent;
-
-    then event occurrence nextEvent;
-
-    variant part optionA;
-    variant part optionB;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

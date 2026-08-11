@@ -18,13 +18,6 @@ package Outer {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Outer {
-    package Inner { }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

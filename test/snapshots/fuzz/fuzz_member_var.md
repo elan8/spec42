@@ -20,15 +20,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    requirement r {
-        var x :>> y = 42;
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

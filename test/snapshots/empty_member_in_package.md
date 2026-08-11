@@ -22,11 +22,6 @@ package MyPkg {;}
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package MyPkg {;}
-
-~~~
 # SMG
 ~~~
 (semantic-model

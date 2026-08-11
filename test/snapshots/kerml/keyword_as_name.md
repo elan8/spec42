@@ -47,41 +47,6 @@ package KeywordAsName {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package KeywordAsName {
-	// P1: KerML usage keywords with direction prefixes
-	function IfThenElse {
-		in bool condition[1] { true }
-		in expr thenValue[0..*] { 42 }
-		in expr elseValue[0..*] { 0 }
-	}
-
-	// P1: direction prefix with expr
-	behavior TestBehavior {
-		in expr whileTest { true }
-		in bool guardCondition { false }
-	}
-
-	// P3: keywords used as names in features
-	classifier SpatialFrame;
-	struct MyStruct {
-		in frame : SpatialFrame[1];
-		in type : SpatialFrame;
-	}
-
-	// P3: keyword as name in alias
-	alias multiplicity for SpatialFrame;
-
-	// P3: keyword as short name
-	feature <do> : SpatialFrame;
-
-	// Regression: usage dispatch keywords must NOT be consumed as names
-	classifier Container {
-		in part : SpatialFrame;
-	}
-}
-~~~
 # SMG
 ~~~
 (semantic-model

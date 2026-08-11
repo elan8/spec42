@@ -22,17 +22,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    state def S {
-        entry; then off;
-        state off;
-        transition t first off accept X state b;
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

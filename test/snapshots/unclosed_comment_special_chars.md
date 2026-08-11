@@ -24,10 +24,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-/* isio . /% #ato
-~~~
 # SMG
 ~~~
 (semantic-model

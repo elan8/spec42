@@ -49,20 +49,6 @@ package Client {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Source {
-    package Inner;
-    part def Item;
-}
-package Client {
-    import Source::*;
-    import Source::Item::*;
-    import Missing::*;
-    import Source [ 1 ];
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

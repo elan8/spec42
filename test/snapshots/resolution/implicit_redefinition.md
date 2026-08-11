@@ -41,18 +41,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    part def Base {
-        attribute mass : Real;
-    }
-    part def Child :> Base {
-        attribute mass = 1200;
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

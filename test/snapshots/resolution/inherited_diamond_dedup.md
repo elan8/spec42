@@ -25,20 +25,6 @@ package Diamond {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Diamond {
-    part def Base {
-        part def Member;
-    }
-    part def Left :> Base;
-    part def Right :> Base;
-    part def Diamond :> Left, Right {
-        part p : Member;
-    }
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

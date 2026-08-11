@@ -26,13 +26,6 @@ package AyPkpowerTrain {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package AyPkpowerTrain {
-    part engine {
-        g { }
-
-~~~
 # SMG
 ~~~
 (semantic-model

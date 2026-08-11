@@ -33,16 +33,6 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package P {
-    action def A {
-        for
-        in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
-        send pq   }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

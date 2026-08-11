@@ -38,12 +38,6 @@ alias Foo for Bar {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-alias Foo for Bar {
-    doc /* unclosed comment
-}
-~~~
 # SMG
 ~~~
 (semantic-model

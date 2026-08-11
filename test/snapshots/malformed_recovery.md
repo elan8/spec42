@@ -24,11 +24,6 @@ x ` y
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-x ` y
-
-~~~
 # SMG
 ~~~
 (semantic-model

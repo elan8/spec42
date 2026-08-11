@@ -19,14 +19,6 @@ package Vehicles {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package Vehicles {
-    part def Car;
-    part def Truck;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

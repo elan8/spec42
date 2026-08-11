@@ -50,45 +50,6 @@ package BehaviorCoverage {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package BehaviorCoverage {
-    behavior Action1 {
-        in x;
-        out y;
-    }
-
-    step s1 : Action1;
-
-    function F {
-        in a;
-        return feature result : Integer;
-    }
-
-    expr E { in x; 1 + x }
-
-    predicate P { in x : Boolean; x }
-
-    bool b { true }
-
-    inv I { true }
-    inv false NegI { false }
-
-    interaction Inter {
-        in x;
-        out y;
-    }
-
-    class Container {
-        step a1 : Action1;
-        step a2 : Action1;
-        succession a1 then a2;
-        flow a1.y to a2.x;
-        succession flow sf from a1.y to a2.x;
-    }
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model

@@ -29,21 +29,6 @@ package P {
   )
 )
 ~~~
-# FORMAT
-## alpha.sysml
-~~~sysml
-package P {
-    part def Engine;
-}
-
-~~~
-## beta.sysml
-~~~sysml
-package P {
-    part def Engine;
-}
-
-~~~
 # SMG
 ~~~sexpr
 (semantic-model

@@ -27,16 +27,6 @@ package ConnectorAll {
   )
 )
 ~~~
-# FORMAT
-~~~sysml
-package ConnectorAll {
-    connector all during: HappensDuring from self to occ;
-    connector all guardConstraint: TPCGuardConstraint[*] from transitionLink to guard;
-    connector all x from a to b;
-    connector all from a to b;
-}
-
-~~~
 # SMG
 ~~~
 (semantic-model
