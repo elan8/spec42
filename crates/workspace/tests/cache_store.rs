@@ -9,9 +9,10 @@ use std::thread;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 
+use source_identity::{ArtifactKey, CanonicalEncoder};
 use workspace::cache::{
-    ArtifactIdentity, ArtifactKey, ArtifactKind, CacheArtifact, CacheConfig, CacheLookup,
-    CacheMissReason, CacheStore, CacheStoreOutcome, CanonicalEncoder, FileCacheStore,
+    ArtifactIdentity, ArtifactKind, CacheArtifact, CacheConfig, CacheLookup, CacheMissReason,
+    CacheStore, CacheStoreOutcome, FileCacheStore,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

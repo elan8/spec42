@@ -2,7 +2,7 @@ pub mod providers;
 
 use url::Url;
 
-use crate::source_identity::ContentDigest;
+use source_identity::ContentDigest;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SysmlDocumentSourceKind {

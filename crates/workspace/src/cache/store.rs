@@ -17,7 +17,7 @@ use super::config::{
     CacheConfig, CacheLimits, CacheMode, TMP_REAP_MIN_AGE_SECS, TOUCH_MIN_INTERVAL_SECS,
 };
 use super::envelope;
-use sysml_model::ArtifactKey;
+use source_identity::ArtifactKey;
 
 /// File extension for cache objects.
 const OBJECT_EXT: &str = "s42c";

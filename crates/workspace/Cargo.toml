@@ -23,6 +23,7 @@ kpar = { path = "../kpar" }
 kpar = { path = "../kpar" }
 sysml_diagnostics = { path = "../sysml_diagnostics" }
 sysml_model = { path = "../sysml_model" }
+source_identity = { path = "../source_identity" }
 language_service = { path = "../language_service" }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -44,6 +45,7 @@ blake3 = { workspace = true }
 zstd = { workspace = true }
 
 [dev-dependencies]
+source_identity = { path = "../source_identity" }
 syn = { version = "2", features = ["full", "visit"] }
 proc-macro2 = { version = "1", features = ["span-locations"] }
 

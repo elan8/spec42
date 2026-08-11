@@ -4,7 +4,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use sysml_model::{RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
+use source_identity::{RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
 
 use crate::error::{WorkspaceError, WorkspaceResult};
 use crate::library::{
@@ -434,7 +434,7 @@ fn scan_library_root(root: &Path, slot: u32, role: SourceRole) -> Vec<SourceMani
             uri,
             path_hint: Some(relative_path.clone()),
             role,
-            content_digest: sysml_model::ContentDigest::of_bytes(&bytes),
+            content_digest: source_identity::ContentDigest::of_bytes(&bytes),
             byte_len: bytes.len() as u64,
             library_root_slot: Some(slot),
             relative_path: Some(relative_path),

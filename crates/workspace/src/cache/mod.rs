@@ -19,10 +19,8 @@ pub use api::{
 pub use config::{CacheConfig, CacheLimits, CacheMode};
 pub use store::FileCacheStore;
 
-// Typed BLAKE3 source/artifact identities (plan §5.1) are a pure semantic-layer value type and
-// live in `sysml_model` so `SysmlDocument` and other semantic-layer types can use them without
-// `sysml_model` depending on `workspace` (dependencies only flow workspace -> sysml_model).
-// Re-exported here so existing `workspace::cache::{Blake3Digest, ...}` call sites are unaffected.
-pub use sysml_model::{
-    ArtifactKey, Blake3Digest, CanonicalEncoder, ContentDigest, DigestParseError, RootDigest,
-};
+// The typed identities this module keys artifacts by (`ArtifactKey`, `ContentDigest`,
+// `RootDigest`, `CanonicalEncoder`) live in the `source_identity` crate. They are deliberately
+// not re-exported here: source identity is shared by the semantic layer and the cache layer
+// alike, so consumers name its owning crate rather than reaching for it through whichever
+// consumer they happen to already import.

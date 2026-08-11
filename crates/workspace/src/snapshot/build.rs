@@ -6,9 +6,10 @@ use std::sync::{Arc, OnceLock};
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
+use source_identity::ContentDigest;
 use sysml_model::{
-    ContentDigest, IbdDataDto, SemanticGraph, SysmlDocument, SysmlDocumentProvider,
-    SysmlVisualizationResultDto, WorkspaceParsedDocument, WorkspaceRenderSnapshot,
+    IbdDataDto, SemanticGraph, SysmlDocument, SysmlDocumentProvider, SysmlVisualizationResultDto,
+    WorkspaceParsedDocument, WorkspaceRenderSnapshot,
 };
 use url::Url;
 
