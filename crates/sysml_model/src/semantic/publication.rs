@@ -1559,6 +1559,30 @@ mod tests {
     }
 
     #[test]
+    fn structural_input_has_authored_facts_without_semantic_endpoint_edges() {
+        let source = document(
+            "memory://test/structural.sysml",
+            "package M { action def A { action one; action two; first one then two; } part p; part q; connect p to q; }",
+        );
+        let snapshot = ImmutableSourceSnapshot::new(vec![source]).unwrap();
+        let (graph, _, _) =
+            build_structural_graph(snapshot.documents(), ConstructionStrategy::Sequential);
+        let edges = graph.semantic_edges();
+        assert!(!edges.iter().any(|(_, _, edge)| {
+            matches!(
+                edge.kind,
+                RelationshipKind::Connection
+                    | RelationshipKind::Flow
+                    | RelationshipKind::SuccessionFlow
+                    | RelationshipKind::Perform
+                    | RelationshipKind::Transition
+                    | RelationshipKind::InitialState
+            )
+        }));
+        assert!(!graph.declared_expression_relationships.is_empty());
+    }
+
+    #[test]
     fn generic_flow_builder_targets_are_resolved_canonically() {
         let model = build(
             "package P { action def ExecuteMission { action validateRoute; action startMission; first validateRoute then startMission; } }",
