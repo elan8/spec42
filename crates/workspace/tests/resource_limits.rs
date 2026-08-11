@@ -74,7 +74,7 @@ fn max_total_bytes_limit_rejects_large_content() {
         ),
         path_hint: Some("Large.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Workspace,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
 

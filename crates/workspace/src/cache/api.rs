@@ -7,7 +7,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 use super::config::CacheMode;
-use super::digest::ArtifactKey;
+use sysml_model::ArtifactKey;
 
 /// The five artifact kinds defined by the unified cache design (plan §6).
 ///
@@ -49,7 +49,7 @@ impl ArtifactKind {
 }
 
 /// An artifact's identity: everything the [`ArtifactKey`] must commit. Implementors compute
-/// the key using a [`super::digest::CanonicalEncoder`] scoped to `ArtifactKey::DOMAIN` so that
+/// the key using a [`sysml_model::CanonicalEncoder`] scoped to `ArtifactKey::DOMAIN` so that
 /// artifact-key identities never collide with content or root digests of the same bytes.
 pub trait ArtifactIdentity {
     fn artifact_key(&self) -> ArtifactKey;

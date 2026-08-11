@@ -2,6 +2,8 @@ pub mod providers;
 
 use url::Url;
 
+use crate::source_identity::ContentDigest;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SysmlDocumentSourceKind {
     Workspace,
@@ -19,7 +21,10 @@ pub struct SysmlDocument {
     pub content: String,
     pub path_hint: Option<String>,
     pub source_kind: SysmlDocumentSourceKind,
-    pub sha256: Option<String>,
+    /// BLAKE3 content identity computed from the exact same byte buffer that was decoded into
+    /// `content` (plan §5.1). Providers that admit a source must compute this from a single
+    /// read; it is `None` only for documents with no discrete backing byte buffer.
+    pub content_digest: Option<ContentDigest>,
     pub byte_size: Option<i64>,
 }
 
@@ -50,7 +55,7 @@ impl SysmlDocument {
         path: &str,
         content: String,
         source_kind: SysmlDocumentSourceKind,
-        sha256: Option<String>,
+        content_digest: Option<ContentDigest>,
         byte_size: Option<i64>,
     ) -> Result<Self, String> {
         let normalized_path = path.trim_start_matches('/').replace('\\', "/");
@@ -61,7 +66,7 @@ impl SysmlDocument {
             content,
             path_hint: Some(path.to_string()),
             source_kind,
-            sha256,
+            content_digest,
             byte_size,
         })
     }
@@ -71,7 +76,7 @@ impl SysmlDocument {
         content: String,
         path_hint: Option<String>,
         source_kind: SysmlDocumentSourceKind,
-        sha256: Option<String>,
+        content_digest: Option<ContentDigest>,
         byte_size: Option<i64>,
     ) -> Result<Self, String> {
         let uri =
@@ -81,7 +86,7 @@ impl SysmlDocument {
             content,
             path_hint,
             source_kind,
-            sha256,
+            content_digest,
             byte_size,
         })
     }
@@ -98,7 +103,7 @@ mod tests {
             "package Architecture {}".to_string(),
             Some("Architecture.sysml".to_string()),
             SysmlDocumentSourceKind::External,
-            Some("abc123".to_string()),
+            Some(ContentDigest::of_bytes(b"package Architecture {}")),
             Some(42),
         )
         .expect("custom URI should parse");

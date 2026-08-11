@@ -165,7 +165,10 @@ impl GeneratorModelView {
             .map(|document| {
                 (
                     normalized_origin(&self.snapshot, &NodeId::new(&document.uri, "")),
-                    document.sha256.clone().unwrap_or_default(),
+                    document
+                        .content_digest
+                        .map(|digest| digest.to_string())
+                        .unwrap_or_default(),
                 )
             })
             .collect::<Vec<_>>();
@@ -603,9 +606,9 @@ fn normalized_origin(snapshot: &HostWorkspaceSnapshot, id: &NodeId) -> String {
     }
     let content_digest = snapshot
         .metadata()
-        .document_hashes
+        .document_digests
         .get(id.uri.as_str())
-        .cloned()
+        .map(|digest| digest.to_string())
         .unwrap_or_else(|| "unknown".to_owned());
     format!("content:{content_digest}")
 }

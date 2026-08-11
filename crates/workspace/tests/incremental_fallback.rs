@@ -163,15 +163,20 @@ fn multi_changed_documents_fall_back_to_full_rebuild() {
 /// Covers the third `can_use_incremental_update` guard (`update.rs:83`): if the engine's
 /// library catalog hash no longer matches the one recorded on the previous snapshot, the
 /// incremental path must not be attempted — fall back to a full rebuild instead. Two engines
-/// with different `extra_library_paths` produce different `library_catalog().content_hash`
-/// values (the hash is computed over package-root paths and library version config, not file
-/// contents — see `catalog.rs`'s `hash_package_roots`), which is enough to simulate a host
-/// reconstructing `Spec42Engine` with a different library configuration between snapshots.
+/// with different `extra_library_paths` whose roots contain different admitted source content
+/// produce different `library_catalog().root_digest` values (the digest transitively commits
+/// every admitted source file's actual bytes under every configured root — see `catalog.rs`'s
+/// `hash_package_roots`), which is enough to simulate a host reconstructing `Spec42Engine` with
+/// a different library configuration between snapshots.
 #[test]
 fn library_catalog_change_falls_back_to_full_rebuild() {
     let cache = tempdir().expect("tempdir");
     let lib_a = tempdir().expect("lib_a tempdir");
     let lib_b = tempdir().expect("lib_b tempdir");
+    std::fs::write(lib_a.path().join("A.sysml"), "package LibA { part def A; }")
+        .expect("write lib_a fixture");
+    std::fs::write(lib_b.path().join("B.sysml"), "package LibB { part def B; }")
+        .expect("write lib_b fixture");
 
     let engine_a = EngineBuilder::default()
         .cache_dir(cache.path().to_path_buf())
@@ -188,8 +193,8 @@ fn library_catalog_change_falls_back_to_full_rebuild() {
         .build()
         .expect("engine_b");
     assert_ne!(
-        engine_a.library_catalog().content_hash,
-        engine_b.library_catalog().content_hash,
+        engine_a.library_catalog().root_digest,
+        engine_b.library_catalog().root_digest,
         "test fixture should produce distinct library catalog hashes"
     );
 

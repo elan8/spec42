@@ -1,4 +1,10 @@
 pub mod semantic;
+pub mod source_identity;
+
+pub use source_identity::{
+    ArtifactKey, Blake3Digest, CanonicalEncoder, ContentDigest, DigestParseError, RootDigest,
+    SourceManifest, SourceManifestEntry, SourceRole,
+};
 
 pub use semantic::activity_graph::enrich_activity_diagrams_from_graph;
 pub use semantic::analysis_typing::prepare_analysis_evaluation_context;
