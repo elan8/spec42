@@ -12,6 +12,7 @@ path = "src/main.rs"
 [dependencies]
 clap.workspace = true
 language_service = { path = "../../crates/language_service" }
+sysml_diagnostics = { path = "../../crates/sysml_diagnostics" }
 sysml_model = { path = "../../crates/sysml_model" }
 
 [dev-dependencies]

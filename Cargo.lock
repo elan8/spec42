@@ -1843,6 +1843,7 @@ version = "0.50.0"
 dependencies = [
  "clap",
  "language_service",
+ "sysml_diagnostics",
  "sysml_model",
  "tempfile",
 ]

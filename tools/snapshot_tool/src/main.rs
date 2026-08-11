@@ -10,6 +10,9 @@ use std::path::{Path, PathBuf};
 
 use clap::{Parser, Subcommand, ValueEnum};
 use language_service::{format_document_text, FormatOptions};
+use sysml_diagnostics::{
+    collect_document_diagnostics_from_model, render_diagnostics_sexpr, DiagnosticsOptions,
+};
 use sysml_model::{
     build_semantic_model, ConstructionStrategy, EvaluationPolicy, ImmutableSourceSnapshot,
     SemanticBuildRequest, SemanticConfiguration, SemanticModel, SysmlDocument,
@@ -67,8 +70,15 @@ fn main() -> Result<(), String> {
 
     let mut stale = Vec::new();
     for path in paths {
-        let original = fs::read_to_string(&path)
-            .map_err(|error| format!("{}: read failed: {error}", path.display()))?;
+        let bytes =
+            fs::read(&path).map_err(|error| format!("{}: read failed: {error}", path.display()))?;
+        let original = match String::from_utf8(bytes) {
+            Ok(original) => original,
+            Err(_) => {
+                eprintln!("SKIP {}: snapshot is not UTF-8", path.display());
+                continue;
+            }
+        };
         let updated = regenerate_snapshot(&original, &path, cli.strategy)?;
         if updated != original {
             match cli.command {
@@ -135,13 +145,17 @@ fn visit_markdown(directory: &Path, paths: &mut Vec<PathBuf>) -> Result<(), Stri
 }
 
 fn regenerate_snapshot(fixture: &str, path: &Path, strategy: Strategy) -> Result<String, String> {
-    let documents = parse_source_documents(fixture, &path.display().to_string())?;
+    let fallback_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("snapshot.md");
+    let documents = parse_source_documents(fixture, fallback_name)?;
     let source_documents = documents
         .iter()
         .map(|document| {
             SysmlDocument::from_memory_path(
                 "snapshot",
-                &format!("{}/{}", path.display(), document.name),
+                &format!("snapshot/{}", document.name),
                 document.text.clone(),
                 SysmlDocumentSourceKind::Workspace,
                 None,
@@ -149,7 +163,7 @@ fn regenerate_snapshot(fixture: &str, path: &Path, strategy: Strategy) -> Result
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let snapshot = ImmutableSourceSnapshot::new(source_documents)
+    let snapshot = ImmutableSourceSnapshot::new(source_documents.clone())
         .map_err(|error| format!("{}: invalid source snapshot: {error}", path.display()))?;
     let model = build_semantic_model(SemanticBuildRequest {
         sources: snapshot,
@@ -167,13 +181,13 @@ fn regenerate_snapshot(fixture: &str, path: &Path, strategy: Strategy) -> Result
     // Diagnostics are intentionally owned by the semantic diagnostics stage. The concrete
     // adapter is kept behind this function so adding diagnostics does not expose model storage
     // to the harness or turn the Markdown fixture into a second semantic API.
-    let diagnostics = render_diagnostics(&model, &documents)?;
+    let diagnostics = render_diagnostics(&model, &documents, &source_documents)?;
 
     let fixture = replace_or_insert_section(fixture, "SMG", &smg)
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &diagnostics)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
-    replace_or_insert_section(&fixture, "FORMAT", &format)
+    replace_or_insert_full_section(&fixture, "FORMAT", &format)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))
 }
 
@@ -186,17 +200,30 @@ fn render_semantic_model(model: &SemanticModel) -> Result<String, String> {
 }
 
 fn render_diagnostics(
-    _model: &SemanticModel,
-    _documents: &[SourceDocument],
+    model: &SemanticModel,
+    documents: &[SourceDocument],
+    source_documents: &[SysmlDocument],
 ) -> Result<String, String> {
-    // The diagnostics owner is being migrated alongside the semantic publication. Keeping this
-    // as an explicit adapter makes the dependency visible and prevents accidentally rebuilding a
-    // legacy mutable graph here. The adapter is replaced by the diagnostics-owned writer before
-    // this tool is enabled for the full corpus.
-    Err(
-        "semantic diagnostics writer is not available yet; refusing to rebuild the legacy graph"
-            .to_string(),
-    )
+    let mut rendered = String::from("(fixture-diagnostics\n");
+    for (document, source_document) in documents.iter().zip(source_documents) {
+        let diagnostics = collect_document_diagnostics_from_model(
+            model,
+            false,
+            &source_document.uri,
+            &document.text,
+            false,
+            DiagnosticsOptions::default(),
+        );
+        rendered.push_str(&format!("  (document {:?}\n", document.name));
+        for line in render_diagnostics_sexpr(&diagnostics).lines() {
+            rendered.push_str("    ");
+            rendered.push_str(line);
+            rendered.push('\n');
+        }
+        rendered.push_str("  )\n");
+    }
+    rendered.push(')');
+    Ok(rendered)
 }
 
 fn render_format(documents: &[SourceDocument]) -> String {
@@ -280,6 +307,27 @@ fn replace_or_insert_section(fixture: &str, name: &str, replacement: &str) -> Op
     Some(updated)
 }
 
+fn replace_or_insert_full_section(fixture: &str, name: &str, replacement: &str) -> Option<String> {
+    let marker = format!("# {name}\n");
+    if let Some(start) = fixture.find(&marker) {
+        let content_start = start + marker.len();
+        let end = fixture[content_start..]
+            .find("\n# ")
+            .map_or(fixture.len(), |index| content_start + index);
+        let mut updated = String::with_capacity(fixture.len() + replacement.len());
+        updated.push_str(&fixture[..content_start]);
+        updated.push_str(replacement.trim_end_matches('\n'));
+        updated.push_str(&fixture[end..]);
+        return Some(updated);
+    }
+    let section = format!("\n# {name}\n{replacement}");
+    let mut updated = String::with_capacity(fixture.len() + section.len());
+    updated.push_str(fixture.trim_end());
+    updated.push_str(&section);
+    updated.push('\n');
+    Some(updated)
+}
+
 fn replace_section(fixture: &str, name: &str, replacement: &str) -> Option<String> {
     let marker = format!("# {name}\n");
     let section_start = fixture.find(&marker)? + marker.len();
@@ -298,7 +346,7 @@ fn replace_section(fixture: &str, name: &str, replacement: &str) -> Option<Strin
     };
     let mut updated = String::with_capacity(fixture.len() + replacement.len());
     updated.push_str(&fixture[..body_start]);
-    updated.push_str(replacement);
+    updated.push_str(replacement.trim_end_matches('\n'));
     updated.push_str(&fixture[body_end..]);
     Some(updated)
 }

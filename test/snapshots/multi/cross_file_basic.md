@@ -47,35 +47,26 @@ NIL
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "package") (id (node (document "d0") (qualified-name "Definitions"))) (name "Definitions") (declared-name "Definitions")
-      (contains
-        (element (kind "part def") (id (node (document "d0") (qualified-name "Definitions::Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared)
-          (contains
-            (element (kind "attribute") (id (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (name "mass") (declared-name "mass") (declared (properties (ordered false) (unique true))) (effective (implied-multiplicity (lower 1) (upper 1) (ordered false)) (implied-feature-ownership (composite true) (reference false)) (featuring-type (node (document "d0") (qualified-name "Definitions::Vehicle")))))
-          )
-        )
-      )
-    )
-    (element (kind "package") (id (node (document "d1") (qualified-name "Usage"))) (name "Usage") (declared-name "Usage")
-      (contains
-        (element (kind "import") (id (node (document "d1") (qualified-name "Usage::*"))) (name "*") (declared-name "*"))
-        (element (kind "part") (id (node (document "d1") (qualified-name "Usage::v"))) (name "v") (declared-name "v") (declared (properties (ordered false))))
-      )
-    )
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "e4dc1c280b6390593b23779cc6d52a5c069c6649ffeea1326e8a6c44f79f2b74") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Definitions"))) (kind "package") (name "Definitions") (declared-name "Definitions") (range (start (line 0) (character 0)) (end (line 0) (character 97))))
+    (element (id (node (document "d0") (qualified-name "Definitions::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 1) (character 4)) (end (line 1) (character 73))) (parent (node (document "d0") (qualified-name "Definitions"))))
+    (element (id (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (kind "attribute") (name "mass") (declared-name "mass") (range (start (line 2) (character 8)) (end (line 2) (character 44))) (parent (node (document "d0") (qualified-name "Definitions::Vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Real") (range none)) (typing (reference "ScalarValues::Real") (range (start (line 2) (character 25)) (end (line 2) (character 43)))))))
+    (element (id (node (document "d1") (qualified-name "Usage"))) (kind "package") (name "Usage") (declared-name "Usage") (range (start (line 0) (character 0)) (end (line 0) (character 66))))
+    (element (id (node (document "d1") (qualified-name "Usage::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 26))) (parent (node (document "d1") (qualified-name "Usage"))) (authored (membership (kind Import) (import (reference "Definitions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 11)) (end (line 1) (character 22))))))
+    (element (id (node (document "d1") (qualified-name "Usage::v"))) (kind "part") (name "v") (declared-name "v") (range (start (line 2) (character 4)) (end (line 2) (character 21))) (parent (node (document "d1") (qualified-name "Usage"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 2) (character 13)) (end (line 2) (character 20)))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (kind featureTyping) (ordinal 1)) (authored-target "ScalarValues::Real") (range (start (line 2) (character 25)) (end (line 2) (character 43))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d1") (qualified-name "Usage::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Definitions::*") (range (start (line 1) (character 11)) (end (line 1) (character 22))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Definitions")))))
+    (reference (id (source (node (document "d1") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 2) (character 13)) (end (line 2) (character 20))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Definitions::Vehicle")))))
   )
   (relationships
-    (typing (status resolved) (from (node (document "d1") (qualified-name "Usage::v"))) (to (node (document "d0") (qualified-name "Definitions::Vehicle"))) (provenance authored))
+    (relationship (kind typing) (source (node (document "d1") (qualified-name "Usage::v"))) (target (node (document "d0") (qualified-name "Definitions::Vehicle"))) (provenance authored) (authored-reference (source (node (document "d1") (qualified-name "Usage::v"))) (kind featureTyping) (ordinal 0)))
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Definitions::Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Definitions::Vehicle::mass"))) (status missing-prerequisite) (target "Base::dataValues"))
-    (universal-standard-library-relationship (from (node (document "d1") (qualified-name "Usage::v"))) (status missing-prerequisite) (target "Parts::parts"))
+  (evaluation
   )
 )
 ~~~
@@ -89,6 +80,12 @@ NIL
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 2 8) (end 2 44))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 2 25) (end 2 43))
       )
     )
   )

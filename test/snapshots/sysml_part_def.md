@@ -31,18 +31,16 @@ NIL
 ~~~
 # SMG
 ~~~
-(semantic-graph
-  (containment
-    (element (kind "part def") (id (node (document "d0") (qualified-name "Vehicle"))) (name "Vehicle") (declared-name "Vehicle") (declared))
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "634454bd1dbce223013fe98c776a6702b55269ecc998bf5020039d0378c6b291") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 0) (character 0)) (end (line 0) (character 20))))
+  )
+  (references
   )
   (relationships
   )
-  (pending-relationships
-  )
-  (pending-expression-relationships
-  )
-  (derived-relationship-resolutions
-    (universal-standard-library-relationship (from (node (document "d0") (qualified-name "Vehicle"))) (status missing-prerequisite) (target "Parts::Part"))
+  (evaluation
   )
 )
 ~~~

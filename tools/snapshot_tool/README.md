@@ -6,7 +6,9 @@ command-line runner, not a Rust integration test and not an `insta` assertion la
 Each Markdown file is a test case. The runner reads its `# SOURCE` section, builds the immutable
 `SemanticModel`, and rewrites the owned `SMG`, `DIAGNOSTICS`, and `FORMAT` sections. It never
 exposes graph nodes, resolution indexes, or fact collections to the caller; the semantic owner
-streams its canonical debug S-expression into an internal buffer owned by the harness.
+streams its canonical debug S-expression into an internal buffer owned by the harness. Diagnostics
+are collected by `sysml_diagnostics` from the same published model and `ResolutionView`; the
+runner never rebuilds a mutable graph for validation.
 
 Run it from the repository root:
 
