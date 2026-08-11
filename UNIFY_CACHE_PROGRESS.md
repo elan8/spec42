@@ -28,9 +28,10 @@ test baseline with `cargo clippy --workspace --all-targets -- -D warnings` clean
 - **Plan step 2, complete.** Typed BLAKE3 identities in their own `source_identity` crate,
   `SourceManifest` with a root digest that commits every entry, role, digest and the ordering
   policy, and the breaking migration of repository-owned metadata off SHA-256 strings.
-- **Round-trip prerequisites B1, B3 and B4, complete.** Typed edge construction ownership;
-  canonical source roles and resolution precedence; and the `SemanticPublication` phase,
-  completeness and identity contract.
+- **Round-trip prerequisites B1, B3, B4 and B7, complete.** Typed edge construction ownership;
+  canonical source roles and resolution precedence; the `SemanticPublication` phase, completeness
+  and identity contract; and the single cache-import invariant validator, whose failures carry no
+  diagnostic code or range and so can never surface as though the user's model were at fault.
 - **B9 substantially advanced.** Six of seven attribute-bag chunks merged. What remains is the
   `*Type` classification family and the final field deletion.
 
@@ -82,8 +83,9 @@ except where noted.
 
 1. Finish B9: the `*Type` family, then chunk G to delete the field. Not blocked. This unblocks a
    real postcard round-trip test, which is currently impossible.
-2. B7 (invariant validator), B11 (graph state fingerprint) — not blocked, and needed regardless of
-   how the resolution work lands.
+2. B11 (graph state fingerprint) — not blocked, and needed regardless of how the resolution work
+   lands. B7's validator is in place and is the natural backing for
+   `workspace::cache::api::CacheArtifact::validate_invariants`, which is not yet wired to it.
 3. B5, B8, B2, B6 (the graph record, canonical encoding, index rebuild, workspace rehydration) —
    blocked on B9 completing, because the record cannot be defined while the untyped attribute bag
    exists.
@@ -300,7 +302,7 @@ Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemantic
 | B4 | `SemanticPublication` identity, phase, completeness | done |
 | B5 | `SemanticGraphRecordV1` replaces direct runtime serde | not started |
 | B6 | Graph hit rehydrates sources and ASTs; no concealed missing input | not started |
-| B7 | Typed `GraphInvariantError` and single cache-import validator | in progress |
+| B7 | Typed `GraphInvariantError` and single cache-import validator | done |
 | B8 | Canonical, byte-stable encoding | not started |
 | B9 | Attribute bag removed | in progress |
 | B10 | Decode bounds; no stack overflow on hostile nesting | in progress (store layer) |
