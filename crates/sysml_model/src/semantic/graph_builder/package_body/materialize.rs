@@ -36,7 +36,6 @@ pub(super) fn materialize_part_def(
             }),
         );
     }
-    insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -99,8 +98,7 @@ pub(super) fn materialize_feature_decl(
         );
     } else {
         let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
-        let mut attrs = HashMap::new();
-        attrs.insert("text".to_string(), serde_json::json!(&fv.text));
+        let attrs = HashMap::new();
         let node_id = NodeId::new(uri, &qualified);
         add_node_and_recurse(
             g,
@@ -129,8 +127,7 @@ pub(super) fn materialize_classifier_decl(
     let cv = &classifier_node.value;
     let name = extract_modeled_decl_name(&cv.keyword, &cv.text, "_classifier");
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "classifier decl");
-    let mut attrs = HashMap::new();
-    attrs.insert("text".to_string(), serde_json::json!(&cv.text));
+    let attrs = HashMap::new();
     let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
@@ -172,7 +169,6 @@ pub(crate) fn materialize_port_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&pd_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, pd_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -259,7 +255,7 @@ pub(super) fn materialize_interface_def(
     let name = identification_name(&id_node.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
     let range = span_to_range(&id_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&id_node.identification)
     {
@@ -269,7 +265,6 @@ pub(super) fn materialize_interface_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&id_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, id_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -408,7 +403,6 @@ pub(super) fn materialize_requirement_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&rd_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, rd_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(rd_node.is_abstract),
@@ -585,7 +579,6 @@ pub(crate) fn materialize_use_case_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&ucd_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, ucd_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(ucd_node.is_abstract),
@@ -674,7 +667,6 @@ pub(crate) fn materialize_item_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&item_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, item_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -719,7 +711,6 @@ pub(super) fn materialize_individual_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&ind_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, ind_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -764,7 +755,6 @@ pub(super) fn materialize_metadata_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&md_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, md_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -815,7 +805,6 @@ pub(super) fn materialize_enum_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&enum_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, enum_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -924,7 +913,6 @@ pub(super) fn materialize_occurrence_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&occ_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, occ_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -982,7 +970,6 @@ pub(super) fn materialize_connection_def(
             serde_json::json!(annotation),
         );
     }
-    insert_def_specialization_attr(&mut attrs, conn_node.specializes.as_deref());
     let qualified = qualified_name_for_node(g, uri, container_prefix, &base_name, "connection def");
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&conn_node.identification)
@@ -1046,7 +1033,6 @@ pub(super) fn materialize_flow_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&flow_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, flow_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -1097,7 +1083,6 @@ pub(super) fn materialize_allocation_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&alloc_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, alloc_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -1204,7 +1189,6 @@ pub(crate) fn materialize_case_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1296,7 +1280,6 @@ pub(crate) fn materialize_analysis_case_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1378,7 +1361,6 @@ pub(crate) fn materialize_verification_case_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, c_node.specializes.as_deref());
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1467,7 +1449,7 @@ pub(super) fn materialize_state_def(
     let name = identification_name(&sd_node.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "state def");
     let range = span_to_range(&sd_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&sd_node.identification)
     {
@@ -1477,7 +1459,6 @@ pub(super) fn materialize_state_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&sd_node.membership),
     );
-    insert_def_specialization_attr(&mut attrs, sd_node.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -1588,10 +1569,8 @@ pub(super) fn materialize_textual_rep(
         g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
     }
     // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic in
-    // `sysml_diagnostics::checks::view_metadata_conformance`, so it stays on the untyped
-    // attribute map in addition to `source_text.language` below.
-    attrs.insert("language".to_string(), serde_json::json!(&tr.language));
-    attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+    // `sysml_diagnostics::checks::view_metadata_conformance`, which reads the typed
+    // `source_text.language` fact set below.
     if let Some(ref language_span) = tr.language_span {
         attrs.insert(
             "languageSpan".to_string(),

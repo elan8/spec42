@@ -643,11 +643,7 @@ pub(crate) fn feature_inspector_element(
         typed_subsetting_family_targets(node, RelationshipKind::Redefinition),
     );
     let inherited_features = inherited_features(semantic_graph, node, &effective_typing_targets);
-    let documentation = node
-        .attributes
-        .get("doc")
-        .and_then(|value| value.as_str())
-        .map(str::to_string);
+    let documentation = node.source_text.doc.clone();
     let multiplicity = multiplicity_text(node);
     let direction = node
         .declared_facts
@@ -679,6 +675,9 @@ pub(crate) fn feature_inspector_element(
         attributes: {
             let mut attrs = node.attributes.clone();
             sysml_model::semantic::model_projection::project_expression_text_attributes(
+                &mut attrs, node,
+            );
+            sysml_model::semantic::model_projection::project_source_text_attributes(
                 &mut attrs, node,
             );
             attrs
