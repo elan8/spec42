@@ -810,10 +810,10 @@ fn add_diagnostic_node_with_attrs(
 mod expr_string_tests {
     use super::{
         classify_expression, expr_node_to_qualified_string, expression_to_debug_string,
-        resolve_expression_endpoint_legacy, resolve_expression_endpoint_strict, ExprClass,
+        resolve_expression_endpoint_legacy, ExprClass,
     };
+    use crate::build_graph_from_doc;
     use crate::semantic::relationships::add_cross_document_edges_for_uri;
-    use crate::{build_graph_from_doc, ResolveResult};
     use sysml_v2_parser::ast::{BinaryOperator, Expression, Node};
     use sysml_v2_parser::Span;
     use url::Url;
@@ -908,7 +908,7 @@ mod expr_string_tests {
     }
 
     #[test]
-    fn legacy_endpoint_resolution_follows_member_imported_instance_name() {
+    fn canonical_publication_resolves_imported_instance_type() {
         let architecture = r#"
             package WebShopArchitecture {
                 part def CheckoutService {}
@@ -924,34 +924,42 @@ mod expr_string_tests {
             }
         "#;
 
-        let architecture_uri = Url::parse("file:///WebShopArchitecture.sysml").expect("arch uri");
-        let usage_uri = Url::parse("file:///webshop.sysml").expect("usage uri");
-        let architecture_root = sysml_v2_parser::parse(architecture).expect("parse architecture");
-        let usage_root = sysml_v2_parser::parse(usage).expect("parse usage");
-
-        let mut graph = build_graph_from_doc(&architecture_root, &architecture_uri);
-        graph.merge(build_graph_from_doc(&usage_root, &usage_uri));
-        add_cross_document_edges_for_uri(&mut graph, &usage_uri);
-
-        let owner = resolve_expression_endpoint_strict(
-            &graph,
-            &usage_uri,
-            Some("WebShopExample"),
-            "webshopSystem",
-        );
-        assert!(matches!(owner, ResolveResult::Resolved(_)));
-
-        let resolved = resolve_expression_endpoint_legacy(
-            &graph,
-            &usage_uri,
-            Some("WebShopExample"),
-            "webshopSystem::checkoutService",
-        );
-
-        assert_eq!(
-            resolved.as_deref(),
-            Some("WebShopArchitecture::WebShopSystem::checkoutService")
-        );
+        let architecture = crate::semantic::source::SysmlDocument::from_uri(
+            "file:///WebShopArchitecture.sysml",
+            architecture.to_string(),
+            None,
+            crate::semantic::source::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("architecture document");
+        let usage = crate::semantic::source::SysmlDocument::from_uri(
+            "file:///webshop.sysml",
+            usage.to_string(),
+            None,
+            crate::semantic::source::SysmlDocumentSourceKind::Workspace,
+            None,
+            None,
+        )
+        .expect("usage document");
+        let snapshot = crate::ImmutableSourceSnapshot::new(vec![architecture, usage])
+            .expect("source snapshot");
+        let model = crate::build_semantic_model(crate::SemanticBuildRequest {
+            sources: snapshot,
+            construction: crate::ConstructionStrategy::Sequential,
+            evaluation: crate::EvaluationPolicy::ResolvedOnly,
+            configuration: crate::SemanticConfiguration::default(),
+        })
+        .expect("canonical semantic model");
+        assert!(model.resolution().facts().iter().any(|fact| {
+            fact.reference.source.qualified_name == "WebShopExample::webshopSystem"
+                && fact.reference.kind == crate::ReferenceKind::MembershipImport
+                && matches!(
+                    &fact.outcome,
+                    crate::ResolutionOutcome::Resolved { target }
+                        if target.qualified_name == "WebShopArchitecture::webshopSystem"
+                )
+        }));
     }
 
     #[test]

@@ -136,15 +136,28 @@ fn parse_document(document: &SysmlDocument) -> WorkspaceParsedDocument {
 pub(crate) fn build_structural_graph(
     documents: &[SysmlDocument],
     strategy: crate::semantic::publication::ConstructionStrategy,
-) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
-    match strategy {
+) -> (
+    SemanticGraph,
+    Vec<WorkspaceParsedDocument>,
+    crate::semantic::publication::SemanticCompleteness,
+) {
+    let completeness = if documents
+        .iter()
+        .any(|document| !sysml_v2_parser::parse_for_editor(&document.content).is_ok())
+    {
+        crate::semantic::publication::SemanticCompleteness::EditorRecovery
+    } else {
+        crate::semantic::publication::SemanticCompleteness::Complete
+    };
+    let (graph, parsed) = match strategy {
         crate::semantic::publication::ConstructionStrategy::Sequential => {
             build_structural_graph_sequential(documents)
         }
         crate::semantic::publication::ConstructionStrategy::Parallel => {
             build_structural_graph_parallel(documents)
         }
-    }
+    };
+    (graph, parsed, completeness)
 }
 
 fn build_structural_graph_sequential(

@@ -14,8 +14,9 @@ use url::Url;
 use crate::semantic::graph::{PendingExpressionRelationship, PendingRelationship, SemanticGraph};
 use crate::semantic::model::{
     DeclaredExpression, DeclaredFeatureProperties, DeclaredFeatureValueKind,
-    DeclaredMultiplicityBound, DerivedRelationshipResolution, ExpressionResultRole,
-    ImpliedRelationshipRule, NodeId, RelationshipProvenance, SemanticEdge, SemanticNode,
+    DeclaredMultiplicityBound, DerivedRelationshipResolution, DerivedRelationshipRule,
+    ExpressionResultRole, ImpliedRelationshipRule, NodeId, RelationshipProvenance, SemanticEdge,
+    SemanticNode,
 };
 
 const FORMAT_ROOT: &str = "semantic-graph";
@@ -479,6 +480,14 @@ fn render_resolved_relationship(
                 }
             };
             let _ = write!(output, " (provenance (implied (rule {rule})))");
+        }
+        RelationshipProvenance::Derived(rule) => {
+            let rule = match rule {
+                DerivedRelationshipRule::CaseSubjectFromTypedSubject => {
+                    "case-subject-from-typed-subject"
+                }
+            };
+            let _ = write!(output, " (provenance (derived (rule {rule})))");
         }
     }
     output.push(')');

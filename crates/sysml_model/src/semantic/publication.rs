@@ -11,6 +11,7 @@ use std::fmt;
 use sha2::{Digest, Sha256};
 
 use crate::semantic::graph::SemanticGraph;
+pub use crate::semantic::model::DerivedRelationshipRule;
 use crate::semantic::model::{
     DeclaredRelationshipFacts, DeclaredRelationshipTarget, ElementKind, ImpliedRelationshipRule,
     NodeId, RelationshipKind, SemanticEdge, SemanticNode,
@@ -180,13 +181,14 @@ pub enum ResolutionOutcome {
     Resolved { target: NodeId },
     Unresolved,
     Ambiguous { candidates: Vec<NodeId> },
+    UnsupportedFiltered,
 }
 
 impl ResolutionOutcome {
     pub fn resolved_target(&self) -> Option<&NodeId> {
         match self {
             Self::Resolved { target } => Some(target),
-            Self::Unresolved | Self::Ambiguous { .. } => None,
+            Self::Unresolved | Self::Ambiguous { .. } | Self::UnsupportedFiltered => None,
         }
     }
 }
@@ -206,11 +208,6 @@ pub enum ResolutionProvenance {
     Derived(DerivedRelationshipRule),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum DerivedRelationshipRule {
-    CaseSubjectFromTypedSubject,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ResolvedRelationship {
     pub source: NodeId,
@@ -221,7 +218,17 @@ pub struct ResolvedRelationship {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ResolutionFailure {
-    DidNotConverge {
+    DependencyDeadlock {
+        passes: usize,
+        changing_families: Vec<String>,
+        pending_references: Vec<AuthoredReferenceId>,
+    },
+    Oscillation {
+        passes: usize,
+        changing_families: Vec<String>,
+        pending_references: Vec<AuthoredReferenceId>,
+    },
+    SafetyBound {
         passes: usize,
         changing_families: Vec<String>,
         pending_references: Vec<AuthoredReferenceId>,
@@ -231,7 +238,17 @@ pub enum ResolutionFailure {
 impl fmt::Display for ResolutionFailure {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::DidNotConverge {
+            Self::DependencyDeadlock {
+                passes,
+                changing_families,
+                pending_references,
+            }
+            | Self::Oscillation {
+                passes,
+                changing_families,
+                pending_references,
+            }
+            | Self::SafetyBound {
                 passes,
                 changing_families,
                 pending_references,
@@ -242,6 +259,74 @@ impl fmt::Display for ResolutionFailure {
             ),
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum WorkingOutcome<K, V> {
+    Pending { dependencies: Vec<K> },
+    Final(V),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum FixedPointFailure<K> {
+    DependencyDeadlock { passes: usize, pending: Vec<K> },
+    Oscillation { passes: usize, pending: Vec<K> },
+    SafetyBound { passes: usize, pending: Vec<K> },
+}
+
+fn solve_fixed_point<K, V, F>(
+    mut state: BTreeMap<K, WorkingOutcome<K, V>>,
+    max_passes: usize,
+    mut step: F,
+) -> Result<BTreeMap<K, WorkingOutcome<K, V>>, FixedPointFailure<K>>
+where
+    K: Clone + Ord,
+    V: Clone + Eq,
+    F: FnMut(&BTreeMap<K, WorkingOutcome<K, V>>) -> BTreeMap<K, WorkingOutcome<K, V>>,
+{
+    let pending_keys = |state: &BTreeMap<K, WorkingOutcome<K, V>>| {
+        state
+            .iter()
+            .filter_map(|(key, outcome)| {
+                matches!(outcome, WorkingOutcome::Pending { .. }).then_some(key.clone())
+            })
+            .collect::<Vec<_>>()
+    };
+    if max_passes == 0 {
+        return Err(FixedPointFailure::SafetyBound {
+            passes: 0,
+            pending: pending_keys(&state),
+        });
+    }
+    let mut seen = Vec::new();
+    for pass in 1..=max_passes {
+        let next = step(&state);
+        if next == state {
+            let pending = pending_keys(&next);
+            if pending.is_empty() {
+                return Ok(next);
+            }
+            return Err(FixedPointFailure::DependencyDeadlock {
+                passes: pass,
+                pending,
+            });
+        }
+        if seen.iter().any(|previous| previous == &next) {
+            return Err(FixedPointFailure::Oscillation {
+                passes: pass,
+                pending: pending_keys(&next),
+            });
+        }
+        if pass == max_passes {
+            return Err(FixedPointFailure::SafetyBound {
+                passes: pass,
+                pending: pending_keys(&next),
+            });
+        }
+        seen.push(next.clone());
+        state = next;
+    }
+    unreachable!("positive fixed-point bound always returns from the loop")
 }
 
 /// Settled relationship results.  Adjacency is derived from `facts` and is never an independent
@@ -274,7 +359,17 @@ impl ResolutionState {
                 graph,
                 &relationship.source,
                 &relationship.target,
-                SemanticEdge::plain(relationship.kind.clone()),
+                match relationship.provenance {
+                    ResolutionProvenance::Authored => {
+                        SemanticEdge::plain(relationship.kind.clone())
+                    }
+                    ResolutionProvenance::Implied(rule) => {
+                        SemanticEdge::implied(relationship.kind.clone(), rule)
+                    }
+                    ResolutionProvenance::Derived(rule) => {
+                        SemanticEdge::derived(relationship.kind.clone(), rule)
+                    }
+                },
             );
         }
     }
@@ -292,21 +387,53 @@ impl<'a> ResolutionDb<'a> {
         Self { graph }
     }
 
-    pub(crate) fn solve(self) -> Result<ResolutionState, ResolutionFailure> {
-        self.solve_with_max_passes(1_000)
-    }
-
     fn solve_with_max_passes(
         self,
         max_passes: usize,
     ) -> Result<ResolutionState, ResolutionFailure> {
-        if max_passes == 0 {
-            return Err(ResolutionFailure::DidNotConverge {
-                passes: 0,
-                changing_families: vec!["authored-reference-resolution".to_string()],
-                pending_references: authored_reference_ids(self.graph),
-            });
+        let pending_references = authored_reference_ids(self.graph);
+        let initial = BTreeMap::from([(
+            "authored-reference-resolution",
+            WorkingOutcome::Pending {
+                dependencies: Vec::new(),
+            },
+        )]);
+        let result = solve_fixed_point(initial, max_passes, |_| {
+            BTreeMap::from([(
+                "authored-reference-resolution",
+                WorkingOutcome::Final(self.solve_once()),
+            )])
+        });
+        match result {
+            Ok(result) => match result.into_values().next() {
+                Some(WorkingOutcome::Final(state)) => Ok(state),
+                _ => unreachable!("a converged semantic pass must be final"),
+            },
+            Err(FixedPointFailure::DependencyDeadlock { passes, .. }) => {
+                Err(ResolutionFailure::DependencyDeadlock {
+                    passes,
+                    changing_families: vec!["authored-reference-resolution".to_string()],
+                    pending_references,
+                })
+            }
+            Err(FixedPointFailure::Oscillation { passes, .. }) => {
+                Err(ResolutionFailure::Oscillation {
+                    passes,
+                    changing_families: vec!["authored-reference-resolution".to_string()],
+                    pending_references,
+                })
+            }
+            Err(FixedPointFailure::SafetyBound { passes, .. }) => {
+                Err(ResolutionFailure::SafetyBound {
+                    passes,
+                    changing_families: vec!["authored-reference-resolution".to_string()],
+                    pending_references,
+                })
+            }
         }
+    }
+
+    fn solve_once(&self) -> ResolutionState {
         let mut facts = Vec::new();
         let mut relationships = Vec::new();
         let nodes = self.graph.semantic_nodes();
@@ -366,16 +493,25 @@ impl<'a> ResolutionDb<'a> {
                             ReferenceKind::MembershipImport
                         }
                     };
-                    let candidates =
-                        explicit_name_candidates(self.graph, &node, &import.target.reference);
-                    let outcome = match candidates.as_slice() {
-                        [target] => ResolutionOutcome::Resolved {
-                            target: target.clone(),
-                        },
-                        [] => ResolutionOutcome::Unresolved,
-                        candidates => ResolutionOutcome::Ambiguous {
-                            candidates: candidates.to_vec(),
-                        },
+                    let outcome = match crate::semantic::import_resolution::resolve_import_target(
+                        self.graph,
+                        &node,
+                    ) {
+                        crate::semantic::import_resolution::ImportTargetResolution::NotApplicable => {
+                            ResolutionOutcome::Unresolved
+                        }
+                        crate::semantic::import_resolution::ImportTargetResolution::Resolved {
+                            target,
+                        } => ResolutionOutcome::Resolved { target },
+                        crate::semantic::import_resolution::ImportTargetResolution::Unresolved => {
+                            ResolutionOutcome::Unresolved
+                        }
+                        crate::semantic::import_resolution::ImportTargetResolution::Ambiguous {
+                            candidates,
+                        } => ResolutionOutcome::Ambiguous { candidates },
+                        crate::semantic::import_resolution::ImportTargetResolution::UnsupportedFiltered => {
+                            ResolutionOutcome::UnsupportedFiltered
+                        }
                     };
                     facts.push(ResolutionFact {
                         reference: AuthoredReferenceId {
@@ -391,7 +527,7 @@ impl<'a> ResolutionDb<'a> {
             }
         }
         derive_implied_relationships(self.graph, &mut relationships);
-        derive_case_subject_relationships(self.graph, &mut relationships);
+        derive_case_subject_relationships(self.graph, &facts, &mut relationships);
 
         facts.sort_by(|left, right| left.reference.cmp(&right.reference));
         relationships.sort_by(|left, right| {
@@ -402,10 +538,10 @@ impl<'a> ResolutionDb<'a> {
             ))
         });
         relationships.dedup();
-        Ok(ResolutionState {
+        ResolutionState {
             facts,
             relationships,
-        })
+        }
     }
 }
 
@@ -456,6 +592,7 @@ fn derive_implied_relationships(
 
 fn derive_case_subject_relationships(
     graph: &SemanticGraph,
+    facts: &[ResolutionFact],
     relationships: &mut Vec<ResolvedRelationship>,
 ) {
     for case in graph.semantic_nodes().into_iter().filter(is_case_kind) {
@@ -475,16 +612,28 @@ fn derive_case_subject_relationships(
             }
         }
         for subject in subject_nodes {
-            let references = if subject.element_kind == ElementKind::Subject {
-                &subject.declared_facts.relationships.typing
+            let (kind, references) = if subject.element_kind == ElementKind::Subject {
+                (
+                    ReferenceKind::FeatureTyping,
+                    &subject.declared_facts.relationships.typing,
+                )
             } else {
-                &subject.declared_facts.relationships.subject
+                (
+                    ReferenceKind::ReferenceSubsetting,
+                    &subject.declared_facts.relationships.subject,
+                )
             };
-            for authored in references {
-                let mut candidates = explicit_name_candidates(graph, subject, &authored.reference);
-                candidates.sort_by(node_id_order);
-                candidates.dedup();
-                if let [target] = candidates.as_slice() {
+            for (ordinal, _) in references.iter().enumerate() {
+                let reference = AuthoredReferenceId {
+                    source: subject.id.clone(),
+                    kind,
+                    authored_ordinal: ordinal as u32,
+                };
+                if let Some(ResolutionOutcome::Resolved { target }) = facts
+                    .iter()
+                    .find(|fact| fact.reference == reference)
+                    .map(|fact| &fact.outcome)
+                {
                     relationships.push(ResolvedRelationship {
                         source: case.id.clone(),
                         target: target.clone(),
@@ -649,15 +798,14 @@ fn inherited_members_named(
 fn authored_relationships(
     facts: &DeclaredRelationshipFacts,
 ) -> Vec<(ReferenceKind, Vec<DeclaredRelationshipTarget>)> {
+    let mut reference_subsetting = facts.reference_subsetting.clone();
+    reference_subsetting.extend(facts.subject.clone());
     vec![
         (ReferenceKind::FeatureTyping, facts.typing.clone()),
         (ReferenceKind::Specialization, facts.specializes.clone()),
         (ReferenceKind::Subsetting, facts.subsetting.clone()),
         (ReferenceKind::Redefinition, facts.redefinition.clone()),
-        (
-            ReferenceKind::ReferenceSubsetting,
-            facts.reference_subsetting.clone(),
-        ),
+        (ReferenceKind::ReferenceSubsetting, reference_subsetting),
         (
             ReferenceKind::CrossSubsetting,
             facts.cross_subsetting.clone(),
@@ -790,11 +938,18 @@ impl<'a> ResolutionView<'a> {
 pub fn build_semantic_model(
     request: SemanticBuildRequest,
 ) -> Result<SemanticModel, SemanticBuildFailure> {
+    build_semantic_model_with_max_passes(request, 1_000)
+}
+
+pub(crate) fn build_semantic_model_with_max_passes(
+    request: SemanticBuildRequest,
+    max_passes: usize,
+) -> Result<SemanticModel, SemanticBuildFailure> {
     let identity = SemanticModelIdentity::for_request(&request.sources, &request.configuration);
     let documents = request.sources.documents();
-    let (graph, _) = build_structural_graph(documents, request.construction);
+    let (graph, _, completeness) = build_structural_graph(documents, request.construction);
     let resolution = ResolutionDb::new(&graph)
-        .solve()
+        .solve_with_max_passes(max_passes)
         .map_err(SemanticBuildFailure::Resolution)?;
     let structural_graph = graph;
     let evaluation = if matches!(request.evaluation, EvaluationPolicy::Evaluate) {
@@ -824,7 +979,7 @@ pub fn build_semantic_model(
         } else {
             SemanticPhase::Resolved
         },
-        completeness: SemanticCompleteness::Complete,
+        completeness,
         indexes,
     })
 }
@@ -852,6 +1007,23 @@ mod tests {
             document("memory://test/a.sysml", "package A {}"),
         ]);
         assert!(matches!(result, Err(SemanticBuildFailure::InvalidInput(_))));
+    }
+
+    #[test]
+    fn recovered_parse_publishes_explicit_editor_completeness() {
+        let snapshot = ImmutableSourceSnapshot::new(vec![document(
+            "memory://test/recovery.sysml",
+            "package A { part p : ;",
+        )])
+        .unwrap();
+        let model = build_semantic_model(SemanticBuildRequest {
+            sources: snapshot,
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: SemanticConfiguration::default(),
+        })
+        .expect("recovery model");
+        assert_eq!(model.completeness(), SemanticCompleteness::EditorRecovery);
     }
 
     #[test]
@@ -955,6 +1127,16 @@ mod tests {
         };
         assert_eq!(candidates.len(), 2);
         assert!(candidates[0].qualified_name < candidates[1].qualified_name);
+    }
+
+    #[test]
+    fn filtered_imports_publish_an_explicit_unsupported_outcome() {
+        let model =
+            build("package Source { part def Item; } package Client { import Source [ 1 ]; }");
+        assert!(model.resolution().facts().iter().any(|fact| {
+            fact.reference.kind == ReferenceKind::NamespaceImport
+                && matches!(fact.outcome, ResolutionOutcome::UnsupportedFiltered)
+        }));
     }
 
     #[test]
@@ -1145,19 +1327,125 @@ mod tests {
             "package A { part p : Missing; }",
         )])
         .unwrap();
-        let (graph, _) =
-            build_structural_graph(snapshot.documents(), ConstructionStrategy::Sequential);
-        let failure = ResolutionDb::new(&graph)
-            .solve_with_max_passes(0)
+        let request = SemanticBuildRequest {
+            sources: snapshot,
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: SemanticConfiguration::default(),
+        };
+        let failure = build_semantic_model_with_max_passes(request, 0)
             .expect_err("zero pass bound must fail explicitly");
         assert!(matches!(
             failure,
-            ResolutionFailure::DidNotConverge {
+            SemanticBuildFailure::Resolution(ResolutionFailure::SafetyBound {
                 passes: 0,
                 pending_references: ref pending,
                 ..
-            } if !pending.is_empty()
+            }) if !pending.is_empty()
         ));
+    }
+
+    #[test]
+    fn fixed_point_resolves_pending_dependencies_from_previous_pass() {
+        let initial = BTreeMap::from([(
+            "inner",
+            WorkingOutcome::Pending {
+                dependencies: vec!["outer"],
+            },
+        )]);
+        let result = solve_fixed_point(initial, 4, |previous| {
+            let mut next = previous.clone();
+            next.insert("inner", WorkingOutcome::Final(7));
+            next
+        })
+        .expect("pending outcome should settle");
+        assert_eq!(result["inner"], WorkingOutcome::Final(7));
+    }
+
+    #[test]
+    fn fixed_point_does_not_read_new_results_within_the_same_pass() {
+        let initial = BTreeMap::from([(
+            "a",
+            WorkingOutcome::Pending {
+                dependencies: vec![],
+            },
+        )]);
+        let result = solve_fixed_point(initial, 4, |previous| {
+            let mut next = previous.clone();
+            if matches!(previous["a"], WorkingOutcome::Pending { .. }) {
+                next.insert("a", WorkingOutcome::Final(1));
+            }
+            next
+        })
+        .expect("previous-pass result should settle");
+        assert_eq!(result["a"], WorkingOutcome::Final(1));
+    }
+
+    #[test]
+    fn fixed_point_reports_dependency_deadlock_and_safety_bound() {
+        let deadlock: BTreeMap<&str, WorkingOutcome<&str, i32>> = BTreeMap::from([
+            (
+                "a",
+                WorkingOutcome::Pending {
+                    dependencies: vec!["b"],
+                },
+            ),
+            (
+                "b",
+                WorkingOutcome::Pending {
+                    dependencies: vec!["a"],
+                },
+            ),
+        ]);
+        let failure = solve_fixed_point(deadlock, 4, |previous| previous.clone())
+            .expect_err("cyclic pending dependencies must fail");
+        assert!(matches!(
+            failure,
+            FixedPointFailure::DependencyDeadlock { passes: 1, .. }
+        ));
+
+        let bounded = BTreeMap::from([(
+            "a",
+            WorkingOutcome::Pending {
+                dependencies: vec![],
+            },
+        )]);
+        let failure = solve_fixed_point(bounded, 1, |_| {
+            BTreeMap::from([("a", WorkingOutcome::Final(1))])
+        })
+        .expect_err("a one-pass bound cannot publish an unverified result");
+        assert!(matches!(
+            failure,
+            FixedPointFailure::SafetyBound { passes: 1, .. }
+        ));
+    }
+
+    #[test]
+    fn fixed_point_reports_non_adjacent_oscillation_and_is_order_independent() {
+        let initial = BTreeMap::from([("a", WorkingOutcome::Final(false))]);
+        let failure = solve_fixed_point(initial, 8, |previous| {
+            let value = match previous["a"] {
+                WorkingOutcome::Final(value) => !value,
+                WorkingOutcome::Pending { .. } => false,
+            };
+            BTreeMap::from([("a", WorkingOutcome::Final(value))])
+        })
+        .expect_err("repeated state must be treated as oscillation");
+        assert!(matches!(failure, FixedPointFailure::Oscillation { .. }));
+
+        let ordered = BTreeMap::from([
+            ("a".to_string(), WorkingOutcome::Final(1)),
+            ("b".to_string(), WorkingOutcome::Final(2)),
+        ]);
+        let reversed = BTreeMap::from([
+            ("b".to_string(), WorkingOutcome::Final(2)),
+            ("a".to_string(), WorkingOutcome::Final(1)),
+        ]);
+        let step = |state: &BTreeMap<String, WorkingOutcome<String, i32>>| state.clone();
+        assert_eq!(
+            solve_fixed_point(ordered, 2, step),
+            solve_fixed_point(reversed, 2, step)
+        );
     }
 
     fn build(source: &str) -> SemanticModel {

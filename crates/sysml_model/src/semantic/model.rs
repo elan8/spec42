@@ -774,6 +774,15 @@ impl SemanticEdge {
         }
     }
 
+    pub fn derived(kind: RelationshipKind, rule: DerivedRelationshipRule) -> Self {
+        Self {
+            kind,
+            provenance: RelationshipProvenance::Derived(rule),
+            connect: None,
+            flow: None,
+        }
+    }
+
     pub fn connection_with_connect(connect: ConnectStatementDetail) -> Self {
         Self {
             kind: RelationshipKind::Connection,
@@ -812,6 +821,7 @@ pub enum RelationshipProvenance {
     #[default]
     Authored,
     Implied(ImpliedRelationshipRule),
+    Derived(DerivedRelationshipRule),
 }
 
 /// Exhaustive identities of rules that may publish implied relationship facts.
@@ -819,6 +829,12 @@ pub enum RelationshipProvenance {
 #[serde(rename_all = "camelCase")]
 pub enum ImpliedRelationshipRule {
     UniversalStandardLibraryRelationship,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DerivedRelationshipRule {
+    CaseSubjectFromTypedSubject,
 }
 
 /// The complete relationship published by the universal standard-library rule for an element

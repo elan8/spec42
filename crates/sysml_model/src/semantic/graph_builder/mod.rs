@@ -600,7 +600,7 @@ mod root_namespace_tests {
 
     use super::build_graph_from_doc;
     use crate::semantic::graph::SemanticGraph;
-    use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+    use crate::semantic::model::{ElementKind, NodeId};
     use crate::semantic::pipeline::{build_and_link_graph, patch_graph_for_document};
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
 
@@ -629,10 +629,12 @@ mod root_namespace_tests {
             item.parent_id, None,
             "root member keeps authored root scope"
         );
-        assert!(graph
-            .outgoing_targets_by_kind(item, RelationshipKind::Typing)
+        assert!(item
+            .declared_facts
+            .relationships
+            .typing
             .iter()
-            .any(|target| target.id == base_id));
+            .any(|target| target.reference == "Base"));
 
         let import = graph
             .nodes_for_uri(&uri)
