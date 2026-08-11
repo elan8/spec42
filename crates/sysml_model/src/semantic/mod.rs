@@ -15,6 +15,8 @@ pub mod graph_invariants;
 pub mod graph_sexpr;
 #[cfg(test)]
 pub mod graph_state_fingerprint;
+#[cfg(test)]
+mod graph_state_fingerprint_differential_tests;
 pub mod ibd;
 pub mod import_resolution;
 pub mod interconnection_elk;

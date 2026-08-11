@@ -262,7 +262,7 @@ impl GraphStateFingerprint {
     /// determinism assertions are not a false negative about publication-stamping, which is out
     /// of scope for these particular comparisons.
     #[cfg(test)]
-    fn with_neutralized_publication_identity(mut self) -> Self {
+    pub(crate) fn with_neutralized_publication_identity(mut self) -> Self {
         self.publication_root_digest_bytes = [0u8; 32];
         self.publication_completeness = SemanticCompleteness::Complete;
         self
@@ -331,13 +331,20 @@ mod tests {
         let (a, b) = typing_fixture();
         let (whole, _) = build_and_link_graph(&[a.clone(), b.clone()]).expect("whole");
 
+        // `patch_graph_for_document_scoped` calls `remove_nodes_for_uri` internally before
+        // merging fresh content, which (correctly, matching `standard_library_uris`'s existing
+        // documented behavior) clears any previously recorded `source_origins` entry for that
+        // URI. `source_origins` is a caller-stamped fact, not something the raw per-document
+        // patch functions maintain on their own -- so the caller must (re-)stamp it *after* the
+        // patch, exactly like `build_and_link_graph_parallel`'s callers already do for a fresh
+        // build.
         let mut incremental = SemanticGraph::new();
-        incremental.set_source_origin(a.uri.clone(), source_identity::SourceRole::Workspace);
-        incremental.set_source_origin(b.uri.clone(), source_identity::SourceRole::Workspace);
         let parsed_a = sysml_v2_parser::parse(&a.content).expect("parse a");
         patch_graph_for_document_scoped(&mut incremental, &a.uri, Some(&parsed_a), true);
+        incremental.set_source_origin(a.uri.clone(), source_identity::SourceRole::Workspace);
         let parsed_b = sysml_v2_parser::parse(&b.content).expect("parse b");
         patch_graph_for_document_scoped(&mut incremental, &b.uri, Some(&parsed_b), true);
+        incremental.set_source_origin(b.uri.clone(), source_identity::SourceRole::Workspace);
 
         assert_eq!(
             fp(&whole).with_neutralized_publication_identity(),
@@ -390,7 +397,11 @@ mod tests {
         let a2 = workspace_doc("A2.sysml", content);
         let (g1, _) = build_and_link_graph(&[a1]).expect("build 1");
         let (g2, _) = build_and_link_graph(&[a2]).expect("build 2");
-        assert_ne!(fp(&g1), fp(&g2), "a different document URI must change every NodeId");
+        assert_ne!(
+            fp(&g1),
+            fp(&g2),
+            "a different document URI must change every NodeId"
+        );
     }
 
     #[test]
@@ -475,10 +486,9 @@ mod tests {
             .edge_indices()
             .find(|idx| graph.graph[*idx].kind == RelationshipKind::Typing)
             .expect("a typing edge must exist in this fixture");
-        graph.graph[edge_idx].provenance =
-            crate::semantic::model::RelationshipProvenance::Implied(
-                crate::semantic::model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
-            );
+        graph.graph[edge_idx].provenance = crate::semantic::model::RelationshipProvenance::Implied(
+            crate::semantic::model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        );
 
         assert_ne!(
             baseline,
