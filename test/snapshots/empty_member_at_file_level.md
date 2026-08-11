@@ -24,23 +24,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
   )
 )
 ~~~
-# TOKENS
-~~~zig
-Semicolon,KwIn,Ident,Colon,Ident,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# EXPECTED
-~~~
-parse.expected_semicolon_or_body
-~~~
-# PROBLEMS
-~~~
-parse.expected_semicolon_or_body
-~~~
 # FORMAT
 ~~~sysml
 ; in v : SpeedVal

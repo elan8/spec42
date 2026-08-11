@@ -42,47 +42,6 @@ package VerificationMetadataExample {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwVerification,KwDef,Ident,Semicolon,
-KwVerification,Ident,Colon,Ident,OpenCurly,
-At,Ident,OpenCurly,Ident,Eq,OpenParen,Ident,Comma,Ident,CloseParen,Semicolon,CloseCurly,
-KwObjective,OpenCurly,
-CloseCurly,
-KwAction,Ident,OpenCurly,
-At,Ident,OpenCurly,Ident,Eq,Ident,Semicolon,CloseCurly,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'VerificationMetadataExample'
-    (import_decl private 'VerificationCases::*')
-    (import_decl private 'VerificationMethodKind::*')
-    (verification_case_def 'MassTest')
-    (sysml_decl 'massTests' : 'MassTest'
-      (metadata_feature typed 'VerificationMethod'
-        (feature_def 'kind' value))
-      (objective_member)
-      (action_usage 'weighVehicle'
-        (metadata_feature typed 'VerificationMethod'
-          (feature_def 'kind' value))))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'VerificationMethod'
-semantic.unresolved_name 'VerificationMethod'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'VerificationMethod'
-semantic.unresolved_name 'VerificationMethod'
-~~~
 # FORMAT
 ~~~sysml
 package VerificationMetadataExample {

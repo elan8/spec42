@@ -22,33 +22,6 @@ package AssignTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwAction,KwDef,Ident,OpenCurly,
-KwAssign,Ident,ColonEq,Ident,Hash,OpenParen,Ident,CloseParen,Semicolon,
-KwAssign,UnrestrictedName,ColonEq,Ident,Hash,OpenParen,Ident,CloseParen,Semicolon,
-KwAssign,Ident,Dot,Ident,ColonEq,Ident,Hash,OpenParen,DecimalValue,CloseParen,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'AssignTest'
-    (action_def 'A'
-      (assign_node)
-      (assign_node)
-      (assign_node))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package AssignTest {

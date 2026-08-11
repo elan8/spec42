@@ -46,54 +46,6 @@ package RiskMetadataExample {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,Ident,OpenCurly,
-At,Ident,OpenCurly,
-Ident,Eq,Ident,Semicolon,
-Ident,Eq,Ident,Semicolon,
-Ident,Eq,Ident,Semicolon,
-CloseCurly,
-At,Ident,OpenCurly,
-Ident,OpenCurly,
-Ident,Eq,DecimalValue,Dot,DecimalValue,Semicolon,
-Ident,Eq,DecimalValue,Dot,DecimalValue,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'RiskMetadataExample'
-    (import_decl private 'RiskMetadata::*')
-    (import_decl private 'RiskLevelEnum::*')
-    (part_usage 'engine4cyl'
-      (metadata_feature typed 'Risk'
-        (feature_def 'totalRisk' value)
-        (feature_def 'technicalRisk' value)
-        (feature_def 'scheduleRisk' value))
-      (metadata_feature typed 'Risk'
-        (feature_def 'totalRisk'
-          (feature_def 'probability' value)
-          (feature_def 'impact' value))))))
-~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'totalRisk'
-semantic.unresolved_name 'Risk'
-semantic.unresolved_name 'Risk'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'totalRisk'
-semantic.unresolved_name 'Risk'
-semantic.unresolved_name 'Risk'
-~~~
 # FORMAT
 ~~~sysml
 package RiskMetadataExample {

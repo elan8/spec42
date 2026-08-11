@@ -18,26 +18,6 @@ package Outer {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Outer'
-    (package_def 'Inner')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package Outer {

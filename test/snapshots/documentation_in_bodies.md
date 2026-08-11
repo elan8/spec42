@@ -44,60 +44,6 @@ package DocTests {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwPart,KwDef,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwAttribute,Ident,Semicolon,
-CloseCurly,
-KwAttribute,KwDef,Ident,OpenCurly,
-KwDoc,Ident,RegularComment,
-CloseCurly,
-KwEnum,KwDef,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwEnum,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwItem,KwDef,Ident,OpenCurly,
-KwDoc,OpenAngle,Ident,CloseAngle,Ident,KwLocale,StringValue,RegularComment,
-CloseCurly,
-KwAlias,Ident,KwFor,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'DocTests'
-    (documentation)
-    (part_def 'Vehicle'
-      (documentation)
-      (attribute_usage 'speed'))
-    (attribute_def 'Speed'
-      (documentation 'DocName'))
-    (enum_def 'Color'
-      (documentation)
-      (enum_value 'red'))
-    (part_usage 'vehicle' : 'Vehicle'
-      (documentation))
-    (item_def 'Payload'
-      (documentation 'PayloadDoc' locale "en"))
-    (alias_member 'Car' for 'Vehicle'
-      (documentation))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package DocTests {

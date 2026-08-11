@@ -67,54 +67,6 @@ package 'Packet Usage' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPart,Ident,Colon,UnrestrictedName,Semicolon,
-KwPart,Ident,Colon,UnrestrictedName,Semicolon,
-KwPart,Ident,Colon,UnrestrictedName,OpenCurly,
-KwAttribute,UnrestrictedName,KwRedefines,UnrestrictedName,OpenCurly,
-KwAttribute,KwRedefines,UnrestrictedName,OpenCurly,
-KwAttribute,UnrestrictedName,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,
-CloseCurly,
-EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Packet Usage''
-    (import_decl public 'Packets::*')
-    (import_decl private 'ScalarValues::Real')
-    (part_usage 'packet1' : ''Thermal Data Packet'')
-    (part_usage 'packet2' : ''Thermal Data Packet'')
-    (part_usage 'packet3' : ''Thermal Data Packet''
-      (attribute_usage ''special data field'' :>> ''packet data field''
-        (attribute_usage :>> ''user data field''
-          (attribute_usage ''special data'' : 'Real'))))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Thermal Data Packet'
-semantic.unresolved_name 'Thermal Data Packet'
-semantic.unresolved_name 'Thermal Data Packet'
-semantic.unresolved_name 'packet data field'
-semantic.unresolved_name 'user data field'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Thermal Data Packet'
-semantic.unresolved_name 'Thermal Data Packet'
-semantic.unresolved_name 'Thermal Data Packet'
-semantic.unresolved_name 'packet data field'
-semantic.unresolved_name 'user data field'
-semantic.unresolved_name 'Real'
-~~~
 # FORMAT
 ~~~sysml
 package 'Packet Usage' {

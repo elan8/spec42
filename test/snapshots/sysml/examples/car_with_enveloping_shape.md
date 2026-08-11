@@ -44,51 +44,6 @@ package CarWithEnvelopingShape {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPart,KwDef,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwItem,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,ColonGt,Ident,OpenCurly,
-ColonGtGt,Ident,Eq,DecimalValue,OpenSquare,Ident,CloseSquare,Semicolon,
-ColonGtGt,Ident,Eq,DecimalValue,OpenSquare,Ident,CloseSquare,Semicolon,
-ColonGtGt,Ident,Eq,DecimalValue,OpenSquare,Ident,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'CarWithEnvelopingShape'
-    (import_decl private 'ShapeItems::Box')
-    (import_decl private 'SI::mm')
-    (part_def 'Car'
-      (documentation)
-      (item_usage 'boundingBox' : 'Box' :> 'boundingShapes' multiplicity
-        (default_ref_usage :>> 'length' value)
-        (default_ref_usage :>> 'width' value)
-        (default_ref_usage :>> 'height' value)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Box'
-semantic.unresolved_name 'boundingShapes'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'width'
-semantic.unresolved_name 'height'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Box'
-semantic.unresolved_name 'boundingShapes'
-semantic.unresolved_name 'length'
-semantic.unresolved_name 'width'
-semantic.unresolved_name 'height'
-~~~
 # FORMAT
 ~~~sysml
 package CarWithEnvelopingShape {

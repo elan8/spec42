@@ -27,40 +27,6 @@ package BindingNamedMult {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwBinding,Ident,OpenSquare,Ident,CloseSquare,KwOf,Ident,Eq,Ident,Semicolon,
-KwBinding,KwAll,Ident,Eq,Ident,Semicolon,
-KwBinding,Ident,KwBind,Ident,Eq,Ident,Semicolon,
-KwBinding,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Ident,Eq,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'BindingNamedMult'
-    (binding_connector 'instant' multiplicity
-      (connector_end)
-      (connector_end))
-    (binding_connector
-      (connector_end)
-      (connector_end))
-    (binding_connector 'x'
-      (connector_end)
-      (connector_end))
-    (binding_connector multiplicity
-      (connector_end)
-      (connector_end))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package BindingNamedMult {

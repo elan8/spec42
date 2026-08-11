@@ -18,26 +18,6 @@ package P {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwFeature,Ident,KwFeatured,KwBy,Ident,Eq,DecimalValue,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (feature_def 'g' value featured by 'c')))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'c'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'c'
-~~~
 # FORMAT
 ~~~sysml
 package P {

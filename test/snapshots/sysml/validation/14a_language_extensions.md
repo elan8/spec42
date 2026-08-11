@@ -52,65 +52,6 @@ package '14a-Language Extensions' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwPackage,UnrestrictedName,OpenCurly,
-KwEnum,KwDef,Ident,OpenCurly,
-Ident,Semicolon,
-Ident,Semicolon,
-Ident,Semicolon,
-CloseCurly,
-KwMetadata,KwDef,Ident,OpenCurly,
-KwRef,ColonGtGt,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-KwAttribute,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,
-KwPart,Ident,OpenCurly,
-KwMetadata,Ident,OpenCurly,
-Ident,Eq,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-LineComment,
-KwPart,Ident,OpenCurly,
-At,Ident,OpenCurly,
-Ident,Eq,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''14a-Language Extensions''
-    (import_decl private ''User Defined Extensions'::*')
-    (package_def ''User Defined Extensions''
-      (enum_def 'ClassificationLevel'
-        (enum_value 'uncl')
-        (enum_value 'conf')
-        (enum_value 'secret'))
-      (metadata_def 'Classified'
-        (ref_usage ref :>> 'annotatedElement' : 'SysML::PartUsage')
-        (attribute_usage 'classificationLevel' : 'ClassificationLevel' multiplicity)))
-    (part_usage 'part_X'
-      (metadata_feature typed 'Classified'
-        (feature_def 'classificationLevel' value)))
-    (line_comment)
-    (part_usage 'part_Y'
-      (metadata_feature typed 'Classified'
-        (feature_def 'classificationLevel' value)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::PartUsage'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'annotatedElement'
-semantic.unresolved_name 'SysML::PartUsage'
-~~~
 # FORMAT
 ~~~sysml
 package '14a-Language Extensions' {

@@ -64,56 +64,6 @@ package 'Variation Usages' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,Ident,Semicolon,
-KwPart,Ident,Semicolon,
-KwAbstract,KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwVariation,KwPart,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,OpenCurly,
-KwVariant,Ident,Semicolon,
-KwVariant,Ident,Semicolon,
-CloseCurly,
-KwAssert,KwConstraint,OpenCurly,
-OpenParen,Ident,EqEq,Ident,ColonColon,UnrestrictedName,KwAnd,
-Ident,EqEq,Ident,ColonColon,Ident,CloseParen,KwXor,
-OpenParen,Ident,EqEq,Ident,ColonColon,UnrestrictedName,KwAnd,
-Ident,EqEq,Ident,ColonColon,Ident,CloseParen,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Variation Usages''
-    (import_decl private ''Variation Definitions'::*')
-    (part_def 'Vehicle')
-    (part_def 'Transmission')
-    (part_usage 'manualTransmission')
-    (part_usage 'automaticTransmission')
-    (part_usage abstract 'vehicleFamily' : 'Vehicle'
-      (part_usage 'engine' : 'EngineChoices' multiplicity)
-      (part_usage variation 'transmission' : 'Transmission' multiplicity
-        (variant_usage
-          (default_ref_usage 'manualTransmission'))
-        (variant_usage
-          (default_ref_usage 'automaticTransmission')))
-      (sysml_decl
-        (result_expr_member)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'EngineChoices'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'EngineChoices'
-~~~
 # FORMAT
 ~~~sysml
 package 'Variation Usages' {

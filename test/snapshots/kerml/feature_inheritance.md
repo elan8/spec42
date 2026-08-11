@@ -22,31 +22,6 @@ package FeatureInheritance {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwFeature,Ident,OpenCurly,
-KwFeature,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-KwFeature,Ident,KwSubsets,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'FeatureInheritance'
-    (feature_def 's'
-      (feature_def 't' : 'ISQ::TorqueValue'))
-    (feature_def 'u' :> 's')))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ISQ::TorqueValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ISQ::TorqueValue'
-~~~
 # FORMAT
 ~~~sysml
 package FeatureInheritance {

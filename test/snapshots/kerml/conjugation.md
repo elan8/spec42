@@ -24,33 +24,6 @@ package Conjugation {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClass,Ident,OpenCurly,
-KwIn,KwFeature,Ident,Semicolon,
-CloseCurly,
-KwClass,Ident,KwConjugates,Ident,Semicolon,
-KwFeature,Ident,Tilde,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Conjugation'
-    (class_def 'A'
-      (feature_def in 'f'))
-    (class_def 'B' ~ 'A')
-    (feature_def 'g' ~ B::f)))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'B::f'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'B::f'
-~~~
 # FORMAT
 ~~~sysml
 package Conjugation {

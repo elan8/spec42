@@ -42,42 +42,6 @@ package MassRollup_2 {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwClass,Ident,OpenCurly,
-KwFeature,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-KwFeature,Ident,Colon,Ident,ColonColon,Ident,Eq,
-Ident,Plus,Ident,OpenParen,Ident,Dot,Ident,CloseParen,Semicolon,
-KwFeature,Ident,KwRedefines,Ident,Semicolon,
-CloseCurly,
-KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'MassRollup_2'
-    (import_decl private 'NumericalFunctions::*')
-    (import_decl private 'ISQ::*')
-    (class_def 'MassedThing'
-      (feature_def 'mass' : 'ScalarValues::Real')
-      (feature_def 'totalMass' : 'ScalarValues::Real' value)
-      (feature_def 'subcomponents' :>> 'massedThings'))
-    (feature_def 'massedThings' : 'MassedThing' multiplicity)))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'ScalarValues::Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'ScalarValues::Real'
-~~~
 # FORMAT
 ~~~sysml
 package MassRollup_2 {

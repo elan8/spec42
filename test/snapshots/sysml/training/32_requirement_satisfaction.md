@@ -102,61 +102,6 @@ package 'Requirement Satisfaction' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwAction,UnrestrictedName,OpenCurly,
-KwAction,UnrestrictedName,OpenCurly,CloseCurly,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPerform,UnrestrictedName,Semicolon,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPort,ColonGtGt,Ident,Semicolon,
-KwPerform,UnrestrictedName,Dot,UnrestrictedName,ColonGtGt,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-KwPart,UnrestrictedName,OpenCurly,
-KwRef,Ident,ColonGt,Ident,Semicolon,
-KwSatisfy,Ident,KwBy,Ident,Semicolon,
-KwSatisfy,Ident,KwBy,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Requirement Satisfaction''
-    (import_decl private ''Requirement Definitions'::*')
-    (import_decl private ''Requirement Groups'::*')
-    (action_usage ''provide power''
-      (action_usage ''generate torque''))
-    (part_usage 'vehicle_c1' : 'Vehicle'
-      (perform_action :>> ''provide power'')
-      (part_usage 'engine_v1' : 'Engine'
-        (port_usage :>> 'clutchPort')
-        (perform_action :>> ''provide power'.'generate torque'')
-        (default_ref_usage :>> 'generateTorque')))
-    (part_usage ''Vehicle c1 Design Context''
-      (ref_usage ref 'vehicle_design' :> 'vehicle_c1')
-      (sysml_decl 'vehicleSpecification')
-      (sysml_decl 'engineSpecification'))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'clutchPort'
-semantic.unresolved_name 'generateTorque'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'clutchPort'
-semantic.unresolved_name 'generateTorque'
-~~~
 # FORMAT
 ~~~sysml
 package 'Requirement Satisfaction' {

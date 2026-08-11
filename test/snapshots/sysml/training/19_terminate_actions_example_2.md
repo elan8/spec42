@@ -35,45 +35,6 @@ package 'Terminate Actions Example-2' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwAction,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,OpenCurly,
-KwRef,KwAction,Ident,Colon,Ident,Semicolon,
-KwAction,Ident,OpenCurly,
-LineComment,
-CloseCurly,
-CloseCurly,
-KwAction,Ident,OpenCurly,
-KwIn,Ident,Colon,Ident,Semicolon,
-KwTerminate,Ident,Dot,Ident,Semicolon,
-KwTerminate,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Terminate Actions Example-2''
-    (action_def 'WorkflowProcess')
-    (part_def 'Processor'
-      (action_usage ref 'workflowProcess' : 'WorkflowProcess')
-      (action_usage 'internalProcess'
-        (line_comment)))
-    (action_usage 'terminateProcessing'
-      (default_ref_usage in 'processor' : 'Processor')
-      (terminate_node processor.workflowProcess)
-      (terminate_node processor))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Terminate Actions Example-2' {

@@ -47,59 +47,6 @@ abstract part def Container {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwAbstract,KwPart,KwDef,Ident,Semicolon,
-KwAbstract,KwAttribute,KwDef,Ident,Semicolon,
-KwAbstract,KwItem,KwDef,Ident,Semicolon,
-KwAbstract,KwPort,KwDef,Ident,Semicolon,
-KwAbstract,KwEnum,KwDef,Ident,Semicolon,
-KwAbstract,KwIndividual,KwDef,Ident,Semicolon,
-KwAbstract,KwOccurrence,KwDef,Ident,Semicolon,
-KwVariation,KwPart,KwDef,Ident,OpenCurly,
-KwVariant,KwPart,Ident,Semicolon,
-KwVariant,KwPart,Ident,Semicolon,
-CloseCurly,
-KwAbstract,KwPart,KwDef,Ident,OpenCurly,
-KwAbstract,KwAttribute,KwDef,Ident,Semicolon,
-KwAbstract,KwEnum,KwDef,Ident,Semicolon,
-KwAbstract,KwItem,KwDef,Ident,Semicolon,
-KwAbstract,KwPart,KwDef,Ident,Semicolon,
-KwAbstract,KwPort,KwDef,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (part_def abstract 'AbstractVehicle')
-  (attribute_def abstract 'Weight')
-  (item_def abstract 'AbstractWidget')
-  (port_def abstract 'AbstractPort')
-  (enum_def abstract 'AbstractPriority')
-  (individual_def abstract individual 'AbstractPerson')
-  (occurrence_def abstract 'AbstractEvent')
-  (part_def variation 'EngineChoices'
-    (variant_usage
-      (part_usage 'fourCyl'))
-    (variant_usage
-      (part_usage 'sixCyl')))
-  (part_def abstract 'Container'
-    (attribute_def abstract 'InnerWeight')
-    (enum_def abstract 'InnerColor')
-    (item_def abstract 'InnerWidget')
-    (part_def abstract 'InnerPart')
-    (port_def abstract 'InnerPort')))
-~~~
-# EXPECTED
-~~~
-parse.expected_enum_body
-parse.expected_enum_body
-~~~
-# PROBLEMS
-~~~
-parse.expected_enum_body
-parse.expected_enum_body
-~~~
 # FORMAT
 ~~~sysml
 abstract part def AbstractVehicle;

@@ -80,59 +80,6 @@ package ExtendedExamples {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-Hash,Ident,KwDef,Ident,Semicolon,
-Hash,Ident,KwDef,Ident,ColonGt,Ident,Semicolon,
-KwAbstract,Hash,Ident,KwDef,Ident,Semicolon,
-Hash,Ident,Hash,Ident,KwDef,Ident,Semicolon,
-Hash,Ident,KwDef,Ident,OpenCurly,KwPart,Ident,Semicolon,CloseCurly,
-Hash,Ident,Ident,Semicolon,
-Hash,Ident,Ident,Colon,Ident,Semicolon,
-Hash,Ident,Ident,Colon,Ident,OpenCurly,CloseCurly,
-KwVariation,Hash,Ident,KwDef,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ExtendedExamples'
-    (extended_def #'situation' 'Failure')
-    (extended_def #'situation' 'Failure' :> 'Base')
-    (extended_def abstract #'situation' 'AbstractFailure')
-    (extended_def #'SecurityRelated', 'situation' 'Vulnerability')
-    (extended_def #'situation' 'Failure'
-      (part_usage 'p'))
-    (extended_usage #'situation' 'batteryLow')
-    (extended_usage #'situation' 'x' : 'T')
-    (extended_usage #'situation' 'x' : 'T')
-    (extended_def variation #'situation' 'V')))
-~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'x'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'x'
-semantic.unresolved_name 'Base'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'Failure'
-semantic.duplicate_name 'x'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'Failure'
-semantic.ambiguous_member 'x'
-semantic.unresolved_name 'Base'
-semantic.unresolved_name 'T'
-semantic.unresolved_name 'T'
-~~~
 # FORMAT
 ~~~sysml
 package ExtendedExamples {

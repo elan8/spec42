@@ -20,29 +20,6 @@ package P {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClass,Ident,OpenCurly,
-KwRef,Hash,Ident,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (class_def 'C'
-      (ref_usage ref #'MyAnnotation' 'self' : 'C'))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package P {

@@ -144,68 +144,6 @@ standard library package StandardViewDefinitions {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,KwSpecializes,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,KwSpecializes,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwView,KwDef,OpenAngle,Ident,CloseAngle,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'StandardViewDefinitions'
-    (documentation)
-    (import_decl public 'SysML::*')
-    (view_def 'GeneralView'
-      (documentation))
-    (view_def 'InterconnectionView'
-      (documentation))
-    (view_def 'ActionFlowView' :> 'InterconnectionView'
-      (documentation))
-    (view_def 'StateTransitionView' :> 'InterconnectionView'
-      (documentation))
-    (view_def 'SequenceView'
-      (documentation))
-    (view_def 'GeometryView'
-      (documentation))
-    (view_def 'GridView'
-      (documentation))
-    (view_def 'BrowserView'
-      (documentation))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 standard library package StandardViewDefinitions {

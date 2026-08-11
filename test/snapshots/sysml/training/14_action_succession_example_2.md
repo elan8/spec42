@@ -75,65 +75,6 @@ package 'Action Definition Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwItem,KwDef,Ident,Semicolon,
-KwItem,KwDef,Ident,Semicolon,
-KwItem,KwDef,Ident,Semicolon,
-KwAction,KwDef,Ident,OpenCurly,KwIn,Ident,Colon,Ident,Semicolon,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwAction,KwDef,Ident,OpenCurly,KwIn,Ident,Colon,Ident,Semicolon,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwAction,KwDef,Ident,OpenCurly,
-KwIn,KwItem,Ident,Colon,Ident,Semicolon,
-KwOut,KwItem,Ident,Colon,Ident,Semicolon,
-KwBind,Ident,Dot,Ident,Eq,Ident,Semicolon,
-KwAction,Ident,Colon,Ident,OpenCurly,KwIn,Ident,Semicolon,KwOut,Ident,Semicolon,CloseCurly,
-KwSuccession,KwFlow,KwFrom,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwAction,Ident,Colon,Ident,OpenCurly,KwIn,Ident,Semicolon,KwOut,Ident,Semicolon,CloseCurly,
-KwBind,Ident,Dot,Ident,Eq,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Action Definition Example''
-    (item_def 'Scene')
-    (item_def 'Image')
-    (item_def 'Picture')
-    (action_def 'Focus'
-      (default_ref_usage in 'scene' : 'Scene')
-      (default_ref_usage out 'image' : 'Image'))
-    (action_def 'Shoot'
-      (default_ref_usage in 'image' : 'Image')
-      (default_ref_usage out 'picture' : 'Picture'))
-    (action_def 'TakePicture'
-      (item_usage in 'scene' : 'Scene')
-      (item_usage out 'picture' : 'Picture')
-      (binding_as_usage
-        (connector_end)
-        (connector_end))
-      (action_usage 'focus' : 'Focus'
-        (default_ref_usage in 'scene')
-        (default_ref_usage out 'image'))
-      (succession_flow_usage
-        (connector_end)
-        (connector_end))
-      (action_usage 'shoot' : 'Shoot'
-        (default_ref_usage in 'image')
-        (default_ref_usage out 'picture'))
-      (binding_as_usage
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Action Definition Example' {

@@ -35,56 +35,6 @@ behavior TakePicture {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwBehavior,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,Semicolon,
-KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwSubsets,Ident,Semicolon,
-KwClass,Ident,Semicolon,
-KwBehavior,Ident,OpenCurly,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwBehavior,Ident,OpenCurly,KwIn,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwStep,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwStep,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwSuccession,KwFlow,Ident,OpenSquare,DecimalValue,CloseSquare,KwOf,Ident,KwFrom,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwSuccession,Ident,KwThen,Ident,Dot,Ident,Semicolon,
-KwSuccession,Ident,KwThen,Ident,Dot,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (behavior_def
-    (import_decl private 'Camera')
-    (feature_def 'camera' : 'Camera' multiplicity :> 'involvedObjects')
-    (class_def 'Exposure')
-    (behavior_def
-      (feature_def out 'xrsl' : 'Exposure'))
-    (behavior_def
-      (feature_def in 'xsf' : 'Exposure'))
-    (step_def)
-    (step_def)
-    (succession_flow_feature 'exposure' : 'Exposure' multiplicity
-      (connector_end)
-      (connector_end))
-    (succession_def
-      (connector_end)
-      (connector_end))
-    (succession_def
-      (connector_end)
-      (connector_end))))
-~~~
-# EXPECTED
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.unresolved_name 'Camera'
-semantic.unresolved_name 'involvedObjects'
-~~~
-# PROBLEMS
-~~~
-semantic.feature_typing_kind_mismatch
-semantic.unresolved_name 'Camera'
-semantic.unresolved_name 'involvedObjects'
-~~~
 # FORMAT
 ~~~sysml
 behavior TakePicture {

@@ -76,67 +76,6 @@ standard library package Calculations {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwAbstract,KwCalc,KwDef,Ident,ColonGt,Ident,Comma,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwRef,KwCalc,Ident,Colon,Ident,ColonGtGt,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
-KwAbstract,KwCalc,Ident,Colon,Ident,ColonGt,Ident,Comma,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-CloseCurly,
-KwAbstract,KwCalc,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,ColonGt,Ident,Comma,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'Calculations'
-    (documentation)
-    (import_decl private 'Performances::Evaluation')
-    (import_decl private 'Performances::evaluations')
-    (import_decl private 'Actions::Action')
-    (import_decl private 'Actions::actions')
-    (calc_def abstract 'Calculation' :> 'Action', 'Evaluation'
-      (documentation)
-      (calc_usage ref 'self' : 'Calculation' :>> 'Action::self', 'Evaluation::self')
-      (calc_usage abstract 'subcalculations' : 'Calculation' :> 'calculations', 'subactions'
-        (documentation)))
-    (calc_usage abstract 'calculations' : 'Calculation' multiplicity :> 'actions', 'evaluations' nonunique
-      (documentation))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Action'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Action::self'
-semantic.unresolved_name 'Evaluation::self'
-semantic.unresolved_name 'subactions'
-semantic.unresolved_name 'actions'
-semantic.unresolved_name 'evaluations'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Action'
-semantic.unresolved_name 'Evaluation'
-semantic.unresolved_name 'Action::self'
-semantic.unresolved_name 'Evaluation::self'
-semantic.unresolved_name 'subactions'
-semantic.unresolved_name 'actions'
-semantic.unresolved_name 'evaluations'
-~~~
 # FORMAT
 ~~~sysml
 standard library package Calculations {

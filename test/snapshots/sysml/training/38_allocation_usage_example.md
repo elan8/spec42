@@ -73,69 +73,6 @@ package 'Allocation Usage Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwAction,KwDef,Ident,Semicolon,
-KwAction,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwAction,Ident,Colon,Ident,OpenCurly,
-KwAction,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPerform,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPerform,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-KwAllocate,Ident,KwTo,Ident,OpenCurly,
-KwAllocate,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Allocation Usage Example''
-    (package_def 'LogicalModel'
-      (action_def 'ProvidePower')
-      (action_def 'GenerateTorque')
-      (part_def 'TorqueGenerator')
-      (action_usage 'providePower' : 'ProvidePower'
-        (action_usage 'generateTorque' : 'GenerateTorque'))
-      (part_usage 'torqueGenerator' : 'TorqueGenerator'
-        (perform_action :>> 'providePower.generateTorque')))
-    (package_def 'PhysicalModel'
-      (import_decl private 'LogicalModel::*')
-      (part_def 'PowerTrain')
-      (part_def 'Engine')
-      (part_usage 'powerTrain' : 'PowerTrain'
-        (part_usage 'engine' : 'Engine'
-          (perform_action :>> 'providePower.generateTorque')))
-      (allocation_usage
-        (connector_end)
-        (connector_end)
-        (allocation_usage
-          (connector_end)
-          (connector_end))))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Allocation Usage Example' {

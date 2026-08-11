@@ -33,32 +33,6 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwAction,KwDef,Ident,OpenCurly,
-KwFor,
-KwIn,KwSend,LineComment,
-KwSend,Ident,CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (action_def 'A'
-      (for_loop_node)
-      (send_node)
-      (send_node))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package P {

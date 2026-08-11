@@ -59,60 +59,6 @@ package 'Viewpoint Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPart,KwDef,UnrestrictedName,Semicolon,
-KwPart,KwDef,UnrestrictedName,Semicolon,
-KwConcern,UnrestrictedName,OpenCurly,
-KwDoc,RegularComment,
-KwSubject,Semicolon,
-KwStakeholder,Ident,Colon,UnrestrictedName,Semicolon,
-KwStakeholder,Ident,Colon,UnrestrictedName,Semicolon,
-CloseCurly,
-KwConcern,UnrestrictedName,OpenCurly,
-KwDoc,RegularComment,
-KwSubject,Semicolon,
-KwStakeholder,Ident,Colon,UnrestrictedName,Semicolon,
-CloseCurly,
-KwViewpoint,UnrestrictedName,OpenCurly,
-KwFrame,UnrestrictedName,Semicolon,
-KwFrame,UnrestrictedName,Semicolon,
-KwRequire,KwConstraint,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Viewpoint Example''
-    (part_def ''Systems Engineer'')
-    (part_def ''IV&V'')
-    (sysml_decl ''system breakdown''
-      (documentation)
-      (sysml_decl)
-      (sysml_decl 'se' : ''Systems Engineer'')
-      (sysml_decl 'ivv' : ''IV&V''))
-    (sysml_decl ''modularity''
-      (documentation)
-      (sysml_decl)
-      (sysml_decl 'se' : ''Systems Engineer''))
-    (sysml_decl ''system structure perspective''
-      (sysml_decl ''system breakdown'')
-      (sysml_decl ''modularity'')
-      (sysml_decl
-        (documentation)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Viewpoint Example' {

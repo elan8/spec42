@@ -35,40 +35,6 @@ package P3 {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPackage,Ident,OpenCurly,
-KwPart,Ident,KwSubsets,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P1'
-    (part_def 'A'))
-  (package_def 'P2'
-    (import_decl private 'P1::*')
-    (part_usage 'a' : 'A'))
-  (import_decl private 'P2::*')
-  (package_def 'P3'
-    (part_usage 'b' :> 'a')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package P1 {

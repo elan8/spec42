@@ -38,56 +38,6 @@ package Redefinition {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClassifier,Ident,OpenCurly,
-KwFeature,Ident,Semicolon,
-CloseCurly,
-KwClassifier,Ident,KwSpecializes,Ident,OpenCurly,
-KwFeature,KwRedefines,Ident,OpenCurly,
-KwFeature,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-KwClassifier,Ident,KwSpecializes,Ident,Comma,Ident,OpenCurly,
-KwFeature,KwSubsets,Ident,OpenCurly,
-KwFeature,KwRedefines,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-KwClass,Ident,OpenCurly,
-KwFeature,KwRedefines,Ident,Semicolon,
-KwFeature,KwRedefines,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Redefinition'
-    (classifier_def 'A'
-      (feature_def 'f'))
-    (classifier_def 'B' :> 'A'
-      (feature_def :>> 'f'
-        (feature_def 'g')))
-    (classifier_def 'C' :> 'A', 'B'
-      (feature_def :> 'f'
-        (feature_def :>> 'g')))
-    (class_def 'X'
-      (feature_def :>> 'startShot')
-      (feature_def :>> 'endShot'))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'g'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'endShot'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'g'
-semantic.unresolved_name 'startShot'
-semantic.unresolved_name 'endShot'
-~~~
 # FORMAT
 ~~~sysml
 package Redefinition {

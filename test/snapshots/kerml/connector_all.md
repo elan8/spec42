@@ -27,42 +27,6 @@ package ConnectorAll {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwConnector,KwAll,Ident,Colon,Ident,KwFrom,Ident,KwTo,Ident,Semicolon,
-KwConnector,KwAll,Ident,Colon,Ident,OpenSquare,Star,CloseSquare,KwFrom,Ident,KwTo,Ident,Semicolon,
-KwConnector,KwAll,Ident,KwFrom,Ident,KwTo,Ident,Semicolon,
-KwConnector,KwAll,KwFrom,Ident,KwTo,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ConnectorAll'
-    (connector_def 'during' : 'HappensDuring'
-      (connector_end)
-      (connector_end))
-    (connector_def 'guardConstraint' : 'TPCGuardConstraint' multiplicity
-      (connector_end)
-      (connector_end))
-    (connector_def 'x'
-      (connector_end)
-      (connector_end))
-    (connector_def
-      (connector_end)
-      (connector_end))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'TPCGuardConstraint'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'HappensDuring'
-semantic.unresolved_name 'TPCGuardConstraint'
-~~~
 # FORMAT
 ~~~sysml
 package ConnectorAll {

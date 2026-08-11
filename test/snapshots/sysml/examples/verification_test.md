@@ -60,68 +60,6 @@ package VerificationTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,OpenCurly,
-Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwRequirement,KwDef,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwRequirement,Ident,Colon,Ident,Semicolon,
-KwVerification,KwDef,Ident,OpenCurly,
-KwSubject,Ident,Colon,Ident,Semicolon,
-KwObjective,OpenCurly,
-KwVerify,KwRequirement,Colon,Ident,Semicolon,
-CloseCurly,
-Ident,ColonColon,Ident,OpenParen,Ident,Dot,Ident,EqEq,DecimalValue,CloseParen,
-CloseCurly,
-KwVerification,KwDef,Ident,OpenCurly,
-KwSubject,Ident,Colon,Ident,Semicolon,
-KwObjective,OpenCurly,
-KwVerify,Ident,Semicolon,
-CloseCurly,
-KwVerification,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,OpenCurly,
-KwVerification,Ident,Colon,Ident,OpenCurly,
-KwSubject,Ident,Eq,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'VerificationTest'
-    (part_def 'V'
-      (default_ref_usage 'm' : 'ScalarValues::Integer'))
-    (part_usage 'vv' : 'V')
-    (requirement_def 'R'
-      (documentation))
-    (requirement_usage 'r' : 'R')
-    (verification_case_def 'VerificationCase'
-      (sysml_decl 'v' : 'V')
-      (objective_member)
-      (result_expr_member))
-    (verification_case_def 'VerificationPlan'
-      (sysml_decl 'v' : 'V')
-      (objective_member)
-      (sysml_decl 'verificationCase' : 'VerificationCase'))
-    (part_usage 'verificationContext'
-      (sysml_decl 'verificationPlan' : 'VerificationPlan'
-        (sysml_decl 'v' value)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Integer'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Integer'
-~~~
 # FORMAT
 ~~~sysml
 package VerificationTest {

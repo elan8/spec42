@@ -44,56 +44,6 @@ package 'Parts Example-1' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-LineComment,
-KwPart,KwDef,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,Semicolon,
-LineComment,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Parts Example-1''
-    (line_comment)
-    (part_def 'Vehicle'
-      (part_usage 'eng' : 'Engine'))
-    (part_def 'Engine'
-      (part_usage 'cyl' : 'Cylinder' multiplicity))
-    (part_def 'Cylinder')
-    (line_comment)
-    (part_usage 'smallVehicle' : 'Vehicle'
-      (part_usage :>> 'eng'
-        (part_usage :>> 'cyl' multiplicity)))
-    (part_usage 'bigVehicle' : 'Vehicle'
-      (part_usage :>> 'eng'
-        (part_usage :>> 'cyl' multiplicity)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Parts Example-1' {

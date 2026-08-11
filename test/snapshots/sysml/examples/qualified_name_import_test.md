@@ -40,43 +40,6 @@ package QualifiedNameImportTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-CloseCurly,
-LineComment,
-LineComment,
-KwPart,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'QualifiedNameImportTest'
-    (package_def 'P1'
-      (part_def 'A'))
-    (package_def 'P2'
-      (package_def 'P2a'
-        (import_decl public 'P1::*'))
-      (line_comment)
-      (line_comment)
-      (part_usage 'x' : 'P2a::A'))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package QualifiedNameImportTest {

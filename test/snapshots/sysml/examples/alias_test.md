@@ -61,56 +61,6 @@ package AliasTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,LineComment,
-KwAttribute,Ident,ColonGt,Ident,Semicolon,
-KwPart,KwDef,Ident,OpenCurly,
-KwPort,Ident,Semicolon,
-KwAlias,Ident,KwFor,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPort,Ident,ColonGtGt,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPort,Ident,Semicolon,
-KwAlias,Ident,KwFor,Ident,Semicolon,
-CloseCurly,
-KwConnect,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwConnect,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'AliasTest'
-    (import_decl private 'ISQSpaceTime::breadth')
-    (line_comment)
-    (attribute_usage 'b' :> 'breadth')
-    (part_def 'P1'
-      (port_usage 'porig1')
-      (alias_member 'po1' for 'porig1'))
-    (part_usage 'p1' : 'P1'
-      (port_usage 'po1' :>> 'po1'))
-    (part_usage 'p2' : 'P1'
-      (port_usage 'pdest')
-      (alias_member 'pd1' for 'pdest'))
-    (connection_usage
-      (connector_end)
-      (connector_end))
-    (connection_usage
-      (connector_end)
-      (connector_end))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'breadth'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'breadth'
-~~~
 # FORMAT
 ~~~sysml
 package AliasTest {

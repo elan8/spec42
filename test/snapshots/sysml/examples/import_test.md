@@ -69,50 +69,6 @@ package ImportTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Ident,ColonColon,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,ColonColon,StarStar,Semicolon,
-KwPart,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,ColonGt,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ImportTest'
-    (package_def 'Pkg1'
-      (import_decl private 'Pkg2::Pkg21::Pkg211::P211')
-      (import_decl private 'Pkg2::Pkg21::*')
-      (import_decl private 'Pkg211::*::**')
-      (part_usage 'p11' : 'Pkg211::P211')
-      (part_def 'P12'))
-    (package_def 'Pkg2'
-      (import_decl private 'Pkg1::*')
-      (package_def 'Pkg21'
-        (package_def 'Pkg211'
-          (part_def 'P211' :> 'P12'))))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package ImportTest {

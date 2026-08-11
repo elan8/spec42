@@ -42,39 +42,6 @@ package P {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwFlow,Eq,Ident,KwOf,Ident,
-KwFrom,Ident,Dot,Ident,
-KwTo,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (part_usage 'vehicle' : 'Vehicle'
-      (part_usage 'eng' : 'Engine')
-      (flow_usage : 'Fuel' value
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'Fuel'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Vehicle'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'Fuel'
-~~~
 # FORMAT
 ~~~sysml
 package P {

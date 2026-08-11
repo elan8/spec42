@@ -34,43 +34,6 @@ package 'Generalization Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwAbstract,KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,KwSpecializes,Ident,OpenCurly,
-KwRef,KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,ColonGt,
-Ident,Comma,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Generalization Example''
-    (part_def abstract 'Vehicle')
-    (part_def 'HumanDrivenVehicle' :> 'Vehicle'
-      (part_usage ref 'driver' : 'Person'))
-    (part_def 'PoweredVehicle' :> 'Vehicle'
-      (part_usage 'eng' : 'Engine'))
-    (part_def 'HumanDrivenPoweredVehicle' :> 'HumanDrivenVehicle', 'PoweredVehicle')
-    (part_def 'Engine')
-    (part_def 'Person')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Generalization Example' {

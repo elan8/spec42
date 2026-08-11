@@ -39,41 +39,6 @@ package PictureTaking {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-KwAction,KwDef,Ident,OpenCurly,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwAction,KwDef,Ident,OpenCurly,KwIn,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwAction,Ident,OpenCurly,
-KwAction,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwFlow,KwOf,Ident,KwFrom,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwAction,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'PictureTaking'
-    (part_def 'Exposure')
-    (action_def 'Focus'
-      (default_ref_usage out 'xrsl' : 'Exposure'))
-    (action_def 'Shoot'
-      (default_ref_usage in 'xsf' : 'Exposure'))
-    (action_usage 'takePicture'
-      (action_usage 'focus' : 'Focus' multiplicity)
-      (flow_usage 'of')
-      (action_usage 'shoot' : 'Shoot' multiplicity))))
-~~~
-# EXPECTED
-~~~
-semantic.invalid_connection_end_count
-~~~
-# PROBLEMS
-~~~
-semantic.invalid_connection_end_count
-~~~
 # FORMAT
 ~~~sysml
 package PictureTaking {

@@ -23,46 +23,6 @@ package SuccessionStructured {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwSuccession,KwAll,OpenSquare,Star,CloseSquare,Ident,KwThen,OpenSquare,Star,CloseSquare,Ident,Semicolon,
-KwSuccession,OpenSquare,DecimalValue,CloseSquare,KwEntry,KwThen,OpenSquare,Star,CloseSquare,Ident,Semicolon,
-KwSuccession,KwFirst,Ident,KwThen,Ident,Semicolon,
-KwSuccession,Ident,KwFirst,Ident,KwThen,Ident,Semicolon,
-KwSuccession,KwAll,OpenSquare,Star,CloseSquare,Ident,KwThen,OpenSquare,DecimalValue,CloseSquare,KwExit,Semicolon,
-KwSuccession,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'SuccessionStructured'
-    (succession_def multiplicity
-      (connector_end)
-      (connector_end))
-    (succession_def multiplicity
-      (connector_end)
-      (connector_end))
-    (succession_as_usage
-      (connector_end)
-      (connector_end))
-    (succession_def 's'
-      (connector_end)
-      (connector_end))
-    (succession_def multiplicity
-      (connector_end)
-      (connector_end))
-    (succession_def 'x')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package SuccessionStructured {

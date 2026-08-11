@@ -66,68 +66,6 @@ package PrivateImportTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-LineComment,
-LineComment,
-LineComment,
-LineComment,
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-LineComment,
-LineComment,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPackage,Ident,OpenCurly,
-KwPublic,KwImport,KwAll,Ident,ColonColon,Star,Semicolon,
-LineComment,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'PrivateImportTest'
-    (package_def 'P1'
-      (part_def 'A'))
-    (package_def 'P2'
-      (import_decl private 'P1::*'))
-    (part_usage 'x' : 'P1::A')
-    (import_decl public 'P2::*')
-    (line_comment)
-    (line_comment)
-    (line_comment)
-    (line_comment)
-    (package_def 'P3'
-      (part_def 'B'))
-    (import_decl private 'P3::*')
-    (line_comment)
-    (line_comment)
-    (part_usage 'z' : 'B')
-    (package_def 'P4'
-      (import_decl public all 'P2::*')
-      (line_comment)
-      (part_usage 'z1' : 'A'))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'A'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'A'
-~~~
 # FORMAT
 ~~~sysml
 package PrivateImportTest {

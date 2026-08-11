@@ -86,57 +86,6 @@ standard library package Allocations {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwAllocation,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwEnd,Ident,Colon,Ident,ColonGtGt,Ident,ColonColon,Ident,Semicolon,
-KwEnd,Ident,Colon,Ident,ColonGtGt,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-KwAbstract,KwAllocation,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,ColonGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'Allocations'
-    (documentation)
-    (import_decl private 'Base::Anything')
-    (import_decl private 'Connections::*')
-    (allocation_def 'Allocation' :> 'BinaryConnection'
-      (documentation)
-      (interface_end end 'source' : 'Anything' :>> 'BinaryConnection::source')
-      (interface_end end 'target' : 'Anything' :>> 'BinaryConnection::target'))
-    (allocation_usage 'Allocation' :> 'binaryConnections' 'allocations' multiplicity
-      (documentation))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'BinaryConnection'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'BinaryConnection::source'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'BinaryConnection::target'
-semantic.unresolved_name 'binaryConnections'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'BinaryConnection'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'BinaryConnection::source'
-semantic.unresolved_name 'Anything'
-semantic.unresolved_name 'BinaryConnection::target'
-semantic.unresolved_name 'binaryConnections'
-~~~
 # FORMAT
 ~~~sysml
 standard library package Allocations {

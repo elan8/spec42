@@ -34,39 +34,6 @@ state def S {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwState,KwDef,Ident,OpenCurly,
-KwEntry,Semicolon,KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwTransition,Ident,KwFirst,KwAccept,Ident,KwState,KwPackage,Ident,Ident,LineComment,
-KwMember,KwStep,UnrestrictedName,Colon,Ident,ColonColon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,KwFeatured,KwBy,Ident,OpenCurly,
-KwPublic,KwImport,UnrestrictedName,Semicolon,
-CloseCurly,
-CloseCurly,
-LineComment,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'j'
-    (state_def 'S'
-      (entry_action)
-      (source_succession
-        (default_ref_usage 'off'))
-      (state_usage 'off')
-      (transition_usage 't')))
-  (line_comment))
-~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-~~~
 # FORMAT
 ~~~sysml
 package j {

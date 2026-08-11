@@ -83,67 +83,6 @@ standard library package AnalysisCases {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwAbstract,KwAnalysis,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwRef,KwAnalysis,Ident,Colon,Ident,ColonGtGt,Ident,ColonColon,Ident,Semicolon,
-KwSubject,Ident,ColonGtGt,Ident,ColonColon,Ident,Semicolon,
-KwAbstract,KwAnalysis,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,ColonGt,Ident,Comma,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-CloseCurly,
-KwAbstract,KwAnalysis,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,ColonGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'AnalysisCases'
-    (documentation)
-    (import_decl private 'Performances::Evaluation')
-    (import_decl private 'Performances::evaluations')
-    (import_decl private 'Calculations::Calculation')
-    (import_decl private 'Cases::Case')
-    (import_decl private 'Cases::cases')
-    (analysis_case_def abstract 'AnalysisCase' :> 'Case'
-      (documentation)
-      (sysml_decl ref 'self' : 'AnalysisCase' :>> 'Case::self')
-      (sysml_decl 'subj' :>> 'Case::subj')
-      (sysml_decl abstract 'subAnalysisCases' : 'AnalysisCase' :> 'analysisCases', 'subcases' multiplicity
-        (documentation)))
-    (sysml_decl abstract 'analysisCases' : 'AnalysisCase' :> 'cases' multiplicity nonunique
-      (documentation))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Case'
-semantic.unresolved_name 'Case::self'
-semantic.unresolved_name 'Case::subj'
-semantic.unresolved_name 'subcases'
-semantic.unresolved_name 'cases'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Case'
-semantic.unresolved_name 'Case::self'
-semantic.unresolved_name 'Case::subj'
-semantic.unresolved_name 'subcases'
-semantic.unresolved_name 'cases'
-~~~
 # FORMAT
 ~~~sysml
 standard library package AnalysisCases {

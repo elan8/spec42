@@ -26,29 +26,6 @@ package AyPkpowerTrain {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPart,Ident,OpenCurly,
-Ident,OpenCurly,CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'AyPkpowerTrain'
-    (part_usage 'engine'
-      (default_ref_usage 'g'))))
-~~~
-# EXPECTED
-~~~
-parse.expected_close_curly
-parse.expected_close_curly
-~~~
-# PROBLEMS
-~~~
-parse.expected_close_curly
-parse.expected_close_curly
-~~~
 # FORMAT
 ~~~sysml
 package AyPkpowerTrain {

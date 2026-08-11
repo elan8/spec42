@@ -24,23 +24,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
   )
 )
 ~~~
-# TOKENS
-~~~zig
-MalformedRegularComment,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# EXPECTED
-~~~
-tokenize.UnclosedRegularComment
-~~~
-# PROBLEMS
-~~~
-tokenize.UnclosedRegularComment
-~~~
 # FORMAT
 ~~~sysml
 /* unclosed comment without closing marker

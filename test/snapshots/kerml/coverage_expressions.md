@@ -45,56 +45,6 @@ package ExpressionCoverage {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClassifier,Ident,Semicolon,
-KwClassifier,Ident,Semicolon,
-KwFeature,Ident,Eq,StringValue,Semicolon,
-KwFeature,Ident,Eq,DecimalValue,Dot,DecimalValue,Semicolon,
-KwFeature,Ident,Eq,Dot,DecimalValue,Semicolon,
-KwFeature,Ident,Eq,KwNull,Semicolon,
-KwFeature,Ident,Eq,Star,Semicolon,
-KwFeature,Ident,Colon,Ident,OpenSquare,Star,CloseSquare,Semicolon,
-KwFeature,Ident,Eq,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwFeature,Ident,Eq,Ident,Hash,OpenParen,DecimalValue,CloseParen,Semicolon,
-KwFeature,Ident,Eq,KwAll,Ident,Semicolon,
-KwFeature,Ident,Eq,Ident,Dot,OpenCurly,KwIn,Ident,Semicolon,Ident,CloseCurly,Semicolon,
-KwFeature,Ident,Eq,Ident,DotQuestion,OpenCurly,KwIn,Ident,Semicolon,Ident,BangEq,KwNull,CloseCurly,Semicolon,
-KwFeature,Ident,Eq,OpenParen,DecimalValue,Comma,DecimalValue,Comma,DecimalValue,CloseParen,Semicolon,
-KwFeature,Ident,Eq,KwIf,KwTrue,Question,DecimalValue,KwElse,DecimalValue,Semicolon,
-KwFeature,Ident,Eq,Ident,Dot,KwMetadata,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ExpressionCoverage'
-    (classifier_def 'Vehicle')
-    (classifier_def 'Item')
-    (feature_def 's' value)
-    (feature_def 'r' value)
-    (feature_def 'r2' value)
-    (feature_def 'n' value)
-    (feature_def 'inf' value)
-    (feature_def 'items' : 'Item' multiplicity)
-    (feature_def 'arr' value)
-    (feature_def 'h' value)
-    (feature_def 'all_v' value)
-    (feature_def 'coll' value)
-    (feature_def 'sel' value)
-    (feature_def 'seq' value)
-    (feature_def 'cond' value)
-    (feature_def 'meta_access' value)))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package ExpressionCoverage {

@@ -42,61 +42,6 @@ package Associations {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwDatatype,Ident,Semicolon,
-KwClass,Ident,Semicolon,
-KwAssoc,Ident,OpenCurly,
-KwEnd,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,KwFeature,Ident,Colon,Ident,Semicolon,
-KwEnd,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwFeature,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
-KwEnd,Ident,Semicolon,
-KwEnd,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwFeature,Ident,KwRedefines,Ident,Semicolon,
-CloseCurly,
-KwAssoc,KwStruct,Ident,OpenCurly,
-KwConst,KwEnd,OpenSquare,DecimalValue,CloseSquare,KwFeature,Ident,Semicolon,
-KwConst,KwEnd,KwFeature,Ident,Semicolon,
-CloseCurly,
-KwMetaclass,Ident,Semicolon,
-KwAssoc,Ident,OpenCurly,
-KwEnd,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,KwFeature,Ident,Colon,Ident,OpenCurly,
-At,Ident,Semicolon,
-CloseCurly,
-KwEnd,KwFeature,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Associations'
-    (datatype_def 'X')
-    (class_def 'Y')
-    (association_def 'A'
-      (feature_def end 'x' multiplicity : 'X')
-      (feature_def end 'y' multiplicity : 'Y'))
-    (association_def 'B' :> 'A'
-      (feature_def end 'x1')
-      (feature_def end 'y1' multiplicity :>> 'y'))
-    (assoc_struct_def 'C'
-      (feature_def const end 'a' multiplicity)
-      (feature_def const end 'b'))
-    (metaclass_def 'M')
-    (association_def 'XY'
-      (feature_def end 'x' multiplicity : 'X'
-        (metadata_feature typed 'M'))
-      (feature_def end 'y' : 'Y'))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package Associations {

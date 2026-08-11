@@ -20,33 +20,6 @@ feature f2 subsets do, step;
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStep,Ident,KwSubsets,KwStep,Semicolon,
-KwFeature,Ident,KwRedefines,KwStep,Semicolon,
-KwFeature,Ident,KwSubsets,KwDo,Comma,KwStep,Semicolon,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (step_def)
-  (feature_def 'f1' :>> 'step')
-  (feature_def 'f2' :> 'do', 'step'))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'do'
-semantic.unresolved_name 'step'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'step'
-semantic.unresolved_name 'do'
-semantic.unresolved_name 'step'
-~~~
 # FORMAT
 ~~~sysml
 step s1 subsets step;

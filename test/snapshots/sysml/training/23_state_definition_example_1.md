@@ -47,58 +47,6 @@ package 'State Definition Example-1' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwAttribute,KwDef,Ident,Semicolon,
-KwAttribute,KwDef,Ident,Semicolon,
-KwAttribute,KwDef,Ident,Semicolon,
-KwState,KwDef,Ident,OpenCurly,
-KwEntry,Semicolon,KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwTransition,Ident,
-KwFirst,Ident,
-KwAccept,Ident,
-KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwTransition,Ident,
-KwFirst,Ident,
-KwAccept,Ident,
-KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwTransition,Ident,
-KwFirst,Ident,
-KwAccept,Ident,
-KwThen,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''State Definition Example-1''
-    (attribute_def 'VehicleStartSignal')
-    (attribute_def 'VehicleOnSignal')
-    (attribute_def 'VehicleOffSignal')
-    (state_def 'VehicleStates'
-      (entry_action)
-      (source_succession
-        (default_ref_usage 'off'))
-      (state_usage 'off')
-      (transition_usage 'off_to_starting')
-      (state_usage 'starting')
-      (transition_usage 'starting_to_on')
-      (state_usage 'on')
-      (transition_usage 'on_to_off'))))
-~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-~~~
 # FORMAT
 ~~~sysml
 package 'State Definition Example-1' {

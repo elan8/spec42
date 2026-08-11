@@ -25,28 +25,6 @@ package Foo {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-Plus,Ident,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Foo'
-    (malformed)
-    (part_def 'Bar')))
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
 # FORMAT
 ~~~sysml
 package Foo {

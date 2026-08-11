@@ -34,42 +34,6 @@ package MassedThings {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPackage,Ident,OpenCurly,
-KwPublic,KwClass,Ident,OpenCurly,
-KwPublic,Ident,Colon,Ident,Semicolon,
-KwPublic,Ident,Colon,Ident,Eq,DecimalValue,Semicolon,
-CloseCurly,
-KwPublic,KwAssoc,Ident,OpenCurly,
-KwPublic,KwEnd,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,KwFeature,Ident,Colon,Ident,Semicolon,
-KwPublic,KwEnd,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwFeature,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (import_decl private 'ScalarValues::*')
-  (package_def 'MassedThings'
-    (class_def public 'MassedThing'
-      (feature_def public 'name' : 'String')
-      (feature_def public 'mass' : 'Real' value))
-    (association_def public 'MassedThingAssembly'
-      (feature_def public end 'assembly' multiplicity : 'MassedThing')
-      (feature_def public end 'parts' multiplicity : 'MassedThing'))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Real'
-~~~
 # FORMAT
 ~~~sysml
 private import ScalarValues::*;

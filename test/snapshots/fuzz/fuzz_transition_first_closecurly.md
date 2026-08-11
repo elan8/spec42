@@ -27,34 +27,6 @@ state def S {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwState,KwDef,Ident,OpenCurly,
-KwEntry,Semicolon,KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwTransition,Ident,KwFirst,CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (state_def 'S'
-      (entry_action)
-      (source_succession
-        (default_ref_usage 'off'))
-      (state_usage 'off')
-      (transition_usage 't'))))
-~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-~~~
 # FORMAT
 ~~~sysml
 package P {

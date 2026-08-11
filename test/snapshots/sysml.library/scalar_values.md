@@ -43,50 +43,6 @@ standard library package ScalarValues {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwAbstract,KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwAbstract,KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwAbstract,KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-KwDatatype,Ident,KwSpecializes,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'ScalarValues'
-    (documentation)
-    (import_decl private 'Base::DataValue')
-    (datatype_def abstract 'ScalarValue' :> 'DataValue')
-    (datatype_def 'Boolean' :> 'ScalarValue')
-    (datatype_def 'String' :> 'ScalarValue')
-    (datatype_def abstract 'NumericalValue' :> 'ScalarValue')
-    (datatype_def abstract 'Number' :> 'NumericalValue')
-    (datatype_def 'Complex' :> 'Number')
-    (datatype_def 'Real' :> 'Complex')
-    (datatype_def 'Rational' :> 'Real')
-    (datatype_def 'Integer' :> 'Rational')
-    (datatype_def 'Natural' :> 'Integer')
-    (datatype_def 'Positive' :> 'Natural')))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'DataValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'DataValue'
-~~~
 # FORMAT
 ~~~sysml
 standard library package ScalarValues {

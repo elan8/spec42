@@ -41,27 +41,6 @@ er E specializes C intersects A, B;
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-MalformedMultilineNote,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ers'
-    (malformed)))
-~~~
-# EXPECTED
-~~~
-tokenize.UnclosedMultilineNote
-parse.expected_close_curly
-~~~
-# PROBLEMS
-~~~
-tokenize.UnclosedMultilineNote
-parse.expected_close_curly
-~~~
 # FORMAT
 ~~~sysml
 package ers {

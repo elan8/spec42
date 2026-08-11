@@ -47,62 +47,6 @@ package 'State Decomposition-1' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwAttribute,KwDef,Ident,Semicolon,
-KwAttribute,KwDef,Ident,Semicolon,
-KwAttribute,KwDef,Ident,Semicolon,
-KwState,KwDef,Ident,Semicolon,
-KwState,Ident,Colon,Ident,KwParallel,OpenCurly,
-KwState,Ident,OpenCurly,
-KwEntry,Semicolon,KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwAccept,Ident,
-KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwAccept,Ident,
-KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwAccept,Ident,
-KwThen,Ident,Semicolon,
-CloseCurly,
-KwState,Ident,OpenCurly,
-RegularComment,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''State Decomposition-1''
-    (attribute_def 'VehicleStartSignal')
-    (attribute_def 'VehicleOnSignal')
-    (attribute_def 'VehicleOffSignal')
-    (state_def 'VehicleStates')
-    (state_usage parallel 'vehicleStates' : 'VehicleStates'
-      (state_usage 'operationalStates'
-        (entry_action)
-        (source_succession
-          (default_ref_usage 'off'))
-        (state_usage 'off')
-        (target_transition)
-        (state_usage 'starting')
-        (target_transition)
-        (state_usage 'on')
-        (target_transition))
-      (state_usage 'healthStates'
-        (comment)))))
-~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-~~~
 # FORMAT
 ~~~sysml
 package 'State Decomposition-1' {

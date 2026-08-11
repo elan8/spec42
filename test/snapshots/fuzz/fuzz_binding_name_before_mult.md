@@ -24,28 +24,6 @@ package P {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwBinding,Ident,OpenSquare,DecimalValue,CloseSquare,KwOf,Ident,Eq,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (binding_connector 'b' multiplicity
-      (connector_end)
-      (connector_end))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package P {

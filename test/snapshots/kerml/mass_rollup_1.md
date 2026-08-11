@@ -32,38 +32,6 @@ package MassRollup_1 {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwClass,Ident,OpenCurly,
-KwFeature,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-KwComposite,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
-KwFeature,Ident,Colon,Ident,ColonColon,Ident,Eq,
-Ident,Plus,Ident,OpenParen,Ident,Dot,Ident,CloseParen,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'MassRollup_1'
-    (import_decl private 'NumericalFunctions::*')
-    (class_def 'MassedThing'
-      (feature_def 'mass' : 'ScalarValues::Real')
-      (feature_def composite 'subcomponents' : 'MassedThing' multiplicity)
-      (feature_def 'totalMass' : 'ScalarValues::Real' value))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'ScalarValues::Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Real'
-semantic.unresolved_name 'ScalarValues::Real'
-~~~
 # FORMAT
 ~~~sysml
 package MassRollup_1 {

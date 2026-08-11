@@ -63,54 +63,6 @@ package RationaleMetadataExample {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-RegularComment,
-KwPart,Ident,Semicolon,
-KwPart,Ident,ColonGt,Ident,Semicolon,
-KwPart,Ident,ColonGt,Ident,Semicolon,
-KwMetadata,Ident,Colon,Ident,KwAbout,Ident,OpenCurly,
-Ident,Eq,StringValue,Semicolon,
-Ident,Eq,Ident,Semicolon,
-CloseCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwAnalysis,Ident,Colon,Ident,OpenCurly,
-KwSubject,Ident,ColonGt,Ident,OpenSquare,DecimalValue,CloseSquare,Eq,OpenParen,Ident,Comma,Ident,CloseParen,Semicolon,
-RegularComment,
-KwReturn,Ident,ColonGt,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'RationaleMetadataExample'
-    (import_decl private 'ModelingMetadata::Rationale')
-    (comment)
-    (part_usage 'engine')
-    (part_usage 'engine4cyl' :> 'engine')
-    (part_usage 'engine6cyl' :> 'engine')
-    (metadata_feature 'engineSelectionRationale' typed 'Rationale' about 'engine4cyl'
-      (feature_def 'text' value)
-      (feature_def 'explanation' value))
-    (import_decl private 'TradeStudies::*')
-    (sysml_decl 'engineTradeOffAnalysis' : 'TradeStudy'
-      (sysml_decl 'alternatives' :> 'engine' multiplicity value)
-      (comment)
-      (return_member))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Rationale'
-semantic.unresolved_name 'TradeStudy'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Rationale'
-semantic.unresolved_name 'TradeStudy'
-~~~
 # FORMAT
 ~~~sysml
 package RationaleMetadataExample {

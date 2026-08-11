@@ -20,29 +20,6 @@ package P {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwRequirement,Ident,OpenCurly,
-KwVar,Ident,ColonGtGt,Ident,Eq,DecimalValue,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (requirement_usage 'r'
-      (feature_def var 'x' :>> 'y' value))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'y'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'y'
-~~~
 # FORMAT
 ~~~sysml
 package P {

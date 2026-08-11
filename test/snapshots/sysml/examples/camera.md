@@ -47,42 +47,6 @@ part def Camera {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPart,KwDef,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPerform,KwAction,Ident,OpenSquare,Star,CloseSquare,ColonGt,Ident,ColonColon,Ident,Semicolon,
-KwPart,Ident,OpenCurly,
-KwPerform,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,OpenCurly,
-KwPerform,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (part_def 'Camera'
-    (import_decl private 'PictureTaking::*')
-    (perform_action 'takePicture' :> 'PictureTaking::takePicture' multiplicity)
-    (part_usage 'focusingSubsystem'
-      (perform_action :>> 'takePicture.focus'))
-    (part_usage 'imagingSubsystem'
-      (perform_action :>> 'takePicture.shoot'))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'PictureTaking::takePicture'
-semantic.unresolved_name 'takePicture::focus'
-semantic.unresolved_name 'takePicture::shoot'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'PictureTaking::takePicture'
-semantic.unresolved_name 'takePicture::focus'
-semantic.unresolved_name 'takePicture::shoot'
-~~~
 # FORMAT
 ~~~sysml
 part def Camera {

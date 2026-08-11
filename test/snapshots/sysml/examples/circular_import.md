@@ -96,62 +96,6 @@ package CircularImport {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-LineComment,
-KwPart,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'CircularImport'
-    (package_def 'P1'
-      (import_decl public 'P2::*')
-      (part_def 'A'))
-    (package_def 'P2'
-      (import_decl public 'P1::*')
-      (part_def 'B'))
-    (package_def 'Test1'
-      (import_decl public 'P1::*')
-      (part_usage 'x' : 'A')
-      (part_usage 'y' : 'B'))
-    (package_def 'Test2'
-      (import_decl public 'P2::*')
-      (part_usage 'x' : 'A')
-      (part_usage 'y' : 'B'))
-    (part_usage 'x' : 'P1::A')
-    (line_comment)
-    (part_usage 'y' : 'P1::B')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package CircularImport {

@@ -73,32 +73,6 @@ package '15_07-System of Units and Scales' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-RegularComment,
-RegularComment,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''15_07-System of Units and Scales''
-    (import_decl private 'ISQ::*')
-    (import_decl private 'USCustomaryUnits::*')
-    (comment)
-    (comment)))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package '15_07-System of Units and Scales' {

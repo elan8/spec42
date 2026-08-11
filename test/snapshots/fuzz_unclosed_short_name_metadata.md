@@ -23,42 +23,6 @@ package ion {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClass,Ident,OpenCurly,
-KwIn,Ident,Semicolon,
-CloseCurly,
-KwClass,Ident,OpenCurly,KwIn,Hash,Ident,OpenAngle,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ion'
-    (class_def 'A'
-      (feature_def in 'f'))
-    (class_def 'A'
-      (malformed)
-      (malformed))))
-~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-semantic.duplicate_name 'A'
-semantic.ambiguous_member 'A'
-semantic.ambiguous_member 'malformed'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-semantic.duplicate_name 'A'
-semantic.ambiguous_member 'A'
-semantic.ambiguous_member 'malformed'
-~~~
 # FORMAT
 ~~~sysml
 package ion {

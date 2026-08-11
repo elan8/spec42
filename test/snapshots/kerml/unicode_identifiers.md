@@ -27,34 +27,6 @@ package 'αβ' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwClass,UnrestrictedName,Semicolon,
-KwType,UnrestrictedName,ColonGt,Ident,ColonColon,Ident,Semicolon,
-KwClass,UnrestrictedName,Semicolon,
-KwClass,UnrestrictedName,ColonGt,Ident,ColonColon,UnrestrictedName,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''αβ''
-    (class_def ''漢字'')
-    (type_def ''🧪'' :> 'Base::Anything')
-    (class_def ''é'')
-    (class_def ''Ω'' :> 'Pkg::'β'')))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Pkg::β'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Base::Anything'
-semantic.unresolved_name 'Pkg::β'
-~~~
 # FORMAT
 ~~~sysml
 package 'αβ' {

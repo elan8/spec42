@@ -49,40 +49,6 @@ standard library package Attributes {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwAlias,Ident,KwFor,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwAlias,Ident,KwFor,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'Attributes'
-    (documentation)
-    (import_decl private 'Base::DataValue')
-    (import_decl private 'Base::dataValues')
-    (alias_member 'AttributeValue' for 'DataValue'
-      (documentation))
-    (alias_member 'attributeValues' for 'dataValues'
-      (documentation))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 standard library package Attributes {

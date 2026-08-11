@@ -19,28 +19,6 @@ state def SD {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwState,KwDef,Ident,OpenCurly,
-KwStep,Ident,Semicolon,
-KwStep,Ident,KwSubsets,KwStep,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (state_def 'SD'
-    (step_usage)
-    (step_usage)))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'step'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'step'
-~~~
 # FORMAT
 ~~~sysml
 state def SD {

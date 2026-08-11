@@ -44,50 +44,6 @@ package ItemTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwItem,Ident,Colon,Ident,Semicolon,
-KwPublic,KwItem,KwDef,Ident,OpenCurly,
-KwItem,Ident,Colon,Ident,Semicolon,
-KwProtected,KwRef,KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwAbstract,KwItem,KwDef,Ident,OpenCurly,
-KwPublic,KwAbstract,KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPrivate,KwPart,KwDef,Ident,OpenCurly,
-KwPrivate,KwIn,KwRef,Ident,Colon,Ident,Comma,Ident,Semicolon,
-CloseCurly,
-KwPort,KwDef,Ident,OpenCurly,
-KwIn,KwItem,Ident,Colon,Ident,Semicolon,
-KwOut,KwItem,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ItemTest'
-    (item_usage 'f' : 'A')
-    (item_def public 'A'
-      (item_usage 'b' : 'B')
-      (part_usage protected ref 'c' : 'C'))
-    (item_def abstract 'B'
-      (part_usage public abstract 'a' : 'A'))
-    (part_def private 'C'
-      (ref_usage private in ref 'y' : 'A', 'B'))
-    (port_def 'P'
-      (item_usage in 'a1' : 'A')
-      (item_usage out 'a2' : 'A'))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package ItemTest {

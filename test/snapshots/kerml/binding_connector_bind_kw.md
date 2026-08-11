@@ -27,45 +27,6 @@ package P {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClass,Ident,OpenCurly,
-KwFeature,Ident,Semicolon,
-KwFeature,Ident,Semicolon,
-KwFeature,Ident,Semicolon,
-KwFeature,Ident,Semicolon,
-KwFeature,Ident,Semicolon,
-KwBinding,OpenSquare,DecimalValue,CloseSquare,KwBind,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Ident,Eq,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Ident,Semicolon,
-KwBinding,Ident,KwBind,Ident,Eq,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'P'
-    (class_def 'C'
-      (feature_def 'x')
-      (feature_def 'y')
-      (feature_def 'startShot')
-      (feature_def 'endShot')
-      (feature_def 'baseEdges')
-      (binding_connector multiplicity
-        (connector_end)
-        (connector_end))
-      (binding_connector 'b'
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package P {

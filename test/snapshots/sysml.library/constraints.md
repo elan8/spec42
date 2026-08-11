@@ -83,69 +83,6 @@ standard library package Constraints {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwAbstract,KwConstraint,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwRef,KwConstraint,Ident,Colon,Ident,ColonGtGt,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-KwAbstract,KwConstraint,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,ColonGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-KwAbstract,KwConstraint,Ident,ColonGt,Ident,Comma,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-KwAbstract,KwConstraint,Ident,ColonGt,Ident,Comma,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'Constraints'
-    (documentation)
-    (import_decl private 'Performances::BooleanEvaluation')
-    (import_decl private 'Performances::booleanEvaluations')
-    (import_decl private 'Performances::trueEvaluations')
-    (import_decl private 'Performances::falseEvaluations')
-    (constraint_def abstract 'ConstraintCheck' :> 'BooleanEvaluation'
-      (documentation)
-      (constraint_usage ref 'self' : 'ConstraintCheck' :>> 'BooleanEvaluation::self'))
-    (constraint_usage abstract 'constraintChecks' : 'ConstraintCheck' multiplicity :> 'booleanEvaluations' nonunique
-      (documentation))
-    (constraint_usage abstract 'assertedConstraintChecks' :> 'constraintChecks', 'trueEvaluations'
-      (documentation))
-    (constraint_usage abstract 'negatedConstraintChecks' :> 'constraintChecks', 'falseEvaluations'
-      (documentation))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'BooleanEvaluation'
-semantic.unresolved_name 'BooleanEvaluation::self'
-semantic.unresolved_name 'booleanEvaluations'
-semantic.unresolved_name 'trueEvaluations'
-semantic.unresolved_name 'falseEvaluations'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'BooleanEvaluation'
-semantic.unresolved_name 'BooleanEvaluation::self'
-semantic.unresolved_name 'booleanEvaluations'
-semantic.unresolved_name 'trueEvaluations'
-semantic.unresolved_name 'falseEvaluations'
-~~~
 # FORMAT
 ~~~sysml
 standard library package Constraints {

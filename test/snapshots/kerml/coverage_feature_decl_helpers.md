@@ -24,38 +24,6 @@ package FeatureDeclCoverage {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClassifier,Ident,Semicolon,
-KwFeature,Ident,Semicolon,
-KwStep,Ident,ColonGt,Ident,Semicolon,
-KwExpr,Ident,ColonGt,Ident,Semicolon,
-KwBool,Ident,ColonGt,Ident,Semicolon,
-KwInv,Ident,ColonGt,Ident,Semicolon,
-KwStep,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Eq,DecimalValue,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'FeatureDeclCoverage'
-    (classifier_def 'Base')
-    (feature_def 'f')
-    (step_def)
-    (expression_def)
-    (boolean_expr_def)
-    (invariant_def)
-    (step_def)))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package FeatureDeclCoverage {

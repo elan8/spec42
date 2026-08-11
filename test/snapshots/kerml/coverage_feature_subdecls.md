@@ -36,48 +36,6 @@ package FeatureSubDeclCoverage {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwFeature,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwFeature,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
-KwFeature,Ident,Eq,DecimalValue,Semicolon,
-KwFeature,Ident,ColonEq,DecimalValue,Semicolon,
-KwFeature,Ident,KwDefault,Eq,DecimalValue,Semicolon,
-KwFeature,Ident,KwDefault,ColonEq,DecimalValue,Semicolon,
-KwFeature,Ident,KwFeatured,KwBy,Ident,Semicolon,
-KwFeature,Ident,KwInverse,KwOf,Ident,Semicolon,
-KwInverse,Ident,KwOf,Ident,Semicolon,
-KwInverting,Ident,KwInverse,Ident,KwOf,Ident,Semicolon,
-KwFeaturing,Ident,KwBy,Ident,Semicolon,
-KwFeaturing,Ident,KwOf,Ident,KwBy,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'FeatureSubDeclCoverage'
-    (feature_def 'a' multiplicity)
-    (feature_def 'b' multiplicity)
-    (feature_def 'c' value)
-    (feature_def 'd' value)
-    (feature_def 'e' value)
-    (feature_def 'f' value)
-    (feature_def 'g' featured by 'T')
-    (feature_def 'h' inverse of 'g')
-    (feature_inverting_decl)
-    (feature_inverting_decl)
-    (type_featuring_decl)
-    (type_featuring_decl)))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'T'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'T'
-~~~
 # FORMAT
 ~~~sysml
 package FeatureSubDeclCoverage {

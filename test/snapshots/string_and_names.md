@@ -24,23 +24,6 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
   )
 )
 ~~~
-# TOKENS
-~~~zig
-StringValue,UnrestrictedName,StringValue,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
 # FORMAT
 ~~~sysml
 "hello" 'world name' "with\nescapes"

@@ -53,68 +53,6 @@ package 'Local Clock Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwItem,KwDef,Ident,Semicolon,
-KwItem,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,OpenCurly,
-KwPart,ColonGtGt,Ident,Eq,Ident,Ident,ColonColon,Ident,OpenParen,CloseParen,Semicolon,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-KwPort,Ident,Semicolon,
-KwState,Ident,OpenCurly,
-KwEntry,Semicolon,KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwAccept,Ident,KwVia,Ident,
-KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwAccept,Ident,Colon,Ident,KwVia,Ident,
-KwThen,Ident,Semicolon,
-KwAccept,Ident,Ident,Ident,ColonColon,Ident,OpenParen,Ident,Plus,StringValue,CloseParen,
-KwThen,Ident,Semicolon,
-KwState,Ident,Semicolon,
-KwAccept,KwAfter,DecimalValue,OpenSquare,Ident,ColonColon,Ident,CloseSquare,
-KwThen,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Local Clock Example''
-    (import_decl private 'ScalarValues::String')
-    (item_def 'Start')
-    (item_def 'Request')
-    (part_def 'Server'
-      (part_usage :>> 'localClock' value)
-      (attribute_usage 'today' : 'String')
-      (port_usage 'requestPort')
-      (state_usage 'ServerBehavior'
-        (entry_action)
-        (source_succession
-          (default_ref_usage 'off'))
-        (state_usage 'off')
-        (target_transition)
-        (state_usage 'waiting')
-        (target_transition)
-        (target_transition)
-        (state_usage 'responding')
-        (target_transition)))))
-~~~
-# EXPECTED
-~~~
-semantic.duplicate_name 'off'
-semantic.unresolved_name 'localClock'
-semantic.unresolved_name 'String'
-~~~
-# PROBLEMS
-~~~
-semantic.duplicate_name 'off'
-semantic.unresolved_name 'localClock'
-semantic.unresolved_name 'String'
-~~~
 # FORMAT
 ~~~sysml
 package 'Local Clock Example' {

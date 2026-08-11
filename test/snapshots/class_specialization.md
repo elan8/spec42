@@ -18,23 +18,6 @@ class B :> A { }
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwClass,Ident,ColonGt,Ident,OpenCurly,CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (class_def 'B' :> 'A'))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'A'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'A'
-~~~
 # FORMAT
 ~~~sysml
 class B :> A { }

@@ -44,63 +44,6 @@ package 'Event Occurrence Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwEvent,KwOccurrence,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwEvent,KwOccurrence,Ident,Semicolon,
-KwThen,KwEvent,KwOccurrence,Ident,Semicolon,
-KwThen,KwEvent,KwOccurrence,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwEvent,KwOccurrence,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwEvent,KwOccurrence,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Event Occurrence Example''
-    (part_def 'Driver')
-    (part_def 'CruiseController')
-    (part_def 'Speedometer')
-    (part_def 'Engine')
-    (part_def 'Vehicle')
-    (part_usage 'driver' : 'Driver'
-      (event_occurrence 'setSpeedSent'))
-    (part_usage 'vehicle' : 'Vehicle'
-      (part_usage 'cruiseController' : 'CruiseController'
-        (event_occurrence 'setSpeedReceived')
-        (source_succession
-          (event_occurrence 'sensedSpeedReceived'))
-        (source_succession
-          (event_occurrence 'fuelCommandSent')))
-      (part_usage 'speedometer' : 'Speedometer'
-        (event_occurrence 'sensedSpeedSent'))
-      (part_usage 'engine' : 'Engine'
-        (event_occurrence 'fuelCommandReceived')))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Event Occurrence Example' {

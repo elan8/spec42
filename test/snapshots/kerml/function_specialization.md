@@ -25,55 +25,6 @@ package FuncSpec {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,CloseCurly,
-KwFunction,Ident,ColonGt,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,OpenCurly,CloseCurly,
-KwAbstract,KwFunction,Ident,ColonGt,Ident,ColonColon,Ident,Semicolon,
-KwPredicate,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,CloseCurly,
-KwPredicate,Ident,ColonGt,Ident,ColonColon,Ident,Semicolon,
-KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,KwIntersects,Ident,ColonColon,Ident,OpenCurly,CloseCurly,
-KwPredicate,Ident,KwSpecializes,Ident,ColonColon,Ident,KwIntersects,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,OpenCurly,CloseCurly,
-KwInv,Ident,OpenCurly,KwNot,Ident,CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'FuncSpec'
-    (function_def)
-    (function_def)
-    (function_def)
-    (predicate_def)
-    (predicate_def)
-    (function_def)
-    (predicate_def)
-    (invariant_def
-      (result_expr_member))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::I'
-semantic.unresolved_name 'Base::J'
-semantic.unresolved_name 'Base::L'
-semantic.unresolved_name 'Base::Q'
-semantic.unresolved_name 'Base::S'
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::Q'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::I'
-semantic.unresolved_name 'Base::J'
-semantic.unresolved_name 'Base::L'
-semantic.unresolved_name 'Base::Q'
-semantic.unresolved_name 'Base::S'
-semantic.unresolved_name 'Base::G'
-semantic.unresolved_name 'Base::Q'
-~~~
 # FORMAT
 ~~~sysml
 package FuncSpec {

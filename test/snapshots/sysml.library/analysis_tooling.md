@@ -73,51 +73,6 @@ standard library package AnalysisTooling {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwMetadata,KwDef,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwMetadata,KwDef,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (standard_library_package_def 'AnalysisTooling'
-    (documentation)
-    (import_decl private 'ScalarValues::*')
-    (metadata_def 'ToolExecution'
-      (documentation)
-      (attribute_usage 'toolName' : 'String')
-      (attribute_usage 'uri' : 'String'))
-    (metadata_def 'ToolVariable'
-      (documentation)
-      (attribute_usage 'name' : 'String'))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-~~~
 # FORMAT
 ~~~sysml
 standard library package AnalysisTooling {

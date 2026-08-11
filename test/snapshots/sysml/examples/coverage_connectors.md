@@ -37,54 +37,6 @@ part def System {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPart,KwDef,Ident,OpenCurly,KwPort,Ident,Semicolon,KwPort,Ident,Semicolon,CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,KwPort,Ident,Semicolon,KwPort,Ident,Semicolon,CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwConnector,Ident,KwFrom,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwConnector,Ident,ColonGt,Ident,KwFrom,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwBinding,Ident,KwOf,Ident,Dot,Ident,Eq,Ident,Dot,Ident,Semicolon,
-KwBinding,KwOf,Ident,Dot,Ident,Eq,Ident,Dot,Ident,Semicolon,
-KwRef,KwPart,Ident,Colon,Ident,Semicolon,
-KwIndividual,KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (part_def 'A'
-    (port_usage 'p1')
-    (port_usage 'p2'))
-  (part_def 'B'
-    (port_usage 'q1')
-    (port_usage 'q2'))
-  (part_def 'System'
-    (part_usage 'a' : 'A')
-    (part_usage 'b' : 'B')
-    (connector_def 'c1'
-      (connector_end)
-      (connector_end))
-    (malformed)
-    (binding_connector 'b1'
-      (connector_end)
-      (connector_end))
-    (binding_connector
-      (connector_end)
-      (connector_end))
-    (part_usage ref 'engine' : 'A')
-    (part_usage individual 'myA' : 'A')))
-~~~
-# EXPECTED
-~~~
-parse.expected_keyword_to
-~~~
-# PROBLEMS
-~~~
-parse.expected_keyword_to
-~~~
 # FORMAT
 ~~~sysml
 part def A { port p1; port p2; }

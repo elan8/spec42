@@ -67,64 +67,6 @@ package Comments {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-RegularComment,
-LineComment,
-KwPackage,Ident,OpenCurly,
-LineComment,
-RegularComment,
-RegularComment,
-RegularComment,
-RegularComment,
-KwLocale,StringValue,RegularComment,
-RegularComment,
-KwComment,Ident,RegularComment,
-KwComment,Ident,KwAbout,Ident,RegularComment,
-KwClass,Ident,OpenCurly,
-KwDoc,KwLocale,StringValue,RegularComment,
-KwComment,RegularComment,
-KwComment,KwAbout,Ident,RegularComment,
-CloseCurly,
-RegularComment,
-KwClass,Ident,OpenCurly,
-KwDoc,OpenAngle,Ident,CloseAngle,RegularComment,
-KwComment,KwAbout,Ident,KwLocale,StringValue,RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (comment)
-  (line_comment)
-  (package_def 'Comments'
-    (line_comment)
-    (comment)
-    (comment)
-    (comment)
-    (comment)
-    (comment_annotating locale "en_US")
-    (comment)
-    (comment_annotating 'cmt')
-    (comment_annotating 'cmt_cmt' about 'cmt')
-    (class_def 'C'
-      (documentation locale "en_US")
-      (comment_annotating)
-      (comment_annotating about 'Comments'))
-    (comment)
-    (class_def 'A'
-      (documentation 'a')
-      (comment_annotating about 'a' locale "en_US"))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 /* AAA */

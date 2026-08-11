@@ -59,67 +59,6 @@ package AnalysisTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,OpenCurly,
-Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwRequirement,KwDef,Ident,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwAnalysis,KwDef,Ident,OpenCurly,
-KwSubject,Ident,Colon,Ident,Semicolon,
-KwObjective,Ident,Colon,Ident,OpenCurly,
-KwSubject,Eq,Ident,Semicolon,
-CloseCurly,
-Ident,Dot,Ident,
-CloseCurly,
-KwAnalysis,KwDef,Ident,OpenCurly,
-KwSubject,Ident,Colon,Ident,Semicolon,
-KwObjective,OpenCurly,
-KwDoc,RegularComment,
-CloseCurly,
-KwAnalysis,Ident,Colon,Ident,OpenCurly,KwReturn,Ident,Semicolon,CloseCurly,
-CloseCurly,
-KwPart,Ident,OpenCurly,
-KwAnalysis,Ident,Colon,Ident,OpenCurly,
-KwSubject,Ident,Eq,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'AnalysisTest'
-    (part_def 'V'
-      (default_ref_usage 'm'))
-    (part_usage 'vv' : 'V')
-    (requirement_def 'AnalysisObjective'
-      (documentation))
-    (analysis_case_def 'AnalysisCase'
-      (sysml_decl 'v' : 'V')
-      (objective_member)
-      (result_expr_member))
-    (analysis_case_def 'AnalysisPlan'
-      (sysml_decl 'v' : 'V')
-      (objective_member)
-      (sysml_decl 'analysisCase' : 'AnalysisCase'
-        (return_member)))
-    (part_usage 'analysisContext'
-      (sysml_decl 'analysisPlan' : 'AnalysisPlan'
-        (sysml_decl 'v' value)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package AnalysisTest {

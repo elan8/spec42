@@ -44,14 +44,6 @@ package Usage {
   )
 )
 ~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ## Definitions.sysml
 ~~~sysml

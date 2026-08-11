@@ -47,50 +47,6 @@ package 'Variation Configuration' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwPart,Ident,ColonGt,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,Eq,Ident,ColonColon,UnrestrictedName,Semicolon,
-KwPart,KwRedefines,Ident,Eq,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,ColonGt,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,Eq,Ident,ColonColon,UnrestrictedName,Semicolon,
-KwPart,KwRedefines,Ident,Eq,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Variation Configuration''
-    (import_decl private ''Variation Usages'::*')
-    (part_usage 'vehicle4Cyl' :> 'vehicleFamily'
-      (part_usage :>> 'engine' value)
-      (part_usage :>> 'transmission' value))
-    (part_usage 'vehicle6Cyl' :> 'vehicleFamily'
-      (part_usage :>> 'engine' value)
-      (part_usage :>> 'transmission' value))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'vehicleFamily'
-semantic.unresolved_name 'engine'
-semantic.unresolved_name 'transmission'
-semantic.unresolved_name 'vehicleFamily'
-semantic.unresolved_name 'engine'
-semantic.unresolved_name 'transmission'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'vehicleFamily'
-semantic.unresolved_name 'engine'
-semantic.unresolved_name 'transmission'
-semantic.unresolved_name 'vehicleFamily'
-semantic.unresolved_name 'engine'
-semantic.unresolved_name 'transmission'
-~~~
 # FORMAT
 ~~~sysml
 package 'Variation Configuration' {

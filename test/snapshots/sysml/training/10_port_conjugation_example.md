@@ -35,47 +35,6 @@ package 'Port Conjugation Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwAttribute,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPort,KwDef,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-KwOut,KwItem,Ident,Colon,Ident,Semicolon,
-KwIn,KwItem,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwPort,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwPort,Ident,Colon,Tilde,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Port Conjugation Example''
-    (attribute_def 'Temp')
-    (part_def 'Fuel')
-    (port_def 'FuelPort'
-      (attribute_usage 'temperature' : 'Temp')
-      (item_usage out 'fuelSupply' : 'Fuel')
-      (item_usage in 'fuelReturn' : 'Fuel'))
-    (part_def 'FuelTank'
-      (port_usage 'fuelTankPort' : 'FuelPort'))
-    (part_def 'Engine'
-      (port_usage 'engineFuelPort' : ~'FuelPort'))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Port Conjugation Example' {

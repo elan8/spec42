@@ -38,27 +38,6 @@ alias Foo for Bar {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwAlias,Ident,KwFor,Ident,OpenCurly,
-KwDoc,MalformedRegularComment,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (alias_member 'Foo' for 'Bar'
-    (documentation)))
-~~~
-# EXPECTED
-~~~
-tokenize.UnclosedRegularComment
-parse.expected_close_curly
-~~~
-# PROBLEMS
-~~~
-tokenize.UnclosedRegularComment
-parse.expected_close_curly
-~~~
 # FORMAT
 ~~~sysml
 alias Foo for Bar {

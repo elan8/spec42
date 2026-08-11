@@ -59,68 +59,6 @@ package ModelingInstancesWithAtoms {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwClassifier,Ident,Semicolon,
-KwClassifier,Ident,KwSpecializes,Ident,Semicolon,
-KwClassifier,Ident,OpenSquare,DecimalValue,CloseSquare,KwSpecializes,Ident,Semicolon,
-KwClassifier,Ident,OpenSquare,DecimalValue,CloseSquare,KwSpecializes,Ident,KwDisjoint,KwFrom,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwClassifier,Ident,Semicolon,
-KwClassifier,Ident,KwSpecializes,Ident,Semicolon,
-Hash,Ident,
-KwClassifier,Ident,KwSpecializes,Ident,Semicolon,
-Hash,Ident,
-KwClassifier,Ident,KwSpecializes,Ident,Semicolon,
-RegularComment,
-KwClassifier,Ident,OpenCurly,
-KwFeature,Ident,Colon,Ident,OpenSquare,Star,CloseSquare,Semicolon,
-CloseCurly,
-KwClassifier,Ident,KwUnions,Ident,Comma,Ident,Semicolon,
-Hash,Ident,
-KwClassifier,Ident,KwSpecializes,Ident,OpenCurly,
-KwFeature,KwRedefines,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ModelingInstances'
-    (documentation)
-    (classifier_def 'Vehicle')
-    (classifier_def 'Bicycle' :> 'Vehicle')
-    (classifier_def 'MyBike' multiplicity     (multiplicity_range) :> 'Bicycle')
-    (classifier_def 'YourBike' multiplicity     (multiplicity_range) :> 'Bicycle' disjoint from 'MyBike'))
-  (package_def 'ModelingInstancesWithAtoms'
-    (documentation)
-    (import_decl private 'Atoms::atom')
-    (classifier_def 'Vehicle')
-    (classifier_def 'Bicycle' :> 'Vehicle')
-    (classifier_def #'atom' 'MyBike' :> 'Bicycle')
-    (classifier_def #'atom' 'YourBike' :> 'Bicycle')
-    (comment)
-    (classifier_def 'Garage'
-      (feature_def 'stores' : 'Bicycle' multiplicity))
-    (classifier_def 'OurBicycle' unions 'MyBike', 'YourBike')
-    (classifier_def #'atom' 'OurGarage' :> 'Garage'
-      (feature_def :>> 'stores' : 'OurBicycle' multiplicity))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package ModelingInstances {

@@ -37,45 +37,6 @@ package Classifiers {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClassifier,Ident,Semicolon,
-KwClassifier,Ident,Semicolon,
-KwSpecialization,Ident,KwSubclassifier,Ident,KwSpecializes,Ident,Semicolon,
-KwSpecialization,KwSubclassifier,Ident,ColonGt,Ident,Semicolon,
-KwSubclassifier,Ident,KwSpecializes,Ident,Semicolon,
-KwSubclassifier,Ident,KwSpecializes,Ident,Semicolon,
-KwClassifier,Ident,KwSpecializes,Ident,Comma,Ident,Semicolon,
-KwClassifier,Ident,KwDisjoint,KwFrom,Ident,KwDifferences,Ident,Comma,Ident,Semicolon,
-KwClassifier,Ident,KwSpecializes,Ident,KwIntersects,Ident,Comma,Ident,Semicolon,
-KwClassifier,Ident,KwUnions,Ident,KwUnions,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Classifiers'
-    (classifier_def 'A')
-    (classifier_def 'B')
-    (subclassification specialization 'Super' specific 'A' general 'B')
-    (malformed)
-    (subclassification specific 'B' general 'A')
-    (subclassification specific 'C' general 'A')
-    (subclassification specific 'C' general 'B')
-    (classifier_def 'C' :> 'A', 'B')
-    (classifier_def 'D' disjoint from 'C' differences 'A', 'B')
-    (classifier_def 'E' :> 'C' intersects 'A', 'B')
-    (classifier_def 'F' unions 'A' unions 'B')))
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
 # FORMAT
 ~~~sysml
 package Classifiers {

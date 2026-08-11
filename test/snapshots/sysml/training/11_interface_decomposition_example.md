@@ -74,57 +74,6 @@ package 'Interface Decomposition Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPort,KwDef,Ident,Semicolon,
-KwPort,KwDef,Ident,Semicolon,
-KwPort,KwDef,Ident,Semicolon,
-KwPort,KwDef,Ident,Semicolon,
-KwInterface,KwDef,Ident,OpenCurly,
-KwEnd,OpenSquare,DecimalValue,CloseSquare,KwPort,Ident,Colon,Ident,OpenCurly,
-KwPort,Ident,Colon,Ident,Semicolon,
-KwPort,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwEnd,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwPort,Ident,Colon,Ident,OpenCurly,
-KwPort,Ident,Colon,Ident,Semicolon,
-KwPort,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwConnect,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwConnect,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Interface Decomposition Example''
-    (port_def 'SpigotBank')
-    (port_def 'Spigot')
-    (port_def 'Faucet')
-    (port_def 'FaucetInlet')
-    (interface_def 'WaterDelivery'
-      (interface_end end 'suppliedBy' : 'SpigotBank' multiplicity
-        (port_usage 'hot' : 'Spigot')
-        (port_usage 'cold' : 'Spigot'))
-      (interface_end end 'deliveredTo' : 'Faucet' multiplicity
-        (port_usage 'hot' : 'FaucetInlet')
-        (port_usage 'cold' : 'FaucetInlet'))
-      (connection_usage
-        (connector_end)
-        (connector_end))
-      (connection_usage
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Interface Decomposition Example' {

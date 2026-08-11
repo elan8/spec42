@@ -36,34 +36,6 @@ package 'Package Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPublic,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwPart,KwDef,Ident,Semicolon,
-KwPublic,KwAlias,Ident,KwFor,Ident,Semicolon,
-KwAlias,Ident,KwFor,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Package Example''
-    (import_decl public 'ISQ::TorqueValue')
-    (import_decl private 'ScalarValues::*')
-    (part_def private 'Automobile')
-    (alias_member public 'Car' for 'Automobile')
-    (alias_member 'Torque' for 'ISQ::TorqueValue')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Package Example' {

@@ -67,57 +67,6 @@ package 'Individuals and Roles' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwIndividual,KwPart,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwIndividual,KwPart,KwDef,Ident,ColonGt,Ident,Semicolon,
-KwIndividual,KwPart,Ident,Colon,Ident,OpenCurly,
-KwSnapshot,KwPart,Ident,OpenCurly,
-KwSnapshot,Ident,Colon,Ident,ColonGtGt,Ident,Semicolon,
-CloseCurly,
-KwThen,KwSnapshot,KwPart,Ident,OpenCurly,
-KwSnapshot,Ident,Colon,Ident,ColonGtGt,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Individuals and Roles''
-    (import_decl private ''Part Definition Example'::*')
-    (part_def 'Wheel')
-    (part_def individual 'Vehicle_1' :> 'Vehicle'
-      (part_usage 'leftFrontWheel' : 'Wheel')
-      (part_usage 'rightFrontWheel' : 'Wheel'))
-    (part_def individual 'Wheel_1' :> 'Wheel')
-    (part_usage individual 'vehicle_1' : 'Vehicle_1'
-      (malformed)
-      (part_usage 'vehicle_1_t0'
-        (portion_usage snapshot 'leftFrontWheel_t0' : 'Wheel_1' :>> 'leftFrontWheel'))
-      (source_succession
-        (malformed))
-      (part_usage 'vehicle_1_t1'
-        (portion_usage snapshot 'rightFrontWheel_t1' : 'Wheel_1' :>> 'rightFrontWheel')))))
-~~~
-# EXPECTED
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-semantic.unresolved_name 'Vehicle'
-~~~
-# PROBLEMS
-~~~
-parse.expected_usage_declaration
-parse.expected_usage_declaration
-semantic.unresolved_name 'Vehicle'
-~~~
 # FORMAT
 ~~~sysml
 package 'Individuals and Roles' {

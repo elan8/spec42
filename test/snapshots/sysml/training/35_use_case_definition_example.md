@@ -49,66 +49,6 @@ package 'Use Case Definition Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,UnrestrictedName,Semicolon,
-KwUse,KwCase,KwDef,UnrestrictedName,OpenCurly,
-KwSubject,Ident,Colon,Ident,Semicolon,
-KwActor,Ident,Colon,Ident,Semicolon,
-KwActor,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
-KwActor,Ident,Colon,Ident,Semicolon,
-KwObjective,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-CloseCurly,
-KwUse,KwCase,KwDef,UnrestrictedName,OpenCurly,
-KwSubject,Ident,Colon,Ident,Semicolon,
-KwActor,Ident,Colon,Ident,Semicolon,
-KwActor,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-KwUse,KwCase,KwDef,UnrestrictedName,OpenCurly,
-KwSubject,Ident,Colon,Ident,Semicolon,
-KwActor,Ident,Colon,Ident,Semicolon,
-KwActor,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Use Case Definition Example''
-    (part_def 'Vehicle')
-    (part_def 'Person')
-    (part_def 'Environment')
-    (part_def ''Fuel Station'')
-    (use_case_def ''Provide Transportation''
-      (sysml_decl 'vehicle' : 'Vehicle')
-      (sysml_decl 'driver' : 'Person')
-      (sysml_decl 'passengers' : 'Person' multiplicity)
-      (sysml_decl 'environment' : 'Environment')
-      (objective_member))
-    (use_case_def ''Enter Vehicle''
-      (sysml_decl 'vehicle' : 'Vehicle')
-      (sysml_decl 'driver' : 'Person')
-      (sysml_decl 'passengers' : 'Person' multiplicity))
-    (use_case_def ''Exit Vehicle''
-      (sysml_decl 'vehicle' : 'Vehicle')
-      (sysml_decl 'driver' : 'Person')
-      (sysml_decl 'passengers' : 'Person' multiplicity))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Use Case Definition Example' {

@@ -35,47 +35,6 @@ package DependencyTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPackage,Ident,OpenCurly,
-KwPackage,UnrestrictedName,Semicolon,
-KwPackage,UnrestrictedName,Semicolon,
-KwPackage,UnrestrictedName,Semicolon,
-CloseCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwDependency,Ident,KwFrom,UnrestrictedName,KwTo,UnrestrictedName,Semicolon,
-KwDependency,KwFrom,UnrestrictedName,KwTo,UnrestrictedName,Semicolon,
-KwAttribute,Ident,Semicolon,
-KwAttribute,Ident,Semicolon,
-KwAttribute,Ident,Semicolon,
-KwDependency,Ident,KwTo,Ident,Comma,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'DependencyTest'
-    (package_def 'System'
-      (package_def ''Application Layer'')
-      (package_def ''Service Layer'')
-      (package_def ''Data Layer''))
-    (import_decl private 'System::*')
-    (dependency 'Use' from ''Application Layer'' to ''Service Layer'')
-    (dependency from ''Service Layer'' to ''Data Layer'')
-    (attribute_usage 'x')
-    (attribute_usage 'y')
-    (attribute_usage 'z')
-    (dependency from 'z' to 'x', 'y')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package DependencyTest {

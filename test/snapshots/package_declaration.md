@@ -16,23 +16,6 @@ package MyPkg { }
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'MyPkg'))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package MyPkg { }

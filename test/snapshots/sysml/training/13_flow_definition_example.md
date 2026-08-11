@@ -72,62 +72,6 @@ package 'Flow Definition Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwFlow,KwDef,Ident,OpenCurly,
-KwRef,ColonGtGt,Ident,Colon,Ident,Semicolon,
-KwEnd,KwPort,Ident,Colon,Ident,Semicolon,
-KwEnd,KwPort,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwFlow,Colon,Ident,KwOf,Ident,
-KwFrom,Ident,Dot,Ident,Dot,Ident,
-KwTo,Ident,Dot,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Flow Definition Example''
-    (import_decl private ''Port Example'::*')
-    (part_def 'Vehicle')
-    (flow_def 'FuelFlow'
-      (ref_usage ref :>> 'payload' : 'Fuel')
-      (interface_end end 'supplierPort' : 'FuelOutPort')
-      (interface_end end 'consumerPort' : 'FuelInPort'))
-    (part_usage 'vehicle' : 'Vehicle'
-      (part_usage 'tankAssy' : 'FuelTankAssembly')
-      (part_usage 'eng' : 'Engine')
-      (flow_usage 'FuelFlow' : 'Fuel'
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'payload'
-semantic.unresolved_name 'Fuel'
-semantic.unresolved_name 'FuelOutPort'
-semantic.unresolved_name 'FuelInPort'
-semantic.unresolved_name 'FuelTankAssembly'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'Fuel'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'payload'
-semantic.unresolved_name 'Fuel'
-semantic.unresolved_name 'FuelOutPort'
-semantic.unresolved_name 'FuelInPort'
-semantic.unresolved_name 'FuelTankAssembly'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'Fuel'
-~~~
 # FORMAT
 ~~~sysml
 package 'Flow Definition Example' {

@@ -35,36 +35,6 @@ package Atoms {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwClassifier,Ident,Semicolon,
-KwMetaclass,OpenAngle,Ident,CloseAngle,Ident,KwSpecializes,Ident,OpenCurly,
-Ident,Eq,Ident,KwMeta,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Atoms'
-    (documentation)
-    (import_decl private 'Metaobjects::Metaobject')
-    (classifier_def 'Atom')
-    (metaclass_def 'AtomMetadata' :> 'Metaobject'
-      (feature_def 'baseType' value))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Metaobject'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Metaobject'
-~~~
 # FORMAT
 ~~~sysml
 package Atoms {

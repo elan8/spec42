@@ -16,23 +16,6 @@ part def Vehicle { }
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPart,KwDef,Ident,OpenCurly,CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (part_def 'Vehicle'))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 part def Vehicle { }

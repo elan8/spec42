@@ -34,40 +34,6 @@ package AddressBookModel {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPackage,Ident,OpenCurly,
-KwClass,Ident,OpenCurly,
-Ident,Colon,Ident,Semicolon,
-Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwClass,Ident,OpenCurly,
-Ident,Colon,Ident,OpenSquare,Star,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (import_decl private 'ScalarValues::*')
-  (package_def 'AddressBookModel'
-    (class_def 'Entry'
-      (feature_def 'name' : 'String')
-      (feature_def 'address' : 'String'))
-    (class_def 'AddressBook'
-      (feature_def 'entries' : 'Entry' multiplicity))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'String'
-~~~
 # FORMAT
 ~~~sysml
 private import ScalarValues::*;

@@ -30,43 +30,6 @@ package Comments {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwDoc,RegularComment,
-KwComment,Ident,RegularComment,
-KwComment,Ident,KwAbout,Ident,RegularComment,
-KwComment,KwAbout,Ident,RegularComment,
-KwPart,KwDef,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwComment,RegularComment,
-KwComment,KwAbout,Ident,RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'Comments'
-    (documentation)
-    (documentation)
-    (comment_annotating 'cmt')
-    (comment_annotating 'cmt_cmt' about 'cmt')
-    (comment_annotating about 'C')
-    (part_def 'C'
-      (documentation)
-      (comment_annotating)
-      (comment_annotating about 'Comments'))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package Comments {

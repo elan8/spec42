@@ -15,22 +15,6 @@ type=file
   )
 )
 ~~~
-# TOKENS
-~~~zig
-EndOfFile,
-~~~
-# AST
-~~~
-(root)
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 

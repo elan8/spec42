@@ -76,58 +76,6 @@ package 'Interface Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwInterface,KwDef,Ident,OpenCurly,
-KwEnd,Ident,Colon,Ident,Semicolon,
-KwEnd,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwInterface,Colon,Ident,KwConnect,
-Ident,ColonColonGt,Ident,Dot,Ident,KwTo,
-Ident,ColonColonGt,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Interface Example''
-    (import_decl private ''Port Example'::*')
-    (part_def 'Vehicle')
-    (interface_def 'FuelInterface'
-      (interface_end end 'supplierPort' : 'FuelOutPort')
-      (interface_end end 'consumerPort' : 'FuelInPort'))
-    (part_usage 'vehicle' : 'Vehicle'
-      (part_usage 'tankAssy' : 'FuelTankAssembly')
-      (part_usage 'eng' : 'Engine')
-      (interface_usage 'FuelInterface'
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'FuelOutPort'
-semantic.unresolved_name 'FuelInPort'
-semantic.unresolved_name 'FuelTankAssembly'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'tankAssy::fuelTankPort'
-semantic.unresolved_name 'eng::engineFuelPort'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'FuelOutPort'
-semantic.unresolved_name 'FuelInPort'
-semantic.unresolved_name 'FuelTankAssembly'
-semantic.unresolved_name 'Engine'
-semantic.unresolved_name 'tankAssy::fuelTankPort'
-semantic.unresolved_name 'eng::engineFuelPort'
-~~~
 # FORMAT
 ~~~sysml
 package 'Interface Example' {

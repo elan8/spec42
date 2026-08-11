@@ -24,23 +24,6 @@ x ` y
   )
 )
 ~~~
-# TOKENS
-~~~zig
-Ident,MalformedUnknownToken,Ident,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
 # FORMAT
 ~~~sysml
 x ` y

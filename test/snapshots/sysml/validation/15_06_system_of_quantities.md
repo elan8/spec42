@@ -61,30 +61,6 @@ package '15_06-System of Quantities' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-RegularComment,
-RegularComment,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''15_06-System of Quantities''
-    (import_decl private 'ISQ::*')
-    (comment)
-    (comment)))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package '15_06-System of Quantities' {

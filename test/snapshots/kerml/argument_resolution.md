@@ -32,47 +32,6 @@ package ArgumentResolutionBug {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClass,Ident,OpenCurly,
-KwFeature,Ident,Semicolon,
-CloseCurly,
-KwBehavior,Ident,OpenCurly,
-KwIn,KwFeature,Ident,Semicolon,
-KwOut,KwFeature,Colon,Ident,Eq,Ident,Ident,OpenParen,Ident,CloseParen,Semicolon,
-CloseCurly,
-KwClass,Ident,OpenCurly,
-KwFeature,Ident,Colon,Ident,Semicolon,
-KwFeature,Ident,Colon,Ident,Semicolon,
-KwConnector,Ident,ColonColonGt,Ident,Dot,Ident,KwTo,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'ArgumentResolutionBug'
-    (class_def 'A'
-      (feature_def 'x'))
-    (behavior_def
-      (feature_def in 'x')
-      (feature_def out : 'A' value))
-    (class_def 'C'
-      (feature_def 'a' : 'A')
-      (feature_def 'b' : 'B')
-      (connector_def
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package ArgumentResolutionBug {

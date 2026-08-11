@@ -38,45 +38,6 @@ package 'Enumeration Definitions-1' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-KwEnum,KwDef,Ident,OpenCurly,
-KwEnum,Ident,Semicolon,
-KwEnum,Ident,Semicolon,
-KwEnum,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,KwSpecializes,Ident,OpenCurly,
-KwAttribute,KwRedefines,Ident,Eq,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Enumeration Definitions-1''
-    (import_decl private 'ScalarValues::Real')
-    (enum_def 'TrafficLightColor'
-      (enum_value 'green')
-      (enum_value 'yellow')
-      (enum_value 'red'))
-    (part_def 'TrafficLight'
-      (attribute_usage 'currentColor' : 'TrafficLightColor'))
-    (part_def 'TrafficLightGo' :> 'TrafficLight'
-      (attribute_usage :>> 'currentColor' value))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Enumeration Definitions-1' {

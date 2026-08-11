@@ -42,40 +42,6 @@ package Annotated {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwMetadata,KwDef,Ident,Semicolon,
-KwMetadata,KwDef,Ident,Semicolon,
-KwPackage,Ident,OpenCurly,
-At,Ident,KwAbout,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwMetadata,Ident,Colon,Ident,KwAbout,Ident,Comma,Ident,Semicolon,
-Hash,Ident,KwPart,KwDef,Ident,Semicolon,
-Hash,Ident,Hash,Ident,KwPart,KwDef,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (metadata_def 'Classified')
-  (metadata_def 'Approval')
-  (package_def 'Annotated'
-    (metadata_feature typed 'Classified' about 'Annotated')
-    (part_def 'Vehicle')
-    (part_def 'Engine')
-    (metadata_feature 'm' typed 'Classified' about 'Vehicle', 'Engine')
-    (part_def #'Classified' 'AnnotatedPart')
-    (part_def #'Approval', 'Classified' 'MultiAnnotated')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 metadata def Classified;

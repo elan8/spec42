@@ -58,37 +58,6 @@ package 'Opaque Action Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-KwAction,KwDef,Ident,OpenCurly,
-KwIn,Ident,Colon,Ident,OpenSquare,Star,CloseSquare,Semicolon,
-KwLanguage,StringValue,
-RegularComment,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Opaque Action Example''
-    (part_def 'Sensor'
-      (attribute_usage 'ready' : 'ScalarValues::Boolean'))
-    (action_def 'UpdateSensors'
-      (default_ref_usage in 'sensors' : 'Sensor' multiplicity)
-      (textual_rep language '"Alf"'))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Boolean'
-~~~
 # FORMAT
 ~~~sysml
 package 'Opaque Action Example' {

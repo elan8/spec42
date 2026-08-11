@@ -22,24 +22,6 @@ package MyPkg { }; in newX : Real;
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,CloseCurly,Semicolon,KwIn,Ident,Colon,Ident,Semicolon,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'MyPkg')
-  (default_ref_usage in 'newX' : 'Real'))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Real'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Real'
-~~~
 # FORMAT
 ~~~sysml
 package MyPkg { }; in newX : Real;

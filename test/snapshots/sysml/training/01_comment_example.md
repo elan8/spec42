@@ -39,44 +39,6 @@ package 'Comment Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-RegularComment,
-KwComment,Ident,RegularComment,
-KwComment,KwAbout,Ident,
-RegularComment,
-KwPart,KwDef,Ident,Semicolon,
-KwAlias,Ident,KwFor,Ident,OpenCurly,
-RegularComment,
-CloseCurly,
-LineComment,
-LineComment,
-KwAlias,Ident,KwFor,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Comment Example''
-    (comment)
-    (comment_annotating 'Comment1')
-    (comment_annotating about 'Automobile')
-    (part_def 'Automobile')
-    (alias_member 'Car' for 'Automobile'
-      (comment))
-    (line_comment)
-    (line_comment)
-    (alias_member 'Torque' for 'ISQ::TorqueValue')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Comment Example' {

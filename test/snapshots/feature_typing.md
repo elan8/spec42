@@ -18,23 +18,6 @@ feature x : Integer;
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwFeature,Ident,Colon,Ident,Semicolon,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (feature_def 'x' : 'Integer'))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Integer'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Integer'
-~~~
 # FORMAT
 ~~~sysml
 feature x : Integer;

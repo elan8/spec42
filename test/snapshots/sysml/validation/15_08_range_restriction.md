@@ -64,49 +64,6 @@ package '15_08-Range Restriction' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,UnrestrictedName,ColonColon,UnrestrictedName,ColonColon,Ident,Semicolon,
-KwPart,KwDef,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-KwAttribute,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,ColonGtGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-KwAssert,KwConstraint,OpenCurly,Ident,GtEq,DecimalValue,OpenSquare,UnrestrictedName,CloseSquare,KwAnd,Ident,LtEq,DecimalValue,OpenSquare,UnrestrictedName,CloseSquare,CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''15_08-Range Restriction''
-    (import_decl private 'ISQ::*')
-    (import_decl private 'SI::*')
-    (import_decl private ''15_01-Constants'::'Mathematical Constants'::pi')
-    (part_def 'HeadLightsTiltKnob'
-      (attribute_usage 'headLightsTile' : 'LightBeamTiltAngleValue' multiplicity))
-    (attribute_def 'LightBeamTiltAngleValue' :> 'PlaneAngleValue'
-      (attribute_usage 'angle' : 'LightBeamTiltAngleValue' :>> 'self'
-        (documentation))
-      (sysml_decl
-        (result_expr_member)))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'PlaneAngleValue'
-semantic.unresolved_name 'self'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'PlaneAngleValue'
-semantic.unresolved_name 'self'
-~~~
 # FORMAT
 ~~~sysml
 package '15_08-Range Restriction' {

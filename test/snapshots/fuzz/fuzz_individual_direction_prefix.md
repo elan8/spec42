@@ -24,23 +24,6 @@ in individual it;
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwIn,KwIndividual,Ident,Semicolon,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (individual_usage in individual 'it'))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 in individual it;

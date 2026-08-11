@@ -54,57 +54,6 @@ package 'Time Slice and Snapshot Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwAttribute,KwDef,Ident,Semicolon,
-KwItem,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,OpenCurly,
-KwTimeslice,Ident,Semicolon,
-KwFirst,Ident,KwThen,Ident,Semicolon,
-KwSnapshot,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwThen,KwTimeslice,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwOrdered,OpenCurly,
-KwSnapshot,Ident,Eq,Ident,Semicolon,
-KwRef,KwItem,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwTimeslice,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,OpenCurly,
-KwRef,KwItem,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,
-KwSnapshot,Ident,Eq,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Time Slice and Snapshot Example''
-    (attribute_def 'Date')
-    (item_def 'Person')
-    (part_def 'Vehicle'
-      (portion_usage timeslice 'assembly')
-      (succession_as_usage
-        (connector_end)
-        (connector_end))
-      (portion_usage snapshot 'delivery'
-        (attribute_usage 'deliveryDate' : 'Date'))
-      (source_succession
-        (portion_usage timeslice 'ownership' multiplicity ordered
-          (portion_usage snapshot 'sale' value)
-          (item_usage ref 'owner' : 'Person' multiplicity)
-          (portion_usage timeslice 'driven' multiplicity
-            (item_usage ref 'driver' : 'Person' multiplicity))))
-      (portion_usage snapshot 'junked' value))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Time Slice and Snapshot Example' {

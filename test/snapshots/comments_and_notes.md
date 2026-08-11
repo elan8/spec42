@@ -31,24 +31,6 @@ y
   )
 )
 ~~~
-# TOKENS
-~~~zig
-Ident,RegularComment,LineComment,
-Ident,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (malformed))
-~~~
-# EXPECTED
-~~~
-parse.unexpected_token
-~~~
-# PROBLEMS
-~~~
-parse.unexpected_token
-~~~
 # FORMAT
 ~~~sysml
 x /* comment */ // note

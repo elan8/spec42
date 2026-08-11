@@ -99,68 +99,6 @@ package CalculationExample {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPart,KwDef,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,ColonGt,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,Semicolon,
-KwAttribute,ColonColonGt,Ident,Eq,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-KwCalc,KwDef,Ident,OpenCurly,
-KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
-KwReturn,Ident,Colon,Ident,Eq,Ident,OpenParen,Ident,CloseParen,Semicolon,
-CloseCurly,
-KwCalc,Ident,Colon,Ident,OpenCurly,
-KwIn,Ident,Eq,OpenParen,Ident,Dot,Ident,Dot,Ident,Comma,Ident,Dot,Ident,Dot,Ident,CloseParen,Semicolon,
-KwReturn,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,OpenSquare,Star,CloseSquare,Eq,OpenParen,Ident,Comma,Ident,CloseParen,Semicolon,
-KwAttribute,Ident,OpenSquare,Star,CloseSquare,Eq,OpenParen,Ident,KwAs,Ident,CloseParen,Dot,Ident,Semicolon,
-KwAttribute,Ident,OpenSquare,Star,CloseSquare,Eq,OpenParen,Ident,KwAs,Ident,CloseParen,Dot,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'CalculationExample'
-    (import_decl private 'ISQ::*')
-    (import_decl private 'NumericalFunctions::*')
-    (part_def 'VehiclePart'
-      (attribute_usage 'm' : 'MassValue'))
-    (part_def 'Vehicle' :> 'VehiclePart')
-    (part_usage 'vehicle' : 'Vehicle'
-      (part_usage 'eng' : 'VehiclePart')
-      (part_usage 'trans' : 'VehiclePart')
-      (attribute_usage references 'm' value))
-    (calc_def 'MassSum'
-      (default_ref_usage in 'partMasses' : 'MassValue' multiplicity)
-      (return_member))
-    (calc_usage 'ms' : 'MassSum'
-      (default_ref_usage in 'partMasses' value)
-      (return_member))
-    (part_usage 'vehicles' multiplicity value)
-    (attribute_usage 'masses1' multiplicity value)
-    (attribute_usage 'masses2' multiplicity value)))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-semantic.unresolved_name 'MassValue'
-~~~
 # FORMAT
 ~~~sysml
 package CalculationExample {

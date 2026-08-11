@@ -20,32 +20,6 @@ package InvalidMult {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwClassifier,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
-KwClassifier,Ident,OpenSquare,Star,DotDot,DecimalValue,CloseSquare,Semicolon,
-KwClassifier,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'InvalidMult'
-    (classifier_def 'Bad' multiplicity     (multiplicity_range))
-    (classifier_def 'AlsoBad' multiplicity     (multiplicity_range))
-    (classifier_def 'Valid' multiplicity     (multiplicity_range))))
-~~~
-# EXPECTED
-~~~
-semantic.computed_multiplicity_invalid
-semantic.computed_multiplicity_invalid
-~~~
-# PROBLEMS
-~~~
-semantic.computed_multiplicity_invalid
-semantic.computed_multiplicity_invalid
-~~~
 # FORMAT
 ~~~sysml
 package InvalidMult {

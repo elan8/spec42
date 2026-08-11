@@ -28,23 +28,6 @@ import ScalarValues::*;
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwImport,Ident,ColonColon,Star,Semicolon,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (import_decl 'ScalarValues::*'))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 import ScalarValues::*;

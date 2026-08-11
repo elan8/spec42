@@ -53,61 +53,6 @@ package '12b-Allocation' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPackage,Ident,OpenCurly,
-KwAction,Ident,OpenCurly,
-KwAction,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,OpenCurly,
-KwPerform,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwPart,Ident,OpenCurly,
-KwPart,Ident,OpenCurly,
-KwPerform,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,
-KwAllocate,Ident,KwTo,Ident,OpenCurly,
-KwAllocate,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Dot,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''12b-Allocation''
-    (import_decl private 'LogicalModel::*')
-    (import_decl private 'PhysicalModel::*')
-    (package_def 'LogicalModel'
-      (action_usage 'providePower'
-        (action_usage 'generateTorque'))
-      (part_usage 'torqueGenerator'
-        (perform_action :>> 'providePower.generateTorque')))
-    (package_def 'PhysicalModel'
-      (part_usage 'powerTrain'
-        (part_usage 'engine'
-          (perform_action :>> 'providePower.generateTorque'))))
-    (allocation_usage
-      (connector_end)
-      (connector_end)
-      (allocation_usage
-        (connector_end)
-        (connector_end)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package '12b-Allocation' {

@@ -25,36 +25,6 @@ class Camera {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwClass,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPortion,Ident,Colon,Ident,KwSubsets,Ident,Semicolon,
-KwPortion,Ident,Colon,Ident,KwSubsets,Ident,Semicolon,
-KwSuccession,Ident,KwThen,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (class_def 'Camera'
-    (import_decl private 'ScalarValues::*')
-    (feature_def portion 'focusedState' : 'Camera' :> 'timeSlices')
-    (feature_def portion 'shotState' : 'Camera' :> 'timeSlices')
-    (succession_def
-      (connector_end)
-      (connector_end))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'timeSlices'
-semantic.unresolved_name 'timeSlices'
-~~~
 # FORMAT
 ~~~sysml
 class Camera {

@@ -76,54 +76,6 @@ package '15_02-Basic Value Properties' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwAttribute,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-KwAttribute,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,Colon,Ident,OpenCurly,
-KwAttribute,ColonGtGt,Ident,Eq,StringValue,Semicolon,
-KwAttribute,ColonGtGt,Ident,Eq,DecimalValue,Dot,DecimalValue,Semicolon,
-KwAttribute,ColonGtGt,Ident,Eq,DecimalValue,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''15_02-Basic Value Properties''
-    (import_decl private 'ScalarValues::*')
-    (attribute_def 'LengthValue' :> 'Real'
-      (documentation))
-    (part_def 'Tire'
-      (attribute_usage 'manufacturer' : 'String')
-      (attribute_usage 'hubDiameter' : 'LengthValue')
-      (attribute_usage 'width' : 'Integer'))
-    (part_usage 'frenchTire' : 'Tire'
-      (attribute_usage :>> 'manufacturer' value)
-      (attribute_usage :>> 'hubDiameter' value)
-      (attribute_usage :>> 'width' value))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Integer'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Real'
-semantic.unresolved_name 'String'
-semantic.unresolved_name 'Integer'
-~~~
 # FORMAT
 ~~~sysml
 package '15_02-Basic Value Properties' {

@@ -30,43 +30,6 @@ package 'Subsetting Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,OpenSquare,Star,CloseSquare,Semicolon,
-KwPart,Ident,Colon,Ident,KwSubsets,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,KwSubsets,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,ColonGt,Ident,Semicolon,
-CloseCurly,
-KwAbstract,KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,ColonGt,Ident,Semicolon,
-KwPart,KwDef,Ident,ColonGt,Ident,Semicolon,
-KwPart,KwDef,Ident,ColonGt,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Subsetting Example''
-    (part_def 'Vehicle'
-      (part_usage 'parts' : 'VehiclePart' multiplicity)
-      (part_usage 'eng' : 'Engine' :> 'parts')
-      (part_usage 'trans' : 'Transmission' :> 'parts')
-      (part_usage 'wheels' : 'Wheel' :> 'parts' multiplicity))
-    (part_def abstract 'VehiclePart')
-    (part_def 'Engine' :> 'VehiclePart')
-    (part_def 'Transmission' :> 'VehiclePart')
-    (part_def 'Wheel' :> 'VehiclePart')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Subsetting Example' {

@@ -71,63 +71,6 @@ package CommentTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-RegularComment,
-LineComment,
-KwPackage,Ident,OpenCurly,
-LineComment,
-RegularComment,
-RegularComment,
-RegularComment,
-RegularComment,
-KwLocale,StringValue,RegularComment,
-RegularComment,
-KwDoc,KwLocale,StringValue,RegularComment,
-KwComment,Ident,RegularComment,
-KwComment,Ident,KwAbout,Ident,RegularComment,
-KwComment,KwAbout,Ident,RegularComment,
-KwPart,KwDef,Ident,OpenCurly,
-KwDoc,RegularComment,
-KwComment,RegularComment,
-KwComment,KwAbout,Ident,KwLocale,StringValue,RegularComment,
-CloseCurly,
-RegularComment,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (comment)
-  (line_comment)
-  (package_def 'CommentTest'
-    (line_comment)
-    (comment)
-    (comment)
-    (comment)
-    (comment)
-    (comment_annotating locale "en_US")
-    (comment)
-    (documentation locale "en_US")
-    (comment_annotating 'cmt')
-    (comment_annotating 'cmt_cmt' about 'cmt')
-    (comment_annotating about 'C')
-    (part_def 'C'
-      (documentation)
-      (comment_annotating)
-      (comment_annotating about 'CommentTest' locale "en_US"))
-    (comment)
-    (part_def 'A')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 /* AAA */

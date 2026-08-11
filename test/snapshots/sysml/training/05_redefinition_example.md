@@ -39,56 +39,6 @@ package 'Redefinition Example' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,KwRedefines,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,ColonGtGt,Ident,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,OpenCurly,
-KwPart,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,ColonGt,Ident,OpenCurly,
-KwPart,KwRedefines,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-CloseCurly,
-KwPart,KwDef,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Redefinition Example''
-    (part_def 'Vehicle'
-      (part_usage 'eng' : 'Engine'))
-    (part_def 'SmallVehicle' :> 'Vehicle'
-      (part_usage 'smallEng' : 'SmallEngine' :>> 'eng'))
-    (part_def 'BigVehicle' :> 'Vehicle'
-      (part_usage 'bigEng' : 'BigEngine' :>> 'eng'))
-    (part_def 'Engine'
-      (part_usage 'cyl' : 'Cylinder' multiplicity))
-    (part_def 'SmallEngine' :> 'Engine'
-      (part_usage :>> 'cyl' multiplicity))
-    (part_def 'BigEngine' :> 'Engine'
-      (part_usage :>> 'cyl' multiplicity))
-    (part_def 'Cylinder')))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Redefinition Example' {

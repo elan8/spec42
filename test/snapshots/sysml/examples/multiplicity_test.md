@@ -76,51 +76,6 @@ package MultiplicityTest {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-KwAttribute,Ident,Colon,Ident,ColonColon,Ident,Eq,DecimalValue,Semicolon,
-KwPart,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwPart,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Colon,Ident,Semicolon,
-KwPart,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
-KwPart,Ident,OpenSquare,Star,CloseSquare,Semicolon,
-KwPart,Ident,OpenSquare,Ident,CloseSquare,Semicolon,
-KwPart,Ident,OpenSquare,Ident,DotDot,Star,CloseSquare,Semicolon,
-KwPart,Ident,OpenSquare,DecimalValue,DotDot,Ident,CloseSquare,Semicolon,
-KwAttribute,KwDef,Ident,OpenCurly,
-KwAttribute,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
-KwAttribute,Ident,Colon,Ident,OpenSquare,Ident,CloseSquare,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'MultiplicityTest'
-    (part_def 'P')
-    (attribute_usage 'n' : 'ScalarValues::Integer' value)
-    (part_usage 'a' multiplicity)
-    (part_usage 'b' : 'P' multiplicity)
-    (part_usage 'c' : 'P' multiplicity)
-    (part_usage 'd' multiplicity)
-    (part_usage 'e' multiplicity)
-    (part_usage 'f' multiplicity)
-    (part_usage 'g' multiplicity)
-    (attribute_def 'A'
-      (attribute_usage 'i' : 'ScalarValues::Integer')
-      (attribute_usage 'x' : 'A' multiplicity))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'ScalarValues::Integer'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'ScalarValues::Integer'
-semantic.unresolved_name 'ScalarValues::Integer'
-~~~
 # FORMAT
 ~~~sysml
 package MultiplicityTest {

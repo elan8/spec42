@@ -55,62 +55,6 @@ package WithoutConnectorsExecution {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwClassifier,Ident,OpenCurly,
-KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,
-KwFeature,Ident,Colon,Ident,OpenSquare,Star,CloseSquare,Semicolon,
-CloseCurly,
-KwClassifier,Ident,Semicolon,
-KwClassifier,Ident,Semicolon,
-CloseCurly,
-KwPackage,Ident,OpenCurly,
-KwDoc,
-RegularComment,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
-Hash,Ident,
-KwClassifier,Ident,KwSpecializes,Ident,Semicolon,
-Hash,Ident,
-KwClassifier,Ident,KwSpecializes,Ident,Semicolon,
-KwClassifier,Ident,KwUnions,Ident,Comma,Ident,Semicolon,
-Hash,Ident,
-KwClassifier,Ident,KwSpecializes,Ident,OpenCurly,
-KwFeature,KwRedefines,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'WithoutConnectorsModelToBeExecuted'
-    (documentation)
-    (classifier_def 'Bicycle'
-      (feature_def 'rollsOn' : 'Wheel' multiplicity)
-      (feature_def 'holdsWheel' : 'BikeFork' multiplicity))
-    (classifier_def 'Wheel')
-    (classifier_def 'BikeFork'))
-  (package_def 'WithoutConnectorsExecution'
-    (documentation)
-    (import_decl private 'Atoms::*')
-    (import_decl private 'WithoutConnectorsModelToBeExecuted::*')
-    (classifier_def #'atom' 'MyWheel1' :> 'Wheel')
-    (classifier_def #'atom' 'MyWheel2' :> 'Wheel')
-    (classifier_def 'MyWheel' unions 'MyWheel1', 'MyWheel2')
-    (classifier_def #'atom' 'MyBike' :> 'Bicycle'
-      (feature_def :>> 'rollsOn' : 'MyWheel'))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 

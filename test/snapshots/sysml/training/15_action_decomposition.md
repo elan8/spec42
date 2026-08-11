@@ -66,67 +66,6 @@ package 'Action Decomposition' {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,UnrestrictedName,OpenCurly,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwPart,KwDef,Ident,Semicolon,
-KwAction,KwDef,Ident,OpenCurly,KwIn,Ident,Colon,Ident,Semicolon,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwAction,KwDef,Ident,OpenCurly,KwIn,Ident,Colon,Ident,Semicolon,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwAction,KwDef,Ident,OpenCurly,KwIn,Ident,Colon,Ident,Semicolon,KwOut,Ident,Colon,Ident,Semicolon,CloseCurly,
-KwAction,Ident,Colon,Ident,OpenCurly,
-KwIn,KwItem,Ident,Semicolon,
-KwOut,KwItem,Ident,Semicolon,
-KwAction,Ident,Colon,Ident,OpenCurly,
-KwIn,KwItem,Ident,Eq,Ident,ColonColon,Ident,Semicolon,
-KwOut,KwItem,Ident,Semicolon,
-CloseCurly,
-KwFlow,KwFrom,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-KwAction,Ident,Colon,Ident,OpenCurly,
-KwIn,KwItem,Semicolon,
-KwOut,KwItem,Ident,Eq,Ident,ColonColon,Ident,Semicolon,
-CloseCurly,
-CloseCurly,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def ''Action Decomposition''
-    (part_def 'Scene')
-    (part_def 'Image')
-    (part_def 'Picture')
-    (action_def 'Focus'
-      (default_ref_usage in 'scene' : 'Scene')
-      (default_ref_usage out 'image' : 'Image'))
-    (action_def 'Shoot'
-      (default_ref_usage in 'image' : 'Image')
-      (default_ref_usage out 'picture' : 'Picture'))
-    (action_def 'TakePicture'
-      (default_ref_usage in 'scene' : 'Scene')
-      (default_ref_usage out 'picture' : 'Picture'))
-    (action_usage 'takePicture' : 'TakePicture'
-      (item_usage in 'scene')
-      (item_usage out 'picture')
-      (action_usage 'focus' : 'Focus'
-        (item_usage in 'scene' value)
-        (item_usage out 'image'))
-      (flow_usage
-        (connector_end)
-        (connector_end))
-      (action_usage 'shoot' : 'Shoot'
-        (item_usage in)
-        (item_usage out 'picture' value)))))
-~~~
-# EXPECTED
-~~~
-NIL
-~~~
-# PROBLEMS
-~~~
-NIL
-~~~
 # FORMAT
 ~~~sysml
 package 'Action Decomposition' {

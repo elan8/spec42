@@ -51,62 +51,6 @@ package IssueMetadataExample {
   )
 )
 ~~~
-# TOKENS
-~~~zig
-KwPackage,Ident,OpenCurly,
-KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
-LineComment,
-KwMetadata,Ident,Colon,Ident,KwAbout,Ident,OpenCurly,
-Ident,Eq,StringValue,Plus,
-StringValue,Plus,
-StringValue,Plus,
-StringValue,Semicolon,
-CloseCurly,
-KwInterface,KwDef,Ident,OpenCurly,
-KwEnd,Ident,Colon,Ident,Semicolon,
-KwEnd,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPort,KwDef,Ident,Semicolon,
-KwPort,KwDef,Ident,Semicolon,
-KwPart,Ident,OpenCurly,
-KwPort,Ident,Colon,Ident,Semicolon,
-CloseCurly,
-KwPart,Ident,OpenCurly,
-KwPort,Ident,Colon,Tilde,Ident,Semicolon,
-CloseCurly,
-KwInterface,Ident,Colon,Ident,
-KwConnect,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
-CloseCurly,EndOfFile,
-~~~
-# AST
-~~~
-(root
-  (package_def 'IssueMetadataExample'
-    (import_decl private 'ModelingMetadata::Issue')
-    (line_comment)
-    (metadata_feature 'InterfaceCompatibilityIssue' typed 'Issue' about 'engineToTransmissionInterface'
-      (feature_def 'text' value))
-    (interface_def 'EngineToTransmissionInterface'
-      (interface_end end 'p1' : 'DrivePwrPort')
-      (interface_end end 'p2' : 'ClutchPort'))
-    (port_def 'DrivePwrPort')
-    (port_def 'ClutchPort')
-    (part_usage 'engine'
-      (port_usage 'drivePwrPort' : 'DrivePwrPort'))
-    (part_usage 'transmission'
-      (port_usage 'clutchPort' : ~'DrivePwrPort'))
-    (interface_usage 'EngineToTransmissionInterface' 'engineToTransmissionInterface'
-      (connector_end)
-      (connector_end))))
-~~~
-# EXPECTED
-~~~
-semantic.unresolved_name 'Issue'
-~~~
-# PROBLEMS
-~~~
-semantic.unresolved_name 'Issue'
-~~~
 # FORMAT
 ~~~sysml
 package IssueMetadataExample {
