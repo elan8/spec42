@@ -1397,3 +1397,293 @@ mod publication_tests {
         assert!(!graph.is_storage_eligible());
     }
 }
+
+// --- B3: source role and lookup precedence ---
+//
+// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B3/§6: `node_ids_by_qualified_name` and `nodes_by_uri` vector
+// order must be a function of canonical `NodeId` order alone, never of document/merge insertion
+// order. These tests build the same source set in forward and reverse document order and assert
+// the lookup vectors (and therefore any first-match consumer) are identical, plus cover the
+// complete source-origin classification map and one genuine-duplicate-namespace case.
+#[cfg(test)]
+mod b3_source_role_and_precedence {
+    use super::*;
+    use source_identity::SourceRole;
+    use std::collections::BTreeMap;
+
+    fn doc(scope: &str, name: &str, content: &str, kind: SysmlDocumentSourceKind) -> SysmlDocument {
+        SysmlDocument::from_memory_path(scope, name, content.to_string(), kind, None, None)
+            .expect("doc")
+    }
+
+    /// Canonical-order snapshot of every `node_ids_by_qualified_name` bucket, for comparing
+    /// graphs built from the same sources in different document orders.
+    fn qualified_name_snapshot(graph: &SemanticGraph) -> BTreeMap<String, Vec<(String, String)>> {
+        graph
+            .node_ids_by_qualified_name
+            .iter()
+            .map(|(qualified, ids)| {
+                (
+                    qualified.clone(),
+                    ids.iter()
+                        .map(|id| (id.uri.to_string(), id.qualified_name.clone()))
+                        .collect(),
+                )
+            })
+            .collect()
+    }
+
+    fn nodes_by_uri_snapshot(graph: &SemanticGraph) -> BTreeMap<String, Vec<String>> {
+        graph
+            .nodes_by_uri
+            .iter()
+            .map(|(uri, ids)| {
+                (
+                    uri.to_string(),
+                    ids.iter().map(|id| id.qualified_name.clone()).collect(),
+                )
+            })
+            .collect()
+    }
+
+    /// Building the same workspace documents in forward and reverse order must produce
+    /// byte-identical `node_ids_by_qualified_name`/`nodes_by_uri` vectors (§6's document-order
+    /// reversal requirement), even though the two builds start from `SysmlDocument` lists in
+    /// opposite order and therefore merge nodes in opposite order internally.
+    #[test]
+    fn document_order_reversal_yields_identical_lookup_vectors() {
+        let docs = vec![
+            doc(
+                "rev",
+                "A.sysml",
+                "package A { part def Thing; }",
+                SysmlDocumentSourceKind::Workspace,
+            ),
+            doc(
+                "rev",
+                "B.sysml",
+                "package B { part def OtherThing; }",
+                SysmlDocumentSourceKind::Workspace,
+            ),
+            doc(
+                "rev",
+                "C.sysml",
+                "package C { part def ThirdThing; }",
+                SysmlDocumentSourceKind::Workspace,
+            ),
+        ];
+        let mut reversed = docs.clone();
+        reversed.reverse();
+
+        let (forward_graph, _) = build_and_link_graph(&docs).expect("forward build");
+        let (reverse_graph, _) = build_and_link_graph(&reversed).expect("reverse build");
+
+        assert_eq!(
+            qualified_name_snapshot(&forward_graph),
+            qualified_name_snapshot(&reverse_graph),
+            "node_ids_by_qualified_name must not depend on document order"
+        );
+        assert_eq!(
+            nodes_by_uri_snapshot(&forward_graph),
+            nodes_by_uri_snapshot(&reverse_graph),
+            "nodes_by_uri must not depend on document order"
+        );
+
+        // Same check against the parallel builder, which merges workspace documents through a
+        // different code path (`link_parsed_documents_parallel_from`) than the sequential
+        // `build_and_link_graph`.
+        let (forward_parallel, _) = build_and_link_graph_parallel(&docs);
+        let (reverse_parallel, _) = build_and_link_graph_parallel(&reversed);
+        assert_eq!(
+            qualified_name_snapshot(&forward_parallel),
+            qualified_name_snapshot(&reverse_parallel),
+            "parallel build's node_ids_by_qualified_name must not depend on document order"
+        );
+    }
+
+    /// A workspace package and a library package sharing a qualified name: the workspace
+    /// declaration must shadow the library one, and this must hold regardless of whether the
+    /// workspace or the library document is listed (and therefore parsed/merged) first.
+    #[test]
+    fn workspace_shadows_library_regardless_of_document_order() {
+        let workspace = doc(
+            "shadow",
+            "Workspace.sysml",
+            "package Shared { part def Thing { doc /* workspace */ '' } }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let library = doc(
+            "shadow",
+            "Library.sysml",
+            "package Shared { part def Thing { doc /* library */ '' } }",
+            SysmlDocumentSourceKind::Library,
+        );
+
+        for docs in [
+            vec![workspace.clone(), library.clone()],
+            vec![library.clone(), workspace.clone()],
+        ] {
+            let (graph, _) = build_and_link_graph(&docs).expect("build");
+            let ids = graph
+                .node_ids_for_qualified_name("Shared::Thing")
+                .expect("Shared::Thing present");
+            assert_eq!(
+                ids.len(),
+                1,
+                "workspace must shadow the duplicate library declaration, leaving one node"
+            );
+            assert_eq!(
+                ids[0].uri, workspace.uri,
+                "the surviving node must be the workspace one"
+            );
+        }
+    }
+
+    /// Two distinct workspace documents that both declare the same qualified name are a genuine
+    /// duplicate, not a shadowing case: both nodes must survive (neither `merge` variant drops
+    /// workspace-vs-workspace duplicates), and the resulting `node_ids_by_qualified_name` bucket
+    /// must contain both candidates in canonical order rather than picking a silent winner.
+    #[test]
+    fn duplicate_workspace_namespace_retains_both_candidates_in_canonical_order() {
+        let first = doc(
+            "dup",
+            "First.sysml",
+            "package Dup { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let second = doc(
+            "dup",
+            "Second.sysml",
+            "package Dup { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+
+        let (forward, _) = build_and_link_graph(&[first.clone(), second.clone()]).expect("forward");
+        let (reverse, _) = build_and_link_graph(&[second.clone(), first.clone()]).expect("reverse");
+
+        let forward_ids = forward
+            .node_ids_for_qualified_name("Dup::Thing")
+            .expect("Dup::Thing present")
+            .to_vec();
+        let reverse_ids = reverse
+            .node_ids_for_qualified_name("Dup::Thing")
+            .expect("Dup::Thing present")
+            .to_vec();
+
+        assert_eq!(
+            forward_ids.len(),
+            2,
+            "both genuine workspace duplicates must be retained as explicit candidates"
+        );
+        assert_eq!(
+            forward_ids, reverse_ids,
+            "the candidate list order must be canonical, not a function of document order"
+        );
+        let mut canonically_sorted = forward_ids.clone();
+        canonically_sorted.sort();
+        assert_eq!(
+            forward_ids, canonically_sorted,
+            "candidates must already be in canonical NodeId order (normalized URI, then qualified name)"
+        );
+    }
+
+    /// The graph's source-origin map must classify every admitted document with its complete
+    /// `SourceRole` (Workspace/StandardLibrary/Library/External), not merely the
+    /// `standard_library_uris` fast-path subset.
+    #[test]
+    fn source_origin_map_classifies_every_admitted_role() {
+        let workspace = doc(
+            "roles",
+            "Workspace.sysml",
+            "package W { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let stdlib = doc(
+            "roles",
+            "Std.sysml",
+            "package Std { part def Base; }",
+            SysmlDocumentSourceKind::StandardLibrary,
+        );
+        let library = doc(
+            "roles",
+            "Lib.sysml",
+            "package Lib { part def Extra; }",
+            SysmlDocumentSourceKind::Library,
+        );
+        let external = doc(
+            "roles",
+            "Ext.sysml",
+            "package Ext { part def Other; }",
+            SysmlDocumentSourceKind::External,
+        );
+        let docs = vec![
+            workspace.clone(),
+            stdlib.clone(),
+            library.clone(),
+            external.clone(),
+        ];
+
+        let (graph, _) = build_and_link_graph(&docs).expect("build");
+
+        assert_eq!(
+            graph.source_role_for_uri(&workspace.uri),
+            Some(SourceRole::Workspace)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&stdlib.uri),
+            Some(SourceRole::StandardLibrary)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&library.uri),
+            Some(SourceRole::Library)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&external.uri),
+            Some(SourceRole::External)
+        );
+        // Every classified standard-library entry is also in the fast-path set the universal
+        // standard-library relationship resolver consults.
+        assert!(graph.standard_library_uris.contains(&stdlib.uri));
+
+        // Reversing document order must not change the classification.
+        let mut reversed = docs.clone();
+        reversed.reverse();
+        let (reverse_graph, _) = build_and_link_graph(&reversed).expect("reverse build");
+        assert_eq!(
+            graph.source_origins_sorted(),
+            reverse_graph.source_origins_sorted(),
+            "source-origin classification must not depend on document order"
+        );
+    }
+
+    /// Same source-origin coverage through the parallel/merge-onto-base path
+    /// (`link_parsed_documents_parallel_from`), which populates the map from a different call
+    /// site than `build_and_link_graph`.
+    #[test]
+    fn source_origin_map_populated_by_parallel_merge_from_base() {
+        let workspace = doc(
+            "roles-parallel",
+            "Workspace.sysml",
+            "package W { part def Thing; }",
+            SysmlDocumentSourceKind::Workspace,
+        );
+        let library = doc(
+            "roles-parallel",
+            "Lib.sysml",
+            "package Lib { part def Extra; }",
+            SysmlDocumentSourceKind::Library,
+        );
+        let docs = vec![workspace.clone(), library.clone()];
+
+        let (graph, _) = build_and_link_graph_parallel(&docs);
+
+        assert_eq!(
+            graph.source_role_for_uri(&workspace.uri),
+            Some(SourceRole::Workspace)
+        );
+        assert_eq!(
+            graph.source_role_for_uri(&library.uri),
+            Some(SourceRole::Library)
+        );
+    }
+}

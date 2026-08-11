@@ -31,6 +31,29 @@ fn deserialize_url<'de, D: Deserializer<'de>>(d: D) -> Result<Url, D::Error> {
     let s = String::deserialize(d)?;
     Url::parse(&s).map_err(serde::de::Error::custom)
 }
+
+/// Inserts `id` into `ids` at its canonical `NodeId` order position
+/// (`ROUNDTRIP_SEMGRAPH_PREREQS.md` §6: normalized URI, then qualified name).
+///
+/// Every mutation site that appends to a `node_ids_by_qualified_name` bucket
+/// (`add_node_and_recurse`, `merge_inner`, `insert_workspace_node`, `register_short_name_alias`)
+/// goes through this function rather than a bare `push`, so the resulting candidate vector's
+/// order is a function of canonical `NodeId` order alone -- never of document/merge insertion
+/// order, document-set traversal order, or `HashMap` iteration order. This is what makes building
+/// the same sources in forward and reverse order produce byte-identical qualified-name lookup
+/// vectors (B3), and what makes a first-match consumer of these vectors deterministic rather than
+/// accidentally order-dependent.
+///
+/// Deliberately **not** used for `nodes_by_uri`: that map's per-URI vector order is not a
+/// cross-document candidate-precedence list the way `node_ids_by_qualified_name` is -- a single
+/// URI's nodes only ever originate from that one document's own deterministic AST-traversal
+/// order, so it carries no accidental cross-document ordering dependency, and at least one
+/// consumer (`find_deepest_node_at_position`'s span-length tie-break) relies on that stable
+/// declaration order. See the matching comment at each `nodes_by_uri` mutation site.
+pub(crate) fn insert_canonical(ids: &mut Vec<NodeId>, id: NodeId) {
+    let pos = ids.partition_point(|existing| existing < &id);
+    ids.insert(pos, id);
+}
 use crate::semantic::workspace_uri;
 
 /// Cached reverse index from petgraph node index to [`NodeId`] (invalidated on structural mutation).
@@ -65,6 +88,18 @@ pub struct SemanticGraphData {
     /// a substitute for one of these targets.
     #[serde(default)]
     pub standard_library_uris: HashSet<Url>,
+    /// The complete normalized Workspace/StandardLibrary/Library/External classification for
+    /// every admitted source URI (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B3's "complete normalized
+    /// source-origin map"). Reuses `source_identity::SourceRole` rather than defining a second
+    /// enum. `standard_library_uris` above remains the fast-path set consulted by universal
+    /// standard-library relationship resolution; this map is the superset classification that
+    /// also distinguishes `Library` from `Workspace`/`External`, and is the one place source
+    /// precedence policy (`Self::source_precedence_rank`) reads role from. Populated by the
+    /// pipeline entry points that know each document's `SysmlDocumentSourceKind`
+    /// (`semantic::pipeline::source_role_for`), the same call sites that already populate
+    /// `standard_library_uris`.
+    #[serde(default)]
+    pub source_origins: HashMap<Url, source_identity::SourceRole>,
     /// Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
@@ -165,6 +200,7 @@ impl Clone for SemanticGraphData {
             nodes_by_uri: self.nodes_by_uri.clone(),
             node_ids_by_qualified_name: self.node_ids_by_qualified_name.clone(),
             standard_library_uris: self.standard_library_uris.clone(),
+            source_origins: self.source_origins.clone(),
             children_by_parent_id: self.children_by_parent_id.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
             declared_expression_relationships: self.declared_expression_relationships.clone(),
@@ -301,6 +337,44 @@ impl SemanticGraph {
     {
         self.standard_library_uris.extend(uris);
         self.derived_relationship_resolution_by_source_id.clear();
+    }
+
+    /// Records `uri`'s complete [`source_identity::SourceRole`] classification in the graph's
+    /// source-origin map (B3's "complete normalized source-origin map"). Idempotent: a later call
+    /// for the same URI overwrites its role, which is what re-classifying a source (e.g. a graph
+    /// hit whose provider now reports a different role for the same URI) must do.
+    pub fn set_source_origin(&mut self, uri: Url, role: source_identity::SourceRole) {
+        self.source_origins.insert(uri, role);
+    }
+
+    /// Bulk form of [`Self::set_source_origin`] for a whole document set.
+    pub fn set_source_origins<I>(&mut self, origins: I)
+    where
+        I: IntoIterator<Item = (Url, source_identity::SourceRole)>,
+    {
+        self.source_origins.extend(origins);
+    }
+
+    /// The classified [`source_identity::SourceRole`] for `uri`, or `None` if `uri` has not been
+    /// admitted through a build entry point that classifies its source (`set_source_origin`/
+    /// `set_source_origins`). Never inferred from URI shape or scheme.
+    pub fn source_role_for_uri(&self, uri: &Url) -> Option<source_identity::SourceRole> {
+        self.source_origins.get(uri).copied()
+    }
+
+    /// The complete source-origin map, sorted by normalized URI string (§6's document-order
+    /// rule for workspace/external sources). Library-root configured precedence order is not
+    /// reconstructible from this map alone -- a caller that needs it supplies its own
+    /// `SourceManifest`/root-slot ordering (see `source_identity::SourceManifest`); this accessor
+    /// only guarantees the map itself is enumerated deterministically.
+    pub fn source_origins_sorted(&self) -> Vec<(Url, source_identity::SourceRole)> {
+        let mut origins: Vec<_> = self
+            .source_origins
+            .iter()
+            .map(|(uri, role)| (uri.clone(), *role))
+            .collect();
+        origins.sort_by(|(left, _), (right, _)| left.as_str().cmp(right.as_str()));
+        origins
     }
 
     /// Recomputes universal standard-library relationships from this coherent graph state.
@@ -834,6 +908,7 @@ impl SemanticGraphData {
             nodes_by_uri: HashMap::new(),
             node_ids_by_qualified_name: HashMap::new(),
             standard_library_uris: HashSet::new(),
+            source_origins: HashMap::new(),
             children_by_parent_id: HashMap::new(),
             pending_expression_relationships: Vec::new(),
             declared_expression_relationships: Vec::new(),
@@ -974,10 +1049,12 @@ impl SemanticGraphData {
             return;
         };
         if short_qualified != id.qualified_name {
-            self.node_ids_by_qualified_name
-                .entry(short_qualified)
-                .or_default()
-                .push(id.clone());
+            insert_canonical(
+                self.node_ids_by_qualified_name
+                    .entry(short_qualified)
+                    .or_default(),
+                id.clone(),
+            );
         }
     }
 
@@ -1150,14 +1227,28 @@ impl SemanticGraphData {
             }
             let idx = self.graph.add_node(node.clone());
             self.node_index_by_id.insert(id.clone(), idx);
+            // `nodes_by_uri`'s per-URI vector deliberately stays insertion-ordered, not
+            // canonicalized: a single URI's nodes only ever originate from that one document's
+            // own deterministic AST-traversal order (each `merge_inner` call's `other` is a
+            // single-document graph, so `other.iter_nodes()` -- itself keyed by URI -- yields
+            // that document's nodes in a fixed order regardless of build/merge order across
+            // *other* documents). Position-sensitive consumers such as
+            // `find_deepest_node_at_position` rely on that stable declaration order as a
+            // deterministic tie-break for overlapping same-span ranges; canonicalizing this
+            // vector by qualified name would replace one deterministic, source-order-derived
+            // tie-break with a different (alphabetical) one for no B3 benefit, since this vector
+            // is not a cross-document candidate-precedence list the way
+            // `node_ids_by_qualified_name` is.
             self.nodes_by_uri
                 .entry(id.uri.clone())
                 .or_default()
                 .push(id.clone());
-            self.node_ids_by_qualified_name
-                .entry(id.qualified_name.clone())
-                .or_default()
-                .push(id.clone());
+            insert_canonical(
+                self.node_ids_by_qualified_name
+                    .entry(id.qualified_name.clone())
+                    .or_default(),
+                id.clone(),
+            );
             // Re-derive the short-name-qualified alias too — merging rebuilds
             // `node_ids_by_qualified_name` from each node's own canonical qualified name only,
             // so the alias registered when the node was first built would otherwise be
@@ -1901,14 +1992,17 @@ impl SemanticGraphData {
         }
         let idx = self.graph.add_node(node.clone());
         self.node_index_by_id.insert(node.id.clone(), idx);
+        // See `merge_inner`'s matching comment: `nodes_by_uri` stays insertion-ordered.
         self.nodes_by_uri
             .entry(node.id.uri.clone())
             .or_default()
             .push(node.id.clone());
-        self.node_ids_by_qualified_name
-            .entry(node.id.qualified_name.clone())
-            .or_default()
-            .push(node.id.clone());
+        insert_canonical(
+            self.node_ids_by_qualified_name
+                .entry(node.id.qualified_name.clone())
+                .or_default(),
+            node.id.clone(),
+        );
         self.register_short_name_alias(&node.id, &node);
         if let Some(parent_id) = &node.parent_id {
             self.children_by_parent_id
