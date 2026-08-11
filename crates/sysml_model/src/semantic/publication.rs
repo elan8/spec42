@@ -264,7 +264,7 @@ impl ResolutionOutcome {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ResolutionFact {
+pub(crate) struct ResolutionFact {
     pub reference: AuthoredReferenceId,
     pub authored_target: String,
     pub authored_range: Option<TextRange>,
@@ -299,7 +299,7 @@ pub enum ResolutionProvenance {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ResolvedRelationship {
+pub(crate) struct ResolvedRelationship {
     pub source: NodeId,
     pub target: NodeId,
     pub kind: RelationshipKind,
@@ -451,25 +451,25 @@ where
 /// Settled relationship results.  Adjacency is derived from `facts` and is never an independent
 /// source of semantic truth.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ResolutionState {
+pub(crate) struct ResolutionState {
     facts: Vec<ResolutionFact>,
     relationships: Vec<ResolvedRelationship>,
     inherited_features: Vec<StructuralDiagnosticFact>,
 }
 
 impl ResolutionState {
-    pub fn facts(&self) -> &[ResolutionFact] {
+    pub(crate) fn facts(&self) -> &[ResolutionFact] {
         &self.facts
     }
 
-    pub fn outcome(&self, reference: &AuthoredReferenceId) -> Option<&ResolutionOutcome> {
+    pub(crate) fn outcome(&self, reference: &AuthoredReferenceId) -> Option<&ResolutionOutcome> {
         self.facts
             .binary_search_by(|fact| fact.reference.cmp(reference))
             .ok()
             .map(|index| &self.facts[index].outcome)
     }
 
-    pub fn relationships(&self) -> &[ResolvedRelationship] {
+    pub(crate) fn relationships(&self) -> &[ResolvedRelationship] {
         &self.relationships
     }
 
@@ -1431,7 +1431,7 @@ pub enum SemanticCompleteness {
 }
 
 #[derive(Debug, Clone)]
-pub struct EvaluationState {
+pub(crate) struct EvaluationState {
     facts: HashMap<NodeId, NodeEvaluationFacts>,
 }
 
@@ -2085,12 +2085,40 @@ impl SemanticModel {
         self.evaluation.is_some()
     }
 
-    pub fn evaluation_facts(&self) -> Option<&HashMap<NodeId, NodeEvaluationFacts>> {
+    pub(crate) fn evaluation_facts(&self) -> Option<&HashMap<NodeId, NodeEvaluationFacts>> {
         self.evaluation.as_ref().map(|state| &state.facts)
     }
 
-    pub fn view(&self) -> ResolutionView<'_> {
+    pub(crate) fn view(&self) -> ResolutionView<'_> {
         ResolutionView { model: self }
+    }
+
+    /// Source-position navigation is an implementation seam for `sysml_query`. It returns a
+    /// cohesive typed answer and cannot expose graph nodes, resolver facts, or index storage.
+    pub fn navigation_references_at_position(
+        &self,
+        uri: &url::Url,
+        position: TextPosition,
+    ) -> Result<Vec<NavigationReference>, NavigationQueryError> {
+        self.view().navigation_references_at_position(uri, position)
+    }
+
+    /// Canonical outcome for one authored reference identity.
+    pub fn authored_reference_outcome(
+        &self,
+        reference: &AuthoredReferenceId,
+    ) -> Option<&ResolutionOutcome> {
+        self.view().outcome(reference)
+    }
+
+    /// Resolved targets from the eager outgoing adjacency index.
+    pub fn resolved_outgoing(&self, source: &NodeId, kind: RelationshipKind) -> &[NodeId] {
+        self.view().outgoing(source, kind)
+    }
+
+    /// Resolved sources from the eager incoming adjacency index.
+    pub fn resolved_incoming(&self, target: &NodeId, kind: RelationshipKind) -> &[NodeId] {
+        self.view().incoming(target, kind)
     }
 
     /// Returns resolution-owned reference outcomes for diagnostics.
@@ -2498,7 +2526,7 @@ impl SemanticQueryIndexes {
 }
 
 /// Read-only query surface over a settled semantic model.
-pub struct ResolutionView<'a> {
+pub(crate) struct ResolutionView<'a> {
     model: &'a SemanticModel,
 }
 
@@ -2506,7 +2534,7 @@ impl<'a> ResolutionView<'a> {
     /// Returns all authored references containing a source position in canonical narrowest-first
     /// order. The interval index is immutable after publication and returns exhaustive typed
     /// outcomes without exposing resolver facts or graph storage.
-    pub fn navigation_references_at_position(
+    pub(crate) fn navigation_references_at_position(
         &self,
         uri: &url::Url,
         position: TextPosition,
@@ -2570,11 +2598,11 @@ impl<'a> ResolutionView<'a> {
         })
     }
 
-    pub fn outcome(&self, reference: &AuthoredReferenceId) -> Option<&'a ResolutionOutcome> {
+    pub(crate) fn outcome(&self, reference: &AuthoredReferenceId) -> Option<&'a ResolutionOutcome> {
         self.model.resolution.outcome(reference)
     }
 
-    pub fn outgoing(&self, source: &NodeId, kind: RelationshipKind) -> &'a [NodeId] {
+    pub(crate) fn outgoing(&self, source: &NodeId, kind: RelationshipKind) -> &'a [NodeId] {
         self.model
             .indexes
             .outgoing
@@ -2583,17 +2611,13 @@ impl<'a> ResolutionView<'a> {
             .unwrap_or(&[])
     }
 
-    pub fn incoming(&self, target: &NodeId, kind: RelationshipKind) -> &'a [NodeId] {
+    pub(crate) fn incoming(&self, target: &NodeId, kind: RelationshipKind) -> &'a [NodeId] {
         self.model
             .indexes
             .incoming
             .get(&(target.clone(), kind))
             .map(Vec::as_slice)
             .unwrap_or(&[])
-    }
-
-    pub fn node(&self, id: &NodeId) -> Option<&'a SemanticNode> {
-        self.model.structural_graph.get_node(id)
     }
 }
 

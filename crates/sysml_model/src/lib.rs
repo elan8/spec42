@@ -77,11 +77,11 @@ pub use semantic::publication::{
     ImmutableSourceSnapshot, ImportConformanceOutcome, NavigationOutcome, NavigationQueryError,
     NavigationReference, NavigationTarget, ReferenceKind, RequirementCaseDiagnosticInput,
     RequirementCaseDiagnosticRelationship, ResolutionDiagnosticCandidate,
-    ResolutionDiagnosticInput, ResolutionDiagnosticReference, ResolutionFact, ResolutionImportFact,
-    ResolutionOutcome, ResolutionProvenance, ResolutionState, ResolutionView, SemanticBuildFailure,
-    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticModel,
-    SemanticModelIdentity, SemanticPhase, StructuralDiagnosticFact, StructuralDiagnosticInput,
-    UnitDiagnosticFact, UnitDiagnosticInput, ViewDiagnosticInput, ViewDiagnosticRelationship,
+    ResolutionDiagnosticInput, ResolutionDiagnosticReference, ResolutionImportFact,
+    ResolutionOutcome, ResolutionProvenance, SemanticBuildFailure, SemanticBuildRequest,
+    SemanticCompleteness, SemanticConfiguration, SemanticModel, SemanticModelIdentity,
+    SemanticPhase, StructuralDiagnosticFact, StructuralDiagnosticInput, UnitDiagnosticFact,
+    UnitDiagnosticInput, ViewDiagnosticInput, ViewDiagnosticRelationship,
 };
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,

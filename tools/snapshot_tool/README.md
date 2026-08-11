@@ -3,12 +3,12 @@
 `spec42-snapshot` is the source-to-golden harness for semantic-model snapshots. It is a separate
 command-line runner, not a Rust integration test and not an `insta` assertion layer.
 
-Each Markdown file is a test case. The runner reads its `# SOURCE` section, builds the immutable
-`SemanticModel`, and rewrites the owned `SMG`, `DIAGNOSTICS`, `NAVIGATION`, and `FORMAT` sections. It never
-exposes graph nodes, resolution indexes, or fact collections to the caller; the semantic owner
-streams its canonical debug S-expression through the caller-provided writer. Diagnostics are
-collected by `sysml_diagnostics` from category-owned projections of the same published model; the
-runner never rebuilds a mutable graph for validation.
+Each Markdown file is a test case. The runner reads its `# SOURCE` section, builds the opaque
+published model through `sysml_query`, and rewrites the owned `SMG`, `DIAGNOSTICS`, `NAVIGATION`,
+and `FORMAT` sections. Its manifest has no direct semantic-model or diagnostics implementation
+dependency. The facade streams canonical semantic, diagnostic, and navigation S-expressions
+through caller-provided writers; the runner cannot obtain graph nodes, resolution indexes, or fact
+collections and never rebuilds a mutable graph for validation.
 
 Each section has one responsibility. `SMG` records semantic identity, kind, ownership, typed facts,
 provenance, settled outcomes, candidates, and relationships. It does not repeat routine source

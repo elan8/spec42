@@ -1844,8 +1844,7 @@ dependencies = [
  "clap",
  "language_service",
  "rayon",
- "sysml_diagnostics",
- "sysml_model",
+ "sysml_query",
  "tempfile",
 ]
 
@@ -1955,6 +1954,17 @@ dependencies = [
  "ts-rs",
  "url",
  "walkdir",
+]
+
+[[package]]
+name = "sysml_query"
+version = "0.50.0"
+dependencies = [
+ "serde_json",
+ "syn 2.0.119",
+ "sysml_diagnostics",
+ "sysml_model",
+ "url",
 ]
 
 [[package]]

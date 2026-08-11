@@ -11,13 +11,9 @@ use std::path::{Path, PathBuf};
 use clap::{Parser, Subcommand};
 use language_service::{format_document_text, FormatOptions};
 use rayon::prelude::*;
-use sysml_diagnostics::{
-    collect_document_diagnostics_from_model, write_diagnostics_sexpr, DiagnosticsOptions,
-};
-use sysml_model::{
-    build_semantic_model, ConstructionStrategy, EvaluationPolicy, ImmutableSourceSnapshot,
-    SemanticBuildRequest, SemanticConfiguration, SemanticModel, SysmlDocument,
-    SysmlDocumentSourceKind,
+use sysml_query::{
+    build as build_published_model, BuildRequest, ConstructionStrategy, PublishedModel,
+    SourceDocument as QuerySourceDocument, SourceKind,
 };
 
 #[derive(Debug, Parser)]
@@ -188,16 +184,15 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
     let source_documents = documents
         .iter()
         .map(|document| {
-            SysmlDocument::from_memory_path(
+            QuerySourceDocument::from_memory_path(
                 "snapshot",
                 &format!("snapshot/{}", document.name),
                 document.text.clone(),
-                SysmlDocumentSourceKind::Workspace,
-                None,
-                None,
+                SourceKind::Workspace,
             )
         })
-        .collect::<Result<Vec<_>, _>>()?;
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| format!("{}: invalid source: {error}", path.display()))?;
     let sequential = render_owned_sections(
         build_model(&source_documents, ConstructionStrategy::Sequential, path)?,
         &documents,
@@ -230,25 +225,21 @@ struct OwnedSections {
 }
 
 fn build_model(
-    source_documents: &[SysmlDocument],
+    source_documents: &[QuerySourceDocument],
     construction: ConstructionStrategy,
     path: &Path,
-) -> Result<SemanticModel, String> {
-    let snapshot = ImmutableSourceSnapshot::new(source_documents.to_vec())
-        .map_err(|error| format!("{}: invalid source snapshot: {error}", path.display()))?;
-    build_semantic_model(SemanticBuildRequest {
-        sources: snapshot,
+) -> Result<PublishedModel, String> {
+    build_published_model(BuildRequest::evaluated(
+        source_documents.to_vec(),
         construction,
-        evaluation: EvaluationPolicy::Evaluate,
-        configuration: SemanticConfiguration::default(),
-    })
+    ))
     .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))
 }
 
 fn render_owned_sections(
-    model: SemanticModel,
+    model: PublishedModel,
     documents: &[SourceDocument],
-    source_documents: &[SysmlDocument],
+    source_documents: &[QuerySourceDocument],
 ) -> Result<OwnedSections, String> {
     // Both strings are complete owner-defined projections. The SMG includes publication phase,
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
@@ -256,7 +247,8 @@ fn render_owned_sections(
     let diagnostics = render_diagnostics(&model, documents, source_documents)?;
     let mut navigation = String::new();
     model
-        .write_navigation_debug_sexpr(&mut navigation)
+        .debug()
+        .write_navigation_sexpr(&mut navigation)
         .map_err(|error| format!("navigation rendering failed: {error}"))?;
     Ok(OwnedSections {
         smg,
@@ -291,32 +283,27 @@ fn ensure_strategy_parity(
     Ok(())
 }
 
-fn render_semantic_model(model: &SemanticModel) -> Result<String, String> {
+fn render_semantic_model(model: &PublishedModel) -> Result<String, String> {
     let mut output = String::new();
     model
-        .write_debug_sexpr(&mut output)
+        .debug()
+        .write_semantic_sexpr(&mut output)
         .map_err(|error| format!("semantic-model rendering failed: {error}"))?;
     Ok(output)
 }
 
 fn render_diagnostics(
-    model: &SemanticModel,
+    model: &PublishedModel,
     documents: &[SourceDocument],
-    source_documents: &[SysmlDocument],
+    source_documents: &[QuerySourceDocument],
 ) -> Result<String, String> {
     let mut rendered = String::from("(fixture-diagnostics\n");
     for (document, source_document) in documents.iter().zip(source_documents) {
-        let diagnostics = collect_document_diagnostics_from_model(
-            model,
-            false,
-            &source_document.uri,
-            &document.text,
-            false,
-            DiagnosticsOptions::default(),
-        );
         rendered.push_str(&format!("  (document {:?}\n", document.name));
         let mut rendered_diagnostics = String::new();
-        write_diagnostics_sexpr(&diagnostics, &mut rendered_diagnostics)
+        model
+            .diagnostics()
+            .write_document_sexpr(source_document, &mut rendered_diagnostics)
             .map_err(|error| format!("diagnostic rendering failed: {error}"))?;
         for line in rendered_diagnostics.lines() {
             rendered.push_str("    ");

@@ -13,6 +13,7 @@ members = [
   "crates/server",
   "crates/sysml_diagnostics",
   "crates/sysml_model",
+  "crates/sysml_query",
   "crates/workspace",
   "crates/sysml_tokens",
   "crates/workspace_session",
