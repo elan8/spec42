@@ -32,8 +32,11 @@ test baseline with `cargo clippy --workspace --all-targets -- -D warnings` clean
   canonical source roles and resolution precedence; the `SemanticPublication` phase, completeness
   and identity contract; and the single cache-import invariant validator, whose failures carry no
   diagnostic code or range and so can never surface as though the user's model were at fault.
-- **B9 substantially advanced.** Six of seven attribute-bag chunks merged. What remains is the
-  `*Type` classification family and the final field deletion.
+- **B9 substantially advanced.** All keys are migrated or deleted except a small entangled
+  residue. 24 redundant `*Type` projections were retired once it was established that
+  `add_typing_edge_if_exists` records the declared target into `relationships.typing` *before*
+  attempting resolution, which proves those producers duplicated an existing typed fact. What
+  remains is the residue listed below and the final field deletion (chunk G).
 
 The store is genuinely usable infrastructure. It is not wired to any call site, which is correct:
 nothing should consume it until the artifacts it stores are trustworthy.
@@ -81,8 +84,10 @@ gate passes. That gate is not met, and this work does not enable them.
 The remaining work is independently resumable in this order. None of it is blocked on anything
 except where noted.
 
-1. Finish B9: the `*Type` family, then chunk G to delete the field. Not blocked. This unblocks a
-   real postcard round-trip test, which is currently impossible.
+1. Finish B9: the entangled key residue, then chunk G to delete the field. This unblocks a real
+   postcard round-trip test, which is currently impossible. Note that part of the residue is
+   itself blocked on the resolution work — see below — so chunk G cannot fully complete until
+   that lands.
 2. B11 (graph state fingerprint) — not blocked, and needed regardless of how the resolution work
    lands. B7's validator is in place and is the natural backing for
    `workspace::cache::api::CacheArtifact::validate_invariants`, which is not yet wired to it.
@@ -139,7 +144,7 @@ the same files; ownership is per key, not per file.
 | D | source fidelity: `doc`, `body`, `text`, `language`, `keyword` (hover use) | merged | `feat/b9-source-fidelity` |
 | E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | merged | `feat/b9-analysis-expression` |
 | F | relationship endpoints and semantic classification keys | merged |  |
-| F2 | the `*Type` classification family (37 keys) | in progress | `feat/b9-type-family` |
+| F2 | the `*Type` classification family | merged; entangled residue remains | `feat/b9-type-family` |
 | G | presentation cutover and field deletion: `generalView*` rollups, remaining `lsp_server`/`server`/`generator_api`/`workspace` consumers, then delete the field | not started | |
 
 Chunk C additionally deleted `stateName` outright as a redundant duplicate of the node's own
@@ -231,6 +236,30 @@ parallel paths to be observably equivalent, which is only meaningful once resolu
 well defined. Together with B1's finding that whole-graph and incremental linking are two
 independently implemented resolution engines, the resolution layer is the least settled part of
 this work.
+
+### Remaining attribute keys and why
+
+After chunk F2, these keys are deliberately still written. They are the entire remaining barrier
+to deleting `SemanticNode.attributes`.
+
+| Key(s) | Why it remains |
+|--------|----------------|
+| `attributeType`, `dataType`, bare `type` | Blocked on the resolution-scoping defect. Routing attribute typing into `relationships.typing` sends it through the over-broad workspace-wide pass. |
+| `payloadType`, `acceptType` | Pairing them would newly populate `relationships.typing` for constructs that do not currently populate it, widening the same defect's blast radius. |
+| `partType`, `portType`, `refType`, `parameterType` | Redundant, but entangled with the blocked `attributeType`/`dataType` chain in `detail_type_name`; needs its own typed-DTO rewrite. |
+| `renderingType` | Mixed semantics on view columns; one site carries no typing meaning at all. |
+| `returnType`, `analysisResultType` | Have semantic, non-presentation readers with no safe typed home yet. |
+| `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes` | Consumers migrated, but `visualization/scope.rs` and `general_view_fold.rs` still read them, so the producer writes stay for chunk G. |
+| `doc`, `text`, `language`, `keyword` | Chunk D's transitional dual write, pending its last consumers. |
+
+`baseType`, `relationType` and one `dataType` site are not attribute keys at all and need no
+migration.
+
+**Consequence: chunk G cannot fully complete until the resolution-scoping defect is fixed.** Six
+of the rows above are blocked on it directly or by entanglement. This is the concrete way the
+resolution blocker reaches into the cache work — it is not merely a correctness concern held at
+arm's length, it physically prevents removing the field that blocks postcard encoding of the
+graph.
 
 ### Resolving normative language questions
 
