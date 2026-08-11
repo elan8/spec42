@@ -1180,9 +1180,17 @@ pub enum ImportOrigin {
 pub struct DeclaredImportTarget {
     /// Authored target reference, before any lookup or normalization.
     pub reference: String,
+    /// Parser-owned presence state. Missing is distinct from an unresolved non-empty target.
+    pub presence: ImportTargetPresence,
     /// Exact target span when the parser exposes it; otherwise the enclosing import span.
     #[serde(default)]
     pub range: Option<TextRange>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ImportTargetPresence {
+    Present,
+    Missing,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]

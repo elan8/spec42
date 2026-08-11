@@ -10,6 +10,7 @@ use sysml_model::{
     AuthoredReferenceId, ElementKind, ReferenceKind, RelationshipKind, ResolutionOutcome,
     SemanticModel,
 };
+use sysml_model::{ImportConformanceOutcome, ResolutionDiagnosticInput};
 
 use crate::ordering::canonicalize_diagnostics;
 use crate::shared_rules::{
@@ -55,6 +56,21 @@ pub fn collect_document_diagnostics_from_model(
                 ResolutionOutcome::Resolved { .. } => {}
                 ResolutionOutcome::Unresolved => {
                     has_unresolved = true;
+                    if matches!(
+                        fact.import.as_ref().map(|import| &import.conformance),
+                        Some(ImportConformanceOutcome::MissingTarget)
+                    ) {
+                        diagnostics.push(reference_diagnostic(
+                            uri,
+                            range,
+                            &reference,
+                            "invalid_import_target",
+                            DiagnosticSeverity::Warning,
+                            "Import declaration is incomplete and has no applicable typed target resolution."
+                                .to_string(),
+                        ));
+                        continue;
+                    }
                     diagnostics.push(reference_diagnostic(
                         uri,
                         range,
@@ -92,12 +108,22 @@ pub fn collect_document_diagnostics_from_model(
                     uri,
                     range,
                     &reference,
-                    "unsupported_reference",
+                    match fact.import {
+                        Some(_) => "unsupported_filtered_import",
+                        None => "unsupported_reference",
+                    },
                     DiagnosticSeverity::Warning,
-                    format!("unsupported reference {:?}", fact.authored_target),
+                    match fact.import {
+                        Some(_) => {
+                            "Filtered namespace imports are parsed but not semantically supported."
+                                .to_string()
+                        }
+                        None => format!("unsupported reference {:?}", fact.authored_target),
+                    },
                 )),
             }
         }
+        diagnostics.extend(collect_import_conformance_diagnostics(&input, uri));
         diagnostics.extend(collect_inherited_value_diagnostics(model, uri));
         diagnostics.extend(collect_category_diagnostics(model, uri));
         if let Some(diagnostic) =
@@ -352,6 +378,61 @@ fn reference_diagnostic(
         message,
         related_information: Vec::new(),
     }
+}
+
+fn collect_import_conformance_diagnostics(
+    input: &ResolutionDiagnosticInput,
+    uri: &Url,
+) -> Vec<SemanticDiagnostic> {
+    let mut diagnostics = Vec::new();
+    for fact in input
+        .references()
+        .iter()
+        .filter(|fact| fact.source.uri == *uri)
+    {
+        let Some(import) = &fact.import else { continue };
+        let reference = AuthoredReferenceId {
+            source: fact.source.clone(),
+            kind: fact.kind,
+            authored_ordinal: fact.authored_ordinal,
+        };
+        let range = fact.authored_range.unwrap_or(fact.source_range);
+        let target = &fact.authored_target;
+        match &import.conformance {
+            ImportConformanceOutcome::Valid
+            | ImportConformanceOutcome::MissingTarget
+            | ImportConformanceOutcome::NotCheckedUnresolved
+            | ImportConformanceOutcome::NotCheckedAmbiguous
+            | ImportConformanceOutcome::NotCheckedUnsupportedFiltered => {}
+            ImportConformanceOutcome::NamespaceKindMismatch { actual } => {
+                diagnostics.push(reference_diagnostic(
+                    uri,
+                    range,
+                    &reference,
+                    "import_kind_mismatch",
+                    DiagnosticSeverity::Warning,
+                    format!(
+                        "Namespace import '{}' targets '{}' which is a '{}', not a namespace.",
+                        target, target, actual
+                    ),
+                ));
+            }
+            ImportConformanceOutcome::RecursiveNonNamespace { actual } => {
+                diagnostics.push(reference_diagnostic(
+                    uri,
+                    range,
+                    &reference,
+                    "invalid_recursive_import",
+                    DiagnosticSeverity::Warning,
+                    format!(
+                        "Recursive import '{}' targets '{}', which is not a namespace.",
+                        target, actual
+                    ),
+                ));
+            }
+        }
+    }
+    diagnostics
 }
 
 fn diagnostic_code(kind: ReferenceKind, severity: DiagnosticSeverity, requested: &str) -> String {

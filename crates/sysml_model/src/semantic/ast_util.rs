@@ -9,7 +9,7 @@ use crate::semantic::model::{
     DeclaredFeatureProperties, DeclaredFeatureValue, DeclaredFeatureValueKind, DeclaredImportFacts,
     DeclaredImportTarget, DeclaredLiteral, DeclaredMembershipFacts, DeclaredMembershipKind,
     DeclaredMultiplicity, DeclaredRelationshipTarget, DeclaredTypeCheckOperator,
-    DeclaredUnaryOperator, ImportOrigin, ImportShape, VisibilityKind,
+    DeclaredUnaryOperator, ImportOrigin, ImportShape, ImportTargetPresence, VisibilityKind,
 };
 use crate::semantic::text_span::{TextPosition, TextRange};
 use sysml_v2_parser::ast::{
@@ -99,6 +99,11 @@ pub fn declared_import_membership_facts(import: &Node<Import>) -> DeclaredMember
         import: Some(DeclaredImportFacts {
             target: DeclaredImportTarget {
                 reference: value.target.clone(),
+                presence: if value.target.is_empty() {
+                    ImportTargetPresence::Missing
+                } else {
+                    ImportTargetPresence::Present
+                },
                 range: Some(span_to_range(&value.target_span)),
             },
             origin: ImportOrigin::Import,
@@ -119,6 +124,11 @@ pub fn declared_expose_membership_facts(expose: &Node<ExposeMember>) -> Declared
         import: Some(DeclaredImportFacts {
             target: DeclaredImportTarget {
                 reference: value.target.clone(),
+                presence: if value.target.is_empty() {
+                    ImportTargetPresence::Missing
+                } else {
+                    ImportTargetPresence::Present
+                },
                 range: None,
             },
             origin: ImportOrigin::Expose,

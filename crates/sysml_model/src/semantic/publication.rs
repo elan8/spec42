@@ -14,8 +14,9 @@ use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph
 pub use crate::semantic::model::DerivedRelationshipRule;
 use crate::semantic::model::{
     DeclaredExpressionRelationship, DeclaredRelationshipFacts, DeclaredRelationshipTarget,
-    ElementKind, EvaluatedValue, EvaluationStatus, ImpliedRelationshipRule, NodeEvaluationFacts,
-    NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    ElementKind, EvaluatedValue, EvaluationStatus, ImpliedRelationshipRule, ImportOrigin,
+    ImportShape, ImportTargetPresence, NodeEvaluationFacts, NodeId, RelationshipKind, SemanticEdge,
+    SemanticNode,
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
@@ -268,6 +269,26 @@ pub struct ResolutionFact {
     pub authored_target: String,
     pub authored_range: Option<TextRange>,
     pub outcome: ResolutionOutcome,
+    pub import: Option<ResolutionImportFact>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResolutionImportFact {
+    pub origin: ImportOrigin,
+    pub shape: ImportShape,
+    pub recursive: bool,
+    pub conformance: ImportConformanceOutcome,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ImportConformanceOutcome {
+    Valid,
+    MissingTarget,
+    NotCheckedUnresolved,
+    NotCheckedAmbiguous,
+    NotCheckedUnsupportedFiltered,
+    NamespaceKindMismatch { actual: ElementKind },
+    RecursiveNonNamespace { actual: ElementKind },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -642,6 +663,7 @@ impl<'a> ResolutionDb<'a> {
                         authored_target: authored.reference,
                         authored_range: authored.range,
                         outcome,
+                        import: None,
                     });
                 }
             }
@@ -680,6 +702,11 @@ impl<'a> ResolutionDb<'a> {
                             ResolutionOutcome::UnsupportedFiltered
                         }
                     };
+                    let resolved_kind = outcome
+                        .resolved_target()
+                        .and_then(|target| self.graph.get_node(target))
+                        .map(|node| &node.element_kind);
+                    let conformance = import_conformance(import, &outcome, resolved_kind);
                     facts.push(ResolutionFact {
                         reference: AuthoredReferenceId {
                             source: node.id.clone(),
@@ -689,6 +716,12 @@ impl<'a> ResolutionDb<'a> {
                         authored_target: import.target.reference.clone(),
                         authored_range: import.target.range,
                         outcome,
+                        import: Some(ResolutionImportFact {
+                            origin: import.origin,
+                            shape: import.shape,
+                            recursive: import.recursive,
+                            conformance,
+                        }),
                     });
                 }
             }
@@ -882,6 +915,7 @@ fn resolve_expression_relationship(
         authored_target: expression.source_expression.clone(),
         authored_range: Some(expression.source_range),
         outcome: source_outcome.clone(),
+        import: None,
     });
     facts.push(ResolutionFact {
         reference: AuthoredReferenceId {
@@ -892,6 +926,7 @@ fn resolve_expression_relationship(
         authored_target: expression.target_expression.clone(),
         authored_range: expression.target_range,
         outcome: target_outcome.clone(),
+        import: None,
     });
     if let (
         ResolutionOutcome::Resolved { target: source },
@@ -1571,6 +1606,8 @@ pub struct ResolutionDiagnosticReference {
     pub outcome: ResolutionOutcome,
     pub provenance: ResolutionProvenance,
     pub candidates: Vec<ResolutionDiagnosticCandidate>,
+    /// Authored import semantics projected by the resolver. `None` for non-import references.
+    pub import: Option<ResolutionImportFact>,
 }
 
 /// A candidate attached to an ambiguous authored reference. The resolver owns both the
@@ -2075,6 +2112,7 @@ impl SemanticModel {
                     outcome: fact.outcome.clone(),
                     provenance: ResolutionProvenance::Authored,
                     candidates: diagnostic_candidates(&self.structural_graph, &fact.outcome),
+                    import: fact.import.clone(),
                 })
             })
             .collect();
@@ -2386,6 +2424,41 @@ fn diagnostic_candidates(
     candidates
 }
 
+fn import_conformance(
+    import: &crate::semantic::model::DeclaredImportFacts,
+    outcome: &ResolutionOutcome,
+    resolved_kind: Option<&ElementKind>,
+) -> ImportConformanceOutcome {
+    if import.target.presence == ImportTargetPresence::Missing {
+        return ImportConformanceOutcome::MissingTarget;
+    }
+    let target_kind = match outcome {
+        ResolutionOutcome::Resolved { .. } => resolved_kind,
+        ResolutionOutcome::Unresolved => return ImportConformanceOutcome::NotCheckedUnresolved,
+        ResolutionOutcome::Ambiguous { .. } => {
+            return ImportConformanceOutcome::NotCheckedAmbiguous
+        }
+        ResolutionOutcome::UnsupportedFiltered => {
+            return ImportConformanceOutcome::NotCheckedUnsupportedFiltered
+        }
+    };
+    let Some(target_kind) = target_kind else {
+        return ImportConformanceOutcome::NotCheckedUnresolved;
+    };
+    if import.shape == ImportShape::Namespace && !crate::semantic::kinds::is_namespace(target_kind)
+    {
+        return ImportConformanceOutcome::NamespaceKindMismatch {
+            actual: target_kind.clone(),
+        };
+    }
+    if import.recursive && !crate::semantic::kinds::is_namespace(target_kind) {
+        return ImportConformanceOutcome::RecursiveNonNamespace {
+            actual: target_kind.clone(),
+        };
+    }
+    ImportConformanceOutcome::Valid
+}
+
 fn range_order(range: Option<TextRange>) -> (u32, u32, u32, u32) {
     let range = range.unwrap_or(TextRange {
         start: TextPosition::new(u32::MAX, u32::MAX),
@@ -2598,6 +2671,8 @@ fn build_navigation_indexes(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::semantic::model::{DeclaredImportFacts, DeclaredImportTarget};
+    use url::Url;
 
     fn document(uri: &str, source: &str) -> SysmlDocument {
         SysmlDocument::from_uri(
@@ -3209,6 +3284,92 @@ mod tests {
         assert_eq!(
             solve_fixed_point(ordered, 2, step),
             solve_fixed_point(reversed, 2, step)
+        );
+    }
+
+    #[test]
+    fn import_conformance_records_resolution_state_without_fallback() {
+        let target = NodeId::new(&Url::parse("memory://test").unwrap(), "Target");
+        let import = |presence, shape, recursive| DeclaredImportFacts {
+            target: DeclaredImportTarget {
+                reference: "Target".to_string(),
+                presence,
+                range: None,
+            },
+            origin: ImportOrigin::Import,
+            shape,
+            recursive,
+        };
+
+        assert_eq!(
+            import_conformance(
+                &import(ImportTargetPresence::Present, ImportShape::Namespace, false),
+                &ResolutionOutcome::Unresolved,
+                None,
+            ),
+            ImportConformanceOutcome::NotCheckedUnresolved
+        );
+        assert_eq!(
+            import_conformance(
+                &import(ImportTargetPresence::Present, ImportShape::Namespace, false),
+                &ResolutionOutcome::Ambiguous {
+                    candidates: vec![target.clone()],
+                },
+                None,
+            ),
+            ImportConformanceOutcome::NotCheckedAmbiguous
+        );
+        assert_eq!(
+            import_conformance(
+                &import(
+                    ImportTargetPresence::Present,
+                    ImportShape::FilteredNamespace,
+                    false
+                ),
+                &ResolutionOutcome::UnsupportedFiltered,
+                None,
+            ),
+            ImportConformanceOutcome::NotCheckedUnsupportedFiltered
+        );
+        assert_eq!(
+            import_conformance(
+                &import(ImportTargetPresence::Missing, ImportShape::Namespace, false),
+                &ResolutionOutcome::Unresolved,
+                None,
+            ),
+            ImportConformanceOutcome::MissingTarget
+        );
+        assert_eq!(
+            import_conformance(
+                &import(ImportTargetPresence::Present, ImportShape::Namespace, false),
+                &ResolutionOutcome::Resolved {
+                    target: target.clone(),
+                },
+                Some(&ElementKind::Package),
+            ),
+            ImportConformanceOutcome::Valid
+        );
+        assert_eq!(
+            import_conformance(
+                &import(ImportTargetPresence::Present, ImportShape::Namespace, false),
+                &ResolutionOutcome::Resolved {
+                    target: target.clone(),
+                },
+                Some(&ElementKind::PartDef),
+            ),
+            ImportConformanceOutcome::NamespaceKindMismatch {
+                actual: ElementKind::PartDef,
+            }
+        );
+        assert_eq!(
+            import_conformance(
+                &import(ImportTargetPresence::Present, ImportShape::Membership, true),
+                &ResolutionOutcome::Resolved { target },
+                Some(&ElementKind::PartDef),
+            ),
+            ImportConformanceOutcome::RecursiveNonNamespace {
+                actual: ElementKind::PartDef,
+            }
         );
     }
 
