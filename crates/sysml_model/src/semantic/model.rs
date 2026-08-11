@@ -746,6 +746,13 @@ pub struct SemanticEdge {
     /// source range or from relationship kind.
     #[serde(default)]
     pub provenance: RelationshipProvenance,
+    /// Which construction pass created (and therefore owns and may remove) this edge. This is
+    /// a distinct axis from `provenance`: `provenance` is a semantic fact about the model
+    /// (authored vs. rule-implied), while `owner` is a mechanical fact about the graph builder
+    /// (which pass is responsible for removing/replacing this edge on re-resolution). Never
+    /// infer one from the other.
+    #[serde(default)]
+    pub owner: ConstructionOwner,
     /// Set when a structural expression relationship (`connect` or `bind`) was resolved, retaining
     /// its declaring context and endpoint expressions for instance projection.
     pub connect: Option<ConnectStatementDetail>,
@@ -755,20 +762,24 @@ pub struct SemanticEdge {
 }
 
 impl SemanticEdge {
-    pub fn plain(kind: RelationshipKind) -> Self {
+    pub fn plain(kind: RelationshipKind, owner: ConstructionOwner) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: None,
             flow: None,
         }
     }
 
-    /// Constructs a relationship produced by a graph-owned semantic rule.
+    /// Constructs a relationship produced by a graph-owned semantic rule. Always owned by
+    /// [`ConstructionOwner::UniversalImpliedRuleConstruction`] -- the rule that publishes the
+    /// fact is also the only pass allowed to remove it.
     pub fn implied(kind: RelationshipKind, rule: ImpliedRelationshipRule) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Implied(rule),
+            owner: ConstructionOwner::UniversalImpliedRuleConstruction,
             connect: None,
             flow: None,
         }
@@ -778,15 +789,20 @@ impl SemanticEdge {
         Self {
             kind,
             provenance: RelationshipProvenance::Derived(rule),
+            owner: ConstructionOwner::DocumentConstruction,
             connect: None,
             flow: None,
         }
     }
 
-    pub fn connection_with_connect(connect: ConnectStatementDetail) -> Self {
+    pub fn connection_with_connect(
+        connect: ConnectStatementDetail,
+        owner: ConstructionOwner,
+    ) -> Self {
         Self {
             kind: RelationshipKind::Connection,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: Some(connect),
             flow: None,
         }
@@ -795,23 +811,72 @@ impl SemanticEdge {
     pub fn interconnection_with_detail(
         kind: RelationshipKind,
         connect: ConnectStatementDetail,
+        owner: ConstructionOwner,
     ) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: Some(connect),
             flow: None,
         }
     }
 
-    pub fn flow_with_detail(kind: RelationshipKind, flow: FlowStatementDetail) -> Self {
+    pub fn flow_with_detail(
+        kind: RelationshipKind,
+        flow: FlowStatementDetail,
+        owner: ConstructionOwner,
+    ) -> Self {
         Self {
             kind,
             provenance: RelationshipProvenance::Authored,
+            owner,
             connect: None,
             flow: Some(flow),
         }
     }
+}
+
+/// Typed construction owner for a semantic edge: which pass created it, and therefore which
+/// pass is responsible for removing/replacing it on re-resolution. This is a distinct axis
+/// from [`RelationshipProvenance`] (semantic authored-vs-implied) -- an edge's owner is a fact
+/// about the graph builder, never inferred from provenance or relationship kind.
+///
+/// This enum, plus source identity, is the sole authority `SemanticGraphData::rebuild_cross_document_edge_ownership_index`
+/// uses to rebuild `cross_document_edges_by_source_uri`. Whole, parallel, merge-from-base,
+/// incremental, and decoded builds must all tag edges with the *same* owner for equivalent
+/// input, or the rebuilt index (and therefore later removal/refresh) will diverge by
+/// construction path -- see `ROUNDTRIP_SEMGRAPH_PREREQS.md` B1.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub enum ConstructionOwner {
+    /// Built directly from one document's own parsed content: the per-document graph builder
+    /// (`graph_builder/*`) and the initial per-node materialization of a single document's
+    /// declared facts. Never a Typing/Specializes/Subject edge whose endpoints can cross
+    /// documents once the workspace is fully linked -- those are always retagged
+    /// [`Self::WorkspaceCrossDocumentLinking`] regardless of which pass produced them (see
+    /// `add_semantic_edge_once`).
+    #[default]
+    DocumentConstruction,
+    /// Typing, Specializes, and Subject edges published by workspace relationship linking --
+    /// whichever of the two equivalent engines ran: the whole-graph fixed-point pass
+    /// (`link_workspace_relationships`/`link_case_subject_relationships`) or the URI-scoped
+    /// resolver (`add_cross_document_edges_for_uri`/`resolve_cross_document_edges_for_uri`),
+    /// including the parallel-build variant that calls the scoped resolver directly. The owning
+    /// URI recorded in `cross_document_edges_by_source_uri` is always the edge's *source* node's
+    /// URI, matching the scoped resolver's per-URI removal contract.
+    WorkspaceCrossDocumentLinking,
+    /// `Derivation` edges wired by `try_wire_derivation_connection` linking a `#derive`/
+    /// `#original` connection pair.
+    DerivationLinking,
+    /// Edges resolved from a previously-deferred `PendingRelationship` or
+    /// `PendingExpressionRelationship` once their endpoints became resolvable.
+    PendingResolution,
+    /// Edges published by a universal standard-library implied rule
+    /// (`refresh_universal_standard_library_relationships`). Always paired with
+    /// `RelationshipProvenance::Implied`; that pass self-cleans its own prior edges by
+    /// provenance and does not use `cross_document_edges_by_source_uri`.
+    UniversalImpliedRuleConstruction,
 }
 
 /// Provenance carried by every resolved relationship edge.

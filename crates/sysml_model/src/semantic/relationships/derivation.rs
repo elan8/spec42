@@ -42,7 +42,10 @@ pub(crate) fn try_wire_derivation_connection(
         g,
         &original_id,
         &derived_id,
-        SemanticEdge::plain(RelationshipKind::Derivation),
+        SemanticEdge::plain(
+            RelationshipKind::Derivation,
+            ConstructionOwner::DerivationLinking,
+        ),
     );
     if let Some(connection) = g.get_node_mut(connection_node_id) {
         connection.attributes.insert(

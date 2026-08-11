@@ -19,8 +19,8 @@ pub use crate::semantic::kinds::{
     ANNOTATED_ELEMENT_TARGET_KINDS, SPECIALIZES_TARGET_KINDS, TYPING_TARGET_KINDS,
 };
 use crate::semantic::model::{
-    ConnectStatementDetail, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    ConnectStatementDetail, ConstructionOwner, DeclaredRelationshipTarget, ElementKind, NodeId,
+    RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type, ResolveResult,
@@ -197,7 +197,12 @@ fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId
             if let Some(target_id) =
                 resolve_subsetting_family_target(g, owner.as_ref(), node_id, &target.reference)
             {
-                add_semantic_edge_once(g, node_id, &target_id, SemanticEdge::plain(kind.clone()));
+                add_semantic_edge_once(
+                    g,
+                    node_id,
+                    &target_id,
+                    SemanticEdge::plain(kind.clone(), ConstructionOwner::DocumentConstruction),
+                );
             }
         }
     }
@@ -292,8 +297,11 @@ fn add_edge_if_both_exist_opt(
     let Some(tgt_idx) = g.node_index_by_id.get(&tgt_id).copied() else {
         return false;
     };
-    g.graph
-        .add_edge(src_idx, tgt_idx, SemanticEdge::plain(kind));
+    g.graph.add_edge(
+        src_idx,
+        tgt_idx,
+        SemanticEdge::plain(kind, ConstructionOwner::DocumentConstruction),
+    );
     true
 }
 
@@ -309,7 +317,7 @@ pub fn add_semantic_edge_once(
     g: &mut SemanticGraph,
     source_id: &NodeId,
     target_id: &NodeId,
-    edge: SemanticEdge,
+    mut edge: SemanticEdge,
 ) -> AddSemanticEdgeResult {
     let (Some(&src_idx), Some(&tgt_idx)) = (
         g.node_index_by_id.get(source_id),
@@ -317,6 +325,26 @@ pub fn add_semantic_edge_once(
     ) else {
         return AddSemanticEdgeResult::SkippedSameKind;
     };
+    // Structural construction-owner promotion: every caller that builds a Typing/Specializes/
+    // Subject edge through the generic per-node/whole-graph linking path tags it
+    // `ConstructionOwner::DocumentConstruction` by default (it doesn't know in advance whether
+    // its target will land in another document). The *only* place that can know for certain --
+    // after both endpoints are resolved -- is here. Promoting uniformly at this single point,
+    // purely from `source_id.uri != target_id.uri`, is what makes whole-graph, parallel, and
+    // scoped/incremental builds converge on identical ownership for the same graph content: all
+    // three paths funnel Typing/Specializes/Subject edges through this function. Callers that
+    // explicitly tag a more specific owner (pending resolution, derivation linking, the implied
+    // rule) are never reclassified -- those categories are cross-document-agnostic by design.
+    let is_cross_document_relationship_kind = matches!(
+        edge.kind,
+        RelationshipKind::Typing | RelationshipKind::Specializes | RelationshipKind::Subject
+    );
+    let promote_to_cross_document = is_cross_document_relationship_kind
+        && edge.owner == ConstructionOwner::DocumentConstruction
+        && source_id.uri != target_id.uri;
+    if promote_to_cross_document {
+        edge.owner = ConstructionOwner::WorkspaceCrossDocumentLinking;
+    }
     if edge.kind == RelationshipKind::Connection {
         if let Some(connect) = edge.connect.clone() {
             // Collect edge data before mutating — borrow checker requires immutable scan
@@ -383,6 +411,12 @@ pub fn add_semantic_edge_once(
             return AddSemanticEdgeResult::SkippedSameKind;
         }
     }
+    if promote_to_cross_document {
+        g.cross_document_edges_by_source_uri
+            .entry(source_id.uri.clone())
+            .or_default()
+            .push((source_id.clone(), target_id.clone(), edge.kind.clone()));
+    }
     g.graph.add_edge(src_idx, tgt_idx, edge);
     AddSemanticEdgeResult::Added
 }
@@ -403,7 +437,10 @@ pub fn wire_metadata_annotated_elements(
             g,
             metadata_id,
             owner_id,
-            SemanticEdge::plain(RelationshipKind::Annotation),
+            SemanticEdge::plain(
+                RelationshipKind::Annotation,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
         let _ = uri;
         return;
@@ -421,7 +458,10 @@ pub fn wire_metadata_annotated_elements(
             g,
             metadata_id,
             &target_id,
-            SemanticEdge::plain(RelationshipKind::Annotation),
+            SemanticEdge::plain(
+                RelationshipKind::Annotation,
+                ConstructionOwner::DocumentConstruction,
+            ),
         );
     }
     let _ = uri;
@@ -497,7 +537,10 @@ pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_
                 g,
                 source_id,
                 &target_id,
-                SemanticEdge::plain(RelationshipKind::Typing),
+                SemanticEdge::plain(
+                    RelationshipKind::Typing,
+                    ConstructionOwner::DocumentConstruction,
+                ),
             );
             return;
         }
@@ -513,7 +556,10 @@ pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_
         g,
         source_id,
         &target_id,
-        SemanticEdge::plain(RelationshipKind::Typing),
+        SemanticEdge::plain(
+            RelationshipKind::Typing,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }
 
@@ -534,7 +580,10 @@ pub fn add_specializes_edges_for_node(
                 g,
                 source_id,
                 &target_id,
-                SemanticEdge::plain(RelationshipKind::Specializes),
+                SemanticEdge::plain(
+                    RelationshipKind::Specializes,
+                    ConstructionOwner::DocumentConstruction,
+                ),
             );
         }
     }

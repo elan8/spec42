@@ -12,11 +12,11 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::semantic::model::{
-    node_matches_simple_name, ConnectStatementDetail, DeclaredExpressionRelationship,
-    DeclaredFeatureValueKind, DeclaredMembershipFacts, DerivedRelationshipResolution,
-    EffectiveFeatureOwnership, EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind,
-    EvaluationPublicationState, ExpressionEvaluationQuery, ExpressionResultId,
-    ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
+    node_matches_simple_name, ConnectStatementDetail, ConstructionOwner,
+    DeclaredExpressionRelationship, DeclaredFeatureValueKind, DeclaredMembershipFacts,
+    DerivedRelationshipResolution, EffectiveFeatureOwnership, EffectiveMembershipVisibility,
+    EffectiveSemanticFacts, ElementKind, EvaluationPublicationState, ExpressionEvaluationQuery,
+    ExpressionResultId, ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
     ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule,
     MembershipVisibilityProvenance, NodeEvaluationFacts, NodeId, RelationshipKind,
     RelationshipProvenance, SemanticEdge, SemanticNode, VisibilityKind,
@@ -125,10 +125,18 @@ pub struct SemanticGraphData {
     /// after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
     #[serde(skip)]
     pub document_dependents: HashMap<Url, HashSet<Url>>,
-    /// The exact (src, tgt, kind) triples `add_cross_document_edges_for_uri` last added for a
-    /// given source URI. Lets a re-resolve for that URI cleanly remove its own prior
-    /// cross-document edges before adding fresh ones, without touching edges owned by other
-    /// passes. Rebuilt after deserialization via [`SemanticGraphData::rebuild_derived_indexes`].
+    /// The exact (src, tgt, kind) triples of Typing/Specializes/Subject edges currently owned by
+    /// [`crate::semantic::model::ConstructionOwner::WorkspaceCrossDocumentLinking`], keyed by
+    /// each edge's *source* node's URI. Lets a re-resolve for that URI cleanly remove its own
+    /// prior cross-document edges before adding fresh ones, without touching edges owned by
+    /// other passes.
+    ///
+    /// Maintained incrementally by `add_semantic_edge_once` (relationships.rs) as edges are
+    /// added during any build path -- whole, parallel, merge-from-base, or scoped/incremental --
+    /// so all of them converge on the same content for equivalent graph state. This is a derived
+    /// index, not stored truth: it is `#[serde(skip)]` and rebuilt from the graph's own edges
+    /// (owner + source identity) via [`SemanticGraphData::rebuild_cross_document_edge_ownership_index`],
+    /// called from [`SemanticGraphData::rebuild_derived_indexes`] after deserialization.
     #[serde(skip)]
     pub cross_document_edges_by_source_uri: HashMap<Url, Vec<(NodeId, NodeId, RelationshipKind)>>,
 }
@@ -179,6 +187,12 @@ pub struct SemanticGraph(Arc<SemanticGraphData>);
 impl SemanticGraph {
     pub fn new() -> Self {
         SemanticGraph::default()
+    }
+
+    /// Wraps already-constructed graph data as a handle, e.g. after directly building or
+    /// mutating a [`SemanticGraphData`] (such as [`SemanticGraphData::into_data`]'s inverse).
+    pub fn from_data(data: SemanticGraphData) -> Self {
+        SemanticGraph(Arc::new(data))
     }
 
     pub fn into_data(self) -> SemanticGraphData {
@@ -671,8 +685,9 @@ impl SemanticGraphData {
         roots.into_iter().next()
     }
 
-    /// Rebuild `node_index_by_id` and `children_by_parent_id` from the petgraph
-    /// `graph` after deserialization (both fields are `#[serde(skip)]`).
+    /// Rebuild `node_index_by_id`, `children_by_parent_id`, `document_dependency_targets`/
+    /// `document_dependents`, and `cross_document_edges_by_source_uri` from the petgraph `graph`
+    /// after deserialization (all `#[serde(skip)]`).
     pub fn rebuild_derived_indexes(&mut self) {
         self.node_index_by_id = HashMap::with_capacity(self.graph.node_count());
         self.children_by_parent_id = HashMap::new();
@@ -688,6 +703,66 @@ impl SemanticGraphData {
             }
         }
         crate::semantic::relationships::rebuild_static_dependency_index(self);
+        self.rebuild_cross_document_edge_ownership_index();
+    }
+
+    /// Rebuilds `cross_document_edges_by_source_uri` from the graph's own edges — their
+    /// `ConstructionOwner` plus their source node's URI — rather than treating the field as
+    /// stored truth. This is the sole reconstruction path for a decoded/deserialized graph
+    /// (where the field starts empty, see its `#[serde(skip)]`), and it is safe to call at any
+    /// time on a live graph too: it always reproduces exactly what `add_semantic_edge_once`
+    /// would have accumulated incrementally, because both derive from the same rule (edge kind
+    /// in {Typing, Specializes, Subject} and owner
+    /// [`crate::semantic::model::ConstructionOwner::WorkspaceCrossDocumentLinking`]).
+    pub fn rebuild_cross_document_edge_ownership_index(&mut self) {
+        self.cross_document_edges_by_source_uri.clear();
+        for edge_ref in self.graph.edge_references() {
+            let weight = edge_ref.weight();
+            if weight.owner != ConstructionOwner::WorkspaceCrossDocumentLinking {
+                continue;
+            }
+            if !matches!(
+                weight.kind,
+                RelationshipKind::Typing
+                    | RelationshipKind::Specializes
+                    | RelationshipKind::Subject
+            ) {
+                continue;
+            }
+            let Some(source_node) = self.graph.node_weight(edge_ref.source()) else {
+                continue;
+            };
+            let Some(target_node) = self.graph.node_weight(edge_ref.target()) else {
+                continue;
+            };
+            self.cross_document_edges_by_source_uri
+                .entry(source_node.id.uri.clone())
+                .or_default()
+                .push((
+                    source_node.id.clone(),
+                    target_node.id.clone(),
+                    weight.kind.clone(),
+                ));
+        }
+    }
+
+    /// Test-only simulation of what deserialization produces: resets every `#[serde(skip)]`
+    /// derived index this module owns to its default (exactly what `#[serde(skip)]` makes real
+    /// deserialization do) and then calls `rebuild_derived_indexes()` — without requiring a
+    /// full serde round-trip through a concrete codec. A true round-trip through postcard (the
+    /// project's actual cache codec) is blocked today by `SemanticNode.attributes:
+    /// HashMap<String, serde_json::Value>` (see B9); `serde_json` round-trips but silently
+    /// diverges from the real cache codec's map-key behavior. This directly exercises the same
+    /// post-deserialize contract (`rebuild_derived_indexes`) that both real codecs would call,
+    /// without depending on either.
+    #[cfg(test)]
+    pub fn simulate_decode_reset_for_test(&mut self) {
+        self.node_index_by_id = HashMap::new();
+        self.children_by_parent_id = HashMap::new();
+        self.document_dependency_targets = HashMap::new();
+        self.document_dependents = HashMap::new();
+        self.cross_document_edges_by_source_uri = HashMap::new();
+        self.rebuild_derived_indexes();
     }
 
     /// Removes `uri`'s previously-recorded outgoing cross-document edges (Typing/Specializes/

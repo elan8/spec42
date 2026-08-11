@@ -8,7 +8,9 @@ use url::Url;
 use crate::semantic::ast_util::{declared_multiplicity, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::TYPING_TARGET_KINDS;
-use crate::semantic::model::{FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge};
+use crate::semantic::model::{
+    ConstructionOwner, FlowStatementDetail, NodeId, RelationshipKind, SemanticEdge,
+};
 use crate::semantic::relationships::{
     add_semantic_edge_once, add_typing_edge_if_exists, resolve_type_target_in_workspace,
 };
@@ -234,6 +236,10 @@ fn add_flow_edge_if_both_exist(
         g,
         &NodeId::new(uri, &src),
         &NodeId::new(uri, &tgt),
-        SemanticEdge::flow_with_detail(relationship_kind_for_flow(flow.kind), detail),
+        SemanticEdge::flow_with_detail(
+            relationship_kind_for_flow(flow.kind),
+            detail,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }
