@@ -186,6 +186,23 @@ maps while resolving a reference. Conversion back to stable public identities ha
 publication boundary. The string table is owned immutable publication data; lookup indexes over
 its IDs remain private disposable accelerators and never become semantic authorities.
 
+Construction uses isolated document-local fragments. A worker owns local typed node, symbol,
+qualified-name, path, and authored-reference domains and cannot allocate publication-global IDs.
+The publication barrier consumes those fragments in the immutable source snapshot's canonical
+document order, interns their strings into the one publication-owned string store, and remaps every
+local ID into its corresponding global typed domain. Worker completion order therefore cannot
+affect document ordinals, symbol IDs, authored-reference ordinals, diagnostics, or rendered output.
+The merge validates all remapped parents, sources, paths, and ranges before publishing; it does not
+discard duplicate names or apply shadowing and import precedence, because those are resolution
+decisions rather than construction conflict rules.
+
+Document completeness is also constructed, not asserted. The exhaustive parser visitor classifies
+every encountered AST family as modeled, unsupported, or recovery-produced, while an absent family
+is recorded as absent. Only that visitor can mint a finished document fragment. Finalization rejects
+an unclassified family, and deterministic merge retains document identity on every unsupported or
+recovery fact. A generic builder method that marks arbitrary families complete would make omitted
+semantic constructs indistinguishable from successfully modeled ones and is therefore forbidden.
+
 Qualified names and feature chains are segmented by the parser/source adapter while typed token
 boundaries are still available. It interns each segment once and records separator semantics,
 absolute scope, authored spelling, and range as distinct typed facts. The resolver consumes a
@@ -196,6 +213,22 @@ Segment blocks live in a build/publication-owned arena, and authored facts hold 
 into that arena; they do not own a `Vec`, boxed slice, or string collection per reference. Adapter
 scratch storage is phase-owned and reusable, and unsupported parser forms roll back their arena
 checkpoint rather than publishing a partial path.
+
+The sibling implementation provides useful performance evidence for this representation: its typed
+`u32` node domains, flat extra-data arenas, dense resolution slots, ordinal parent arrays, and
+two-pass CSR edge indexes remove allocation-heavy generic resolution machinery. Spec42 adopts those
+structural techniques while retaining distinct opaque ID types, exhaustive ambiguous outcomes, and
+dependency-complete publication identity. It does not adopt the sibling's duplicate string storage,
+fixed segment or supertype limits, generic packed fields, mutable resolver pointer, raw edge-index
+escape, same-pass recursive memoization, or nondeterministic cache serialization.
+
+Before solving, the frozen authored IR is compiled once into dense parent and authored-reference
+tables, canonical per-scope bindings, typed relationship inputs, and import ranges. Solver outcomes
+are indexed directly by authored-reference ordinal; variable-size candidate and effective-membership
+sets live in flat arenas and are referenced by typed ranges. Fixed-point families read the same
+complete previous-pass state and write reusable next-pass buffers, which are swapped only at the pass
+barrier. Published outgoing and incoming relationships use purpose-built typed CSR indexes. This
+keeps local queries proportional to their result size without making an index authoritative.
 
 Performance is nevertheless a measured acceptance criterion, not an article of faith. The
 whole-model solver is the correctness oracle. Representative CLI and LSP benchmarks must record
