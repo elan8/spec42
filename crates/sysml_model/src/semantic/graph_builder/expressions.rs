@@ -5,7 +5,7 @@ use url::Url;
 
 use crate::semantic::ast_util::span_to_range;
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
-use crate::semantic::graph::SemanticGraph;
+use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph};
 use crate::semantic::model::{
     ConnectStatementDetail, DeclaredExpressionRelationship, ElementKind, NodeId, RelationshipKind,
     SemanticEdge,
@@ -119,35 +119,30 @@ fn add_expression_edge_with_metadata(
     let interface_type = metadata.interface_type.clone();
     let left_str = expr_node_to_qualified_string(left);
     let right_str = expr_node_to_qualified_string(right);
-    if left_str.is_empty() || right_str.is_empty() {
-        return;
-    }
     if g.structural_input_only {
-        let scope_owner = container_prefix
+        let owner = container_prefix
             .map(|prefix| NodeId::new(uri, prefix))
-            .filter(|id| g.get_node(id).is_some());
-        let record_id = scope_owner.clone().or_else(|| {
-            g.nodes_for_uri(uri)
-                .into_iter()
-                .map(|node| node.id.clone())
-                .next()
-        });
-        if let Some(record_id) = record_id {
-            if let Some(node) = g.get_node_mut(&record_id) {
-                node.declared_facts
-                    .expression_relationships
-                    .push(DeclaredExpressionRelationship {
-                        kind: kind.clone(),
-                        source_expression: left_str,
-                        target_expression: right_str,
-                        scope_owner,
-                        source_range: span_to_range(&left.span),
-                        target_range: Some(span_to_range(&right.span)),
-                        is_interface_usage,
-                        interface_type,
-                    });
-            }
-        }
+            .unwrap_or_else(|| NodeId::new(uri, "@root"));
+        let authored_ordinal = g
+            .declared_expression_relationships
+            .iter()
+            .filter(|record| record.owner == owner)
+            .count() as u32;
+        g.declared_expression_relationships
+            .push(DeclaredExpressionRelationshipRecord {
+                owner: owner.clone(),
+                authored_ordinal,
+                relationship: DeclaredExpressionRelationship {
+                    kind: kind.clone(),
+                    source_expression: left_str,
+                    target_expression: right_str,
+                    scope_owner: Some(owner),
+                    source_range: span_to_range(&left.span),
+                    target_range: Some(span_to_range(&right.span)),
+                    is_interface_usage,
+                    interface_type,
+                },
+            });
         return;
     }
     if matches!(kind, RelationshipKind::Connection | RelationshipKind::Bind) {

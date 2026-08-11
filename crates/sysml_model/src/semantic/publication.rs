@@ -10,7 +10,7 @@ use std::fmt;
 
 use sha2::{Digest, Sha256};
 
-use crate::semantic::graph::SemanticGraph;
+use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph};
 pub use crate::semantic::model::DerivedRelationshipRule;
 use crate::semantic::model::{
     DeclaredExpressionRelationship, DeclaredRelationshipFacts, DeclaredRelationshipTarget,
@@ -259,6 +259,7 @@ pub struct ResolvedRelationship {
     pub target: NodeId,
     pub kind: RelationshipKind,
     pub provenance: ResolutionProvenance,
+    pub authored_reference: Option<AuthoredReferenceId>,
     pub expression: Option<DeclaredExpressionRelationship>,
 }
 
@@ -315,9 +316,21 @@ enum WorkingOutcome<K, V> {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum FixedPointFailure<K> {
-    DependencyDeadlock { passes: usize, pending: Vec<K> },
-    Oscillation { passes: usize, pending: Vec<K> },
-    SafetyBound { passes: usize, pending: Vec<K> },
+    DependencyDeadlock {
+        passes: usize,
+        pending: Vec<K>,
+        changing: Vec<K>,
+    },
+    Oscillation {
+        passes: usize,
+        pending: Vec<K>,
+        changing: Vec<K>,
+    },
+    SafetyBound {
+        passes: usize,
+        pending: Vec<K>,
+        changing: Vec<K>,
+    },
 }
 
 fn solve_fixed_point<K, V, F>(
@@ -338,10 +351,22 @@ where
             })
             .collect::<Vec<_>>()
     };
+    let changed_keys = |before: &BTreeMap<K, WorkingOutcome<K, V>>,
+                        after: &BTreeMap<K, WorkingOutcome<K, V>>| {
+        before
+            .keys()
+            .chain(after.keys())
+            .cloned()
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .filter(|key| before.get(key) != after.get(key))
+            .collect::<Vec<_>>()
+    };
     if max_passes == 0 {
         return Err(FixedPointFailure::SafetyBound {
             passes: 0,
             pending: pending_keys(&state),
+            changing: Vec::new(),
         });
     }
     let mut seen = Vec::new();
@@ -355,18 +380,21 @@ where
             return Err(FixedPointFailure::DependencyDeadlock {
                 passes: pass,
                 pending,
+                changing: Vec::new(),
             });
         }
         if seen.iter().any(|previous| previous == &next) {
             return Err(FixedPointFailure::Oscillation {
                 passes: pass,
                 pending: pending_keys(&next),
+                changing: changed_keys(&state, &next),
             });
         }
         if pass == max_passes {
             return Err(FixedPointFailure::SafetyBound {
                 passes: pass,
                 pending: pending_keys(&next),
+                changing: changed_keys(&state, &next),
             });
         }
         seen.push(next.clone());
@@ -437,45 +465,72 @@ impl<'a> ResolutionDb<'a> {
         self,
         max_passes: usize,
     ) -> Result<ResolutionState, ResolutionFailure> {
-        let pending_references = authored_reference_ids(self.graph);
-        let initial = BTreeMap::from([(
-            "authored-reference-resolution",
-            WorkingOutcome::Pending {
-                dependencies: Vec::new(),
-            },
-        )]);
-        let result = solve_fixed_point(initial, max_passes, |_| {
-            BTreeMap::from([(
-                "authored-reference-resolution",
-                WorkingOutcome::Final(self.solve_once()),
-            )])
+        let references = authored_reference_ids(self.graph);
+        let initial = references
+            .iter()
+            .map(|reference| {
+                (
+                    reference.clone(),
+                    WorkingOutcome::Pending {
+                        dependencies: reference_dependencies(self.graph, reference),
+                    },
+                )
+            })
+            .collect::<BTreeMap<_, _>>();
+        let result = solve_fixed_point(initial, max_passes, |previous| {
+            let solved = self.solve_once();
+            // Keep unresolved slots in the working state.  Omitting a pending key would make
+            // the generic fixed-point driver mistake a partial pass for convergence.
+            let mut next = previous.clone();
+            for fact in solved.facts() {
+                let ready = previous
+                    .get(&fact.reference)
+                    .is_some_and(|outcome| match outcome {
+                        WorkingOutcome::Final(_) => true,
+                        WorkingOutcome::Pending { dependencies } => {
+                            dependencies.iter().all(|dependency| {
+                                matches!(previous.get(dependency), Some(WorkingOutcome::Final(_)))
+                            })
+                        }
+                    });
+                if ready {
+                    next.insert(
+                        fact.reference.clone(),
+                        WorkingOutcome::Final(fact.outcome.clone()),
+                    );
+                }
+            }
+            next
         });
         match result {
-            Ok(result) => match result.into_values().next() {
-                Some(WorkingOutcome::Final(state)) => Ok(state),
-                _ => unreachable!("a converged semantic pass must be final"),
-            },
-            Err(FixedPointFailure::DependencyDeadlock { passes, .. }) => {
-                Err(ResolutionFailure::DependencyDeadlock {
-                    passes,
-                    changing_families: vec!["authored-reference-resolution".to_string()],
-                    pending_references,
-                })
-            }
-            Err(FixedPointFailure::Oscillation { passes, .. }) => {
-                Err(ResolutionFailure::Oscillation {
-                    passes,
-                    changing_families: vec!["authored-reference-resolution".to_string()],
-                    pending_references,
-                })
-            }
-            Err(FixedPointFailure::SafetyBound { passes, .. }) => {
-                Err(ResolutionFailure::SafetyBound {
-                    passes,
-                    changing_families: vec!["authored-reference-resolution".to_string()],
-                    pending_references,
-                })
-            }
+            Ok(_) => Ok(self.solve_once()),
+            Err(FixedPointFailure::DependencyDeadlock {
+                passes,
+                pending,
+                changing,
+            }) => Err(ResolutionFailure::DependencyDeadlock {
+                passes,
+                changing_families: reference_families(&changing),
+                pending_references: pending,
+            }),
+            Err(FixedPointFailure::Oscillation {
+                passes,
+                pending,
+                changing,
+            }) => Err(ResolutionFailure::Oscillation {
+                passes,
+                changing_families: reference_families(&changing),
+                pending_references: pending,
+            }),
+            Err(FixedPointFailure::SafetyBound {
+                passes,
+                pending,
+                changing,
+            }) => Err(ResolutionFailure::SafetyBound {
+                passes,
+                changing_families: reference_families(&changing),
+                pending_references: pending,
+            }),
         }
     }
 
@@ -518,6 +573,7 @@ impl<'a> ResolutionDb<'a> {
                             target: target.clone(),
                             kind: relationship_kind,
                             provenance: ResolutionProvenance::Authored,
+                            authored_reference: Some(reference.clone()),
                             expression: None,
                         });
                     }
@@ -572,18 +628,39 @@ impl<'a> ResolutionDb<'a> {
                     });
                 }
             }
-            resolve_expression_relationships(self.graph, &node, &mut facts, &mut relationships);
+        }
+        let mut expression_relationships = self
+            .graph
+            .declared_expression_relationships
+            .iter()
+            .collect::<Vec<_>>();
+        expression_relationships.sort_by(|left, right| {
+            left.owner
+                .cmp(&right.owner)
+                .then_with(|| left.authored_ordinal.cmp(&right.authored_ordinal))
+                .then_with(|| {
+                    expression_range_order(Some(&left.relationship))
+                        .cmp(&expression_range_order(Some(&right.relationship)))
+                })
+        });
+        for record in expression_relationships {
+            resolve_expression_relationship(self.graph, record, &mut facts, &mut relationships);
         }
         derive_implied_relationships(self.graph, &mut relationships);
         derive_case_subject_relationships(self.graph, &facts, &mut relationships);
 
         facts.sort_by(|left, right| left.reference.cmp(&right.reference));
         relationships.sort_by(|left, right| {
-            (&left.source, &left.kind, &left.target).cmp(&(
-                &right.source,
-                &right.kind,
-                &right.target,
-            ))
+            (&left.source, &left.kind, &left.target)
+                .cmp(&(&right.source, &right.kind, &right.target))
+                .then_with(|| left.authored_reference.cmp(&right.authored_reference))
+                .then_with(|| {
+                    provenance_order(left.provenance).cmp(&provenance_order(right.provenance))
+                })
+                .then_with(|| {
+                    expression_range_order(left.expression.as_ref())
+                        .cmp(&expression_range_order(right.expression.as_ref()))
+                })
         });
         relationships.dedup();
         ResolutionState {
@@ -593,104 +670,103 @@ impl<'a> ResolutionDb<'a> {
     }
 }
 
-fn resolve_expression_relationships(
+fn resolve_expression_relationship(
     graph: &SemanticGraph,
-    owner: &SemanticNode,
+    record: &DeclaredExpressionRelationshipRecord,
     facts: &mut Vec<ResolutionFact>,
     relationships: &mut Vec<ResolvedRelationship>,
 ) {
-    for (ordinal, expression) in owner
-        .declared_facts
-        .expression_relationships
-        .iter()
-        .enumerate()
-    {
-        let (source_kind, target_kind) = match expression.kind {
-            RelationshipKind::Connection => (
-                ReferenceKind::ConnectionSource,
-                ReferenceKind::ConnectionTarget,
-            ),
-            RelationshipKind::Bind => (ReferenceKind::BindSource, ReferenceKind::BindTarget),
-            RelationshipKind::Satisfy => {
-                (ReferenceKind::SatisfySource, ReferenceKind::SatisfyTarget)
-            }
-            RelationshipKind::Allocate => {
-                (ReferenceKind::AllocateSource, ReferenceKind::AllocateTarget)
-            }
-            RelationshipKind::Flow => (ReferenceKind::FlowSource, ReferenceKind::FlowTarget),
-            RelationshipKind::SuccessionFlow => (
-                ReferenceKind::SuccessionFlowSource,
-                ReferenceKind::SuccessionFlowTarget,
-            ),
-            RelationshipKind::Perform => {
-                (ReferenceKind::PerformSource, ReferenceKind::PerformTarget)
-            }
-            RelationshipKind::Transition | RelationshipKind::InitialState => (
-                ReferenceKind::TransitionSource,
-                ReferenceKind::TransitionTarget,
-            ),
-            RelationshipKind::Reference => (
-                ReferenceKind::ReferenceSource,
-                ReferenceKind::ReferenceTarget,
-            ),
-            RelationshipKind::Dependency => (
-                ReferenceKind::DependencySource,
-                ReferenceKind::DependencyTarget,
-            ),
-            RelationshipKind::Derivation => (
-                ReferenceKind::DerivationSource,
-                ReferenceKind::DerivationTarget,
-            ),
-            _ => continue,
-        };
-        let source_outcome =
-            resolve_expression_endpoint_outcome(graph, owner, &expression.source_expression);
-        let target_outcome =
-            resolve_expression_endpoint_outcome(graph, owner, &expression.target_expression);
-        facts.push(ResolutionFact {
-            reference: AuthoredReferenceId {
-                source: owner.id.clone(),
-                kind: source_kind,
-                authored_ordinal: ordinal as u32,
-            },
-            authored_target: expression.source_expression.clone(),
-            authored_range: Some(expression.source_range),
-            outcome: source_outcome.clone(),
-        });
-        facts.push(ResolutionFact {
-            reference: AuthoredReferenceId {
-                source: owner.id.clone(),
-                kind: target_kind,
-                authored_ordinal: ordinal as u32,
-            },
-            authored_target: expression.target_expression.clone(),
-            authored_range: expression.target_range,
-            outcome: target_outcome.clone(),
-        });
-        if let (
-            ResolutionOutcome::Resolved { target: source },
-            ResolutionOutcome::Resolved { target },
-        ) = (source_outcome, target_outcome)
-        {
-            relationships.push(ResolvedRelationship {
-                source,
-                target,
-                kind: expression.kind.clone(),
-                provenance: ResolutionProvenance::Authored,
-                expression: Some(expression.clone()),
-            });
+    let owner = graph.get_node(&record.owner);
+    let expression = &record.relationship;
+    let (source_kind, target_kind) = match expression.kind {
+        RelationshipKind::Connection => (
+            ReferenceKind::ConnectionSource,
+            ReferenceKind::ConnectionTarget,
+        ),
+        RelationshipKind::Bind => (ReferenceKind::BindSource, ReferenceKind::BindTarget),
+        RelationshipKind::Satisfy => (ReferenceKind::SatisfySource, ReferenceKind::SatisfyTarget),
+        RelationshipKind::Allocate => {
+            (ReferenceKind::AllocateSource, ReferenceKind::AllocateTarget)
         }
+        RelationshipKind::Flow => (ReferenceKind::FlowSource, ReferenceKind::FlowTarget),
+        RelationshipKind::SuccessionFlow => (
+            ReferenceKind::SuccessionFlowSource,
+            ReferenceKind::SuccessionFlowTarget,
+        ),
+        RelationshipKind::Perform => (ReferenceKind::PerformSource, ReferenceKind::PerformTarget),
+        RelationshipKind::Transition | RelationshipKind::InitialState => (
+            ReferenceKind::TransitionSource,
+            ReferenceKind::TransitionTarget,
+        ),
+        RelationshipKind::Reference => (
+            ReferenceKind::ReferenceSource,
+            ReferenceKind::ReferenceTarget,
+        ),
+        RelationshipKind::Dependency => (
+            ReferenceKind::DependencySource,
+            ReferenceKind::DependencyTarget,
+        ),
+        RelationshipKind::Derivation => (
+            ReferenceKind::DerivationSource,
+            ReferenceKind::DerivationTarget,
+        ),
+        _ => return,
+    };
+    let source_outcome =
+        resolve_expression_endpoint_outcome(graph, owner, &expression.source_expression);
+    let target_outcome =
+        resolve_expression_endpoint_outcome(graph, owner, &expression.target_expression);
+    facts.push(ResolutionFact {
+        reference: AuthoredReferenceId {
+            source: record.owner.clone(),
+            kind: source_kind,
+            authored_ordinal: record.authored_ordinal,
+        },
+        authored_target: expression.source_expression.clone(),
+        authored_range: Some(expression.source_range),
+        outcome: source_outcome.clone(),
+    });
+    facts.push(ResolutionFact {
+        reference: AuthoredReferenceId {
+            source: record.owner.clone(),
+            kind: target_kind,
+            authored_ordinal: record.authored_ordinal,
+        },
+        authored_target: expression.target_expression.clone(),
+        authored_range: expression.target_range,
+        outcome: target_outcome.clone(),
+    });
+    if let (
+        ResolutionOutcome::Resolved { target: source },
+        ResolutionOutcome::Resolved { target },
+    ) = (source_outcome, target_outcome)
+    {
+        relationships.push(ResolvedRelationship {
+            source,
+            target,
+            kind: expression.kind.clone(),
+            provenance: ResolutionProvenance::Authored,
+            authored_reference: Some(AuthoredReferenceId {
+                source: record.owner.clone(),
+                kind: source_kind,
+                authored_ordinal: record.authored_ordinal,
+            }),
+            expression: Some(expression.clone()),
+        });
     }
 }
 
 fn resolve_expression_endpoint_outcome(
     graph: &SemanticGraph,
-    owner: &SemanticNode,
+    owner: Option<&SemanticNode>,
     authored: &str,
 ) -> ResolutionOutcome {
     // Endpoint expressions are authored by the containing scope itself, whereas a feature
     // typing reference is authored by the child node. Start lookup at the scope owner so
     // `connect left to right` can see sibling members without falling back to a root search.
+    let Some(owner) = owner else {
+        return ResolutionOutcome::Unresolved;
+    };
     let mut context = owner.clone();
     context.parent_id = Some(owner.id.clone());
     let mut candidates = explicit_name_candidates(graph, &context, authored);
@@ -747,6 +823,7 @@ fn derive_implied_relationships(
                 provenance: ResolutionProvenance::Implied(
                     ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
                 ),
+                authored_reference: None,
                 expression: None,
             });
         }
@@ -804,6 +881,7 @@ fn derive_case_subject_relationships(
                         provenance: ResolutionProvenance::Derived(
                             DerivedRelationshipRule::CaseSubjectFromTypedSubject,
                         ),
+                        authored_reference: None,
                         expression: None,
                     });
                 }
@@ -840,9 +918,130 @@ fn authored_reference_ids(graph: &SemanticGraph) -> Vec<AuthoredReferenceId> {
                 }
             }));
         }
+        if let Some(import) = node
+            .declared_facts
+            .membership
+            .as_ref()
+            .and_then(|membership| membership.import.as_ref())
+        {
+            let kind = match import.shape {
+                crate::semantic::model::ImportShape::Membership => ReferenceKind::MembershipImport,
+                crate::semantic::model::ImportShape::Namespace
+                | crate::semantic::model::ImportShape::FilteredNamespace => {
+                    ReferenceKind::NamespaceImport
+                }
+            };
+            references.push(AuthoredReferenceId {
+                source: node.id.clone(),
+                kind,
+                authored_ordinal: 0,
+            });
+        }
+    }
+    for record in &graph.declared_expression_relationships {
+        if let Some((source_kind, target_kind)) =
+            expression_reference_kinds(record.relationship.kind.clone())
+        {
+            references.push(AuthoredReferenceId {
+                source: record.owner.clone(),
+                kind: source_kind,
+                authored_ordinal: record.authored_ordinal,
+            });
+            references.push(AuthoredReferenceId {
+                source: record.owner.clone(),
+                kind: target_kind,
+                authored_ordinal: record.authored_ordinal,
+            });
+        }
     }
     references.sort();
+    references.dedup();
     references
+}
+
+fn expression_reference_kinds(kind: RelationshipKind) -> Option<(ReferenceKind, ReferenceKind)> {
+    Some(match kind {
+        RelationshipKind::Connection => (
+            ReferenceKind::ConnectionSource,
+            ReferenceKind::ConnectionTarget,
+        ),
+        RelationshipKind::Bind => (ReferenceKind::BindSource, ReferenceKind::BindTarget),
+        RelationshipKind::Satisfy => (ReferenceKind::SatisfySource, ReferenceKind::SatisfyTarget),
+        RelationshipKind::Allocate => {
+            (ReferenceKind::AllocateSource, ReferenceKind::AllocateTarget)
+        }
+        RelationshipKind::Flow => (ReferenceKind::FlowSource, ReferenceKind::FlowTarget),
+        RelationshipKind::SuccessionFlow => (
+            ReferenceKind::SuccessionFlowSource,
+            ReferenceKind::SuccessionFlowTarget,
+        ),
+        RelationshipKind::Perform => (ReferenceKind::PerformSource, ReferenceKind::PerformTarget),
+        RelationshipKind::Transition | RelationshipKind::InitialState => (
+            ReferenceKind::TransitionSource,
+            ReferenceKind::TransitionTarget,
+        ),
+        RelationshipKind::Reference => (
+            ReferenceKind::ReferenceSource,
+            ReferenceKind::ReferenceTarget,
+        ),
+        RelationshipKind::Dependency => (
+            ReferenceKind::DependencySource,
+            ReferenceKind::DependencyTarget,
+        ),
+        RelationshipKind::Derivation => (
+            ReferenceKind::DerivationSource,
+            ReferenceKind::DerivationTarget,
+        ),
+        _ => return None,
+    })
+}
+
+fn reference_dependencies(
+    graph: &SemanticGraph,
+    reference: &AuthoredReferenceId,
+) -> Vec<AuthoredReferenceId> {
+    let Some(node) = graph.get_node(&reference.source) else {
+        return Vec::new();
+    };
+    let owner = node
+        .parent_id
+        .as_ref()
+        .and_then(|parent| graph.get_node(parent))
+        .unwrap_or(node);
+    if matches!(
+        reference.kind,
+        ReferenceKind::FeatureTyping
+            | ReferenceKind::ConnectionSource
+            | ReferenceKind::ConnectionTarget
+            | ReferenceKind::BindSource
+            | ReferenceKind::BindTarget
+            | ReferenceKind::FlowSource
+            | ReferenceKind::FlowTarget
+    ) {
+        return owner
+            .declared_facts
+            .relationships
+            .specializes
+            .iter()
+            .enumerate()
+            .map(|(ordinal, _)| AuthoredReferenceId {
+                source: owner.id.clone(),
+                kind: ReferenceKind::Specialization,
+                authored_ordinal: ordinal as u32,
+            })
+            .collect();
+    }
+    Vec::new()
+}
+
+fn reference_families(references: &[AuthoredReferenceId]) -> Vec<String> {
+    let mut families = references
+        .iter()
+        .map(|reference| format!("{:?}", reference.kind))
+        .collect::<Vec<_>>();
+    families.sort();
+    families.dedup();
+    families
 }
 
 fn explicit_name_candidates(
@@ -982,6 +1181,27 @@ fn node_id_order(left: &NodeId, right: &NodeId) -> std::cmp::Ordering {
         .as_str()
         .cmp(right.uri.as_str())
         .then_with(|| left.qualified_name.cmp(&right.qualified_name))
+}
+
+fn provenance_order(provenance: ResolutionProvenance) -> u8 {
+    match provenance {
+        ResolutionProvenance::Authored => 0,
+        ResolutionProvenance::Implied(_) => 1,
+        ResolutionProvenance::Derived(_) => 2,
+    }
+}
+
+fn expression_range_order(
+    expression: Option<&DeclaredExpressionRelationship>,
+) -> Option<(u32, u32, u32, u32)> {
+    expression.map(|expression| {
+        (
+            expression.source_range.start.line,
+            expression.source_range.start.character,
+            expression.source_range.end.line,
+            expression.source_range.end.character,
+        )
+    })
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

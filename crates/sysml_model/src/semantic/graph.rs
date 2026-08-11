@@ -12,14 +12,14 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use url::Url;
 
 use crate::semantic::model::{
-    node_matches_simple_name, ConnectStatementDetail, DeclaredFeatureValueKind,
-    DeclaredMembershipFacts, DerivedRelationshipResolution, EffectiveFeatureOwnership,
-    EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind, EvaluationPublicationState,
-    ExpressionEvaluationQuery, ExpressionResultId, ExpressionResultRole,
-    FeatureOwnershipProvenance, ImpliedFeatureOwnership, ImpliedFeatureValueBinding,
-    ImpliedMultiplicity, ImpliedRelationshipRule, MembershipVisibilityProvenance,
-    NodeEvaluationFacts, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
-    SemanticNode, VisibilityKind,
+    node_matches_simple_name, ConnectStatementDetail, DeclaredExpressionRelationship,
+    DeclaredFeatureValueKind, DeclaredMembershipFacts, DerivedRelationshipResolution,
+    EffectiveFeatureOwnership, EffectiveMembershipVisibility, EffectiveSemanticFacts, ElementKind,
+    EvaluationPublicationState, ExpressionEvaluationQuery, ExpressionResultId,
+    ExpressionResultRole, FeatureOwnershipProvenance, ImpliedFeatureOwnership,
+    ImpliedFeatureValueBinding, ImpliedMultiplicity, ImpliedRelationshipRule,
+    MembershipVisibilityProvenance, NodeEvaluationFacts, NodeId, RelationshipKind,
+    RelationshipProvenance, SemanticEdge, SemanticNode, VisibilityKind,
 };
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
@@ -68,6 +68,11 @@ pub struct SemanticGraphData {
     #[serde(skip)]
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
+    /// Parser-backed authored endpoint expressions captured before any relationship linking.
+    /// `owner` is the explicit semantic scope identity; a synthetic `@root` owner is used for
+    /// a document-level expression when the parser provides no enclosing declaration.
+    #[serde(default)]
+    pub declared_expression_relationships: Vec<DeclaredExpressionRelationshipRecord>,
     pub pending_relationships: Vec<PendingRelationship>,
     /// Build-local typed handoff from an AST membership adapter to its immediately following
     /// node materialization. It is never serialized or published as an attribute projection.
@@ -141,6 +146,7 @@ impl Clone for SemanticGraphData {
             standard_library_uris: self.standard_library_uris.clone(),
             children_by_parent_id: self.children_by_parent_id.clone(),
             pending_expression_relationships: self.pending_expression_relationships.clone(),
+            declared_expression_relationships: self.declared_expression_relationships.clone(),
             pending_relationships: self.pending_relationships.clone(),
             // A cloned/published graph must never inherit an unfinished builder handoff.
             pending_declared_membership_facts: HashMap::new(),
@@ -623,6 +629,13 @@ pub struct PendingExpressionRelationship {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeclaredExpressionRelationshipRecord {
+    pub owner: NodeId,
+    pub authored_ordinal: u32,
+    pub relationship: DeclaredExpressionRelationship,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PendingRelationship {
     #[serde(serialize_with = "serialize_url", deserialize_with = "deserialize_url")]
     pub uri: Url,
@@ -699,6 +712,7 @@ impl SemanticGraphData {
             standard_library_uris: HashSet::new(),
             children_by_parent_id: HashMap::new(),
             pending_expression_relationships: Vec::new(),
+            declared_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
             pending_declared_membership_facts: HashMap::new(),
             effective_facts_by_node_id: HashMap::new(),
@@ -863,6 +877,8 @@ impl SemanticGraphData {
         // canonical document is removed, any replacement must be admitted again through the
         // source-kind-aware build boundary before it can satisfy a universal relationship.
         self.standard_library_uris.remove(uri);
+        self.declared_expression_relationships
+            .retain(|record| &record.owner.uri != uri);
         let Some(node_ids) = self.nodes_by_uri.remove(uri) else {
             self.clear_import_lookup_cache();
             return;
@@ -947,6 +963,8 @@ impl SemanticGraphData {
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships
             .extend(other.pending_expression_relationships.iter().cloned());
+        self.declared_expression_relationships
+            .extend(other.declared_expression_relationships.iter().cloned());
         for (id, node) in other.iter_nodes() {
             if let Some(shadowed) = shadowed_packages {
                 let exact_name_exists = self
