@@ -7,6 +7,15 @@ type=file
 ~~~sysml
 part def Vehicle { }
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "sysml_part_def.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwPart,KwDef,Ident,OpenCurly,CloseCurly,EndOfFile,
@@ -16,11 +25,6 @@ KwPart,KwDef,Ident,OpenCurly,CloseCurly,EndOfFile,
 (root
   (part_def 'Vehicle'))
 ~~~
-# FORMAT
-~~~sysml
-part def Vehicle { }
-
-~~~
 # EXPECTED
 ~~~
 NIL
@@ -28,6 +32,11 @@ NIL
 # PROBLEMS
 ~~~
 NIL
+~~~
+# FORMAT
+~~~sysml
+part def Vehicle { }
+
 ~~~
 # SMG
 ~~~
@@ -41,15 +50,6 @@ NIL
   (relationships
   )
   (evaluation
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "sysml_part_def.md"
-    (diagnostics
-    )
   )
 )
 ~~~

@@ -9,6 +9,15 @@ semantic_graph_skip_reason=standalone KerML feature declarations are opaque pars
 ~~~sysml
 feature x : Integer;
 ~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "feature_typing.md"
+    (diagnostics
+    )
+  )
+)
+~~~
 # TOKENS
 ~~~zig
 KwFeature,Ident,Colon,Ident,Semicolon,EndOfFile,
@@ -18,11 +27,6 @@ KwFeature,Ident,Colon,Ident,Semicolon,EndOfFile,
 (root
   (feature_def 'x' : 'Integer'))
 ~~~
-# FORMAT
-~~~sysml
-feature x : Integer;
-
-~~~
 # EXPECTED
 ~~~
 semantic.unresolved_name 'Integer'
@@ -30,6 +34,11 @@ semantic.unresolved_name 'Integer'
 # PROBLEMS
 ~~~
 semantic.unresolved_name 'Integer'
+~~~
+# FORMAT
+~~~sysml
+feature x : Integer;
+
 ~~~
 # SMG
 ~~~
@@ -42,15 +51,6 @@ semantic.unresolved_name 'Integer'
   (relationships
   )
   (evaluation
-  )
-)
-~~~
-# DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "feature_typing.md"
-    (diagnostics
-    )
   )
 )
 ~~~
