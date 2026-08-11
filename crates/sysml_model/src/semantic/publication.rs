@@ -1374,6 +1374,20 @@ impl<'a> ResolutionView<'a> {
     pub fn node(&self, id: &NodeId) -> Option<&'a SemanticNode> {
         self.model.structural_graph.get_node(id)
     }
+
+    /// Visits settled authored facts without exposing resolver storage or indexes.
+    pub fn visit_facts(&self, mut visitor: impl FnMut(&ResolutionFact)) {
+        for fact in &self.model.resolution.facts {
+            visitor(fact);
+        }
+    }
+
+    /// Visits settled relationships without exposing resolver storage or indexes.
+    pub fn visit_relationships(&self, mut visitor: impl FnMut(&ResolvedRelationship)) {
+        for relationship in &self.model.resolution.relationships {
+            visitor(relationship);
+        }
+    }
 }
 
 /// Build one immutable semantic publication.  Construction strategy affects only parsing and
