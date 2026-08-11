@@ -44,7 +44,7 @@ pub use semantic::library_loader::{
 };
 pub use semantic::model::{
     ConnectStatementDetail, DeclaredExpression, ElementKind, FlowStatementDetail, NodeId,
-    RelationshipKind, SemanticEdge, SemanticNode,
+    RelationshipKind, SemanticEdge, SemanticNode, TransitionEndpointFacts,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,

@@ -73,36 +73,25 @@ fn state_def_has_initial_transition(
         node.element_kind == sysml_model::ElementKind::Transition
             && !is_synthetic(node)
             && node
-                .attributes
-                .get("isInitial")
-                .and_then(|v| v.as_bool())
-                .unwrap_or(false)
+                .declared_facts
+                .transition_endpoints
+                .as_ref()
+                .is_some_and(|endpoints| endpoints.is_initial)
             && state_def_contains_node(graph, state_def_qn, node)
     })
 }
 
 fn state_def_has_final_indicator(graph: &SemanticGraph, state_def: &SemanticNode) -> bool {
-    let final_state_count = state_def
-        .attributes
-        .get("finalStateCount")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(0);
-    if final_state_count > 0 {
-        return true;
-    }
-    if state_def
-        .attributes
-        .get("doneTransitionCount")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(0)
-        > 0
-    {
-        return true;
-    }
-    graph
-        .children_of(state_def)
-        .into_iter()
-        .any(|child| child.element_kind == sysml_model::ElementKind::FinalState)
+    graph.children_of(state_def).into_iter().any(|child| {
+        child.element_kind == sysml_model::ElementKind::FinalState
+            || (child.element_kind == sysml_model::ElementKind::Transition
+                && !is_synthetic(child)
+                && child
+                    .declared_facts
+                    .transition_endpoints
+                    .as_ref()
+                    .is_some_and(|endpoints| endpoints.target_is_done))
+    })
 }
 
 fn state_def_is_cyclic(graph: &SemanticGraph, state_def: &SemanticNode) -> bool {
@@ -111,24 +100,14 @@ fn state_def_is_cyclic(graph: &SemanticGraph, state_def: &SemanticNode) -> bool 
         if child.element_kind != sysml_model::ElementKind::Transition || is_synthetic(child) {
             continue;
         }
-        let Some(source) = child
-            .attributes
-            .get("source")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())
-        else {
+        let Some(endpoints) = child.declared_facts.transition_endpoints.as_ref() else {
             continue;
         };
-        let Some(target) = child
-            .attributes
-            .get("target")
-            .and_then(|value| value.as_str())
-            .map(str::trim)
-            .filter(|value| !value.is_empty())
-        else {
+        let source = endpoints.source_expression.trim();
+        let target = endpoints.target_expression.trim();
+        if source.is_empty() || target.is_empty() {
             continue;
-        };
+        }
         adjacency
             .entry(source.to_string())
             .or_default()
@@ -250,14 +229,11 @@ pub(crate) fn collect_behavior_conformance_diagnostics(
         if node.element_kind != sysml_model::ElementKind::Transition || is_synthetic(node) {
             continue;
         }
-        let Some(source_ref) = node.attributes.get("source").and_then(|v| v.as_str()) else {
+        let Some(endpoints) = node.declared_facts.transition_endpoints.as_ref() else {
             continue;
         };
-        let Some(target_ref) = node.attributes.get("target").and_then(|v| v.as_str()) else {
-            continue;
-        };
-        let source_node = resolve_qualified_endpoint(graph, uri, source_ref);
-        let target_node = resolve_qualified_endpoint(graph, uri, target_ref);
+        let source_node = resolve_qualified_endpoint(graph, uri, &endpoints.source_expression);
+        let target_node = resolve_qualified_endpoint(graph, uri, &endpoints.target_expression);
         let (Some(source_node), Some(target_node)) = (source_node, target_node) else {
             continue;
         };
