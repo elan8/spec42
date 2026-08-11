@@ -34,17 +34,27 @@ pub(super) fn add_end_decl(
     let range = span_to_range(&wrap.span);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &n.name, "interface end");
     let mut attrs = HashMap::new();
-    if subsetting_target(n.references.as_deref()).is_none() {
+    if let Some(reference_target) = subsetting_target(n.references.as_deref()) {
         // spec42#1/#2: `::>`/`references` names a reference (KerML `ReferenceSubsetting`), not a
         // type. Previously this always also set `portType`, which feeds the generic
         // type-resolution diagnostics/edges (`unresolved_type_reference`,
         // `add_typing_edge_if_exists`) and misfired treating the referenced feature's name as an
-        // unresolved type. The reference case is handled below by
-        // `attach_declared_subsetting_family` into the typed `reference_subsetting` fact, which
+        // unresolved type. Set `referencesFeature` instead, which
         // `link_subsetting_family_edges_for_node` already resolves into a proper
         // `ReferenceSubsetting` edge the same way attribute/occurrence usages' `references`
         // clauses do.
+        attrs.insert(
+            "referencesFeature".to_string(),
+            serde_json::json!(reference_target),
+        );
+    } else {
         attrs.insert("portType".to_string(), serde_json::json!(&n.type_name));
+    }
+    if let Some(target) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(target));
+    }
+    if let Some(target) = subsetting_target(n.crosses.as_deref()) {
+        attrs.insert("crossesFeature".to_string(), serde_json::json!(target));
     }
     add_node_and_recurse(
         g,

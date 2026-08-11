@@ -135,14 +135,10 @@ fn attribute_redefining_a_port_is_classified_as_port_in_every_containing_context
     for (path, src) in contexts {
         let doc = workspace_doc(path, src);
         let (graph, _parsed) = build_semantic_graph_from_documents(&[doc]).expect("graph");
-        let node = graph.nodes_named("p").into_iter().find(|node| {
-            node.declared_facts
-                .relationships
-                .redefinition
-                .first()
-                .map(|target| target.reference.as_str())
-                == Some("p")
-        });
+        let node = graph
+            .nodes_named("p")
+            .into_iter()
+            .find(|node| node.attributes.get("redefines").and_then(|v| v.as_str()) == Some("p"));
         let node = node.unwrap_or_else(|| {
             panic!("expected an attribute usage redefining `p` to exist in context {path}")
         });
@@ -181,11 +177,9 @@ fn unnamed_redefining_usage_gets_effective_name_per_spec_7_6_5() {
         );
     assert_eq!(
         redefining
-            .declared_facts
-            .relationships
-            .redefinition
-            .first()
-            .map(|target| target.reference.as_str()),
+            .attributes
+            .get("redefines")
+            .and_then(|v| v.as_str()),
         Some("cylinders")
     );
     assert_eq!(
@@ -229,12 +223,7 @@ fn anonymous_item_redefinition_gets_effective_name_and_typing_in_part_def_body()
             "expected the redefining `shape` item usage to be addressable by its effective name",
         );
     assert_eq!(
-        shape
-            .declared_facts
-            .relationships
-            .redefinition
-            .first()
-            .map(|target| target.reference.as_str()),
+        shape.attributes.get("redefines").and_then(|v| v.as_str()),
         Some("shape")
     );
     assert!(
@@ -368,14 +357,12 @@ fn requirement_usage_subsets_feature_is_preserved_in_every_containing_context() 
                 panic!("expected requirement usage `r2` to exist in context {path}")
             });
         assert_eq!(
-            node.declared_facts
-                .relationships
-                .subsetting
-                .first()
-                .map(|target| target.reference.as_str()),
+            node.attributes
+                .get("subsetsFeature")
+                .and_then(|v| v.as_str()),
             Some("r1"),
-            "expected `r2` to keep a subsetting fact to \"r1\" in context {path}, got {:#?}",
-            node.declared_facts.relationships.subsetting
+            "expected `r2` to keep subsetsFeature=\"r1\" in context {path}, got {:#?}",
+            node.attributes
         );
     }
 }

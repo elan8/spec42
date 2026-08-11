@@ -39,12 +39,7 @@ fn standalone_rendering_usage_captures_column_view_in_declaration_order() {
     assert_eq!(columns.len(), 1, "expected exactly one columnView child");
     let column = columns[0];
     assert_eq!(
-        column
-            .declared_facts
-            .relationships
-            .redefinition
-            .first()
-            .map(|target| target.reference.as_str()),
+        column.attributes.get("redefines").and_then(|v| v.as_str()),
         Some("columnView")
     );
     assert_eq!(

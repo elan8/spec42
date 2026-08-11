@@ -254,6 +254,9 @@ impl GeneratorModelView {
             .parent_of(node)
             .map(|parent| self.expose_node(parent));
         let projected = self.projected(node);
+        let attributes = projected
+            .map(|value| &value.attributes)
+            .unwrap_or(&node.attributes);
         let properties = projected.and_then(|value| value.facts.feature_properties.as_ref());
         let declared_properties = node.declared_facts.feature_properties.as_ref();
         let ownership = self
@@ -289,7 +292,10 @@ impl GeneratorModelView {
                 end_character: node.range.end.character,
             },
             definition: node.element_kind.is_definition(),
-            documentation: node.source_text.doc.clone(),
+            documentation: attributes
+                .get("doc")
+                .and_then(|value| value.as_str())
+                .map(str::to_owned),
             short_name: node.declared_facts.short_name.clone(),
             direction: properties
                 .and_then(|value| value.direction.clone())

@@ -467,7 +467,12 @@ pub(crate) fn collect_view_metadata_conformance_diagnostics(
         {
             continue;
         }
-        let language = node.source_text.language.as_deref().unwrap_or("").trim();
+        let language = node
+            .attributes
+            .get("language")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .trim();
         if !language.is_empty() {
             continue;
         }

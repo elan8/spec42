@@ -384,13 +384,10 @@ fn part_def_ref_action_materializes_as_reference_action_not_opaque() {
     assert!(facts.is_abstract);
     assert_eq!(
         performed
-            .declared_facts
-            .relationships
-            .subsetting
-            .iter()
-            .map(|target| target.reference.as_str())
-            .collect::<Vec<_>>(),
-        vec!["actions", "enactedPerformances"]
+            .attributes
+            .get("subsetsFeature")
+            .and_then(|v| v.as_str()),
+        Some("actions, enactedPerformances")
     );
     let nested_state = children
         .iter()

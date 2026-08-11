@@ -9,7 +9,7 @@ use sysml_v2_parser::ast::{
 use url::Url;
 
 use crate::semantic::ast_util::{
-    declared_expression, declared_feature_value, span_to_range, typing_targets,
+    declared_expression, declared_feature_value, span_to_range, subsetting_target, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -85,6 +85,9 @@ pub(super) fn build_from_occurrence_body_element(
                     "attributeType".to_string(),
                     serde_json::json!(typed_by.join(", ")),
                 );
+            }
+            if let Some(r) = subsetting_target(value.redefines.as_deref()) {
+                attrs.insert("redefines".to_string(), serde_json::json!(r));
             }
             add_node_and_recurse(
                 g,

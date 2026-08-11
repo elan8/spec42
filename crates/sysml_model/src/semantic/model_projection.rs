@@ -47,54 +47,6 @@ pub fn project_expression_text_attributes(
     }
 }
 
-/// Projects [`crate::semantic::model::SourceTextFacts`] onto a boundary DTO's legacy `attributes`
-/// JSON map, at the transport boundary only (see `AGENTS.md` "Boundary DTO modules remain
-/// explicitly allowed"). `SemanticNode` itself no longer carries `doc`/`text`/`language`/`keyword`
-/// as JSON (`UNIFY_CACHE_PROGRESS.md` chunk D/G); this keeps presentation consumers that read the
-/// projected DTO's `attributes` map (e.g. `general_view_fold`, `lsp_server`'s symbol projections)
-/// unchanged. `keyword` here is the hover-only spelling; the separate semantic
-/// `DeclaredSemanticFacts::modeled_keyword` fact is never projected through this map.
-pub fn project_source_text_attributes(
-    attributes: &mut HashMap<String, Value>,
-    node: &crate::semantic::model::SemanticNode,
-) {
-    let text = &node.source_text;
-    if let Some(value) = &text.doc {
-        attributes.insert("doc".to_string(), json!(value));
-    }
-    if let Some(value) = &text.body {
-        attributes.insert("body".to_string(), json!(value));
-    }
-    if let Some(value) = &text.text {
-        attributes.insert("text".to_string(), json!(value));
-    }
-    if let Some(value) = &text.language {
-        attributes.insert("language".to_string(), json!(value));
-    }
-    if let Some(value) = &text.keyword {
-        attributes.insert("keyword".to_string(), json!(value));
-    }
-}
-
-/// Projects the authored `redefines`/`subsetsFeature` display spelling from
-/// [`crate::semantic::model::DeclaredRelationshipFacts::redefinition`]/`subsetting` onto a
-/// boundary DTO's legacy `attributes` JSON map, at the transport boundary only (see `AGENTS.md`
-/// "Boundary DTO modules remain explicitly allowed"). `general_view_fold` reads these through the
-/// projected DTO rather than `SemanticNode.attributes` (`UNIFY_CACHE_PROGRESS.md` chunk G); the
-/// other relationship-target keys in the same family (`referencesFeature`, `crossesFeature`,
-/// `specializes`) have no attribute-map reader left and are not projected here.
-pub fn project_relationship_target_attributes(
-    attributes: &mut HashMap<String, Value>,
-    node: &crate::semantic::model::SemanticNode,
-) {
-    if let Some(target) = node.declared_facts.relationships.redefinition.first() {
-        attributes.insert("redefines".to_string(), json!(target.reference));
-    }
-    if let Some(target) = node.declared_facts.relationships.subsetting.first() {
-        attributes.insert("subsetsFeature".to_string(), json!(target.reference));
-    }
-}
-
 pub fn canonical_general_view_graph(
     graph: &SysmlGraphDto,
     _include_all_roots: bool,

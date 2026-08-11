@@ -12,7 +12,7 @@ use url::Url;
 use crate::semantic::ast_util::declared_expression;
 use crate::semantic::ast_util::{
     action_usage_feature_properties, declared_multiplicity, span_to_range,
-    state_usage_feature_properties, typing_targets,
+    state_usage_feature_properties, subsetting_target, subsetting_targets, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::DeclaredFeatureProperties;
@@ -659,7 +659,9 @@ fn add_action_body_decl(
         d.text.clone()
     };
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "action body decl");
-    let attrs = HashMap::new();
+    let mut attrs = HashMap::new();
+    attrs.insert("keyword".to_string(), serde_json::json!(&d.keyword));
+    attrs.insert("text".to_string(), serde_json::json!(&d.text));
     let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
@@ -733,6 +735,16 @@ fn action_usage_graph_attrs(usage: &ActionUsage) -> HashMap<String, serde_json::
     if let Some(ref m) = usage.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
+    let subset_targets = subsetting_targets(usage.subsets.as_deref());
+    if !subset_targets.is_empty() {
+        attrs.insert(
+            "subsetsFeature".to_string(),
+            serde_json::json!(subset_targets.join(", ")),
+        );
+    }
+    if let Some(r) = subsetting_target(usage.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
     attrs
 }
 
@@ -779,6 +791,16 @@ pub(super) fn state_usage_graph_attrs(usage: &StateUsage) -> HashMap<String, ser
     }
     if let Some(ref m) = usage.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    let subset_targets = subsetting_targets(usage.subsets.as_deref());
+    if !subset_targets.is_empty() {
+        attrs.insert(
+            "subsetsFeature".to_string(),
+            serde_json::json!(subset_targets.join(", ")),
+        );
+    }
+    if let Some(r) = subsetting_target(usage.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
     attrs
 }
@@ -1307,7 +1329,7 @@ pub(super) fn materialize_action_def(
 ) -> String {
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action def");
     let action_id = NodeId::new(uri, &qualified);
-    let attrs = HashMap::new();
+    let mut attrs = HashMap::new();
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&ad_node.identification)
     {
@@ -1323,6 +1345,12 @@ pub(super) fn materialize_action_def(
         .into_iter()
         .filter(|target| !target.trim().is_empty())
         .collect();
+    if !spec_targets.is_empty() {
+        attrs.insert(
+            "specializes".to_string(),
+            serde_json::json!(spec_targets.join(", ")),
+        );
+    }
     add_node_and_recurse(
         g,
         uri,

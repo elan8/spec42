@@ -12,7 +12,10 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use super::requirement_body::{import_member_label, walk_requirement_def_body};
-use super::{add_node_and_recurse, qualified_name_for_node, wire_def_specialization_edge};
+use super::{
+    add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
+    wire_def_specialization_edge,
+};
 use crate::semantic::ast_util::{
     declared_expression, identification_name, span_to_range, subsetting_target,
 };
@@ -187,6 +190,9 @@ fn add_view_column_node(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&cv.membership),
     );
+    if let Some(redefines) = redefines_name {
+        attrs.insert("redefines".to_string(), serde_json::json!(redefines));
+    }
     if let Some(ref multiplicity) = cv.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(multiplicity));
     }
@@ -345,7 +351,7 @@ pub(super) fn build_view_def(
     let name = identification_name(&vd_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "view def");
     let range = span_to_range(&vd_node.span);
-    let attrs = HashMap::new();
+    let mut attrs = HashMap::new();
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&vd_node.value.identification)
     {
@@ -355,6 +361,7 @@ pub(super) fn build_view_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vd_node.value.membership),
     );
+    insert_def_specialization_attr(&mut attrs, vd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -411,7 +418,7 @@ pub(super) fn build_viewpoint_def(
     let name = identification_name(&vpd_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "viewpoint def");
     let range = span_to_range(&vpd_node.span);
-    let attrs = HashMap::new();
+    let mut attrs = HashMap::new();
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&vpd_node.value.identification)
     {
@@ -421,6 +428,7 @@ pub(super) fn build_viewpoint_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vpd_node.value.membership),
     );
+    insert_def_specialization_attr(&mut attrs, vpd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,
@@ -461,7 +469,7 @@ pub(super) fn build_rendering_def(
     let name = identification_name(&rd_node.value.identification);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "rendering def");
     let range = span_to_range(&rd_node.span);
-    let attrs = HashMap::new();
+    let mut attrs = HashMap::new();
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&rd_node.value.identification)
     {
@@ -471,6 +479,7 @@ pub(super) fn build_rendering_def(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&rd_node.value.membership),
     );
+    insert_def_specialization_attr(&mut attrs, rd_node.value.specializes.as_deref());
     add_node_and_recurse(
         g,
         uri,

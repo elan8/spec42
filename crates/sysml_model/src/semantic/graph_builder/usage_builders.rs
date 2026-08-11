@@ -15,7 +15,8 @@ use url::Url;
 use crate::semantic::ast_util::{
     attribute_usage_feature_properties, connection_end_expression, declared_feature_value,
     declared_multiplicity, item_usage_feature_properties, occurrence_usage_feature_properties,
-    part_usage_feature_properties, span_to_range, subsetting_target, typing_targets,
+    part_usage_feature_properties, span_to_range, subsetting_target, subsetting_target_display,
+    typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
@@ -72,11 +73,20 @@ pub(super) fn materialize_part_usage(
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
     attrs.insert("ordered".to_string(), serde_json::json!(n.ordered));
-    if let Some((_, Some(ref v))) = n.subsets {
+    if let Some((ref feat, ref val)) = n.subsets {
         attrs.insert(
-            "subsetsValue".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(v)),
+            "subsetsFeature".to_string(),
+            serde_json::json!(subsetting_target_display(Some(&feat.value))),
         );
+        if let Some(v) = val {
+            attrs.insert(
+                "subsetsValue".to_string(),
+                serde_json::json!(expressions::expression_to_debug_string(v)),
+            );
+        }
+    }
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
     let value_expression = n
         .value
@@ -186,6 +196,18 @@ pub(super) fn materialize_attribute_usage(
             serde_json::json!(typed_by.join(", ")),
         );
     }
+    if let Some(s) = subsetting_target(n.subsets.as_deref()) {
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
+    }
+    if let Some(r) = subsetting_target(n.references.as_deref()) {
+        attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+    }
+    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
+        attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+    }
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
     add_node_and_recurse(
         g,
         uri,
@@ -254,6 +276,18 @@ pub(super) fn materialize_occurrence_usage(
     if let Some(ref portion_kind) = n.portion_kind {
         attrs.insert("portionKind".to_string(), serde_json::json!(portion_kind));
     }
+    if let Some(s) = subsetting_target(n.subsets.as_deref()) {
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
+    }
+    if let Some(r) = subsetting_target(n.references.as_deref()) {
+        attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+    }
+    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
+        attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+    }
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
+    }
     add_node_and_recurse(
         g,
         uri,
@@ -315,6 +349,9 @@ pub(super) fn materialize_requirement_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
+    if let Some(subsets) = subsetting_target(n.subsets.as_deref()) {
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
+    }
     attrs.insert("isAbstract".to_string(), serde_json::json!(n.is_abstract));
     add_node_and_recurse(
         g,
@@ -358,6 +395,9 @@ pub(super) fn materialize_item_usage(
     );
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
+    }
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
     add_node_and_recurse(
         g,
@@ -413,11 +453,17 @@ pub(super) fn materialize_connection_usage(
     let redefine_target = subsetting_target(n.redefines.as_deref());
     let name = declared_name.or(redefine_target).unwrap_or("_connection");
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "connection");
-    let attrs = HashMap::new();
+    let mut attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&n.membership),
     );
+    if let Some(subsets) = subsetting_target(n.subsets.as_deref()) {
+        attrs.insert("subsetsFeature".to_string(), serde_json::json!(subsets));
+    }
+    if let Some(redefines) = redefine_target {
+        attrs.insert("redefines".to_string(), serde_json::json!(redefines));
+    }
     add_node_and_recurse(
         g,
         uri,

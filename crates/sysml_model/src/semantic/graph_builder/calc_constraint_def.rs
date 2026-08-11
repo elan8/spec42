@@ -11,8 +11,8 @@ use sysml_v2_parser::Node;
 use url::Url;
 
 use super::{
-    add_node_and_recurse, qualified_name_for_node, resolve_addressable_name,
-    wire_def_specialization_edge,
+    add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
+    resolve_addressable_name, wire_def_specialization_edge,
 };
 use crate::semantic::ast_util::{declared_expression, identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
@@ -170,6 +170,7 @@ pub(super) fn build_constraint_def(
     );
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "constraint def");
     let expression = extract_constraint_metadata(uri, &c_node.value.body);
+    insert_def_specialization_attr(&mut attrs, c_node.value.specializes.as_deref());
     if let Some(short_name) =
         crate::semantic::ast_util::declared_short_name(&c_node.value.identification)
     {

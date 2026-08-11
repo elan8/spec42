@@ -415,8 +415,8 @@ pub(super) fn attach_declared_subsetting_family(
 }
 
 /// Attaches a `doc /* ... */` comment as an addressable Documentation child of the
-/// annotated element, wires an Annotation edge, and records the combined text on the
-/// annotated node's typed `source_text.doc` fact (multiple docs join with a blank line).
+/// annotated element, wires an Annotation edge, and keeps the convenience `doc`
+/// attribute text on the annotated node (multiple docs join with a blank line).
 pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: &str) {
     let text = text.trim();
     if text.is_empty() {
@@ -430,6 +430,11 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
         _ => text.to_string(),
     };
     if let Some(node) = g.get_node_mut(node_id) {
+        // The `doc` attribute is kept in the legacy display map for consumers not yet migrated
+        // off it (see `UNIFY_CACHE_PROGRESS.md` chunk G); `source_text.doc` is the canonical typed
+        // fact and the only value hover presentation reads.
+        node.attributes
+            .insert("doc".to_string(), serde_json::json!(combined));
         node.source_text.doc = Some(combined.clone());
     }
 
@@ -437,7 +442,8 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
     let container_prefix = Some(node_id.qualified_name.as_str());
     let qualified =
         qualified_name_for_node(g, uri, container_prefix, "_documentation", "documentation");
-    let attrs = HashMap::new();
+    let mut attrs = HashMap::new();
+    attrs.insert("body".to_string(), serde_json::json!(text));
     add_node_and_recurse(
         g,
         uri,
@@ -461,6 +467,23 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
             ConstructionOwner::DocumentConstruction,
         ),
     );
+}
+
+/// Inserts a `specializes` attribute on a def-kind node's attribute map, if present. SysML v2
+/// allows a comma-separated multi-target clause (`specializes A, B;`), so this joins every
+/// declared target for display -- the real per-target `Specializes` edges are wired separately by
+/// [`wire_def_specialization_edge`].
+pub(super) fn insert_def_specialization_attr(
+    attrs: &mut HashMap<String, serde_json::Value>,
+    specializes: Option<&TypingRelationship>,
+) {
+    let targets = typing_targets(specializes);
+    if !targets.is_empty() {
+        attrs.insert(
+            "specializes".to_string(),
+            serde_json::json!(targets.join(", ")),
+        );
+    }
 }
 
 /// Wires a `Specializes` edge for a def-kind node for every declared `specializes` target, not

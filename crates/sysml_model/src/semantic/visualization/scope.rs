@@ -147,18 +147,17 @@ fn collect_definition_uris_for_subtree(
                     visited,
                 );
             }
-            let redefines_and_subsets = node
-                .declared_facts
-                .relationships
-                .redefinition
-                .iter()
-                .chain(node.declared_facts.relationships.subsetting.iter());
-            for declared_target in redefines_and_subsets {
-                for target in resolve_redefines_or_subsets_targets(
-                    semantic_graph,
-                    owner,
-                    declared_target.reference.as_str(),
-                ) {
+            for attribute_key in ["redefines", "subsetsFeature"] {
+                let Some(attribute_value) = node
+                    .attributes
+                    .get(attribute_key)
+                    .and_then(|value| value.as_str())
+                else {
+                    continue;
+                };
+                for target in
+                    resolve_redefines_or_subsets_targets(semantic_graph, owner, attribute_value)
+                {
                     collect_definition_uris_for_subtree(semantic_graph, target, uris, visited);
                 }
             }

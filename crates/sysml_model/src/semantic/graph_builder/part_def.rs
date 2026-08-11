@@ -134,6 +134,9 @@ pub(super) fn build_from_part_def_body_element(
                     }),
                 );
             }
+            if let Some(ref s) = pd_node.specializes {
+                attrs.insert("specializes".to_string(), serde_json::json!(s));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -191,6 +194,9 @@ pub(super) fn build_from_part_def_body_element(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&item_node.membership),
             );
+            if let Some(ref s) = item_node.specializes {
+                attrs.insert("specializes".to_string(), serde_json::json!(s));
+            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -539,7 +545,9 @@ pub(super) fn build_from_part_def_body_element(
             };
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "opaque member");
-            let attrs = HashMap::new();
+            let mut attrs = HashMap::new();
+            attrs.insert("keyword".to_string(), serde_json::json!(opaque.keyword));
+            attrs.insert("text".to_string(), serde_json::json!(opaque.text));
             add_node_and_recurse(
                 g,
                 uri,

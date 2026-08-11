@@ -51,6 +51,9 @@ pub fn materialize_unit_attribute_def_from_kerml(
     let mut attrs = HashMap::new();
     if let Some(ref base) = parsed.specializes {
         attrs.insert("attributeType".to_string(), serde_json::json!(base));
+        if parsed.name.ends_with("Value") {
+            attrs.insert("specializes".to_string(), serde_json::json!(base));
+        }
     }
     add_node_and_recurse(
         g,

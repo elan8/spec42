@@ -81,11 +81,25 @@ pub(super) fn materialize_port_usage(
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
-    if let Some((_, Some(ref v))) = n.subsets {
-        attrs.insert(
-            "subsetsValue".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(v)),
-        );
+    if let Some((ref feat, ref val)) = n.subsets {
+        if let Some(target) = subsetting_target(Some(&feat.value)) {
+            attrs.insert("subsetsFeature".to_string(), serde_json::json!(target));
+        }
+        if let Some(v) = val {
+            attrs.insert(
+                "subsetsValue".to_string(),
+                serde_json::json!(expressions::expression_to_debug_string(v)),
+            );
+        }
+    }
+    if let Some(r) = subsetting_target(n.references.as_deref()) {
+        attrs.insert("referencesFeature".to_string(), serde_json::json!(r));
+    }
+    if let Some(c) = subsetting_target(n.crosses.as_deref()) {
+        attrs.insert("crossesFeature".to_string(), serde_json::json!(c));
+    }
+    if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+        attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
     add_node_and_recurse(
         g,
@@ -233,6 +247,9 @@ pub(super) fn build_from_port_def_body_element(
                         "parameterType".to_string(),
                         serde_json::json!(parameter_type_display),
                     );
+                }
+                if let Some(r) = subsetting_target(n.redefines.as_deref()) {
+                    attrs.insert("redefines".to_string(), serde_json::json!(r));
                 }
                 add_node_and_recurse(
                     g,
