@@ -155,7 +155,9 @@ fn add_expression_edge_with_metadata(
     if g.structural_input_only {
         let owner = container_prefix
             .map(|prefix| NodeId::new(uri, prefix))
-            .unwrap_or_else(|| NodeId::new(uri, "@root"));
+            .filter(|id| g.get_node(id).is_some())
+            .or_else(|| g.root_scope_id(uri))
+            .expect("structural documents always materialize a root semantic scope");
         record_declared_expression_relationship(
             g,
             owner,

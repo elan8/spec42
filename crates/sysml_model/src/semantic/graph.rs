@@ -69,8 +69,7 @@ pub struct SemanticGraphData {
     pub children_by_parent_id: HashMap<NodeId, Vec<NodeId>>,
     pub pending_expression_relationships: Vec<PendingExpressionRelationship>,
     /// Parser-backed authored endpoint expressions captured before any relationship linking.
-    /// `owner` is the explicit semantic scope identity; a synthetic `@root` owner is used for
-    /// a document-level expression when the parser provides no enclosing declaration.
+    /// `owner` is always an explicit parser-materialized semantic scope identity.
     #[serde(default)]
     pub declared_expression_relationships: Vec<DeclaredExpressionRelationshipRecord>,
     pub pending_relationships: Vec<PendingRelationship>,
@@ -648,6 +647,23 @@ pub struct PendingRelationship {
 impl SemanticGraphData {
     pub(crate) fn set_structural_input_only(&mut self, value: bool) {
         self.structural_input_only = value;
+    }
+
+    /// Returns the parser-materialized root scope for a document. This is deliberately narrower
+    /// than a generic URI node lookup: authored document-level expressions must have a real
+    /// semantic owner rather than borrowing an arbitrary first node.
+    pub(crate) fn root_scope_id(&self, uri: &Url) -> Option<NodeId> {
+        let mut roots = self
+            .nodes_by_uri
+            .get(uri)
+            .into_iter()
+            .flatten()
+            .filter_map(|id| self.get_node(id))
+            .filter(|node| node.parent_id.is_none())
+            .map(|node| node.id.clone())
+            .collect::<Vec<_>>();
+        roots.sort();
+        roots.into_iter().next()
     }
 
     /// Rebuild `node_index_by_id` and `children_by_parent_id` from the petgraph
