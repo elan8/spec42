@@ -626,6 +626,11 @@ and architectural review still checks for downstream semantic classification. Th
 guarantee is that supported consumers cannot access raw semantic storage or resolution machinery
 and cannot add such access without a manifest/API gate failure.
 
+The dependency-complete production migration inventory is maintained with the query facade in
+`crates/sysml_query/PRODUCTION_CUTOVER.md`. It identifies the typed services that must replace
+`HostWorkspaceSnapshot`, server, and LSP graph access before those consumers leave the transitional
+allowlist; it does not authorize a dual mutable-graph/`PublishedModel` publication.
+
 There is no public resolver accepting an arbitrary context string, container prefix, or concrete
 allowed-kind slice. Diagnostics query the authored reference's canonical outcome. Interactive
 language-service lookup uses a separate typed `LookupRole` (for example navigation symbol,

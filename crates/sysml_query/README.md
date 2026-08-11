@@ -7,9 +7,11 @@ state, resolution-fact collection, index handle, generic attribute map, or const
 semantic state. This first vertical slice does not yet move every consumer or physical query-index
 representation into this crate.
 
-The standalone snapshot pipeline is the first complete migrated consumer. Its manifest has no
-direct `sysml_model` or `sysml_diagnostics` dependency, so Rust cannot name either implementation
-crate through the transitive facade dependency.
+The standalone snapshot pipeline and `workspace_session` publication owner are migrated consumers.
+Their manifests have no direct `sysml_model` or `sysml_diagnostics` dependency, so Rust cannot name
+either implementation crate through the transitive facade dependency. `workspace_session` stores
+only `Arc<PublishedModel>` and validates replacement identity and completeness through the typed
+publication service.
 
 The normal `sysml_query` test gate enforces the boundary in three ways:
 
@@ -39,3 +41,7 @@ graph, generic facts collection, or index handle. `sysml_query` can then build a
 `SemanticQueryIndexes` before publishing `PublishedModel`, after which the model-owned temporary
 index and its forwarding methods are deleted. The manifest gate, rather than compatibility
 wrappers, restricts that implementation seam to `sysml_query`.
+
+The dependency-complete inventory for replacing the production workspace, server, and LSP graph
+publication is maintained in [PRODUCTION_CUTOVER.md](PRODUCTION_CUTOVER.md). This tranche does not
+claim that production cutover.
