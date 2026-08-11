@@ -1421,6 +1421,7 @@ package P {
             ),
             attributes: HashMap::new(),
             declared_facts: Default::default(),
+            source_text: Default::default(),
             parent_id: None,
         };
         let mut graph = SemanticGraph::new();

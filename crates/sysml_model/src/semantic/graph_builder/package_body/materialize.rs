@@ -99,8 +99,12 @@ pub(super) fn materialize_feature_decl(
     } else {
         let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
         let mut attrs = HashMap::new();
+        // `keyword` here also feeds a semantic user-defined-keyword classification in
+        // `sysml_diagnostics::checks::view_metadata_conformance`; it stays on the untyped
+        // attribute map (see `UNIFY_CACHE_PROGRESS.md` chunk F) and is not part of `source_text`.
         attrs.insert("keyword".to_string(), serde_json::json!(&fv.keyword));
         attrs.insert("text".to_string(), serde_json::json!(&fv.text));
+        let node_id = NodeId::new(uri, &qualified);
         add_node_and_recurse(
             g,
             uri,
@@ -111,6 +115,9 @@ pub(super) fn materialize_feature_decl(
             attrs,
             parent_id,
         );
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.source_text.text = Some(fv.text.clone());
+        }
     }
 }
 
@@ -125,8 +132,11 @@ pub(super) fn materialize_classifier_decl(
     let name = extract_modeled_decl_name(&cv.keyword, &cv.text, "_classifier");
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "classifier decl");
     let mut attrs = HashMap::new();
+    // See the matching comment in `materialize_feature_decl`: `keyword` also feeds the
+    // metadata-view semantic check and stays on the untyped attribute map.
     attrs.insert("keyword".to_string(), serde_json::json!(&cv.keyword));
     attrs.insert("text".to_string(), serde_json::json!(&cv.text));
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -137,6 +147,9 @@ pub(super) fn materialize_classifier_decl(
         attrs,
         parent_id,
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(cv.text.clone());
+    }
 }
 
 pub(crate) fn materialize_port_def(
@@ -1514,6 +1527,9 @@ pub(super) fn materialize_textual_rep(
     if let Some(ref rep_identification) = tr.rep_identification {
         attach_short_name_attribute(&mut attrs, rep_identification);
     }
+    // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic in
+    // `sysml_diagnostics::checks::view_metadata_conformance`, so it stays on the untyped
+    // attribute map in addition to `source_text.language` below.
     attrs.insert("language".to_string(), serde_json::json!(&tr.language));
     attrs.insert("text".to_string(), serde_json::json!(&tr.text));
     if let Some(ref language_span) = tr.language_span {
@@ -1522,6 +1538,7 @@ pub(super) fn materialize_textual_rep(
             text_range_to_json(span_to_range(language_span)),
         );
     }
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -1532,4 +1549,8 @@ pub(super) fn materialize_textual_rep(
         attrs,
         Some(pid),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(tr.text.clone());
+        node.source_text.language = Some(tr.language.clone());
+    }
 }

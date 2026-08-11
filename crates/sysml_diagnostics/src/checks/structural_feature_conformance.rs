@@ -340,6 +340,7 @@ mod tests {
                 feature_properties: Some(props),
                 ..Default::default()
             },
+            source_text: Default::default(),
             parent_id: None,
         }
     }

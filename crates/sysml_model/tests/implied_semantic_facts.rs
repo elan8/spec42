@@ -141,6 +141,7 @@ fn directed_feature_does_not_receive_the_ownership_default() {
         range,
         attributes: Default::default(),
         declared_facts: Default::default(),
+        source_text: Default::default(),
         parent_id: None,
     });
     graph.insert_workspace_node(SemanticNode {
@@ -157,6 +158,7 @@ fn directed_feature_does_not_receive_the_ownership_default() {
             }),
             ..Default::default()
         },
+        source_text: Default::default(),
         parent_id: Some(owner_id),
     });
     graph.refresh_effective_facts();

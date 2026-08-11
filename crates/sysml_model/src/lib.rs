@@ -57,7 +57,7 @@ pub use semantic::model::{
     ImpliedFeatureOwnership, ImpliedFeatureValueBinding, ImpliedMultiplicity,
     ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance,
     NodeEvaluationFacts, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
-    SemanticNode, StandardLibraryElement, TransitionEndpointFacts,
+    SemanticNode, SourceTextFacts, StandardLibraryElement, TransitionEndpointFacts,
     UniversalStandardLibraryRelationship, VisibilityKind,
 };
 pub use semantic::pipeline::{

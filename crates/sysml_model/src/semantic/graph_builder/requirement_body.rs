@@ -780,6 +780,8 @@ pub(super) fn walk_requirement_def_body(
                     "textualRep",
                 );
                 let mut attrs = HashMap::new();
+                // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic; kept
+                // on the untyped attribute map in addition to `source_text.language` below.
                 attrs.insert("language".to_string(), serde_json::json!(&tr.language));
                 attrs.insert("text".to_string(), serde_json::json!(&tr.text));
                 if let Some(ref language_span) = tr.language_span {
@@ -788,6 +790,7 @@ pub(super) fn walk_requirement_def_body(
                         text_range_to_json(span_to_range(language_span)),
                     );
                 }
+                let node_id = NodeId::new(uri, &qualified);
                 add_node_and_recurse(
                     g,
                     uri,
@@ -798,6 +801,10 @@ pub(super) fn walk_requirement_def_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.source_text.text = Some(tr.text.clone());
+                    node.source_text.language = Some(tr.language.clone());
+                }
             }
             RequirementDefBodyElement::VerifyRequirement(verify_node) => {
                 if let Some(requirement_ref) = verify_requirement_target(&verify_node.value) {

@@ -552,6 +552,10 @@ pub(super) fn build_from_part_def_body_element(
                 Some(parent_id),
             );
             let node_id = NodeId::new(uri, &qualified);
+            if let Some(node) = g.get_node_mut(&node_id) {
+                node.source_text.keyword = Some(opaque.keyword.to_string());
+                node.source_text.text = Some(opaque.text.to_string());
+            }
             attribute_body::build_from_attribute_body(
                 &opaque.body,
                 uri,

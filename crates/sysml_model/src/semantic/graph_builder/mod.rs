@@ -284,6 +284,7 @@ pub(super) fn add_node_and_recurse(
             membership: declared_membership,
             ..Default::default()
         },
+        source_text: crate::semantic::model::SourceTextFacts::default(),
         parent_id: parent_id.cloned(),
     };
     // Also index the node under its short-name-qualified variant (if any), so
@@ -416,13 +417,17 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
     let Some(annotated) = g.get_node(node_id).cloned() else {
         return;
     };
-    let combined = match annotated.attributes.get("doc").and_then(|v| v.as_str()) {
+    let combined = match annotated.source_text.doc.as_deref() {
         Some(existing) if !existing.is_empty() => format!("{existing}\n\n{text}"),
         _ => text.to_string(),
     };
     if let Some(node) = g.get_node_mut(node_id) {
+        // The `doc` attribute is kept in the legacy display map for consumers not yet migrated
+        // off it (see `UNIFY_CACHE_PROGRESS.md` chunk G); `source_text.doc` is the canonical typed
+        // fact and the only value hover presentation reads.
         node.attributes
             .insert("doc".to_string(), serde_json::json!(combined));
+        node.source_text.doc = Some(combined.clone());
     }
 
     let uri = &node_id.uri;
@@ -442,6 +447,9 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
         Some(node_id),
     );
     let doc_id = NodeId::new(uri, &qualified);
+    if let Some(doc_node) = g.get_node_mut(&doc_id) {
+        doc_node.source_text.body = Some(text.to_string());
+    }
     add_semantic_edge_once(
         g,
         &doc_id,

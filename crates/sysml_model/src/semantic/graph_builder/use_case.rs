@@ -409,6 +409,7 @@ pub(super) fn add_ref_redefinition_node(
     );
     let mut attrs = HashMap::new();
     attrs.insert("body".to_string(), serde_json::json!(redef.body.as_str()));
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -419,6 +420,9 @@ pub(super) fn add_ref_redefinition_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.body = Some(redef.body.as_str().to_string());
+    }
 }
 
 /// Wire case-body elements shared across use-case, analysis, and verification walkers.

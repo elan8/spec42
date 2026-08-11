@@ -2001,6 +2001,42 @@ impl Drop for DeclaredExpression {
     }
 }
 
+/// Typed source-fidelity/documentation text retained from the parser AST, parallel to
+/// [`DeclaredSemanticFacts`]. These fields deliberately remain separate from the legacy
+/// display-oriented `attributes` map: they are the sole semantic-node-owned source of
+/// documentation and representation text for presentation consumers (see
+/// `crates/language_service/src/presentation_hover.rs`), and must not be reconstructed from
+/// JSON attribute projections.
+///
+/// `keyword` here covers only the hover/doc-comment presentation use (opaque member / action
+/// body decl spelling). The *semantic* classification use of a `keyword` value -- feature/
+/// classifier-decl user-defined-keyword detection and metadata-keyword-usage matching in
+/// `sysml_diagnostics::checks::view_metadata_conformance` -- reads a distinct producer/consumer
+/// pair on the untyped `attributes` map and is out of scope here; see
+/// `UNIFY_CACHE_PROGRESS.md` chunk F.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SourceTextFacts {
+    /// Documentation comment text (`doc` member of a `TextualRepresentation`/annotation, or the
+    /// combined text attached by `attach_doc_comment`). Multiple `///`/`doc` blocks on the same
+    /// element are joined with a blank line.
+    #[serde(default)]
+    pub doc: Option<String>,
+    /// Free-form body/content text retained for source-fidelity presentation (e.g. a `ref
+    /// redefinition` body, or a synthesized `documentation` node's own text).
+    #[serde(default)]
+    pub body: Option<String>,
+    /// Raw source text of a declaration or textual representation (feature/classifier decl body,
+    /// action body decl, opaque member, or `TextualRepresentation` content).
+    #[serde(default)]
+    pub text: Option<String>,
+    /// Declared language tag for a `TextualRepresentation`.
+    #[serde(default)]
+    pub language: Option<String>,
+    /// Declared keyword spelling for an opaque member / action body decl (hover-only use).
+    #[serde(default)]
+    pub keyword: Option<String>,
+}
+
 /// A node in the semantic graph representing a model element.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemanticNode {
@@ -2016,6 +2052,9 @@ pub struct SemanticNode {
     pub attributes: HashMap<String, serde_json::Value>,
     #[serde(default)]
     pub declared_facts: DeclaredSemanticFacts,
+    /// Typed source-fidelity/documentation text. See [`SourceTextFacts`].
+    #[serde(default)]
+    pub source_text: SourceTextFacts,
     pub parent_id: Option<NodeId>,
 }
 

@@ -206,7 +206,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("enum {}{}{};", node.name, type_part, multiplicity)
         }
         "opaque member" => {
-            let keyword = attr_str(node, "keyword").unwrap_or("opaque");
+            let keyword = node.source_text.keyword.as_deref().unwrap_or("opaque");
             format!("{} {};", keyword, node.name)
         }
         "require constraint" => {
@@ -227,7 +227,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("render {}{};", node.name, type_part)
         }
         "ref redefinition" => {
-            let body = attr_str(node, "body").unwrap_or("{}");
+            let body = node.source_text.body.as_deref().unwrap_or("{}");
             format!("ref :>> {} {{ {} }};", node.name, body.trim())
         }
         "actor redefinition" => {
@@ -296,8 +296,10 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             let target = attr_str(node, "importTarget").unwrap_or(node.name.as_str());
             format!("{visibility}import {recursive}{target};")
         }
-        "feature decl" | "classifier decl" => attr_str(node, "text")
-            .map(str::to_string)
+        "feature decl" | "classifier decl" => node
+            .source_text
+            .text
+            .clone()
             .unwrap_or_else(|| format!("{} {};", kind, node.name)),
         _ => format!("{} {};", kind, node.name),
     };
@@ -322,7 +324,7 @@ pub fn hover_markdown_for_node(
     // rule-separated bands per field.
     let mut body = String::new();
 
-    if let Some(doc) = attr_str(node, "doc") {
+    if let Some(doc) = node.source_text.doc.as_deref() {
         let doc = doc.trim();
         if !doc.is_empty() {
             body.push_str(doc);
@@ -534,6 +536,30 @@ mod tests {
         assert!(
             signature.starts_with("enum status"),
             "enumeration signature should use enum keyword: {signature}"
+        );
+    }
+
+    #[test]
+    fn hover_includes_multiline_doc_comment_text_via_typed_source_text_fact() {
+        let input = r#"package P {
+  part def Widget {
+    doc /* First line of documentation.
+    Second line of documentation. */
+  }
+}"#;
+        let root = parse(input).expect("parse");
+        let uri = Url::parse("file:///w-multiline.sysml").expect("uri");
+        let graph = build_graph_from_doc(&root, &uri);
+        let widget = graph_node(&graph, &uri, "part def", "Widget");
+        assert!(
+            widget.source_text.doc.is_some(),
+            "doc text should be captured on the typed source_text fact"
+        );
+        let hover = hover_markdown_for_node(&graph, widget, false);
+        assert!(
+            hover.contains("First line of documentation.")
+                && hover.contains("Second line of documentation."),
+            "hover should surface the full multi-line doc comment unchanged: {hover}"
         );
     }
 }
