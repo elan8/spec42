@@ -22,7 +22,6 @@ use crate::semantic::publication::{
     ImportConformanceOutcome, ReferenceKind, ResolutionOutcome, ResolutionProvenance,
     ResolvedRelationship, SemanticCompleteness, SemanticModel, SemanticPhase,
 };
-use crate::semantic::text_span::TextRange;
 
 const FORMAT_ROOT: &str = "semantic-graph";
 
@@ -284,7 +283,6 @@ fn render_model_structure(
         if let Some(declared_name) = &node.declared_name {
             write!(output, " (declared-name {})", atom(declared_name))?;
         }
-        write!(output, " (range {})", render_range(&node.range))?;
         if let Some(parent) = &node.parent_id {
             write!(output, " (parent {})", identities.node(parent))?;
         }
@@ -347,9 +345,6 @@ fn render_model_declared_facts(
                 import.shape,
                 import.recursive
             )?;
-            if let Some(range) = import.target.range {
-                write!(output, " (import-range {})", render_range(&range))?;
-            }
         }
         output.write_char(')')?;
     }
@@ -359,12 +354,9 @@ fn render_model_declared_facts(
             for target in targets {
                 write!(
                     output,
-                    " ({} (reference {}) (range {}))",
+                    " ({} (reference {}))",
                     kind,
                     atom(&target.reference),
-                    target
-                        .range
-                        .map_or_else(|| "none".to_string(), |range| render_range(&range))
                 )?;
             }
         }
@@ -375,15 +367,11 @@ fn render_model_declared_facts(
         for relationship in &facts.expression_relationships {
             write!(
                 output,
-                " ({} (source {}) (target {}) (source-range {})",
+                " ({} (source {}) (target {})",
                 relationship.kind.as_str(),
                 atom(&relationship.source_expression),
                 atom(&relationship.target_expression),
-                render_range(&relationship.source_range)
             )?;
-            if let Some(range) = relationship.target_range {
-                write!(output, " (target-range {})", render_range(&range))?;
-            }
             output.write_char(')')?;
         }
         output.write_char(')')?;
@@ -405,12 +393,11 @@ fn render_model_references(
         let reference = &fact.reference;
         write!(
             output,
-            "    (reference (id (source {}) (kind {}) (ordinal {})) (authored-target {}) (range {}) ",
+            "    (reference (id (source {}) (kind {}) (ordinal {})) (authored-target {}) ",
             identities.node(&reference.source),
             reference_kind(reference.kind),
             reference.authored_ordinal,
             atom(&fact.authored_target),
-            fact.authored_range.map_or_else(|| "none".to_string(), |range| render_range(&range)),
         )?;
         render_outcome(&fact.outcome, identities, output)?;
         if let Some(import) = &fact.import {
@@ -556,15 +543,11 @@ fn render_model_relationship(
     if let Some(expression) = &relationship.expression {
         write!(
             output,
-            " (expression (kind {}) (source {}) (target {}) (source-range {})",
+            " (expression (kind {}) (source {}) (target {})",
             expression.kind.as_str(),
             atom(&expression.source_expression),
             atom(&expression.target_expression),
-            render_range(&expression.source_range),
         )?;
-        if let Some(range) = expression.target_range {
-            write!(output, " (target-range {})", render_range(&range))?;
-        }
         output.write_char(')')?;
     }
     output.write_str(")\n")
@@ -632,13 +615,6 @@ fn render_node_evaluation_facts(
         output.write_char(')')?;
     }
     Ok(())
-}
-
-fn render_range(range: &TextRange) -> String {
-    format!(
-        "(start (line {}) (character {})) (end (line {}) (character {}))",
-        range.start.line, range.start.character, range.end.line, range.end.character
-    )
 }
 
 fn reference_kind(kind: ReferenceKind) -> &'static str {
