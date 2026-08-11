@@ -13,7 +13,9 @@ use super::api::{
     CacheMaintenanceReport, CacheMissReason, CacheStatus, CacheStore, CacheStoreOutcome,
     CacheWriteFailure,
 };
-use super::config::{CacheConfig, CacheMode, TMP_REAP_MIN_AGE_SECS, TOUCH_MIN_INTERVAL_SECS};
+use super::config::{
+    CacheConfig, CacheLimits, CacheMode, TMP_REAP_MIN_AGE_SECS, TOUCH_MIN_INTERVAL_SECS,
+};
 use super::digest::ArtifactKey;
 use super::envelope;
 
@@ -210,15 +212,13 @@ impl CacheStore for FileCacheStore {
         let key = identity.artifact_key();
         let path = self.object_path(key);
 
-        let bytes = match fs::read(&path) {
+        let bytes = match read_object_bounded(&path, &self.config.limits) {
             Ok(b) => b,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                return CacheLookup::Miss(CacheMissReason::NotFound);
-            }
-            Err(e) => {
-                return CacheLookup::Miss(CacheMissReason::IoFailure {
-                    detail: e.to_string(),
-                });
+            Err(reason) => {
+                if matches!(reason, CacheMissReason::ResourceLimit { .. }) {
+                    self.best_effort_delete(&path);
+                }
+                return CacheLookup::Miss(reason);
             }
         };
 
@@ -431,15 +431,75 @@ fn scan_total_bytes(objects_dir: &Path) -> u64 {
     list_objects(objects_dir).iter().map(|o| o.len).sum()
 }
 
-/// Reads just enough of an object to recover its `ArtifactKind` for status reporting, without
-/// decoding the whole payload.
+/// Opens an object and reads it into memory, rejecting a file whose size already exceeds what
+/// [`envelope::decode`] could accept.
+///
+/// The size is taken from the open handle rather than from a separate `fs::metadata` call so a
+/// concurrent republication cannot swap the file between the check and the read. Bounding the
+/// read here is what keeps a corrupt or hostile oversized object from being allocated in full
+/// before the envelope's own length checks run (plan §7.2, §7.4, prerequisite B10).
+fn read_object_bounded(path: &Path, limits: &CacheLimits) -> Result<Vec<u8>, CacheMissReason> {
+    use std::io::Read;
+
+    let file = match fs::File::open(path) {
+        Ok(f) => f,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            return Err(CacheMissReason::NotFound);
+        }
+        Err(e) => {
+            return Err(CacheMissReason::IoFailure {
+                detail: e.to_string(),
+            });
+        }
+    };
+
+    let max = envelope::max_object_file_bytes(limits);
+    let size = match file.metadata() {
+        Ok(meta) => meta.len(),
+        Err(e) => {
+            return Err(CacheMissReason::IoFailure {
+                detail: e.to_string(),
+            })
+        }
+    };
+    if size > max {
+        return Err(CacheMissReason::ResourceLimit {
+            detail: format!("object file is {size} bytes, exceeding the {max} byte limit"),
+        });
+    }
+
+    // Read at most `max + 1` bytes so a file that grows between the stat and the read is still
+    // bounded, and is then rejected for exceeding the limit rather than truncated into a
+    // plausible-looking envelope.
+    let mut bytes = Vec::with_capacity(size as usize);
+    if let Err(e) = file.take(max + 1).read_to_end(&mut bytes) {
+        return Err(CacheMissReason::IoFailure {
+            detail: e.to_string(),
+        });
+    }
+    if bytes.len() as u64 > max {
+        return Err(CacheMissReason::ResourceLimit {
+            detail: format!("object file exceeds the {max} byte limit"),
+        });
+    }
+    Ok(bytes)
+}
+
+/// Reads just enough of an object to recover its `ArtifactKind` for status reporting.
+///
+/// Status and prune scan every object in the store, so this reads only the fixed header prefix
+/// rather than the whole file; pulling a multi-megabyte payload into memory to recover one byte
+/// would make maintenance cost scale with cache bytes instead of object count (plan §7.3).
 fn read_kind_prefix(path: &Path) -> Option<ArtifactKind> {
-    let bytes = fs::read(path).ok()?;
-    // magic(4) + envelope_version(2) + kind(1)
-    if bytes.len() < 7 || &bytes[0..4] != envelope::MAGIC {
+    use std::io::Read;
+
+    let mut file = fs::File::open(path).ok()?;
+    let mut prefix = [0u8; envelope::KIND_OFFSET + 1];
+    file.read_exact(&mut prefix).ok()?;
+    if &prefix[0..4] != envelope::MAGIC {
         return None;
     }
-    ArtifactKind::from_u8(bytes[6])
+    ArtifactKind::from_u8(prefix[envelope::KIND_OFFSET])
 }
 
 /// Removes temp files older than [`TMP_REAP_MIN_AGE_SECS`]. A race that removes a still-active

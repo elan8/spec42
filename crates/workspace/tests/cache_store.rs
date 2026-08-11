@@ -140,6 +140,67 @@ fn truncated_object_is_a_typed_miss_and_deletes_bad_path() {
 }
 
 #[test]
+fn oversized_object_file_is_rejected_before_it_is_read_into_memory() {
+    // A corrupt or hostile object whose file is already larger than any decodable envelope must
+    // be rejected on the basis of its size alone. Reading it in full first and only then
+    // consulting the envelope's length fields would let a bad object dictate the allocation
+    // (plan §7.2, prerequisite B10).
+    let dir = TempDir::new().expect("temp dir");
+    let mut config = CacheConfig::with_root(dir.path().to_path_buf());
+    config.limits.max_compressed_object_bytes = 1024;
+    let store = FileCacheStore::new(config);
+
+    let id = identity(b"oversized");
+    let value = TestArtifact {
+        value: 7,
+        label: "small".to_string(),
+    };
+    store.put(&id, &value);
+
+    let path = object_path_for(&store, &id);
+    std::fs::write(&path, vec![0u8; 64 * 1024]).unwrap();
+
+    match store.get::<TestArtifact>(&id) {
+        CacheLookup::Miss(CacheMissReason::ResourceLimit { .. }) => {}
+        other => panic!("expected ResourceLimit miss, got {other:?}"),
+    }
+    assert!(
+        !path.exists(),
+        "oversized object should be best-effort deleted"
+    );
+
+    // The canonical path still works afterwards: the store is a disposable accelerator.
+    store.put(&id, &value);
+    match store.get::<TestArtifact>(&id) {
+        CacheLookup::Hit(got, _) => assert_eq!(got, value),
+        CacheLookup::Miss(reason) => panic!("expected hit after rewrite, got {reason:?}"),
+    }
+}
+
+#[test]
+fn status_reports_kinds_without_reading_whole_objects() {
+    // Status scans every object in the store, so it must read only the fixed header prefix.
+    // A large payload is used here so that a regression to a whole-file read is at least
+    // exercised against a non-trivial object.
+    let (_dir, store) = isolated_store();
+    let id = identity(b"big-payload");
+    let value = TestArtifact {
+        value: 9,
+        label: "x".repeat(256 * 1024),
+    };
+    store.put(&id, &value);
+
+    let status = store.status();
+    assert_eq!(status.object_count, 1);
+    assert_eq!(status.unreadable_objects, 0);
+    let parse_outcomes = status
+        .per_kind
+        .get(&ArtifactKind::ParseOutcome)
+        .expect("parse outcome kind reported");
+    assert_eq!(parse_outcomes.object_count, 1);
+}
+
+#[test]
 fn bit_flip_is_a_typed_miss() {
     let (_dir, store) = isolated_store();
     let id = identity(b"bitflip-me");

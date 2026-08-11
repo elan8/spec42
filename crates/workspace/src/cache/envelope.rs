@@ -25,7 +25,17 @@ use super::digest::ArtifactKey;
 pub const MAGIC: &[u8; 4] = b"S42C";
 pub const ENVELOPE_VERSION: u16 = 1;
 
-const HEADER_LEN: usize = 4 + 2 + 1 + 4 + 32 + 8 + 8 + 32;
+pub(super) const HEADER_LEN: usize = 4 + 2 + 1 + 4 + 32 + 8 + 8 + 32;
+
+/// Byte offset of the artifact-kind field within the fixed header.
+pub(super) const KIND_OFFSET: usize = 4 + 2;
+
+/// The largest object worth reading at all: an object whose file is longer than the header plus
+/// the compressed-payload limit cannot pass [`decode`], so it is rejected before it is read into
+/// memory rather than after (plan §7.2, prerequisite B10).
+pub(super) fn max_object_file_bytes(limits: &CacheLimits) -> u64 {
+    HEADER_LEN as u64 + limits.max_compressed_object_bytes
+}
 
 /// Encodes `plain_payload` (an already-postcard-serialized artifact record) into a complete
 /// envelope: zstd-compresses it, computes its BLAKE3 digest, and writes the fixed header.
