@@ -1,0 +1,16 @@
+[package]
+name = "spec42-resolution-benchmark"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "spec42-resolution-benchmark"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sysml_query = { path = "../../crates/sysml_query" }

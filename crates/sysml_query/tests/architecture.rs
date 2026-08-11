@@ -7,7 +7,11 @@ use serde_json::Value;
 use syn::visit::{self, Visit};
 use syn::{Fields, ImplItem, Item, ReturnType, Signature, Type, UseTree, Visibility};
 
-const DESIGNATED_CONSUMERS: &[&str] = &["spec42-snapshot", "workspace_session"];
+const DESIGNATED_CONSUMERS: &[&str] = &[
+    "spec42-resolution-benchmark",
+    "spec42-snapshot",
+    "workspace_session",
+];
 const MODEL_IMPLEMENTATION_OWNERS: &[&str] = &["sysml_query"];
 const TRANSITIONAL_DIRECT_CONSUMERS: &[&str] = &[
     "language_service",
