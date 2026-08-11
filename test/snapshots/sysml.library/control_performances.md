@@ -375,3 +375,74 @@ standard library package ControlPerformances {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 37)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 7 16) (end 7 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 39)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::size"))
+        (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::size")
+        (range (start 8 16) (end 8 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 39)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::Occurrence"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+        (range (start 10 16) (end 10 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 13 16) (end 13 41)) (probe (position 13 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::Performance"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::Performance")
+        (range (start 13 16) (end 13 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 42)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::HappensBefore"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::HappensBefore")
+        (range (start 11 16) (end 11 42))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 43)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::notEmpty"))
+        (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::notEmpty")
+        (range (start 9 16) (end 9 43))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 16) (end 12 45)) (probe (position 12 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::SelfSameLifeLink"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::SelfSameLifeLink")
+        (range (start 12 16) (end 12 45))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 14 16) (end 14 47)) (probe (position 14 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlPerformances::BooleanEvaluation"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::BooleanEvaluation")
+        (range (start 14 16) (end 14 47))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

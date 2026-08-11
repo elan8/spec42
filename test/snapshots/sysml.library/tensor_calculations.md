@@ -389,3 +389,66 @@ standard library package TensorCalculations {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 19) (end 7 39)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "TensorCalculations::Number"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Number")
+        (range (start 7 19) (end 7 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 19) (end 6 40)) (probe (position 6 19))
+      (reference
+        (source (document "d0") (qualified-name "TensorCalculations::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 6 19) (end 6 40))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 19) (end 8 50)) (probe (position 8 19))
+      (reference
+        (source (document "d0") (qualified-name "TensorCalculations::ScalarQuantityValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Quantities::ScalarQuantityValue")
+        (range (start 8 19) (end 8 50))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 19) (end 9 50)) (probe (position 9 19))
+      (reference
+        (source (document "d0") (qualified-name "TensorCalculations::VectorQuantityValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Quantities::VectorQuantityValue")
+        (range (start 9 19) (end 9 50))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 19) (end 10 50)) (probe (position 10 19))
+      (reference
+        (source (document "d0") (qualified-name "TensorCalculations::TensorQuantityValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Quantities::TensorQuantityValue")
+        (range (start 10 19) (end 10 50))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 19) (end 12 66)) (probe (position 12 19))
+      (reference
+        (source (document "d0") (qualified-name "TensorCalculations::CoordinateTransformation"))
+        (kind membershipImport) (ordinal 0) (authored-target "MeasurementReferences::CoordinateTransformation")
+        (range (start 12 19) (end 12 66))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 19) (end 11 68)) (probe (position 11 19))
+      (reference
+        (source (document "d0") (qualified-name "TensorCalculations::TensorMeasurementReference"))
+        (kind membershipImport) (ordinal 0) (authored-target "MeasurementReferences::TensorMeasurementReference")
+        (range (start 11 19) (end 11 68))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

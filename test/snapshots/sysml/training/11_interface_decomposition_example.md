@@ -129,3 +129,42 @@ package 'Interface Decomposition Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 18 10) (end 18 24)) (probe (position 18 10))
+      (reference
+        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
+        (kind connectionSource) (ordinal 0) (authored-target "suppliedBy::hot")
+        (range (start 18 10) (end 18 24))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 18 28) (end 18 43)) (probe (position 18 28))
+      (reference
+        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
+        (kind connectionTarget) (ordinal 0) (authored-target "deliveredTo::hot")
+        (range (start 18 28) (end 18 43))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 19 10) (end 19 25)) (probe (position 19 10))
+      (reference
+        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
+        (kind connectionSource) (ordinal 1) (authored-target "suppliedBy::cold")
+        (range (start 19 10) (end 19 25))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 19 29) (end 19 45)) (probe (position 19 29))
+      (reference
+        (source (document "d0") (qualified-name "Interface Decomposition Example::WaterDelivery"))
+        (kind connectionTarget) (ordinal 1) (authored-target "deliveredTo::cold")
+        (range (start 19 29) (end 19 45))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

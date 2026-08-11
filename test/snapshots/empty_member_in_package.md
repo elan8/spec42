@@ -42,3 +42,8 @@ package MyPkg {;}
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

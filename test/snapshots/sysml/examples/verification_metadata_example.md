@@ -90,3 +90,26 @@ package VerificationMetadataExample {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 33)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "VerificationMetadataExample::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "VerificationCases::*")
+        (range (start 1 16) (end 1 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 38)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "VerificationMetadataExample::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "VerificationMethodKind::*")
+        (range (start 2 16) (end 2 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

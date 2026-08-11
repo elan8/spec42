@@ -176,3 +176,52 @@ package 'Message Payload Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 11 18) (end 11 25)) (probe (position 11 18))
+      (reference
+        (source (document "d0") (qualified-name "Message Payload Example::vehicle1"))
+        (kind subsetting) (ordinal 0) (authored-target "vehicle")
+        (range (start 11 18) (end 11 25))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 26) (end 12 42)) (probe (position 12 26))
+      (reference
+        (source (document "d0") (qualified-name "Message Payload Example::vehicle1::engineController"))
+        (kind featureTyping) (ordinal 0) (authored-target "EngineController")
+        (range (start 12 26) (end 12 42))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Message Payload Example::EngineController") (range (start 9 1) (end 9 27)))
+        )
+      )
+    )
+    (query (range (start 23 8) (end 23 27)) (probe (position 23 8))
+      (reference
+        (source (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))
+        (kind flowSource) (ordinal 0) (authored-target "driver::setSpeedSent")
+        (range (start 23 8) (end 23 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 42)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Message Payload Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example::*")
+        (range (start 1 16) (end 1 42))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 23 31) (end 23 72)) (probe (position 23 31))
+      (reference
+        (source (document "d0") (qualified-name "Message Payload Example::CruiseControlInteraction"))
+        (kind flowTarget) (ordinal 0) (authored-target "vehicle::cruiseController::setSpeedReceived")
+        (range (start 23 31) (end 23 72))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

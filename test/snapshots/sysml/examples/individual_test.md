@@ -149,3 +149,60 @@ package IndividualTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 11 11) (end 11 12)) (probe (position 11 11))
+      (reference
+        (source (document "d0") (qualified-name "IndividualTest::I::i"))
+        (kind featureTyping) (ordinal 0) (authored-target "I")
+        (range (start 11 11) (end 11 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "IndividualTest::I") (range (start 10 1) (end 10 30)))
+        )
+      )
+    )
+    (query (range (start 22 11) (end 22 12)) (probe (position 22 11))
+      (reference
+        (source (document "d0") (qualified-name "IndividualTest::P::p"))
+        (kind featureTyping) (ordinal 0) (authored-target "P")
+        (range (start 22 11) (end 22 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "IndividualTest::P") (range (start 21 1) (end 21 30)))
+        )
+      )
+    )
+    (query (range (start 24 28) (end 24 29)) (probe (position 24 28))
+      (reference
+        (source (document "d0") (qualified-name "IndividualTest::IP2"))
+        (kind specialization) (ordinal 0) (authored-target "P")
+        (range (start 24 28) (end 24 29))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "IndividualTest::P") (range (start 21 1) (end 21 30)))
+        )
+      )
+    )
+    (query (range (start 18 22) (end 18 25)) (probe (position 18 22))
+      (reference
+        (source (document "d0") (qualified-name "IndividualTest::IP1::p"))
+        (kind featureTyping) (ordinal 0) (authored-target "IP1")
+        (range (start 18 22) (end 18 25))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "IndividualTest::IP1") (range (start 17 1) (end 17 56)))
+        )
+      )
+    )
+    (query (range (start 25 26) (end 25 29)) (probe (position 25 26))
+      (reference
+        (source (document "d0") (qualified-name "IndividualTest::IP2::p"))
+        (kind featureTyping) (ordinal 0) (authored-target "IP2")
+        (range (start 25 26) (end 25 29))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "IndividualTest::IP2") (range (start 24 1) (end 24 65)))
+        )
+      )
+    )
+  )
+)
+~~~

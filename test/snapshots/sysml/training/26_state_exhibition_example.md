@@ -107,3 +107,34 @@ package 'State Exhibition Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 3 16) (end 3 23)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "State Exhibition Example::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 3 16) (end 3 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 27) (end 5 44)) (probe (position 5 27))
+      (reference
+        (source (document "d0") (qualified-name "State Exhibition Example::vehicle::vehicleController"))
+        (kind featureTyping) (ordinal 0) (authored-target "VehicleController")
+        (range (start 5 27) (end 5 44))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 36)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "State Exhibition Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Transition Actions::*")
+        (range (start 1 16) (end 1 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

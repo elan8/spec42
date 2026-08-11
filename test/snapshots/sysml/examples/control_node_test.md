@@ -176,3 +176,64 @@ action def ControlNodeTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 9 14) (end 9 17)) (probe (position 9 14))
+      (reference
+        (source (document "d0") (qualified-name "ControlNodeTest"))
+        (kind flowTarget) (ordinal 0) (authored-target "F::a")
+        (range (start 9 14) (end 9 17))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 6) (end 9 10)) (probe (position 9 6))
+      (reference
+        (source (document "d0") (qualified-name "ControlNodeTest"))
+        (kind flowSource) (ordinal 0) (authored-target "A2::a")
+        (range (start 9 6) (end 9 10))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ControlNodeTest::A2::a") (range (start 5 5) (end 5 11)))
+        )
+      )
+    )
+    (query (range (start 20 6) (end 20 10)) (probe (position 20 6))
+      (reference
+        (source (document "d0") (qualified-name "ControlNodeTest"))
+        (kind flowSource) (ordinal 1) (authored-target "F::b1")
+        (range (start 20 6) (end 20 10))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 20 14) (end 20 18)) (probe (position 20 14))
+      (reference
+        (source (document "d0") (qualified-name "ControlNodeTest"))
+        (kind flowTarget) (ordinal 1) (authored-target "B1::b")
+        (range (start 20 14) (end 20 18))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ControlNodeTest::B1::b") (range (start 24 5) (end 24 10)))
+        )
+      )
+    )
+    (query (range (start 21 6) (end 21 10)) (probe (position 21 6))
+      (reference
+        (source (document "d0") (qualified-name "ControlNodeTest"))
+        (kind flowSource) (ordinal 2) (authored-target "F::b2")
+        (range (start 21 6) (end 21 10))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 21 14) (end 21 18)) (probe (position 21 14))
+      (reference
+        (source (document "d0") (qualified-name "ControlNodeTest"))
+        (kind flowTarget) (ordinal 2) (authored-target "B2::b")
+        (range (start 21 14) (end 21 18))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ControlNodeTest::B2::b") (range (start 29 5) (end 29 10)))
+        )
+      )
+    )
+  )
+)
+~~~

@@ -165,3 +165,60 @@ standard library package AnalysisCases {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 13 39) (end 13 43)) (probe (position 13 39))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisCases::AnalysisCase"))
+        (kind specialization) (ordinal 0) (authored-target "Case")
+        (range (start 13 39) (end 13 43))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "AnalysisCases::Case") (range (start 10 1) (end 10 28)))
+        )
+      )
+    )
+    (query (range (start 10 16) (end 10 27)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisCases::Case"))
+        (kind membershipImport) (ordinal 0) (authored-target "Cases::Case")
+        (range (start 10 16) (end 10 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 28)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisCases::cases"))
+        (kind membershipImport) (ordinal 0) (authored-target "Cases::cases")
+        (range (start 11 16) (end 11 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 40)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisCases::Evaluation"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::Evaluation")
+        (range (start 7 16) (end 7 40))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 41)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisCases::evaluations"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::evaluations")
+        (range (start 8 16) (end 8 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 41)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisCases::Calculation"))
+        (kind membershipImport) (ordinal 0) (authored-target "Calculations::Calculation")
+        (range (start 9 16) (end 9 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

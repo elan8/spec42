@@ -122,3 +122,44 @@ package MassRollup2 {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 4 26) (end 4 35)) (probe (position 4 26))
+      (reference
+        (source (document "d0") (qualified-name "MassRollup2::MassedThing::simpleMass"))
+        (kind subsetting) (ordinal 0) (authored-target "ISQ::mass")
+        (range (start 4 26) (end 4 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 25) (end 5 34)) (probe (position 5 25))
+      (reference
+        (source (document "d0") (qualified-name "MassRollup2::MassedThing::totalMass"))
+        (kind subsetting) (ordinal 0) (authored-target "ISQ::mass")
+        (range (start 5 25) (end 5 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 31) (end 8 42)) (probe (position 8 31))
+      (reference
+        (source (document "d0") (qualified-name "MassRollup2::composicomackagteThing"))
+        (kind featureTyping) (ordinal 0) (authored-target "MassedThing")
+        (range (start 8 31) (end 8 42))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "MassRollup2::MassedThing") (range (start 3 1) (end 3 118)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "MassRollup2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions::*")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

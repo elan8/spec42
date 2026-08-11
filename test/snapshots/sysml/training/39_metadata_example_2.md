@@ -135,3 +135,8 @@ package 'Metadata Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

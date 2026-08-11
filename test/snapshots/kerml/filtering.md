@@ -208,3 +208,66 @@ package Filtering {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 38 17) (end 38 22)) (probe (position 38 17))
+      (reference
+        (source (document "d0") (qualified-name "Filtering::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "KerML::*")
+        (range (start 38 17) (end 38 22))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 20) (end 12 31)) (probe (position 12 20))
+      (reference
+        (source (document "d0") (qualified-name "Filtering::DesignModel::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Annotations::*")
+        (range (start 12 20) (end 12 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 24 20) (end 24 31)) (probe (position 24 20))
+      (reference
+        (source (document "d0") (qualified-name "Filtering::UpperLevelApprovals::DesignModel"))
+        (kind membershipImport) (ordinal 0) (authored-target "DesignModel")
+        (range (start 24 20) (end 24 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 32 20) (end 32 31)) (probe (position 32 20))
+      (reference
+        (source (document "d0") (qualified-name "Filtering::UpperLevelApprovals1::Annotations"))
+        (kind membershipImport) (ordinal 0) (authored-target "Annotations")
+        (range (start 32 20) (end 32 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 33 20) (end 33 31)) (probe (position 33 20))
+      (reference
+        (source (document "d0") (qualified-name "Filtering::UpperLevelApprovals1::DesignModel"))
+        (kind namespaceImport) (ordinal 0) (authored-target "DesignModel")
+        (range (start 33 20) (end 33 31))
+        (outcome (status unsupported-filtered))
+      )
+    )
+    (query (range (start 40 17) (end 40 28)) (probe (position 40 17))
+      (reference
+        (source (document "d0") (qualified-name "Filtering::Meta::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "DesignModel::*")
+        (range (start 40 17) (end 40 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Filtering::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

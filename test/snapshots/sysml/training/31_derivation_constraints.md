@@ -155,3 +155,58 @@ package 'Derivation Constraints' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 18)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Derivation Constraints::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 1 16) (end 1 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 4 17) (end 4 24)) (probe (position 4 17))
+      (reference
+        (source (document "d0") (qualified-name "Derivation Constraints::vehicle1"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 4 17) (end 4 24))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 17) (end 9 24)) (probe (position 9 17))
+      (reference
+        (source (document "d0") (qualified-name "Derivation Constraints::vehicle2"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 9 17) (end 9 24))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 24) (end 5 33)) (probe (position 5 24))
+      (reference
+        (source (document "d0") (qualified-name "Derivation Constraints::vehicle1::totalMass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 5 24) (end 5 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 24) (end 10 33)) (probe (position 10 24))
+      (reference
+        (source (document "d0") (qualified-name "Derivation Constraints::vehicle2::totalMass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 10 24) (end 10 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 39)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Derivation Constraints::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Constraints Example-1::*")
+        (range (start 2 16) (end 2 39))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

@@ -190,3 +190,26 @@ standard library package Links {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 19) (end 7 31)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "Links::things"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::things")
+        (range (start 7 19) (end 7 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 19) (end 6 33)) (probe (position 6 19))
+      (reference
+        (source (document "d0") (qualified-name "Links::Anything"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
+        (range (start 6 19) (end 6 33))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

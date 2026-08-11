@@ -146,3 +146,18 @@ package 'Terminate Actions Example-1' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 37)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Terminate Actions Example-1::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 1 16) (end 1 37))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

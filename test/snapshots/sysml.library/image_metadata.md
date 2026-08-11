@@ -227,3 +227,18 @@ standard library package ImageMetadata {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 16) (end 8 36)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "ImageMetadata::String"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+        (range (start 8 16) (end 8 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

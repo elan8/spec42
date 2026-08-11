@@ -86,3 +86,20 @@ package DependencyTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 16) (end 8 22)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "DependencyTest::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "System::*")
+        (range (start 8 16) (end 8 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DependencyTest::System") (range (start 2 1) (end 2 102)))
+        )
+      )
+    )
+  )
+)
+~~~

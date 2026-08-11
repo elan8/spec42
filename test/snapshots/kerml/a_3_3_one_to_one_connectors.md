@@ -214,3 +214,68 @@ package OneToOneConnectorsExecution {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 25 16) (end 25 21)) (probe (position 25 16))
+      (reference
+        (source (document "d0") (qualified-name "OneToOneConnectorsExecution::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Atoms::*")
+        (range (start 25 16) (end 25 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 26 15) (end 26 50)) (probe (position 26 15))
+      (reference
+        (source (document "d0") (qualified-name "OneToOneConnectorsExecution::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "OneToOneConnectorsModelToBeExecuted::*")
+        (range (start 26 15) (end 26 50))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted") (range (start 1 0) (end 1 446)))
+        )
+      )
+    )
+    (query (range (start 29 15) (end 29 50)) (probe (position 29 15))
+      (reference
+        (source (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel"))
+        (kind membershipImport) (ordinal 0) (authored-target "WithoutConnectorsExecution::MyWheel")
+        (range (start 29 15) (end 29 50))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 27 15) (end 27 51)) (probe (position 27 15))
+      (reference
+        (source (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel1"))
+        (kind membershipImport) (ordinal 0) (authored-target "WithoutConnectorsExecution::MyWheel1")
+        (range (start 27 15) (end 27 51))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 28 15) (end 28 51)) (probe (position 28 15))
+      (reference
+        (source (document "d0") (qualified-name "OneToOneConnectorsExecution::MyWheel2"))
+        (kind membershipImport) (ordinal 0) (authored-target "WithoutConnectorsExecution::MyWheel2")
+        (range (start 28 15) (end 28 51))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 18) (end 6 59)) (probe (position 6 18))
+      (reference
+        (source (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::Wheel"))
+        (kind membershipImport) (ordinal 0) (authored-target "WithoutConnectorsModelToBeExecuted::Wheel")
+        (range (start 6 18) (end 6 59))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 18) (end 7 62)) (probe (position 7 18))
+      (reference
+        (source (document "d0") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeFork"))
+        (kind membershipImport) (ordinal 0) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork")
+        (range (start 7 18) (end 7 62))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

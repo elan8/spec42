@@ -287,3 +287,18 @@ package TimeVaryingCarDriver {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 19) (end 1 31)) (probe (position 1 19))
+      (reference
+        (source (document "d0") (qualified-name "TimeVaryingCarDriver::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 19) (end 1 31))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

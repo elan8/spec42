@@ -5432,3 +5432,42 @@ standard library package ISQCharacteristicNumbers {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 17 19) (end 17 26)) (probe (position 17 19))
+      (reference
+        (source (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQBase::*")
+        (range (start 17 19) (end 17 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 15 19) (end 15 29)) (probe (position 15 19))
+      (reference
+        (source (document "d0") (qualified-name "ISQCharacteristicNumbers::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Quantities::*")
+        (range (start 15 19) (end 15 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 14 19) (end 14 37)) (probe (position 14 19))
+      (reference
+        (source (document "d0") (qualified-name "ISQCharacteristicNumbers::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 14 19) (end 14 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 16 19) (end 16 40)) (probe (position 16 19))
+      (reference
+        (source (document "d0") (qualified-name "ISQCharacteristicNumbers::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "MeasurementReferences::*")
+        (range (start 16 19) (end 16 40))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

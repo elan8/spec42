@@ -170,3 +170,70 @@ package 'Individuals and Time Slices' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 15 16) (end 15 20)) (probe (position 15 16))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence"))
+        (kind redefinition) (ordinal 0) (authored-target "done")
+        (range (start 15 16) (end 15 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 21)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::"))
+        (kind redefinition) (ordinal 0) (authored-target "start")
+        (range (start 11 16) (end 11 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 27) (end 9 33)) (probe (position 9 27))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::item"))
+        (kind redefinition) (ordinal 0) (authored-target "driver")
+        (range (start 9 27) (end 9 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 21 27) (end 21 33)) (probe (position 21 27))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Time Slices::::bobDriving::item"))
+        (kind redefinition) (ordinal 0) (authored-target "driver")
+        (range (start 21 27) (end 21 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 4) (end 12 12)) (probe (position 12 4))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass"))
+        (kind redefinition) (ordinal 0) (authored-target "mass")
+        (range (start 12 4) (end 12 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::::mass") (range (start 12 4) (end 12 22)))
+        )
+      )
+    )
+    (query (range (start 16 4) (end 16 12)) (probe (position 16 4))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass"))
+        (kind redefinition) (ordinal 0) (authored-target "mass")
+        (range (start 16 4) (end 16 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Individuals and Time Slices::::aliceDriving::#occurrence::mass") (range (start 16 4) (end 16 22)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 51)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Time Slices::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Individuals and Snapshots Example::*")
+        (range (start 1 16) (end 1 51))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

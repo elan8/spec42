@@ -122,3 +122,30 @@ package 'Port Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 26) (end 7 30)) (probe (position 7 26))
+      (reference
+        (source (document "d0") (qualified-name "Port Example::FuelOutPort::temperature"))
+        (kind featureTyping) (ordinal 1) (authored-target "Temp")
+        (range (start 7 26) (end 7 30))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Port Example::Temp") (range (start 2 1) (end 2 20)))
+        )
+      )
+    )
+    (query (range (start 13 26) (end 13 30)) (probe (position 13 26))
+      (reference
+        (source (document "d0") (qualified-name "Port Example::FuelInPort::temperature"))
+        (kind featureTyping) (ordinal 1) (authored-target "Temp")
+        (range (start 13 26) (end 13 30))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Port Example::Temp") (range (start 2 1) (end 2 20)))
+        )
+      )
+    )
+  )
+)
+~~~

@@ -159,3 +159,28 @@ package 'Action Decomposition' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 18 12) (end 18 23)) (probe (position 18 12))
+      (reference
+        (source (document "d0") (qualified-name "Action Decomposition::takePicture"))
+        (kind flowSource) (ordinal 0) (authored-target "focus::image")
+        (range (start 18 12) (end 18 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Action Decomposition::takePicture::focus::image") (range (start 15 3) (end 15 18)))
+        )
+      )
+    )
+    (query (range (start 18 27) (end 18 38)) (probe (position 18 27))
+      (reference
+        (source (document "d0") (qualified-name "Action Decomposition::takePicture"))
+        (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
+        (range (start 18 27) (end 18 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

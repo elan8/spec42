@@ -454,3 +454,50 @@ standard library package Triggers {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 12 15) (end 12 21)) (probe (position 12 15))
+      (reference
+        (source (document "d0") (qualified-name "Triggers::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Clocks::*")
+        (range (start 12 15) (end 12 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 13 15) (end 13 26)) (probe (position 13 15))
+      (reference
+        (source (document "d0") (qualified-name "Triggers::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Observation::*")
+        (range (start 13 15) (end 13 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 37)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "Triggers::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 8 16) (end 8 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 39)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "Triggers::Occurrence"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+        (range (start 10 16) (end 10 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 44)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Triggers::NumericalValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::NumericalValue")
+        (range (start 9 16) (end 9 44))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

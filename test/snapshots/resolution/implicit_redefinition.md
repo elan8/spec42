@@ -77,3 +77,28 @@ package P {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 25) (end 2 29)) (probe (position 2 25))
+      (reference
+        (source (document "d0") (qualified-name "P::Base::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "Real")
+        (range (start 2 25) (end 2 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 4 22) (end 4 26)) (probe (position 4 22))
+      (reference
+        (source (document "d0") (qualified-name "P::Child"))
+        (kind specialization) (ordinal 0) (authored-target "Base")
+        (range (start 4 22) (end 4 26))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "P::Base") (range (start 1 4) (end 1 56)))
+        )
+      )
+    )
+  )
+)
+~~~

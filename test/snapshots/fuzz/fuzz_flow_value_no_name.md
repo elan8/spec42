@@ -74,3 +74,26 @@ package P {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 19) (end 2 25)) (probe (position 2 19))
+      (reference
+        (source (document "d0") (qualified-name "P::vehicle::eng"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 2 19) (end 2 25))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 19) (end 1 26)) (probe (position 1 19))
+      (reference
+        (source (document "d0") (qualified-name "P::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 1 19) (end 1 26))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

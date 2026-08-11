@@ -86,3 +86,8 @@ package 'Terminate Actions Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

@@ -43,3 +43,8 @@ semantic_graph_skip_reason=parser recovery for non-empty source produced no type
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

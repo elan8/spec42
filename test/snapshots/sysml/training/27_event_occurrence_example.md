@@ -118,3 +118,60 @@ package 'Event Occurrence Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 15) (end 7 21)) (probe (position 7 15))
+      (reference
+        (source (document "d0") (qualified-name "Event Occurrence Example::driver"))
+        (kind featureTyping) (ordinal 0) (authored-target "Driver")
+        (range (start 7 15) (end 7 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Event Occurrence Example::Driver") (range (start 1 1) (end 1 17)))
+        )
+      )
+    )
+    (query (range (start 23 16) (end 23 22)) (probe (position 23 16))
+      (reference
+        (source (document "d0") (qualified-name "Event Occurrence Example::vehicle::engine"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 23 16) (end 23 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Event Occurrence Example::Engine") (range (start 4 1) (end 4 17)))
+        )
+      )
+    )
+    (query (range (start 11 16) (end 11 23)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "Event Occurrence Example::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 11 16) (end 11 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Event Occurrence Example::Vehicle") (range (start 5 1) (end 5 18)))
+        )
+      )
+    )
+    (query (range (start 19 21) (end 19 32)) (probe (position 19 21))
+      (reference
+        (source (document "d0") (qualified-name "Event Occurrence Example::vehicle::speedometer"))
+        (kind featureTyping) (ordinal 0) (authored-target "Speedometer")
+        (range (start 19 21) (end 19 32))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Event Occurrence Example::Speedometer") (range (start 3 1) (end 3 22)))
+        )
+      )
+    )
+    (query (range (start 13 26) (end 13 42)) (probe (position 13 26))
+      (reference
+        (source (document "d0") (qualified-name "Event Occurrence Example::vehicle::cruiseController"))
+        (kind featureTyping) (ordinal 0) (authored-target "CruiseController")
+        (range (start 13 26) (end 13 42))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Event Occurrence Example::CruiseController") (range (start 2 1) (end 2 27)))
+        )
+      )
+    )
+  )
+)
+~~~

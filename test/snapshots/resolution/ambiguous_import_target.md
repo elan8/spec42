@@ -116,3 +116,32 @@ package Use {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d2"
+    (query (range (start 2 17) (end 2 22)) (probe (position 2 17))
+      (reference
+        (source (document "d2") (qualified-name "Use::usage"))
+        (kind featureTyping) (ordinal 0) (authored-target "Thing")
+        (range (start 2 17) (end 2 22))
+        (outcome (status ambiguous)
+          (target (document "d0") (qualified-name "Shared::Thing") (range (start 0 17) (end 0 32)))
+          (target (document "d1") (qualified-name "Shared::Thing") (range (start 0 17) (end 0 32)))
+        )
+      )
+    )
+    (query (range (start 1 11) (end 1 17)) (probe (position 1 11))
+      (reference
+        (source (document "d2") (qualified-name "Use::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Shared::*")
+        (range (start 1 11) (end 1 17))
+        (outcome (status ambiguous)
+          (target (document "d0") (qualified-name "Shared") (range (start 0 0) (end 0 34)))
+          (target (document "d1") (qualified-name "Shared") (range (start 0 0) (end 0 34)))
+        )
+      )
+    )
+  )
+)
+~~~

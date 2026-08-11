@@ -205,3 +205,18 @@ package AssignmentTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 3 20) (end 3 41)) (probe (position 3 20))
+      (reference
+        (source (document "d0") (qualified-name "AssignmentTest::Counter::count"))
+        (kind featureTyping) (ordinal 1) (authored-target "ScalarValues::Integer")
+        (range (start 3 20) (end 3 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

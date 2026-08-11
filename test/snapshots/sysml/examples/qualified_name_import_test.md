@@ -80,3 +80,26 @@ package QualifiedNameImportTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 17) (end 6 19)) (probe (position 6 17))
+      (reference
+        (source (document "d0") (qualified-name "QualifiedNameImportTest::P2::P2a::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "P1::*")
+        (range (start 6 17) (end 6 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 10) (end 10 16)) (probe (position 10 10))
+      (reference
+        (source (document "d0") (qualified-name "QualifiedNameImportTest::P2::x"))
+        (kind featureTyping) (ordinal 0) (authored-target "P2a::A")
+        (range (start 10 10) (end 10 16))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

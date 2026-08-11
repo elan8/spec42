@@ -37,3 +37,8 @@ class B :> A { }
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

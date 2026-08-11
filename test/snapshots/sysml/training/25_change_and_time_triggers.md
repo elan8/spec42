@@ -205,3 +205,72 @@ package 'Change and Time Triggers' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 4 16) (end 4 21)) (probe (position 4 16))
+      (reference
+        (source (document "d0") (qualified-name "Change and Time Triggers::h"))
+        (kind membershipImport) (ordinal 0) (authored-target "SI::h")
+        (range (start 4 16) (end 4 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 34) (end 10 47)) (probe (position 10 34))
+      (reference
+        (source (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceInterval"))
+        (kind featureTyping) (ordinal 1) (authored-target "DurationValue")
+        (range (start 10 34) (end 10 47))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Change and Time Triggers::DurationValue") (range (start 2 1) (end 2 35)))
+        )
+      )
+    )
+    (query (range (start 9 30) (end 9 46)) (probe (position 9 30))
+      (reference
+        (source (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maintenanceTime"))
+        (kind featureTyping) (ordinal 1) (authored-target "TimeInstantValue")
+        (range (start 9 30) (end 9 46))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Change and Time Triggers::TimeInstantValue") (range (start 3 1) (end 3 39)))
+        )
+      )
+    )
+    (query (range (start 11 29) (end 11 45)) (probe (position 11 29))
+      (reference
+        (source (document "d0") (qualified-name "Change and Time Triggers::Vehicle::maxTemperature"))
+        (kind featureTyping) (ordinal 1) (authored-target "TemperatureValue")
+        (range (start 11 29) (end 11 45))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Change and Time Triggers::TemperatureValue") (range (start 1 1) (end 1 38)))
+        )
+      )
+    )
+    (query (range (start 2 16) (end 2 34)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Change and Time Triggers::DurationValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ISQ::DurationValue")
+        (range (start 2 16) (end 2 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 37)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Change and Time Triggers::TemperatureValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ISQ::TemperatureValue")
+        (range (start 1 16) (end 1 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 38)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "Change and Time Triggers::TimeInstantValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Time::TimeInstantValue")
+        (range (start 3 16) (end 3 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

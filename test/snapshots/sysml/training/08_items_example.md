@@ -96,3 +96,26 @@ package 'Items Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 19) (end 7 23)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "Items Example::Vehicle::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "Real")
+        (range (start 7 19) (end 7 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Items Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

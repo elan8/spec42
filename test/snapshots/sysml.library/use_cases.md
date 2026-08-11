@@ -173,3 +173,36 @@ standard library package UseCases {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 9 25) (end 9 29)) (probe (position 9 25))
+      (reference
+        (source (document "d0") (qualified-name "UseCases::UseCase"))
+        (kind specialization) (ordinal 0) (authored-target "Case")
+        (range (start 9 25) (end 9 29))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "UseCases::Case") (range (start 6 1) (end 6 28)))
+        )
+      )
+    )
+    (query (range (start 6 16) (end 6 27)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "UseCases::Case"))
+        (kind membershipImport) (ordinal 0) (authored-target "Cases::Case")
+        (range (start 6 16) (end 6 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 28)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "UseCases::cases"))
+        (kind membershipImport) (ordinal 0) (authored-target "Cases::cases")
+        (range (start 7 16) (end 7 28))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

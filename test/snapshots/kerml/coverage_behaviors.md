@@ -114,3 +114,8 @@ package BehaviorCoverage {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

@@ -255,3 +255,70 @@ package '13b-Safety and Security Features Element Group-1' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 34 16) (end 34 23)) (probe (position 34 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety Features::vehicle"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle")
+        (range (start 34 16) (end 34 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 40 16) (end 40 23)) (probe (position 40 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Security Features::vehicle"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle")
+        (range (start 40 16) (end 40 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 46 16) (end 46 23)) (probe (position 46 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Safety & Security Features::vehicle"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle")
+        (range (start 46 16) (end 46 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 52 16) (end 52 23)) (probe (position 52 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::Mandatory Safety Features::vehicle"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle")
+        (range (start 52 16) (end 52 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 25)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "PartsTree::*")
+        (range (start 3 16) (end 3 25))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::PartsTree") (range (start 12 1) (end 12 449)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 37)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AnnotationDefinitions::*")
+        (range (start 2 16) (end 2 37))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "13b-Safety and Security Features Element Group-1::AnnotationDefinitions") (range (start 5 1) (end 5 124)))
+        )
+      )
+    )
+  )
+)
+~~~

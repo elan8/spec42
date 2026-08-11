@@ -128,3 +128,56 @@ package 'Part Definition Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 4 19) (end 4 23)) (probe (position 4 19))
+      (reference
+        (source (document "d0") (qualified-name "Part Definition Example::Vehicle::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "Real")
+        (range (start 4 19) (end 4 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 13) (end 7 19)) (probe (position 7 13))
+      (reference
+        (source (document "d0") (qualified-name "Part Definition Example::Vehicle::eng"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 7 13) (end 7 19))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Part Definition Example::Engine") (range (start 17 1) (end 17 17)))
+        )
+      )
+    )
+    (query (range (start 9 20) (end 9 26)) (probe (position 9 20))
+      (reference
+        (source (document "d0") (qualified-name "Part Definition Example::Vehicle::driver"))
+        (kind featureTyping) (ordinal 0) (authored-target "Person")
+        (range (start 9 20) (end 9 26))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Part Definition Example::Person") (range (start 18 1) (end 18 17)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Part Definition Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 21) (end 5 34)) (probe (position 5 21))
+      (reference
+        (source (document "d0") (qualified-name "Part Definition Example::Vehicle::status"))
+        (kind featureTyping) (ordinal 1) (authored-target "VehicleStatus")
+        (range (start 5 21) (end 5 34))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Part Definition Example::VehicleStatus") (range (start 12 1) (end 12 108)))
+        )
+      )
+    )
+  )
+)
+~~~

@@ -107,3 +107,20 @@ package DocTests {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 17 19) (end 17 26)) (probe (position 17 19))
+      (reference
+        (source (document "d0") (qualified-name "DocTests::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 17 19) (end 17 26))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DocTests::Vehicle") (range (start 3 4) (end 3 95)))
+        )
+      )
+    )
+  )
+)
+~~~

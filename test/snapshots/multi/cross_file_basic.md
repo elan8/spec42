@@ -87,3 +87,40 @@ package Usage {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 25) (end 2 43)) (probe (position 2 25))
+      (reference
+        (source (document "d0") (qualified-name "Definitions::Vehicle::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "ScalarValues::Real")
+        (range (start 2 25) (end 2 43))
+        (outcome (status unresolved))
+      )
+    )
+  )
+  (document "d1"
+    (query (range (start 2 13) (end 2 20)) (probe (position 2 13))
+      (reference
+        (source (document "d1") (qualified-name "Usage::v"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 2 13) (end 2 20))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Definitions::Vehicle") (range (start 1 4) (end 1 73)))
+        )
+      )
+    )
+    (query (range (start 1 11) (end 1 22)) (probe (position 1 11))
+      (reference
+        (source (document "d1") (qualified-name "Usage::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Definitions::*")
+        (range (start 1 11) (end 1 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Definitions") (range (start 0 0) (end 0 97)))
+        )
+      )
+    )
+  )
+)
+~~~

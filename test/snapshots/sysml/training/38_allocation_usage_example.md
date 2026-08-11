@@ -159,3 +159,66 @@ package 'Allocation Usage Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 23 17) (end 23 23)) (probe (position 23 17))
+      (reference
+        (source (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel::powerTrain::engine"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 23 17) (end 23 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel::Engine") (range (start 20 2) (end 20 18)))
+        )
+      )
+    )
+    (query (range (start 22 20) (end 22 30)) (probe (position 22 20))
+      (reference
+        (source (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel::powerTrain"))
+        (kind featureTyping) (ordinal 0) (authored-target "PowerTrain")
+        (range (start 22 20) (end 22 30))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel::PowerTrain") (range (start 19 2) (end 19 22)))
+        )
+      )
+    )
+    (query (range (start 28 30) (end 28 40)) (probe (position 28 30))
+      (reference
+        (source (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel"))
+        (kind allocateTarget) (ordinal 0) (authored-target "powerTrain")
+        (range (start 28 30) (end 28 40))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel::powerTrain") (range (start 22 2) (end 22 108)))
+        )
+      )
+    )
+    (query (range (start 17 17) (end 17 29)) (probe (position 17 17))
+      (reference
+        (source (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "LogicalModel::*")
+        (range (start 17 17) (end 17 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 25) (end 11 40)) (probe (position 11 25))
+      (reference
+        (source (document "d0") (qualified-name "Allocation Usage Example::LogicalModel::torqueGenerator"))
+        (kind featureTyping) (ordinal 0) (authored-target "TorqueGenerator")
+        (range (start 11 25) (end 11 40))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Allocation Usage Example::LogicalModel::TorqueGenerator") (range (start 5 2) (end 5 27)))
+        )
+      )
+    )
+    (query (range (start 28 11) (end 28 26)) (probe (position 28 11))
+      (reference
+        (source (document "d0") (qualified-name "Allocation Usage Example::PhysicalModel"))
+        (kind allocateSource) (ordinal 0) (authored-target "torqueGenerator")
+        (range (start 28 11) (end 28 26))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

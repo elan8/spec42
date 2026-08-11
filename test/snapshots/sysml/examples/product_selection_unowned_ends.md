@@ -141,3 +141,36 @@ package ProductSelection_UnownedEnds_SysML {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 17 42) (end 17 58)) (probe (position 17 42))
+      (reference
+        (source (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::SingleProductSelection"))
+        (kind specialization) (ordinal 0) (authored-target "ProductSelection")
+        (range (start 17 42) (end 17 58))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection") (range (start 10 1) (end 10 206)))
+        )
+      )
+    )
+    (query (range (start 14 47) (end 14 68)) (probe (position 14 47))
+      (reference
+        (source (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::selectedProduct"))
+        (kind crossSubsetting) (ordinal 0) (authored-target "cart.selectedProducts")
+        (range (start 14 47) (end 14 68))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 13 41) (end 13 63)) (probe (position 13 41))
+      (reference
+        (source (document "d0") (qualified-name "ProductSelection_UnownedEnds_SysML::ProductSelection::cart"))
+        (kind crossSubsetting) (ordinal 0) (authored-target "selectedProduct.inCart")
+        (range (start 13 41) (end 13 63))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

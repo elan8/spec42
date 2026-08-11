@@ -275,3 +275,60 @@ package '10a-Analysis' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 18)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "10a-Analysis::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 2 16) (end 2 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 19)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "10a-Analysis::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 1 16) (end 1 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 3) (end 11 11)) (probe (position 11 3))
+      (reference
+        (source (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::mass"))
+        (kind redefinition) (ordinal 0) (authored-target "mass")
+        (range (start 11 3) (end 11 11))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::mass") (range (start 11 3) (end 11 167)))
+        )
+      )
+    )
+    (query (range (start 11 14) (end 11 23)) (probe (position 11 14))
+      (reference
+        (source (document "d0") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 11 14) (end 11 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 34)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "10a-Analysis::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions::*")
+        (range (start 3 16) (end 3 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 37 17) (end 37 44)) (probe (position 37 17))
+      (reference
+        (source (document "d0") (qualified-name "10a-Analysis::VehicleAnalysisModel::Vehicle"))
+        (kind membershipImport) (ordinal 0) (authored-target "VehicleDesignModel::Vehicle")
+        (range (start 37 17) (end 37 44))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

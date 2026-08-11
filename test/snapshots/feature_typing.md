@@ -37,3 +37,8 @@ feature x : Integer;
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

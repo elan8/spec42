@@ -131,3 +131,60 @@ package 'Interface Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 12 13) (end 12 19)) (probe (position 12 13))
+      (reference
+        (source (document "d0") (qualified-name "Interface Example::vehicle::eng"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 12 13) (end 12 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 23)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "Interface Example::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 10 16) (end 10 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Interface Example::Vehicle") (range (start 3 1) (end 3 18)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 30)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Interface Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Port Example::*")
+        (range (start 1 16) (end 1 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 18) (end 11 34)) (probe (position 11 18))
+      (reference
+        (source (document "d0") (qualified-name "Interface Example::vehicle::tankAssy"))
+        (kind featureTyping) (ordinal 0) (authored-target "FuelTankAssembly")
+        (range (start 11 18) (end 11 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 16 20) (end 16 38)) (probe (position 16 20))
+      (reference
+        (source (document "d0") (qualified-name "Interface Example::vehicle"))
+        (kind connectionTarget) (ordinal 0) (authored-target "eng::engineFuelPort")
+        (range (start 16 20) (end 16 38))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 15 20) (end 15 41)) (probe (position 15 20))
+      (reference
+        (source (document "d0") (qualified-name "Interface Example::vehicle"))
+        (kind connectionSource) (ordinal 0) (authored-target "tankAssy::fuelTankPort")
+        (range (start 15 20) (end 15 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

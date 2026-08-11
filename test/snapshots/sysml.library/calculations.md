@@ -153,3 +153,42 @@ standard library package Calculations {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 9 16) (end 9 31)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Calculations::Action"))
+        (kind membershipImport) (ordinal 0) (authored-target "Actions::Action")
+        (range (start 9 16) (end 9 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 32)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "Calculations::actions"))
+        (kind membershipImport) (ordinal 0) (authored-target "Actions::actions")
+        (range (start 10 16) (end 10 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 40)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "Calculations::Evaluation"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::Evaluation")
+        (range (start 7 16) (end 7 40))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 41)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "Calculations::evaluations"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::evaluations")
+        (range (start 8 16) (end 8 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

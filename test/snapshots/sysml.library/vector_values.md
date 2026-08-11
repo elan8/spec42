@@ -178,3 +178,34 @@ standard library package VectorValues {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 19) (end 8 37)) (probe (position 8 19))
+      (reference
+        (source (document "d0") (qualified-name "VectorValues::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 8 19) (end 8 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 19) (end 9 37)) (probe (position 9 19))
+      (reference
+        (source (document "d0") (qualified-name "VectorValues::Array"))
+        (kind membershipImport) (ordinal 0) (authored-target "Collections::Array")
+        (range (start 9 19) (end 9 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 19) (end 7 47)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "VectorValues::NumericalValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::NumericalValue")
+        (range (start 7 19) (end 7 47))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

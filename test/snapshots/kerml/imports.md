@@ -190,3 +190,50 @@ package Imports {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 26 16) (end 26 17)) (probe (position 26 16))
+      (reference
+        (source (document "d0") (qualified-name "Imports::R::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Q::*")
+        (range (start 26 16) (end 26 17))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 31 16) (end 31 17)) (probe (position 31 16))
+      (reference
+        (source (document "d0") (qualified-name "Imports::S::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "P::*")
+        (range (start 31 16) (end 31 17))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 32 16) (end 32 17)) (probe (position 32 16))
+      (reference
+        (source (document "d0") (qualified-name "Imports::S::Q"))
+        (kind membershipImport) (ordinal 0) (authored-target "Q")
+        (range (start 32 16) (end 32 17))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 40 16) (end 40 17)) (probe (position 40 16))
+      (reference
+        (source (document "d0") (qualified-name "Imports::S1::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "P::*")
+        (range (start 40 16) (end 40 17))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 41 16) (end 41 17)) (probe (position 41 16))
+      (reference
+        (source (document "d0") (qualified-name "Imports::S1::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "R::*")
+        (range (start 41 16) (end 41 17))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

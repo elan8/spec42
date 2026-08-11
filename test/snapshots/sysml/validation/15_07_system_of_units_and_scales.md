@@ -142,3 +142,26 @@ package '15_07-System of Units and Scales' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 19) (end 1 22)) (probe (position 1 19))
+      (reference
+        (source (document "d0") (qualified-name "15_07-System of Units and Scales::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 1 19) (end 1 22))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 19) (end 2 35)) (probe (position 2 19))
+      (reference
+        (source (document "d0") (qualified-name "15_07-System of Units and Scales::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "USCustomaryUnits::*")
+        (range (start 2 19) (end 2 35))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

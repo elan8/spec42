@@ -135,3 +135,30 @@ package MultiplicityTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 16) (end 6 17)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "MultiplicityTest::b"))
+        (kind featureTyping) (ordinal 0) (authored-target "P")
+        (range (start 6 16) (end 6 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "MultiplicityTest::P") (range (start 2 1) (end 2 12)))
+        )
+      )
+    )
+    (query (range (start 7 10) (end 7 11)) (probe (position 7 10))
+      (reference
+        (source (document "d0") (qualified-name "MultiplicityTest::c"))
+        (kind featureTyping) (ordinal 0) (authored-target "P")
+        (range (start 7 10) (end 7 11))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "MultiplicityTest::P") (range (start 2 1) (end 2 12)))
+        )
+      )
+    )
+  )
+)
+~~~

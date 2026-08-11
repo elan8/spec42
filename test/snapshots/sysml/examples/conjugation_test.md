@@ -148,3 +148,30 @@ package ConjugationTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 25 22) (end 25 26)) (probe (position 25 22))
+      (reference
+        (source (document "d0") (qualified-name "ConjugationTest::B1::a::p3"))
+        (kind referenceSubsetting) (ordinal 0) (authored-target "p.p1")
+        (range (start 25 22) (end 25 26))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ConjugationTest::B1::p::p1") (range (start 20 3) (end 20 14)))
+        )
+      )
+    )
+    (query (range (start 26 23) (end 26 27)) (probe (position 26 23))
+      (reference
+        (source (document "d0") (qualified-name "ConjugationTest::B1::a::p4"))
+        (kind referenceSubsetting) (ordinal 0) (authored-target "p.p2")
+        (range (start 26 23) (end 26 27))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ConjugationTest::B1::p::p2") (range (start 21 3) (end 21 15)))
+        )
+      )
+    )
+  )
+)
+~~~

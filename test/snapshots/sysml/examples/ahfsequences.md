@@ -323,3 +323,42 @@ package AHFNorwaySequences {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 5 16) (end 5 25)) (probe (position 5 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorwaySequences::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AHFNorway::*")
+        (range (start 5 16) (end 5 25))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 4 16) (end 4 26)) (probe (position 4 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorwaySequences::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AHFCoreLib::*")
+        (range (start 4 16) (end 4 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 28)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorwaySequences::*#import3"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 6 16) (end 6 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 29)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorwaySequences::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AHFProfileLib::*")
+        (range (start 3 16) (end 3 29))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

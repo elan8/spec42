@@ -487,3 +487,50 @@ package AHFNorway {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 26)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorway::AHFCoreLib"))
+        (kind membershipImport) (ordinal 0) (authored-target "AHFCoreLib")
+        (range (start 7 16) (end 7 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 18 32) (end 18 43)) (probe (position 18 32))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorway::APIS_DD"))
+        (kind specialization) (ordinal 0) (authored-target "APISService")
+        (range (start 18 32) (end 18 43))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 28)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorway::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 8 16) (end 8 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 16) (end 5 29)) (probe (position 5 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorway::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AHFProfileLib::*")
+        (range (start 5 16) (end 5 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 34)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFNorway::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AHFProfileMetadata::*")
+        (range (start 6 16) (end 6 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

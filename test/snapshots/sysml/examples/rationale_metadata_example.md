@@ -127,3 +127,46 @@ package RationaleMetadataExample {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 23) (end 7 29)) (probe (position 7 23))
+      (reference
+        (source (document "d0") (qualified-name "RationaleMetadataExample::engine4cyl"))
+        (kind subsetting) (ordinal 0) (authored-target "engine")
+        (range (start 7 23) (end 7 29))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "RationaleMetadataExample::engine") (range (start 6 4) (end 6 16)))
+        )
+      )
+    )
+    (query (range (start 8 23) (end 8 29)) (probe (position 8 23))
+      (reference
+        (source (document "d0") (qualified-name "RationaleMetadataExample::engine6cyl"))
+        (kind subsetting) (ordinal 0) (authored-target "engine")
+        (range (start 8 23) (end 8 29))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "RationaleMetadataExample::engine") (range (start 6 4) (end 6 16)))
+        )
+      )
+    )
+    (query (range (start 15 19) (end 15 31)) (probe (position 15 19))
+      (reference
+        (source (document "d0") (qualified-name "RationaleMetadataExample::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "TradeStudies::*")
+        (range (start 15 19) (end 15 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 43)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "RationaleMetadataExample::Rationale"))
+        (kind membershipImport) (ordinal 0) (authored-target "ModelingMetadata::Rationale")
+        (range (start 1 16) (end 1 43))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

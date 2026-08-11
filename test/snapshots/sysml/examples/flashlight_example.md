@@ -243,3 +243,50 @@ package 'Flashlight Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 51 63) (end 51 81)) (probe (position 51 63))
+      (reference
+        (source (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))
+        (kind successionFlowTarget) (ordinal 1) (authored-target "reflectLight::light")
+        (range (start 51 63) (end 51 81))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Flashlight Example::illuminateRegion::reflectLight::light") (range (start 53 24) (end 53 40)))
+        )
+      )
+    )
+    (query (range (start 47 36) (end 47 57)) (probe (position 47 36))
+      (reference
+        (source (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))
+        (kind successionFlowSource) (ordinal 0) (authored-target "sendOnOffCmd::onOffCmd")
+        (range (start 47 36) (end 47 57))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Flashlight Example::illuminateRegion::sendOnOffCmd::onOffCmd") (range (start 45 24) (end 45 47)))
+        )
+      )
+    )
+    (query (range (start 51 33) (end 51 59)) (probe (position 51 33))
+      (reference
+        (source (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))
+        (kind successionFlowSource) (ordinal 1) (authored-target "produceDirectedLight::light")
+        (range (start 51 33) (end 51 59))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::light") (range (start 49 45) (end 49 62)))
+        )
+      )
+    )
+    (query (range (start 47 61) (end 47 90)) (probe (position 47 61))
+      (reference
+        (source (document "d0") (qualified-name "Flashlight Example::illuminateRegion"))
+        (kind successionFlowTarget) (ordinal 0) (authored-target "produceDirectedLight::onOffCmd")
+        (range (start 47 61) (end 47 90))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Flashlight Example::illuminateRegion::produceDirectedLight::onOffCmd") (range (start 49 32) (end 49 44)))
+        )
+      )
+    )
+  )
+)
+~~~

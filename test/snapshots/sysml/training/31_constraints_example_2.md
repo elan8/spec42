@@ -177,3 +177,78 @@ package 'Constraints Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 18)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 2 16) (end 2 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 19)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 1 16) (end 1 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 23 16) (end 23 22)) (probe (position 23 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::Vehicle::engine"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 23 16) (end 23 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Constraints Example-2::Engine") (range (start 5 1) (end 5 17)))
+        )
+      )
+    )
+    (query (range (start 27 22) (end 27 28)) (probe (position 27 22))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::Vehicle::transmission"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 27 22) (end 27 28))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Constraints Example-2::Engine") (range (start 5 1) (end 5 17)))
+        )
+      )
+    )
+    (query (range (start 21 26) (end 21 35)) (probe (position 21 26))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::Vehicle::chassisMass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 21 26) (end 21 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 24 20) (end 24 29)) (probe (position 24 20))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::Vehicle::engine::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 24 20) (end 24 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 28 20) (end 28 29)) (probe (position 28 20))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::Vehicle::transmission::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 28 20) (end 28 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 34)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints Example-2::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions::*")
+        (range (start 3 16) (end 3 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

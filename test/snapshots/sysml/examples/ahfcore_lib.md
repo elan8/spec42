@@ -205,3 +205,62 @@ library package AHFCoreLib {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 15 22) (end 15 28)) (probe (position 15 22))
+      (reference
+        (source (document "d0") (qualified-name "AHFCoreLib::Authorisation::publickey"))
+        (kind featureTyping) (ordinal 1) (authored-target "String")
+        (range (start 15 22) (end 15 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 28)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFCoreLib::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 3 16) (end 3 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 29)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFCoreLib::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AHFProfileLib::*")
+        (range (start 2 16) (end 2 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 18 38) (end 18 51)) (probe (position 18 38))
+      (reference
+        (source (document "d0") (qualified-name "AHFCoreLib::AuthorisationDD"))
+        (kind specialization) (ordinal 0) (authored-target "Authorisation")
+        (range (start 18 38) (end 18 51))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "AHFCoreLib::Authorisation") (range (start 14 10) (end 14 87)))
+        )
+      )
+    )
+    (query (range (start 11 41) (end 11 57)) (probe (position 11 41))
+      (reference
+        (source (document "d0") (qualified-name "AHFCoreLib::ServiceDiscoveryDD"))
+        (kind specialization) (ordinal 0) (authored-target "ServiceDiscovery")
+        (range (start 11 41) (end 11 57))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "AHFCoreLib::ServiceDiscovery") (range (start 6 10) (end 6 180)))
+        )
+      )
+    )
+    (query (range (start 4 16) (end 4 34)) (probe (position 4 16))
+      (reference
+        (source (document "d0") (qualified-name "AHFCoreLib::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AHFProfileMetadata::*")
+        (range (start 4 16) (end 4 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

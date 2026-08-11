@@ -389,3 +389,44 @@ standard library package ModelingMetadata {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 16) (end 6 30)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "ModelingMetadata::Anything"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
+        (range (start 6 16) (end 6 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 34)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "ModelingMetadata::Risk"))
+        (kind membershipImport) (ordinal 0) (authored-target "RiskMetadata::Risk")
+        (range (start 8 16) (end 8 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 36)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "ModelingMetadata::String"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+        (range (start 7 16) (end 7 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 139 2) (end 139 22)) (probe (position 139 2))
+      (reference
+        (source (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement"))
+        (kind redefinition) (ordinal 0) (authored-target "annotatedElement")
+        (range (start 139 2) (end 139 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ModelingMetadata::Refinement::annotatedElement") (range (start 139 2) (end 139 43)))
+        )
+      )
+    )
+  )
+)
+~~~

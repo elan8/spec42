@@ -124,3 +124,46 @@ package 'Variation Usages' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 31) (end 8 38)) (probe (position 8 31))
+      (reference
+        (source (document "d0") (qualified-name "Variation Usages::vehicleFamily"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 8 31) (end 8 38))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Variation Usages::Vehicle") (range (start 3 1) (end 3 18)))
+        )
+      )
+    )
+    (query (range (start 11 32) (end 11 44)) (probe (position 11 32))
+      (reference
+        (source (document "d0") (qualified-name "Variation Usages::vehicleFamily::transmission"))
+        (kind featureTyping) (ordinal 0) (authored-target "Transmission")
+        (range (start 11 32) (end 11 44))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Variation Usages::Transmission") (range (start 4 1) (end 4 23)))
+        )
+      )
+    )
+    (query (range (start 9 16) (end 9 29)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Variation Usages::vehicleFamily::engine"))
+        (kind featureTyping) (ordinal 0) (authored-target "EngineChoices")
+        (range (start 9 16) (end 9 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 39)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Variation Usages::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Variation Definitions::*")
+        (range (start 1 16) (end 1 39))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

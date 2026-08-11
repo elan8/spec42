@@ -379,3 +379,50 @@ standard library package Collections {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 16) (end 8 20)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "Collections::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Base::*")
+        (range (start 8 16) (end 8 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 28)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Collections::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 9 16) (end 9 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 32)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "Collections::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "IntegerFunctions::*")
+        (range (start 11 16) (end 11 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 16) (end 12 32)) (probe (position 12 16))
+      (reference
+        (source (document "d0") (qualified-name "Collections::*#import3"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ControlFunctions::*")
+        (range (start 12 16) (end 12 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 39)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "Collections::size"))
+        (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::size")
+        (range (start 10 16) (end 10 39))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

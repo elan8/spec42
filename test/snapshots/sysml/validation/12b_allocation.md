@@ -119,3 +119,50 @@ package '12b-Allocation' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 22 29) (end 22 39)) (probe (position 22 29))
+      (reference
+        (source (document "d0") (qualified-name "12b-Allocation"))
+        (kind allocateTarget) (ordinal 0) (authored-target "powerTrain")
+        (range (start 22 29) (end 22 39))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "12b-Allocation::PhysicalModel::powerTrain") (range (start 15 2) (end 15 86)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "12b-Allocation::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "LogicalModel::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "12b-Allocation::LogicalModel") (range (start 4 1) (end 4 152)))
+        )
+      )
+    )
+    (query (range (start 2 16) (end 2 29)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "12b-Allocation::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "PhysicalModel::*")
+        (range (start 2 16) (end 2 29))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "12b-Allocation::PhysicalModel") (range (start 14 1) (end 14 114)))
+        )
+      )
+    )
+    (query (range (start 22 10) (end 22 25)) (probe (position 22 10))
+      (reference
+        (source (document "d0") (qualified-name "12b-Allocation"))
+        (kind allocateSource) (ordinal 0) (authored-target "torqueGenerator")
+        (range (start 22 10) (end 22 25))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "12b-Allocation::LogicalModel::torqueGenerator") (range (start 9 2) (end 9 68)))
+        )
+      )
+    )
+  )
+)
+~~~

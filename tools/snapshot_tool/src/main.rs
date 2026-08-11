@@ -235,6 +235,8 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &sequential.diagnostics)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
+    let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &sequential.navigation)
+        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_full_section(&fixture, "FORMAT", &format)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     Ok(canonicalize_sections(&fixture))
@@ -243,6 +245,7 @@ fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
 struct OwnedSections {
     smg: String,
     diagnostics: String,
+    navigation: String,
 }
 
 fn build_model(
@@ -270,7 +273,15 @@ fn render_owned_sections(
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
     let smg = render_semantic_model(&model)?;
     let diagnostics = render_diagnostics(&model, documents, source_documents)?;
-    Ok(OwnedSections { smg, diagnostics })
+    let mut navigation = String::new();
+    model
+        .write_navigation_debug_sexpr(&mut navigation)
+        .map_err(|error| format!("navigation rendering failed: {error}"))?;
+    Ok(OwnedSections {
+        smg,
+        diagnostics,
+        navigation,
+    })
 }
 
 fn ensure_strategy_parity(
@@ -287,6 +298,12 @@ fn ensure_strategy_parity(
     if sequential.diagnostics != parallel.diagnostics {
         return Err(format!(
             "{}: sequential and parallel diagnostics outputs differ",
+            path.display()
+        ));
+    }
+    if sequential.navigation != parallel.navigation {
+        return Err(format!(
+            "{}: sequential and parallel navigation outputs differ",
             path.display()
         ));
     }
@@ -437,7 +454,14 @@ fn replace_or_insert_full_section(fixture: &str, name: &str, replacement: &str) 
 
 /// Canonical top-level Markdown order. SOURCE is authored; the other sections are owned by this
 /// runner. Canonicalization drops sections outside this ownership contract.
-const SECTION_ORDER: &[&str] = &["META", "SOURCE", "DIAGNOSTICS", "FORMAT", "SMG"];
+const SECTION_ORDER: &[&str] = &[
+    "META",
+    "SOURCE",
+    "DIAGNOSTICS",
+    "FORMAT",
+    "SMG",
+    "NAVIGATION",
+];
 
 fn canonicalize_sections(fixture: &str) -> String {
     let mut sections = Vec::<(&str, &str, usize)>::new();
@@ -597,10 +621,12 @@ mod tests {
         let sequential = OwnedSections {
             smg: "sequential".to_string(),
             diagnostics: "same".to_string(),
+            navigation: "same".to_string(),
         };
         let parallel = OwnedSections {
             smg: "parallel".to_string(),
             diagnostics: "same".to_string(),
+            navigation: "same".to_string(),
         };
         let error = ensure_strategy_parity(Path::new("fixture.md"), &sequential, &parallel)
             .expect_err("mismatched owned output must fail parity");
@@ -633,11 +659,13 @@ mod tests {
         let fixture = "# META\n~~~ini\ntype=file\n~~~\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n";
         let first = replace_or_insert_section(fixture, "SMG", "model").unwrap();
         let first = replace_or_insert_section(&first, "DIAGNOSTICS", "diagnostics").unwrap();
+        let first = replace_or_insert_section(&first, "NAVIGATION", "navigation").unwrap();
         let first =
             replace_or_insert_full_section(&first, "FORMAT", "~~~sysml\npackage A {}\n~~~\n")
                 .unwrap();
         let second = replace_or_insert_section(&first, "SMG", "model").unwrap();
         let second = replace_or_insert_section(&second, "DIAGNOSTICS", "diagnostics").unwrap();
+        let second = replace_or_insert_section(&second, "NAVIGATION", "navigation").unwrap();
         let second =
             replace_or_insert_full_section(&second, "FORMAT", "~~~sysml\npackage A {}\n~~~\n")
                 .unwrap();
@@ -646,11 +674,11 @@ mod tests {
 
     #[test]
     fn canonicalizes_shuffled_top_level_sections() {
-        let fixture = "# SMG\nold\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# META\nmeta\n# DIAGNOSTICS\ndiag\n";
+        let fixture = "# SMG\nold\n# NAVIGATION\nnav\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# META\nmeta\n# DIAGNOSTICS\ndiag\n# FORMAT\nformat\n";
         let canonical = canonicalize_sections(fixture);
         assert_eq!(
             canonical,
-            "# META\nmeta\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# DIAGNOSTICS\ndiag\n# SMG\nold\n"
+            "# META\nmeta\n# SOURCE\n~~~sysml\npackage A {}\n~~~\n# DIAGNOSTICS\ndiag\n# FORMAT\nformat\n# SMG\nold\n# NAVIGATION\nnav\n"
         );
         assert_eq!(canonicalize_sections(&canonical), canonical);
     }

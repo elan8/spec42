@@ -114,3 +114,8 @@ package ProductSelection_N_ary_SysML {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

@@ -111,3 +111,56 @@ package ServerSequenceModelOutside {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 11) (end 8 17)) (probe (position 8 11))
+      (reference
+        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server"))
+        (kind redefinition) (ordinal 0) (authored-target "server")
+        (range (start 8 11) (end 8 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::server") (range (start 8 2) (end 8 245)))
+        )
+      )
+    )
+    (query (range (start 4 11) (end 4 19)) (probe (position 4 11))
+      (reference
+        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer"))
+        (kind redefinition) (ordinal 0) (authored-target "producer")
+        (range (start 4 11) (end 4 19))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::producer") (range (start 4 2) (end 4 80)))
+        )
+      )
+    )
+    (query (range (start 14 11) (end 14 19)) (probe (position 14 11))
+      (reference
+        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer"))
+        (kind redefinition) (ordinal 0) (authored-target "consumer")
+        (range (start 14 11) (end 14 19))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside::consumer") (range (start 14 2) (end 14 247)))
+        )
+      )
+    )
+    (query (range (start 3 35) (end 3 49)) (probe (position 3 35))
+      (reference
+        (source (document "d0") (qualified-name "ServerSequenceModelOutside::PubSubSequenceOutside"))
+        (kind specialization) (ordinal 0) (authored-target "PubSubSequence")
+        (range (start 3 35) (end 3 49))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 15) (end 1 34)) (probe (position 1 15))
+      (reference
+        (source (document "d0") (qualified-name "ServerSequenceModelOutside::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ServerSequenceModel::*")
+        (range (start 1 15) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

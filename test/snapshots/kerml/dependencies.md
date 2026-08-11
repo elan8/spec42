@@ -96,3 +96,20 @@ package Dependencies {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 15) (end 8 21)) (probe (position 8 15))
+      (reference
+        (source (document "d0") (qualified-name "Dependencies::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "System::*")
+        (range (start 8 15) (end 8 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Dependencies::System") (range (start 2 1) (end 2 102)))
+        )
+      )
+    )
+  )
+)
+~~~

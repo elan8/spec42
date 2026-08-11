@@ -113,3 +113,58 @@ package 'Packet Usage' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 15) (end 1 22)) (probe (position 1 15))
+      (reference
+        (source (document "d0") (qualified-name "Packet Usage::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Packets::*")
+        (range (start 1 15) (end 1 22))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 34)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Packet Usage::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 2 16) (end 2 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 43) (end 7 62)) (probe (position 7 43))
+      (reference
+        (source (document "d0") (qualified-name "Packet Usage::packet3::special data field"))
+        (kind redefinition) (ordinal 0) (authored-target "packet data field")
+        (range (start 7 43) (end 7 62))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 4 15) (end 4 36)) (probe (position 4 15))
+      (reference
+        (source (document "d0") (qualified-name "Packet Usage::packet1"))
+        (kind featureTyping) (ordinal 0) (authored-target "Thermal Data Packet")
+        (range (start 4 15) (end 4 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 15) (end 5 36)) (probe (position 5 15))
+      (reference
+        (source (document "d0") (qualified-name "Packet Usage::packet2"))
+        (kind featureTyping) (ordinal 0) (authored-target "Thermal Data Packet")
+        (range (start 5 15) (end 5 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 15) (end 6 36)) (probe (position 6 15))
+      (reference
+        (source (document "d0") (qualified-name "Packet Usage::packet3"))
+        (kind featureTyping) (ordinal 0) (authored-target "Thermal Data Packet")
+        (range (start 6 15) (end 6 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

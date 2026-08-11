@@ -150,3 +150,44 @@ package 'Enumeration Definitions-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 24 25) (end 24 29)) (probe (position 24 25))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-2::GradePoints"))
+        (kind specialization) (ordinal 0) (authored-target "Real")
+        (range (start 24 25) (end 24 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 41) (end 9 60)) (probe (position 9 41))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationKind"))
+        (kind specialization) (ordinal 0) (authored-target "ClassificationLevel")
+        (range (start 9 41) (end 9 60))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Enumeration Definitions-2::ClassificationLevel") (range (start 4 1) (end 4 105)))
+        )
+      )
+    )
+    (query (range (start 2 16) (end 2 43)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-2::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Enumeration Definitions-1::*")
+        (range (start 2 16) (end 2 43))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

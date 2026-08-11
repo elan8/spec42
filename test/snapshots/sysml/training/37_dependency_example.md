@@ -96,3 +96,8 @@ package 'Dependency Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

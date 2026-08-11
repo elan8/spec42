@@ -229,3 +229,58 @@ standard library package CollectionFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 12 15) (end 12 26)) (probe (position 12 15))
+      (reference
+        (source (document "d0") (qualified-name "CollectionFunctions::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Collections::*")
+        (range (start 12 15) (end 12 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 28)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "CollectionFunctions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 8 16) (end 8 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 30)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "CollectionFunctions::Anything"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
+        (range (start 7 16) (end 7 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 40)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "CollectionFunctions::exists"))
+        (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::exists")
+        (range (start 11 16) (end 11 40))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 41)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "CollectionFunctions::equals"))
+        (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::equals")
+        (range (start 9 16) (end 9 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 43)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "CollectionFunctions::includes"))
+        (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::includes")
+        (range (start 10 16) (end 10 43))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

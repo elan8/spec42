@@ -98,3 +98,18 @@ package MedicalDeviceFailure {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 30)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "MedicalDeviceFailure::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "CauseAndEffect::*")
+        (range (start 1 16) (end 1 30))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

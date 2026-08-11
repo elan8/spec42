@@ -180,3 +180,56 @@ package '15_12-Compound Value Type' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 28 19) (end 28 24)) (probe (position 28 19))
+      (reference
+        (source (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::width"))
+        (kind redefinition) (ordinal 0) (authored-target "width")
+        (range (start 28 19) (end 28 24))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::width") (range (start 28 5) (end 28 31)))
+        )
+      )
+    )
+    (query (range (start 27 19) (end 27 30)) (probe (position 27 19))
+      (reference
+        (source (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::hubDiameter"))
+        (kind redefinition) (ordinal 0) (authored-target "hubDiameter")
+        (range (start 27 19) (end 27 30))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::hubDiameter") (range (start 27 5) (end 27 44)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "15_12-Compound Value Type::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 26 19) (end 26 31)) (probe (position 26 19))
+      (reference
+        (source (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::manufacturer"))
+        (kind redefinition) (ordinal 0) (authored-target "manufacturer")
+        (range (start 26 19) (end 26 31))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "15_12-Compound Value Type::frenchTireInfo::manufacturer") (range (start 26 5) (end 26 45)))
+        )
+      )
+    )
+    (query (range (start 2 16) (end 2 38)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "15_12-Compound Value Type::in"))
+        (kind membershipImport) (ordinal 0) (authored-target "USCustomaryUnits::in")
+        (range (start 2 16) (end 2 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

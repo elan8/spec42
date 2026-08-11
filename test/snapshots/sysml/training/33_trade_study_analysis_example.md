@@ -272,3 +272,64 @@ package 'Trade Study Analysis Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 5 19) (end 5 25)) (probe (position 5 19))
+      (reference
+        (source (document "d0") (qualified-name "Trade Study Analysis Example::engine4cyl"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 5 19) (end 5 25))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Trade Study Analysis Example::Engine") (range (start 4 1) (end 4 17)))
+        )
+      )
+    )
+    (query (range (start 6 19) (end 6 25)) (probe (position 6 19))
+      (reference
+        (source (document "d0") (qualified-name "Trade Study Analysis Example::engine6cyl"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 6 19) (end 6 25))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Trade Study Analysis Example::Engine") (range (start 4 1) (end 4 17)))
+        )
+      )
+    )
+    (query (range (start 27 38) (end 27 44)) (probe (position 27 38))
+      (reference
+        (source (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::anEngine"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 27 38) (end 27 44))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Trade Study Analysis Example::Engine") (range (start 4 1) (end 4 17)))
+        )
+      )
+    )
+    (query (range (start 27 24) (end 27 35)) (probe (position 27 24))
+      (reference
+        (source (document "d0") (qualified-name "Trade Study Analysis Example::engineTradeStudy::anEngine"))
+        (kind redefinition) (ordinal 0) (authored-target "alternative")
+        (range (start 27 24) (end 27 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 28)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Trade Study Analysis Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "TradeStudies::*")
+        (range (start 2 16) (end 2 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Trade Study Analysis Example::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

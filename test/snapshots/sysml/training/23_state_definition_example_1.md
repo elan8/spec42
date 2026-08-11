@@ -120,3 +120,8 @@ package 'State Definition Example-1' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

@@ -109,3 +109,50 @@ package DefaultValueTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 11) (end 7 12)) (probe (position 7 11))
+      (reference
+        (source (document "d0") (qualified-name "DefaultValueTest::v1"))
+        (kind featureTyping) (ordinal 0) (authored-target "V")
+        (range (start 7 11) (end 7 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DefaultValueTest::V") (range (start 2 1) (end 2 64)))
+        )
+      )
+    )
+    (query (range (start 8 16) (end 8 17)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "DefaultValueTest::v1::m"))
+        (kind redefinition) (ordinal 0) (authored-target "m")
+        (range (start 8 16) (end 8 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DefaultValueTest::v1::m") (range (start 8 2) (end 8 23)))
+        )
+      )
+    )
+    (query (range (start 11 15) (end 11 16)) (probe (position 11 15))
+      (reference
+        (source (document "d0") (qualified-name "DefaultValueTest::W"))
+        (kind specialization) (ordinal 0) (authored-target "V")
+        (range (start 11 15) (end 11 16))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DefaultValueTest::V") (range (start 2 1) (end 2 64)))
+        )
+      )
+    )
+    (query (range (start 12 16) (end 12 17)) (probe (position 12 16))
+      (reference
+        (source (document "d0") (qualified-name "DefaultValueTest::W::m"))
+        (kind redefinition) (ordinal 0) (authored-target "m")
+        (range (start 12 16) (end 12 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DefaultValueTest::W::m") (range (start 12 2) (end 12 30)))
+        )
+      )
+    )
+  )
+)
+~~~

@@ -165,3 +165,34 @@ standard library package DataFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 31)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "DataFunctions::DataValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
+        (range (start 7 16) (end 7 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 37)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "DataFunctions::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 8 16) (end 8 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 40)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "DataFunctions::reduce"))
+        (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::reduce")
+        (range (start 9 16) (end 9 40))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

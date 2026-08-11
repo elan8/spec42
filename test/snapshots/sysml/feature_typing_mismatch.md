@@ -41,3 +41,20 @@ part p : Foo;
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 9) (end 1 12)) (probe (position 1 9))
+      (reference
+        (source (document "d0") (qualified-name "p"))
+        (kind featureTyping) (ordinal 0) (authored-target "Foo")
+        (range (start 1 9) (end 1 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Foo") (range (start 0 0) (end 0 20)))
+        )
+      )
+    )
+  )
+)
+~~~

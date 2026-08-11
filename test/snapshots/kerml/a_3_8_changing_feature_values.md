@@ -507,3 +507,68 @@ package ChangingFeatureValuesExecution {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 75 16) (end 75 21)) (probe (position 75 16))
+      (reference
+        (source (document "d0") (qualified-name "ChangingFeatureValuesExecution::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Atoms::*")
+        (range (start 75 16) (end 75 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 37)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 6 16) (end 6 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 77 16) (end 77 39)) (probe (position 77 16))
+      (reference
+        (source (document "d0") (qualified-name "ChangingFeatureValuesExecution::Occurrence"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+        (range (start 77 16) (end 77 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 78 16) (end 78 42)) (probe (position 78 16))
+      (reference
+        (source (document "d0") (qualified-name "ChangingFeatureValuesExecution::HappensBefore"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::HappensBefore")
+        (range (start 78 16) (end 78 42))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 76 16) (end 76 54)) (probe (position 76 16))
+      (reference
+        (source (document "d0") (qualified-name "ChangingFeatureValuesExecution::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ChangingFeatureValuesModelToBeExecuted::*")
+        (range (start 76 16) (end 76 54))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted") (range (start 1 0) (end 1 1984)))
+        )
+      )
+    )
+    (query (range (start 7 16) (end 7 71)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "ChangingFeatureValuesModelToBeExecuted::FeatureWritePerformance"))
+        (kind membershipImport) (ordinal 0) (authored-target "FeatureReferencingPerformances::FeatureWritePerformance")
+        (range (start 7 16) (end 7 71))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 79 16) (end 79 71)) (probe (position 79 16))
+      (reference
+        (source (document "d0") (qualified-name "ChangingFeatureValuesExecution::FeatureWritePerformance"))
+        (kind membershipImport) (ordinal 0) (authored-target "FeatureReferencingPerformances::FeatureWritePerformance")
+        (range (start 79 16) (end 79 71))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

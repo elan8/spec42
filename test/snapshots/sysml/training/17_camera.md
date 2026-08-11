@@ -140,3 +140,52 @@ package Camera {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 15) (end 7 21)) (probe (position 7 15))
+      (reference
+        (source (document "d0") (qualified-name "Camera::camera"))
+        (kind featureTyping) (ordinal 0) (authored-target "Camera")
+        (range (start 7 15) (end 7 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Camera::Camera") (range (start 3 1) (end 3 17)))
+        )
+      )
+    )
+    (query (range (start 9 16) (end 9 23)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Camera::camera::photos"))
+        (kind featureTyping) (ordinal 0) (authored-target "Picture")
+        (range (start 9 16) (end 9 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 16 7) (end 16 26)) (probe (position 16 7))
+      (reference
+        (source (document "d0") (qualified-name "Camera::camera"))
+        (kind flowSource) (ordinal 0) (authored-target "autoFocus::realImage")
+        (range (start 16 7) (end 16 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 16 30) (end 16 49)) (probe (position 16 30))
+      (reference
+        (source (document "d0") (qualified-name "Camera::camera"))
+        (kind flowTarget) (ordinal 0) (authored-target "imager::focusedImage")
+        (range (start 16 30) (end 16 49))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 38)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Camera::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Action Decomposition::*")
+        (range (start 1 16) (end 1 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

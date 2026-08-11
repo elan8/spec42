@@ -67,3 +67,8 @@ package 'Documentation Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

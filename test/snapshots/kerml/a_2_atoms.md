@@ -72,3 +72,18 @@ package Atoms {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 39)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "Atoms::Metaobject"))
+        (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::Metaobject")
+        (range (start 7 16) (end 7 39))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

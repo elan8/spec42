@@ -71,3 +71,26 @@ package 'Package Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 28)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Package Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 2 16) (end 2 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 15) (end 1 31)) (probe (position 1 15))
+      (reference
+        (source (document "d0") (qualified-name "Package Example::TorqueValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ISQ::TorqueValue")
+        (range (start 1 15) (end 1 31))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

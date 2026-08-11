@@ -141,3 +141,20 @@ package AnalysisTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 11) (end 6 12)) (probe (position 6 11))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisTest::vv"))
+        (kind featureTyping) (ordinal 0) (authored-target "V")
+        (range (start 6 11) (end 6 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "AnalysisTest::V") (range (start 2 1) (end 2 21)))
+        )
+      )
+    )
+  )
+)
+~~~

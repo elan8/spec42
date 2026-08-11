@@ -75,3 +75,28 @@ package AliasImport {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 10 20) (end 10 23)) (probe (position 10 20))
+      (reference
+        (source (document "d0") (qualified-name "AliasImport::Usages::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Car")
+        (range (start 10 20) (end 10 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "AliasImport::Usages::Car") (range (start 8 5) (end 8 37)))
+        )
+      )
+    )
+    (query (range (start 8 20) (end 8 36)) (probe (position 8 20))
+      (reference
+        (source (document "d0") (qualified-name "AliasImport::Usages::Car"))
+        (kind membershipImport) (ordinal 0) (authored-target "Definitions::Car")
+        (range (start 8 20) (end 8 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

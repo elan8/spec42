@@ -550,3 +550,74 @@ package Dynamics {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 19)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 2 16) (end 2 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 74 7) (end 74 12)) (probe (position 74 7))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::dyn2"))
+        (kind bindSource) (ordinal 0) (authored-target "a_out")
+        (range (start 74 7) (end 74 12))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 74 15) (end 74 20)) (probe (position 74 15))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::dyn2"))
+        (kind bindTarget) (ordinal 0) (authored-target "acc::a")
+        (range (start 74 15) (end 74 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 81 7) (end 81 12)) (probe (position 81 7))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::dyn2"))
+        (kind bindSource) (ordinal 1) (authored-target "v_out")
+        (range (start 81 7) (end 81 12))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 81 15) (end 81 20)) (probe (position 81 15))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::dyn2"))
+        (kind bindTarget) (ordinal 1) (authored-target "vel::v")
+        (range (start 81 15) (end 81 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 88 7) (end 88 12)) (probe (position 88 7))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::dyn2"))
+        (kind bindSource) (ordinal 2) (authored-target "x_out")
+        (range (start 88 7) (end 88 12))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 88 15) (end 88 20)) (probe (position 88 15))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::dyn2"))
+        (kind bindTarget) (ordinal 2) (authored-target "pos::x")
+        (range (start 88 15) (end 88 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Dynamics::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

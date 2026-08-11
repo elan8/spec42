@@ -151,3 +151,50 @@ standard library package Allocations {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 16) (end 8 27)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "Allocations::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Connections::*")
+        (range (start 8 16) (end 8 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 30)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "Allocations::Anything"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
+        (range (start 7 16) (end 7 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 30) (end 10 46)) (probe (position 10 30))
+      (reference
+        (source (document "d0") (qualified-name "Allocations::Allocation"))
+        (kind specialization) (ordinal 0) (authored-target "BinaryConnection")
+        (range (start 10 30) (end 10 46))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 18 27) (end 18 51)) (probe (position 18 27))
+      (reference
+        (source (document "d0") (qualified-name "Allocations::Allocation::source"))
+        (kind redefinition) (ordinal 0) (authored-target "BinaryConnection::source")
+        (range (start 18 27) (end 18 51))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 19 27) (end 19 51)) (probe (position 19 27))
+      (reference
+        (source (document "d0") (qualified-name "Allocations::Allocation::target"))
+        (kind redefinition) (ordinal 0) (authored-target "BinaryConnection::target")
+        (range (start 19 27) (end 19 51))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

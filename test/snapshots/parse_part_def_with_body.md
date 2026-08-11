@@ -44,3 +44,8 @@ part def Vehicle {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

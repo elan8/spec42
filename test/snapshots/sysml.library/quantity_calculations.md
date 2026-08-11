@@ -593,3 +593,42 @@ standard library package QuantityCalculations {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 16) (end 6 28)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "QuantityCalculations::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 6 16) (end 6 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 19) (end 7 50)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "QuantityCalculations::ScalarQuantityValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Quantities::ScalarQuantityValue")
+        (range (start 7 19) (end 7 50))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 19) (end 9 59)) (probe (position 9 19))
+      (reference
+        (source (document "d0") (qualified-name "QuantityCalculations::DimensionOneValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "MeasurementReferences::DimensionOneValue")
+        (range (start 9 19) (end 9 59))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 19) (end 8 68)) (probe (position 8 19))
+      (reference
+        (source (document "d0") (qualified-name "QuantityCalculations::ScalarMeasurementReference"))
+        (kind membershipImport) (ordinal 0) (authored-target "MeasurementReferences::ScalarMeasurementReference")
+        (range (start 8 19) (end 8 68))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

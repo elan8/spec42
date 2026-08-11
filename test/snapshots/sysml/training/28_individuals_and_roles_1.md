@@ -123,3 +123,62 @@ package 'Individuals and Roles' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 24) (end 6 29)) (probe (position 6 24))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::leftFrontWheel"))
+        (kind featureTyping) (ordinal 0) (authored-target "Wheel")
+        (range (start 6 24) (end 6 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 25) (end 7 30)) (probe (position 7 25))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Roles::Vehicle_1::rightFrontWheel"))
+        (kind featureTyping) (ordinal 0) (authored-target "Wheel")
+        (range (start 7 25) (end 7 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 32) (end 10 37)) (probe (position 10 32))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Roles::Wheel_1"))
+        (kind specialization) (ordinal 0) (authored-target "Wheel")
+        (range (start 10 32) (end 10 37))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Individuals and Roles::Wheel") (range (start 3 1) (end 3 16)))
+        )
+      )
+    )
+    (query (range (start 5 34) (end 5 41)) (probe (position 5 34))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Roles::Vehicle_1"))
+        (kind specialization) (ordinal 0) (authored-target "Vehicle")
+        (range (start 5 34) (end 5 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 29) (end 12 38)) (probe (position 12 29))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Roles::vehicle_1"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle_1")
+        (range (start 12 29) (end 12 38))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Individuals and Roles::Vehicle_1") (range (start 5 1) (end 5 109)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 41)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Roles::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Part Definition Example::*")
+        (range (start 1 16) (end 1 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

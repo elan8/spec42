@@ -254,3 +254,18 @@ package JohnIndividualExample {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 23)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "JohnIndividualExample::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Objects::*")
+        (range (start 1 16) (end 1 23))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

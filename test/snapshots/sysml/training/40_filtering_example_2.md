@@ -185,3 +185,34 @@ package 'Filtering Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 27 16) (end 27 23)) (probe (position 27 16))
+      (reference
+        (source (document "d0") (qualified-name "Filtering Example-2::Safety Features::vehicle"))
+        (kind namespaceImport) (ordinal 0) (authored-target "vehicle")
+        (range (start 27 16) (end 27 23))
+        (outcome (status unsupported-filtered))
+      )
+    )
+    (query (range (start 32 16) (end 32 23)) (probe (position 32 16))
+      (reference
+        (source (document "d0") (qualified-name "Filtering Example-2::Mandatory Safety Features::vehicle"))
+        (kind namespaceImport) (ordinal 0) (authored-target "vehicle")
+        (range (start 32 16) (end 32 23))
+        (outcome (status unsupported-filtered))
+      )
+    )
+    (query (range (start 1 16) (end 1 37)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Filtering Example-2::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 1 16) (end 1 37))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

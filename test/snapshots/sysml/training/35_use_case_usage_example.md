@@ -192,3 +192,18 @@ package 'Use Case Usage Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 45)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Use Case Usage Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Use Case Definition Example::*")
+        (range (start 2 16) (end 2 45))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

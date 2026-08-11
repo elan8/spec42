@@ -142,3 +142,34 @@ package Moments {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 19) (end 1 36)) (probe (position 1 19))
+      (reference
+        (source (document "d0") (qualified-name "Moments::Life"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Life")
+        (range (start 1 19) (end 1 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 19) (end 2 42)) (probe (position 2 19))
+      (reference
+        (source (document "d0") (qualified-name "Moments::Occurrence"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+        (range (start 2 19) (end 2 42))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 33 19) (end 33 61)) (probe (position 33 19))
+      (reference
+        (source (document "d0") (qualified-name "Moments::spaceTimeCoincidentOccurrences"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrence::spaceTimeCoincidentOccurrences")
+        (range (start 33 19) (end 33 61))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

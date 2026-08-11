@@ -183,3 +183,30 @@ package EnumerationTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 46 24) (end 46 28)) (probe (position 46 24))
+      (reference
+        (source (document "d0") (qualified-name "EnumerationTest::SizeChoice"))
+        (kind specialization) (ordinal 0) (authored-target "Size")
+        (range (start 46 24) (end 46 28))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "EnumerationTest::Size") (range (start 39 1) (end 39 159)))
+        )
+      )
+    )
+    (query (range (start 6 23) (end 6 28)) (probe (position 6 23))
+      (reference
+        (source (document "d0") (qualified-name "EnumerationTest::ColorKind"))
+        (kind specialization) (ordinal 0) (authored-target "Color")
+        (range (start 6 23) (end 6 28))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "EnumerationTest::Color") (range (start 2 1) (end 2 66)))
+        )
+      )
+    )
+  )
+)
+~~~

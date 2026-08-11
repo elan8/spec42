@@ -98,3 +98,56 @@ package CarWithEnvelopingShape {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 22)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "CarWithEnvelopingShape::mm"))
+        (kind membershipImport) (ordinal 0) (authored-target "SI::mm")
+        (range (start 2 16) (end 2 22))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 3) (end 12 12)) (probe (position 12 3))
+      (reference
+        (source (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width"))
+        (kind redefinition) (ordinal 0) (authored-target "width")
+        (range (start 12 3) (end 12 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::width") (range (start 12 3) (end 12 26)))
+        )
+      )
+    )
+    (query (range (start 11 3) (end 11 13)) (probe (position 11 3))
+      (reference
+        (source (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length"))
+        (kind redefinition) (ordinal 0) (authored-target "length")
+        (range (start 11 3) (end 11 13))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::length") (range (start 11 3) (end 11 26)))
+        )
+      )
+    )
+    (query (range (start 13 3) (end 13 13)) (probe (position 13 3))
+      (reference
+        (source (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height"))
+        (kind redefinition) (ordinal 0) (authored-target "height")
+        (range (start 13 3) (end 13 13))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "CarWithEnvelopingShape::Car::boundingBox::height") (range (start 13 3) (end 13 26)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 31)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "CarWithEnvelopingShape::Box"))
+        (kind membershipImport) (ordinal 0) (authored-target "ShapeItems::Box")
+        (range (start 1 16) (end 1 31))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

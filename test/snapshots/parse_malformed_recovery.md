@@ -49,3 +49,8 @@ package Foo {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

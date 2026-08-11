@@ -163,3 +163,30 @@ package 'Conditional Succession Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 22 12) (end 22 23)) (probe (position 22 12))
+      (reference
+        (source (document "d0") (qualified-name "Conditional Succession Example-2::takePicture"))
+        (kind flowSource) (ordinal 0) (authored-target "focus::image")
+        (range (start 22 12) (end 22 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Conditional Succession Example-2::takePicture::focus::image") (range (start 17 3) (end 17 18)))
+        )
+      )
+    )
+    (query (range (start 22 27) (end 22 38)) (probe (position 22 27))
+      (reference
+        (source (document "d0") (qualified-name "Conditional Succession Example-2::takePicture"))
+        (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
+        (range (start 22 27) (end 22 38))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Conditional Succession Example-2::takePicture::shoot::image") (range (start 25 3) (end 25 17)))
+        )
+      )
+    )
+  )
+)
+~~~

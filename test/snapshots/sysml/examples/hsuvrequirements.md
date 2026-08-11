@@ -173,3 +173,18 @@ package HSUVRequirements {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "HSUVRequirements::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Requirements::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

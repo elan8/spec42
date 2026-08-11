@@ -157,3 +157,62 @@ package RequirementMetadataExample {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 3 16) (end 3 28)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "RequirementMetadataExample::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "RiskMetadata::*")
+        (range (start 3 16) (end 3 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 5) (end 9 17)) (probe (position 9 5))
+      (reference
+        (source (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType"))
+        (kind redefinition) (ordinal 0) (authored-target "baseType")
+        (range (start 9 5) (end 9 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "RequirementMetadataExample::goal::baseType") (range (start 9 5) (end 9 55)))
+        )
+      )
+    )
+    (query (range (start 4 16) (end 4 29)) (probe (position 4 16))
+      (reference
+        (source (document "d0") (qualified-name "RequirementMetadataExample::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "RiskLevelEnum::*")
+        (range (start 4 16) (end 4 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 32)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "RequirementMetadataExample::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ModelingMetadata::*")
+        (range (start 2 16) (end 2 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 22) (end 8 38)) (probe (position 8 22))
+      (reference
+        (source (document "d0") (qualified-name "RequirementMetadataExample::goal"))
+        (kind specialization) (ordinal 0) (authored-target "SemanticMetadata")
+        (range (start 8 22) (end 8 38))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata") (range (start 1 1) (end 1 46)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 45)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "RequirementMetadataExample::SemanticMetadata"))
+        (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
+        (range (start 1 16) (end 1 45))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

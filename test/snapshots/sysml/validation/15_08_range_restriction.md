@@ -121,3 +121,52 @@ package '15_08-Range Restriction' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 18)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "15_08-Range Restriction::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 2 16) (end 2 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 19)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "15_08-Range Restriction::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 1 16) (end 1 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 47) (end 10 51)) (probe (position 10 47))
+      (reference
+        (source (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle"))
+        (kind redefinition) (ordinal 0) (authored-target "self")
+        (range (start 10 47) (end 10 51))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 29) (end 6 52)) (probe (position 6 29))
+      (reference
+        (source (document "d0") (qualified-name "15_08-Range Restriction::HeadLightsTiltKnob::headLightsTile"))
+        (kind featureTyping) (ordinal 1) (authored-target "LightBeamTiltAngleValue")
+        (range (start 6 29) (end 6 52))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue") (range (start 9 1) (end 9 292)))
+        )
+      )
+    )
+    (query (range (start 3 16) (end 3 63)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "15_08-Range Restriction::pi"))
+        (kind membershipImport) (ordinal 0) (authored-target "15_01-Constants::Mathematical Constants::pi")
+        (range (start 3 16) (end 3 63))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

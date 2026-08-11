@@ -119,3 +119,20 @@ package FeatureAdvancedCoverage {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 28 11) (end 28 12)) (probe (position 28 11))
+      (reference
+        (source (document "d0") (qualified-name "FeatureAdvancedCoverage::C#import"))
+        (kind membershipImport) (ordinal 0) (authored-target "C")
+        (range (start 28 11) (end 28 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "FeatureAdvancedCoverage::C") (range (start 19 4) (end 19 121)))
+        )
+      )
+    )
+  )
+)
+~~~

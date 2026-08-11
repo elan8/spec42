@@ -126,3 +126,76 @@ package 'Flow Usage Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 13) (end 7 19)) (probe (position 7 13))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::vehicle::eng"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 7 13) (end 7 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 16) (end 5 23)) (probe (position 5 16))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 5 16) (end 5 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Flow Usage Example::Vehicle") (range (start 3 1) (end 3 18)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 30)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Port Example::*")
+        (range (start 1 16) (end 1 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 18) (end 6 34)) (probe (position 6 18))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::vehicle::tankAssy"))
+        (kind featureTyping) (ordinal 0) (authored-target "FuelTankAssembly")
+        (range (start 6 18) (end 6 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 6) (end 11 35)) (probe (position 11 6))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::vehicle"))
+        (kind flowTarget) (ordinal 0) (authored-target "eng::engineFuelPort::fuelSupply")
+        (range (start 11 6) (end 11 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 14 9) (end 14 38)) (probe (position 14 9))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::vehicle"))
+        (kind flowSource) (ordinal 1) (authored-target "eng::engineFuelPort::fuelReturn")
+        (range (start 14 9) (end 14 38))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 9) (end 10 41)) (probe (position 10 9))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::vehicle"))
+        (kind flowSource) (ordinal 0) (authored-target "tankAssy::fuelTankPort::fuelSupply")
+        (range (start 10 9) (end 10 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 15 6) (end 15 38)) (probe (position 15 6))
+      (reference
+        (source (document "d0") (qualified-name "Flow Usage Example::vehicle"))
+        (kind flowTarget) (ordinal 1) (authored-target "tankAssy::fuelTankPort::fuelReturn")
+        (range (start 15 6) (end 15 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

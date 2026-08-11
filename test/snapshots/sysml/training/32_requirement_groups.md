@@ -185,3 +185,26 @@ package 'Requirement Groups' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 36)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Groups::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Requirement Usages::*")
+        (range (start 2 16) (end 2 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 41)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Groups::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Requirement Definitions::*")
+        (range (start 1 16) (end 1 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

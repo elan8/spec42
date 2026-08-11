@@ -92,3 +92,26 @@ package PictureTaking {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 38) (end 8 47)) (probe (position 8 38))
+      (reference
+        (source (document "d0") (qualified-name "PictureTaking::takePicture"))
+        (kind flowTarget) (ordinal 0) (authored-target "shoot::xsf")
+        (range (start 8 38) (end 8 47))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 24) (end 8 34)) (probe (position 8 24))
+      (reference
+        (source (document "d0") (qualified-name "PictureTaking::takePicture"))
+        (kind flowSource) (ordinal 0) (authored-target "focus::xrsl")
+        (range (start 8 24) (end 8 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

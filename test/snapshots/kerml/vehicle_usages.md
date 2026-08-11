@@ -257,3 +257,18 @@ package VehicleUsages {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 16) (end 6 34)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "VehicleUsages::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "VehicleDefinitions::*")
+        (range (start 6 16) (end 6 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

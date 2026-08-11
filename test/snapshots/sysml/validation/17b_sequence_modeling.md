@@ -194,3 +194,28 @@ package '17b-Sequence-Modeling' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "17b-Sequence-Modeling::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 34)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "17b-Sequence-Modeling::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "PayloadDefinitions::*")
+        (range (start 2 16) (end 2 34))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "17b-Sequence-Modeling::PayloadDefinitions") (range (start 4 1) (end 4 252)))
+        )
+      )
+    )
+  )
+)
+~~~

@@ -185,3 +185,70 @@ package 'Calculation Usages-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 19)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Calculation Usages-2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 2 16) (end 2 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 18) (end 11 22)) (probe (position 11 18))
+      (reference
+        (source (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::C_d"))
+        (kind featureTyping) (ordinal 1) (authored-target "Real")
+        (range (start 11 18) (end 11 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Calculation Usages-2::Real") (range (start 1 1) (end 1 35)))
+        )
+      )
+    )
+    (query (range (start 12 18) (end 12 22)) (probe (position 12 18))
+      (reference
+        (source (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::C_f"))
+        (kind featureTyping) (ordinal 1) (authored-target "Real")
+        (range (start 12 18) (end 12 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Calculation Usages-2::Real") (range (start 1 1) (end 1 35)))
+        )
+      )
+    )
+    (query (range (start 14 19) (end 14 28)) (probe (position 14 19))
+      (reference
+        (source (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 14 19) (end 14 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 13 25) (end 13 35)) (probe (position 13 25))
+      (reference
+        (source (document "d0") (qualified-name "Calculation Usages-2::VehicleDynamics::wheelPower"))
+        (kind featureTyping) (ordinal 1) (authored-target "PowerValue")
+        (range (start 13 25) (end 13 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Calculation Usages-2::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 41)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "Calculation Usages-2::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Calculation Definitions::*")
+        (range (start 3 16) (end 3 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

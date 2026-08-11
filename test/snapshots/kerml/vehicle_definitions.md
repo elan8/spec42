@@ -132,3 +132,8 @@ package VehicleDefinitions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

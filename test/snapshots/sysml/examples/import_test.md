@@ -123,3 +123,58 @@ package ImportTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 13 27) (end 13 30)) (probe (position 13 27))
+      (reference
+        (source (document "d0") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211"))
+        (kind specialization) (ordinal 0) (authored-target "P12")
+        (range (start 13 27) (end 13 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 23) (end 10 27)) (probe (position 10 23))
+      (reference
+        (source (document "d0") (qualified-name "ImportTest::Pkg2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Pkg1::*")
+        (range (start 10 23) (end 10 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 4 20) (end 4 26)) (probe (position 4 20))
+      (reference
+        (source (document "d0") (qualified-name "ImportTest::Pkg1::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Pkg211::*")
+        (range (start 4 20) (end 4 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 20) (end 3 31)) (probe (position 3 20))
+      (reference
+        (source (document "d0") (qualified-name "ImportTest::Pkg1::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Pkg2::Pkg21::*")
+        (range (start 3 20) (end 3 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 19) (end 5 31)) (probe (position 5 19))
+      (reference
+        (source (document "d0") (qualified-name "ImportTest::Pkg1::p11"))
+        (kind featureTyping) (ordinal 0) (authored-target "Pkg211::P211")
+        (range (start 5 19) (end 5 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 20) (end 2 45)) (probe (position 2 20))
+      (reference
+        (source (document "d0") (qualified-name "ImportTest::Pkg1::P211"))
+        (kind membershipImport) (ordinal 0) (authored-target "Pkg2::Pkg21::Pkg211::P211")
+        (range (start 2 20) (end 2 45))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

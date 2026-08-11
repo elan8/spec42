@@ -158,3 +158,8 @@ package StructuredControlTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

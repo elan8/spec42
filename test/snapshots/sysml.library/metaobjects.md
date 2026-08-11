@@ -176,3 +176,42 @@ standard library package Metaobjects {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 19) (end 8 30)) (probe (position 8 19))
+      (reference
+        (source (document "d0") (qualified-name "Metaobjects::Type"))
+        (kind membershipImport) (ordinal 0) (authored-target "KerML::Type")
+        (range (start 8 19) (end 8 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 19) (end 7 33)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "Metaobjects::Element"))
+        (kind membershipImport) (ordinal 0) (authored-target "KerML::Element")
+        (range (start 7 19) (end 7 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 19) (end 5 34)) (probe (position 5 19))
+      (reference
+        (source (document "d0") (qualified-name "Metaobjects::Object"))
+        (kind membershipImport) (ordinal 0) (authored-target "Objects::Object")
+        (range (start 5 19) (end 5 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 19) (end 6 35)) (probe (position 6 19))
+      (reference
+        (source (document "d0") (qualified-name "Metaobjects::objects"))
+        (kind membershipImport) (ordinal 0) (authored-target "Objects::objects")
+        (range (start 6 19) (end 6 35))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

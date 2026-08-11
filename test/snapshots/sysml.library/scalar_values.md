@@ -98,3 +98,18 @@ standard library package ScalarValues {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 19) (end 7 34)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "ScalarValues::DataValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
+        (range (start 7 19) (end 7 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

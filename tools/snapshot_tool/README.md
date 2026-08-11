@@ -4,20 +4,21 @@
 command-line runner, not a Rust integration test and not an `insta` assertion layer.
 
 Each Markdown file is a test case. The runner reads its `# SOURCE` section, builds the immutable
-`SemanticModel`, and rewrites the owned `SMG`, `DIAGNOSTICS`, and `FORMAT` sections. It never
+`SemanticModel`, and rewrites the owned `SMG`, `DIAGNOSTICS`, `NAVIGATION`, and `FORMAT` sections. It never
 exposes graph nodes, resolution indexes, or fact collections to the caller; the semantic owner
 streams its canonical debug S-expression through the caller-provided writer. Diagnostics are
 collected by `sysml_diagnostics` from category-owned projections of the same published model; the
 runner never rebuilds a mutable graph for validation.
 
-The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `FORMAT`, `SMG`.
+The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `FORMAT`, `SMG`,
+`NAVIGATION`.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
 Only sections in this contract are retained during normalization. Unknown or future sections
 should be added to the explicit ordering table before they become part of the corpus contract.
 
 Each readable fixture is built with both sequential and parallel construction. The runner compares
-the complete owned `SMG` and `DIAGNOSTICS` renderings, including the publication state embedded in
-`SMG`, before checking or writing goldens. Sequential output is the canonical rendering only after
+the complete owned `SMG`, `DIAGNOSTICS`, and `NAVIGATION` renderings, including the publication
+state embedded in `SMG`, before checking or writing goldens. Sequential output is the canonical rendering only after
 this parity check succeeds; there is no strategy override that can bypass it.
 
 Fixtures are evaluated concurrently with Rayon’s bounded global worker pool. Results are sorted by

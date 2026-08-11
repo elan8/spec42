@@ -70,3 +70,8 @@ behavior TakePicture {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

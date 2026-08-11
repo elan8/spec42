@@ -394,3 +394,50 @@ standard library package Clocks {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 10 16) (end 10 33)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "Clocks::Life"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Life")
+        (range (start 10 16) (end 10 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 34)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "Clocks::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 8 16) (end 8 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 39)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Clocks::Occurrence"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+        (range (start 9 16) (end 9 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 40)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "Clocks::forAll"))
+        (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::forAll")
+        (range (start 11 16) (end 11 40))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 44)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "Clocks::NumericalValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::NumericalValue")
+        (range (start 7 16) (end 7 44))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

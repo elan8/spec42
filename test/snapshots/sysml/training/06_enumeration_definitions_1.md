@@ -93,3 +93,48 @@ package 'Enumeration Definitions-1' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 13 37) (end 13 49)) (probe (position 13 37))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo"))
+        (kind specialization) (ordinal 0) (authored-target "TrafficLight")
+        (range (start 13 37) (end 13 49))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight") (range (start 9 1) (end 9 73)))
+        )
+      )
+    )
+    (query (range (start 14 22) (end 14 34)) (probe (position 14 22))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor"))
+        (kind redefinition) (ordinal 0) (authored-target "currentColor")
+        (range (start 14 22) (end 14 34))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightGo::currentColor") (range (start 14 2) (end 14 62)))
+        )
+      )
+    )
+    (query (range (start 10 27) (end 10 44)) (probe (position 10 27))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLight::currentColor"))
+        (kind featureTyping) (ordinal 1) (authored-target "TrafficLightColor")
+        (range (start 10 27) (end 10 44))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Enumeration Definitions-1::TrafficLightColor") (range (start 3 1) (end 3 73)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Enumeration Definitions-1::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

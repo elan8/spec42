@@ -78,3 +78,8 @@ package FeatureSubDeclCoverage {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

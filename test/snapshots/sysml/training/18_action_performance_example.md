@@ -118,3 +118,48 @@ package 'Action Performance Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 15) (end 7 21)) (probe (position 7 15))
+      (reference
+        (source (document "d0") (qualified-name "Action Performance Example::camera"))
+        (kind featureTyping) (ordinal 0) (authored-target "Camera")
+        (range (start 7 15) (end 7 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Action Performance Example::Camera") (range (start 3 1) (end 3 17)))
+        )
+      )
+    )
+    (query (range (start 16 11) (end 16 17)) (probe (position 16 11))
+      (reference
+        (source (document "d0") (qualified-name "Action Performance Example::camera::i"))
+        (kind featureTyping) (ordinal 0) (authored-target "Imager")
+        (range (start 16 11) (end 16 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Action Performance Example::Imager") (range (start 5 1) (end 5 17)))
+        )
+      )
+    )
+    (query (range (start 12 11) (end 12 20)) (probe (position 12 11))
+      (reference
+        (source (document "d0") (qualified-name "Action Performance Example::camera::f"))
+        (kind featureTyping) (ordinal 0) (authored-target "AutoFocus")
+        (range (start 12 11) (end 12 20))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Action Performance Example::AutoFocus") (range (start 4 1) (end 4 20)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 38)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Action Performance Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Action Decomposition::*")
+        (range (start 1 16) (end 1 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

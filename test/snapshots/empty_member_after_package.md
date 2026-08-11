@@ -42,3 +42,8 @@ package MyPkg { }; in newX : Real;
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

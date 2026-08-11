@@ -139,3 +139,18 @@ standard library package AnalysisTooling {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 28)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisTooling::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 7 16) (end 7 28))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

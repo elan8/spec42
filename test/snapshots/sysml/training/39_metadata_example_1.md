@@ -204,3 +204,32 @@ package 'Metadata Example-1' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 4 2) (end 4 21)) (probe (position 4 2))
+      (reference
+        (source (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement"))
+        (kind subsetting) (ordinal 0) (authored-target "annotatedElement")
+        (range (start 4 2) (end 4 21))
+        (outcome (status ambiguous)
+          (target (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement") (range (start 4 2) (end 4 46)))
+          (target (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute") (range (start 5 2) (end 5 41)))
+        )
+      )
+    )
+    (query (range (start 5 2) (end 5 21)) (probe (position 5 2))
+      (reference
+        (source (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute"))
+        (kind subsetting) (ordinal 0) (authored-target "annotatedElement")
+        (range (start 5 2) (end 5 21))
+        (outcome (status ambiguous)
+          (target (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement") (range (start 4 2) (end 4 46)))
+          (target (document "d0") (qualified-name "Metadata Example-1::SecurityFeature::annotatedElement#attribute") (range (start 5 2) (end 5 41)))
+        )
+      )
+    )
+  )
+)
+~~~

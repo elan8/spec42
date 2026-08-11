@@ -103,3 +103,18 @@ package 'Opaque Action Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 3 20) (end 3 41)) (probe (position 3 20))
+      (reference
+        (source (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))
+        (kind featureTyping) (ordinal 1) (authored-target "ScalarValues::Boolean")
+        (range (start 3 20) (end 3 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

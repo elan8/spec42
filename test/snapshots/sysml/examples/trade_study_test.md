@@ -129,3 +129,56 @@ package TradeStudyTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 5 15) (end 5 21)) (probe (position 5 15))
+      (reference
+        (source (document "d0") (qualified-name "TradeStudyTest::engine1"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 5 15) (end 5 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "TradeStudyTest::Engine") (range (start 4 1) (end 4 17)))
+        )
+      )
+    )
+    (query (range (start 6 15) (end 6 21)) (probe (position 6 15))
+      (reference
+        (source (document "d0") (qualified-name "TradeStudyTest::engine2"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 6 15) (end 6 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "TradeStudyTest::Engine") (range (start 4 1) (end 4 17)))
+        )
+      )
+    )
+    (query (range (start 13 13) (end 13 19)) (probe (position 13 13))
+      (reference
+        (source (document "d0") (qualified-name "TradeStudyTest::engineTradeStudy::#part"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 13 13) (end 13 19))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "TradeStudyTest::Engine") (range (start 4 1) (end 4 17)))
+        )
+      )
+    )
+    (query (range (start 2 16) (end 2 28)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "TradeStudyTest::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "TradeStudies::*")
+        (range (start 2 16) (end 2 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "TradeStudyTest::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

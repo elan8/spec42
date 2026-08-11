@@ -106,3 +106,40 @@ package ItemTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 0 0) (end 0 1)) (probe (position 0 0))
+      (reference
+        (source (document "d0") (qualified-name "ItemTest::f"))
+        (kind specialization) (ordinal 0) (authored-target "A")
+        (range (start 0 0) (end 0 1))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ItemTest::A") (range (start 4 1) (end 4 63)))
+        )
+      )
+    )
+    (query (range (start 6 24) (end 6 25)) (probe (position 6 24))
+      (reference
+        (source (document "d0") (qualified-name "ItemTest::A::c"))
+        (kind featureTyping) (ordinal 0) (authored-target "C")
+        (range (start 6 24) (end 6 25))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ItemTest::C") (range (start 13 1) (end 13 50)))
+        )
+      )
+    )
+    (query (range (start 10 26) (end 10 27)) (probe (position 10 26))
+      (reference
+        (source (document "d0") (qualified-name "ItemTest::B::a"))
+        (kind featureTyping) (ordinal 0) (authored-target "A")
+        (range (start 10 26) (end 10 27))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ItemTest::A") (range (start 4 1) (end 4 63)))
+        )
+      )
+    )
+  )
+)
+~~~

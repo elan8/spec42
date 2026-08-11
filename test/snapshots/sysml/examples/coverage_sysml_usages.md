@@ -189,3 +189,46 @@ part def Vehicle {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 28 13) (end 28 19)) (probe (position 28 13))
+      (reference
+        (source (document "d0") (qualified-name "Vehicle::r1"))
+        (kind featureTyping) (ordinal 0) (authored-target "Sensor")
+        (range (start 28 13) (end 28 19))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Sensor") (range (start 0 0) (end 0 16)))
+        )
+      )
+    )
+    (query (range (start 31 23) (end 31 29)) (probe (position 31 23))
+      (reference
+        (source (document "d0") (qualified-name "Vehicle::refPart"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 31 23) (end 31 29))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Engine") (range (start 1 0) (end 1 16)))
+        )
+      )
+    )
+    (query (range (start 12 21) (end 12 28)) (probe (position 12 21))
+      (reference
+        (source (document "d0") (qualified-name "Vehicle::mass"))
+        (kind featureTyping) (ordinal 1) (authored-target "Integer")
+        (range (start 12 21) (end 12 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 13 27) (end 13 34)) (probe (position 13 27))
+      (reference
+        (source (document "d0") (qualified-name "Vehicle::weights"))
+        (kind featureTyping) (ordinal 1) (authored-target "Integer")
+        (range (start 13 27) (end 13 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

@@ -110,3 +110,18 @@ standard library package NaturalFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 15) (end 7 27)) (probe (position 7 15))
+      (reference
+        (source (document "d0") (qualified-name "NaturalFunctions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 7 15) (end 7 27))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

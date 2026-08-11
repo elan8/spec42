@@ -193,3 +193,20 @@ package JohnIndividualExample {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 32 32) (end 32 39)) (probe (position 32 32))
+      (reference
+        (source (document "d0") (qualified-name "JohnIndividualExample::Country::presidentOfCountry"))
+        (kind featureTyping) (ordinal 0) (authored-target "Person")
+        (range (start 32 32) (end 32 39))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "JohnIndividualExample::Person") (range (start 2 1) (end 2 294)))
+        )
+      )
+    )
+  )
+)
+~~~

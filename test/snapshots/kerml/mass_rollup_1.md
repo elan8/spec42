@@ -64,3 +64,18 @@ package MassRollup_1 {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "MassRollup_1::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "NumericalFunctions::*")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

@@ -90,3 +90,50 @@ part def System {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 4 13) (end 4 14)) (probe (position 4 13))
+      (reference
+        (source (document "d0") (qualified-name "System::a"))
+        (kind featureTyping) (ordinal 0) (authored-target "A")
+        (range (start 4 13) (end 4 14))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "A") (range (start 0 0) (end 0 32)))
+        )
+      )
+    )
+    (query (range (start 5 13) (end 5 14)) (probe (position 5 13))
+      (reference
+        (source (document "d0") (qualified-name "System::b"))
+        (kind featureTyping) (ordinal 0) (authored-target "B")
+        (range (start 5 13) (end 5 14))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "B") (range (start 1 0) (end 1 32)))
+        )
+      )
+    )
+    (query (range (start 13 22) (end 13 23)) (probe (position 13 22))
+      (reference
+        (source (document "d0") (qualified-name "System::engine"))
+        (kind featureTyping) (ordinal 0) (authored-target "A")
+        (range (start 13 22) (end 13 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "A") (range (start 0 0) (end 0 32)))
+        )
+      )
+    )
+    (query (range (start 14 26) (end 14 27)) (probe (position 14 26))
+      (reference
+        (source (document "d0") (qualified-name "System::myA"))
+        (kind featureTyping) (ordinal 0) (authored-target "A")
+        (range (start 14 26) (end 14 27))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "A") (range (start 0 0) (end 0 32)))
+        )
+      )
+    )
+  )
+)
+~~~

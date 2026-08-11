@@ -102,3 +102,8 @@ package 'State Definition Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

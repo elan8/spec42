@@ -137,3 +137,42 @@ package ExternalShapeRefExample {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 4 16) (end 4 22)) (probe (position 4 16))
+      (reference
+        (source (document "d0") (qualified-name "ExternalShapeRefExample::mm"))
+        (kind membershipImport) (ordinal 0) (authored-target "SI::mm")
+        (range (start 4 16) (end 4 22))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 25)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "ExternalShapeRefExample::mass"))
+        (kind membershipImport) (ordinal 0) (authored-target "ISQ::mass")
+        (range (start 3 16) (end 3 25))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 26)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "ExternalShapeRefExample::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ShapeItems::*")
+        (range (start 2 16) (end 2 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 36)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "ExternalShapeRefExample::String"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+        (range (start 1 16) (end 1 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

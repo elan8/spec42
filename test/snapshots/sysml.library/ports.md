@@ -181,3 +181,64 @@ standard library package Ports {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 22 38) (end 22 43)) (probe (position 22 38))
+      (reference
+        (source (document "d0") (qualified-name "Ports::Port::subports"))
+        (kind subsetting) (ordinal 0) (authored-target "ports")
+        (range (start 22 38) (end 22 43))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Ports::ports") (range (start 47 4) (end 47 156)))
+        )
+      )
+    )
+    (query (range (start 10 30) (end 10 36)) (probe (position 10 30))
+      (reference
+        (source (document "d0") (qualified-name "Ports::Port"))
+        (kind specialization) (ordinal 0) (authored-target "Object")
+        (range (start 10 30) (end 10 36))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Ports::Object") (range (start 7 4) (end 7 35)))
+        )
+      )
+    )
+    (query (range (start 0 0) (end 0 7)) (probe (position 0 0))
+      (reference
+        (source (document "d0") (qualified-name "Ports::ports"))
+        (kind specialization) (ordinal 0) (authored-target "objects")
+        (range (start 0 0) (end 0 7))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Ports::objects") (range (start 8 4) (end 8 36)))
+        )
+      )
+    )
+    (query (range (start 7 19) (end 7 34)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "Ports::Object"))
+        (kind membershipImport) (ordinal 0) (authored-target "Objects::Object")
+        (range (start 7 19) (end 7 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 19) (end 8 35)) (probe (position 8 19))
+      (reference
+        (source (document "d0") (qualified-name "Ports::objects"))
+        (kind membershipImport) (ordinal 0) (authored-target "Objects::objects")
+        (range (start 8 19) (end 8 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 22 45) (end 22 68)) (probe (position 22 45))
+      (reference
+        (source (document "d0") (qualified-name "Ports::Port::subports"))
+        (kind subsetting) (ordinal 1) (authored-target "timeEnclosedOccurrences")
+        (range (start 22 45) (end 22 68))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

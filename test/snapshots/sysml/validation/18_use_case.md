@@ -290,3 +290,8 @@ package '18-Use Case' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

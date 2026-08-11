@@ -202,3 +202,26 @@ package 'Analytical Constraints' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 19)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Analytical Constraints::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 1 16) (end 1 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 41)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Analytical Constraints::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Calculation Definitions::*")
+        (range (start 2 16) (end 2 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

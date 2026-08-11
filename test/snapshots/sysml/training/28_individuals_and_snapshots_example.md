@@ -110,3 +110,26 @@ package 'Individuals and Snapshots Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 3 34) (end 3 41)) (probe (position 3 34))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))
+        (kind specialization) (ordinal 0) (authored-target "Vehicle")
+        (range (start 3 34) (end 3 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 15) (end 1 40)) (probe (position 1 15))
+      (reference
+        (source (document "d0") (qualified-name "Individuals and Snapshots Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Part Definition Example::*")
+        (range (start 1 15) (end 1 40))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

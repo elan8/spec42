@@ -168,3 +168,52 @@ standard library package Constraints {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 12 44) (end 12 61)) (probe (position 12 44))
+      (reference
+        (source (document "d0") (qualified-name "Constraints::ConstraintCheck"))
+        (kind specialization) (ordinal 0) (authored-target "BooleanEvaluation")
+        (range (start 12 44) (end 12 61))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Constraints::BooleanEvaluation") (range (start 7 1) (end 7 48)))
+        )
+      )
+    )
+    (query (range (start 9 16) (end 9 45)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints::trueEvaluations"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::trueEvaluations")
+        (range (start 9 16) (end 9 45))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 46)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints::falseEvaluations"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::falseEvaluations")
+        (range (start 10 16) (end 10 46))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 47)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints::BooleanEvaluation"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::BooleanEvaluation")
+        (range (start 7 16) (end 7 47))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 48)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "Constraints::booleanEvaluations"))
+        (kind membershipImport) (ordinal 0) (authored-target "Performances::booleanEvaluations")
+        (range (start 8 16) (end 8 48))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

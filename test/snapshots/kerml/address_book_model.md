@@ -69,3 +69,18 @@ package AddressBookModel {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 0 15) (end 0 27)) (probe (position 0 15))
+      (reference
+        (source (document "d0") (qualified-name "*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 0 15) (end 0 27))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

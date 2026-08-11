@@ -235,3 +235,34 @@ package '15_01-Constants' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 19) (end 2 21)) (probe (position 2 19))
+      (reference
+        (source (document "d0") (qualified-name "15_01-Constants::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 2 19) (end 2 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 19) (end 3 32)) (probe (position 3 19))
+      (reference
+        (source (document "d0") (qualified-name "15_01-Constants::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "RealFunctions::*")
+        (range (start 3 19) (end 3 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 19) (end 1 40)) (probe (position 1 19))
+      (reference
+        (source (document "d0") (qualified-name "15_01-Constants::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "MeasurementReferences::*")
+        (range (start 1 19) (end 1 40))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

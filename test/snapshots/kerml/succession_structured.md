@@ -56,3 +56,8 @@ package SuccessionStructured {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

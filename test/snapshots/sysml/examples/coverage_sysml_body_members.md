@@ -161,3 +161,38 @@ part def Outer {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 9 18) (end 9 25)) (probe (position 9 18))
+      (reference
+        (source (document "d0") (qualified-name "Outer::x"))
+        (kind featureTyping) (ordinal 1) (authored-target "Integer")
+        (range (start 9 18) (end 9 25))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 14 14) (end 14 23)) (probe (position 14 14))
+      (reference
+        (source (document "d0") (qualified-name "Outer::p1"))
+        (kind featureTyping) (ordinal 0) (authored-target "InnerPart")
+        (range (start 14 14) (end 14 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Outer::InnerPart") (range (start 6 4) (end 6 23)))
+        )
+      )
+    )
+    (query (range (start 18 13) (end 18 22)) (probe (position 18 13))
+      (reference
+        (source (document "d0") (qualified-name "Outer::r1"))
+        (kind featureTyping) (ordinal 0) (authored-target "InnerPart")
+        (range (start 18 13) (end 18 22))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Outer::InnerPart") (range (start 6 4) (end 6 23)))
+        )
+      )
+    )
+  )
+)
+~~~

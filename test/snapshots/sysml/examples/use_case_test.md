@@ -160,3 +160,30 @@ package UseCaseTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 22 13) (end 22 17)) (probe (position 22 13))
+      (reference
+        (source (document "d0") (qualified-name "UseCaseTest::user"))
+        (kind featureTyping) (ordinal 0) (authored-target "User")
+        (range (start 22 13) (end 22 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "UseCaseTest::User") (range (start 3 1) (end 3 15)))
+        )
+      )
+    )
+    (query (range (start 31 15) (end 31 21)) (probe (position 31 15))
+      (reference
+        (source (document "d0") (qualified-name "UseCaseTest::system"))
+        (kind featureTyping) (ordinal 0) (authored-target "System")
+        (range (start 31 15) (end 31 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "UseCaseTest::System") (range (start 2 1) (end 2 17)))
+        )
+      )
+    )
+  )
+)
+~~~

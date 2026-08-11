@@ -214,3 +214,34 @@ package Expressions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 31)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Expressions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarFunctions::*")
+        (range (start 1 16) (end 1 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 32)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "Expressions::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ControlFunctions::*")
+        (range (start 3 16) (end 3 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 39)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Expressions::ToString"))
+        (kind membershipImport) (ordinal 0) (authored-target "BaseFunctions::ToString")
+        (range (start 2 16) (end 2 39))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

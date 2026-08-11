@@ -122,3 +122,28 @@ package WithoutConnectorsExecution {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 19 16) (end 19 21)) (probe (position 19 16))
+      (reference
+        (source (document "d0") (qualified-name "WithoutConnectorsExecution::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Atoms::*")
+        (range (start 19 16) (end 19 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 20 16) (end 20 50)) (probe (position 20 16))
+      (reference
+        (source (document "d0") (qualified-name "WithoutConnectorsExecution::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "WithoutConnectorsModelToBeExecuted::*")
+        (range (start 20 16) (end 20 50))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "WithoutConnectorsModelToBeExecuted") (range (start 1 0) (end 1 196)))
+        )
+      )
+    )
+  )
+)
+~~~

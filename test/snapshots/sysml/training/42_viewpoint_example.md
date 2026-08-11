@@ -137,3 +137,8 @@ package 'Viewpoint Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

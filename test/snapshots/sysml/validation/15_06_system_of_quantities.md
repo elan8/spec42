@@ -122,3 +122,18 @@ package '15_06-System of Quantities' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 19) (end 1 22)) (probe (position 1 19))
+      (reference
+        (source (document "d0") (qualified-name "15_06-System of Quantities::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 1 19) (end 1 22))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

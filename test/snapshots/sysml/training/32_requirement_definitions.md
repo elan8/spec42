@@ -237,3 +237,70 @@ package 'Requirement Definitions' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 2 16) (end 2 18)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Definitions::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 2 16) (end 2 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 19)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Definitions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 1 16) (end 1 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 14 21) (end 14 30)) (probe (position 14 21))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Definitions::Vehicle::dryMass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 14 21) (end 14 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 15 22) (end 15 31)) (probe (position 15 22))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Definitions::Vehicle::fuelMass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 15 22) (end 15 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 16 26) (end 16 35)) (probe (position 16 26))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Definitions::Vehicle::fuelFullMass"))
+        (kind featureTyping) (ordinal 1) (authored-target "MassValue")
+        (range (start 16 26) (end 16 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 24 22) (end 24 32)) (probe (position 24 22))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::massActual"))
+        (kind redefinition) (ordinal 0) (authored-target "massActual")
+        (range (start 24 22) (end 24 32))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement::massActual") (range (start 24 2) (end 24 70)))
+        )
+      )
+    )
+    (query (range (start 19 59) (end 19 84)) (probe (position 19 59))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Definitions::VehicleMassLimitationRequirement"))
+        (kind specialization) (ordinal 0) (authored-target "MassLimitationRequirement")
+        (range (start 19 59) (end 19 84))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Requirement Definitions::MassLimitationRequirement") (range (start 4 1) (end 4 247)))
+        )
+      )
+    )
+  )
+)
+~~~

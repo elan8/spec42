@@ -313,3 +313,58 @@ package '11b-Safety and Security Feaure Views' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 0 15) (end 0 20)) (probe (position 0 15))
+      (reference
+        (source (document "d0") (qualified-name "*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Views::*")
+        (range (start 0 15) (end 0 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 28)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "11b-Safety and Security Feaure Views::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 2 16) (end 2 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 47 17) (end 47 32)) (probe (position 47 17))
+      (reference
+        (source (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ViewDefinitions::*")
+        (range (start 47 17) (end 47 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 48 17) (end 48 35)) (probe (position 48 17))
+      (reference
+        (source (document "d0") (qualified-name "11b-Safety and Security Feaure Views::Views::vehicle"))
+        (kind membershipImport) (ordinal 0) (authored-target "PartsTree::vehicle")
+        (range (start 48 17) (end 48 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 16) (end 12 37)) (probe (position 12 16))
+      (reference
+        (source (document "d0") (qualified-name "11b-Safety and Security Feaure Views::PartsTree::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AnnotationDefinitions::*")
+        (range (start 12 16) (end 12 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 33 16) (end 33 37)) (probe (position 33 16))
+      (reference
+        (source (document "d0") (qualified-name "11b-Safety and Security Feaure Views::ViewDefinitions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AnnotationDefinitions::*")
+        (range (start 33 16) (end 33 37))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

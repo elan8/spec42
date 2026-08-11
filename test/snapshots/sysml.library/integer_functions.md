@@ -149,3 +149,18 @@ standard library package IntegerFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 15) (end 7 27)) (probe (position 7 15))
+      (reference
+        (source (document "d0") (qualified-name "IntegerFunctions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 7 15) (end 7 27))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

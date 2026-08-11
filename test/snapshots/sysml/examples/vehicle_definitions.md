@@ -266,3 +266,82 @@ package VehicleDefinitions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 10 16) (end 10 18)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::*#import4"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 10 16) (end 10 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 19)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::*#import3"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 9 16) (end 9 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 15 20) (end 15 29)) (probe (position 15 20))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::Vehicle::mass"))
+        (kind subsetting) (ordinal 0) (authored-target "ISQ::mass")
+        (range (start 15 20) (end 15 29))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 26)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Quantities::*")
+        (range (start 7 16) (end 7 26))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 27 32) (end 27 43)) (probe (position 27 32))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::Lugbolt::tighteningTorque"))
+        (kind subsetting) (ordinal 0) (authored-target "ISQ::torque")
+        (range (start 27 32) (end 27 43))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 28)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 6 16) (end 6 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 51 38) (end 51 55)) (probe (position 51 38))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::Mounting"))
+        (kind flowTarget) (ordinal 0) (authored-target "hub::appliedTorque")
+        (range (start 51 38) (end 51 55))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 37)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "MeasurementReferences::*")
+        (range (start 8 16) (end 8 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 51 7) (end 51 34)) (probe (position 51 7))
+      (reference
+        (source (document "d0") (qualified-name "VehicleDefinitions::Mounting"))
+        (kind flowSource) (ordinal 0) (authored-target "axleMount::transferredTorque")
+        (range (start 51 7) (end 51 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

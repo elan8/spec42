@@ -57,3 +57,18 @@ package Expansion {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 40)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Expansion::select"))
+        (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::select")
+        (range (start 1 16) (end 1 40))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

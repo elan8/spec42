@@ -122,3 +122,18 @@ standard library package TrigFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 5 18) (end 5 36)) (probe (position 5 18))
+      (reference
+        (source (document "d0") (qualified-name "TrigFunctions::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 5 18) (end 5 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

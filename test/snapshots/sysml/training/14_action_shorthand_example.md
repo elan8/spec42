@@ -146,3 +146,28 @@ package 'Action Shorthand Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 17 12) (end 17 23)) (probe (position 17 12))
+      (reference
+        (source (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))
+        (kind flowSource) (ordinal 0) (authored-target "focus::image")
+        (range (start 17 12) (end 17 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Action Shorthand Example::TakePicture::focus::image") (range (start 14 3) (end 14 18)))
+        )
+      )
+    )
+    (query (range (start 17 27) (end 17 38)) (probe (position 17 27))
+      (reference
+        (source (document "d0") (qualified-name "Action Shorthand Example::TakePicture"))
+        (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
+        (range (start 17 27) (end 17 38))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

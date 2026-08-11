@@ -1113,3 +1113,44 @@ standard library package KerML {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 131 16) (end 131 20)) (probe (position 131 16))
+      (reference
+        (source (document "d0") (qualified-name "KerML::Core::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Root::*")
+        (range (start 131 16) (end 131 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 297 16) (end 297 20)) (probe (position 297 16))
+      (reference
+        (source (document "d0") (qualified-name "KerML::Kernel::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Core::*")
+        (range (start 297 16) (end 297 20))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 15) (end 7 21)) (probe (position 7 15))
+      (reference
+        (source (document "d0") (qualified-name "KerML::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Kernel::*")
+        (range (start 7 15) (end 7 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "KerML::Kernel") (range (start 296 1) (end 296 6977)))
+        )
+      )
+    )
+    (query (range (start 6 16) (end 6 28)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "KerML::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 6 16) (end 6 28))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

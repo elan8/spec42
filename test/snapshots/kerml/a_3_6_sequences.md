@@ -202,3 +202,44 @@ package SequencesExecution {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 23 16) (end 23 21)) (probe (position 23 16))
+      (reference
+        (source (document "d0") (qualified-name "SequencesExecution::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Atoms::*")
+        (range (start 23 16) (end 23 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 25 16) (end 25 39)) (probe (position 25 16))
+      (reference
+        (source (document "d0") (qualified-name "SequencesExecution::Occurrence"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::Occurrence")
+        (range (start 25 16) (end 25 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 24 16) (end 24 42)) (probe (position 24 16))
+      (reference
+        (source (document "d0") (qualified-name "SequencesExecution::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SequencesModelToBeExecuted::*")
+        (range (start 24 16) (end 24 42))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "SequencesModelToBeExecuted") (range (start 1 0) (end 1 308)))
+        )
+      )
+    )
+    (query (range (start 26 16) (end 26 42)) (probe (position 26 16))
+      (reference
+        (source (document "d0") (qualified-name "SequencesExecution::HappensBefore"))
+        (kind membershipImport) (ordinal 0) (authored-target "Occurrences::HappensBefore")
+        (range (start 26 16) (end 26 42))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

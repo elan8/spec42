@@ -67,3 +67,20 @@ package Circular {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 5 16) (end 5 24)) (probe (position 5 16))
+      (reference
+        (source (document "d0") (qualified-name "Circular::P::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Circular::*")
+        (range (start 5 16) (end 5 24))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Circular") (range (start 0 0) (end 0 172)))
+        )
+      )
+    )
+  )
+)
+~~~

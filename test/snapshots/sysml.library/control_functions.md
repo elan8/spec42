@@ -325,3 +325,50 @@ standard library package ControlFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 30)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlFunctions::Anything"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::Anything")
+        (range (start 7 16) (end 7 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 36)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlFunctions::min"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarFunctions::min")
+        (range (start 10 16) (end 10 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 36)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlFunctions::max"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarFunctions::max")
+        (range (start 11 16) (end 11 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 37)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlFunctions::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 9 16) (end 9 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 41)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "ControlFunctions::ScalarValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::ScalarValue")
+        (range (start 8 16) (end 8 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

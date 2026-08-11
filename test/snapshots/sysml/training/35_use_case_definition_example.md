@@ -143,3 +143,8 @@ package 'Use Case Definition Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

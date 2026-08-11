@@ -152,3 +152,42 @@ package 'Views Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 21)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Views Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Views::*")
+        (range (start 1 16) (end 1 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 16 11) (end 16 21)) (probe (position 16 11))
+      (reference
+        (source (document "d0") (qualified-name "Views Example::asTextualNotationTable::columnView[1]"))
+        (kind redefinition) (ordinal 0) (authored-target "columnView")
+        (range (start 16 11) (end 16 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 35)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Views Example::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Viewpoint Example::*")
+        (range (start 2 16) (end 2 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 37)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "Views Example::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Filtering Example-2::*")
+        (range (start 3 16) (end 3 37))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

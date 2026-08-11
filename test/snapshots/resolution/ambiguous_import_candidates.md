@@ -80,3 +80,41 @@ package Use {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 3 11) (end 3 12)) (probe (position 3 11))
+      (reference
+        (source (document "d0") (qualified-name "Use::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "A::*")
+        (range (start 3 11) (end 3 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "A") (range (start 0 0) (end 0 29)))
+        )
+      )
+    )
+    (query (range (start 4 11) (end 4 12)) (probe (position 4 11))
+      (reference
+        (source (document "d0") (qualified-name "Use::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "B::*")
+        (range (start 4 11) (end 4 12))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "B") (range (start 1 0) (end 1 29)))
+        )
+      )
+    )
+    (query (range (start 5 17) (end 5 22)) (probe (position 5 17))
+      (reference
+        (source (document "d0") (qualified-name "Use::usage"))
+        (kind featureTyping) (ordinal 0) (authored-target "Thing")
+        (range (start 5 17) (end 5 22))
+        (outcome (status ambiguous)
+          (target (document "d0") (qualified-name "A::Thing") (range (start 0 12) (end 0 27)))
+          (target (document "d0") (qualified-name "B::Thing") (range (start 1 12) (end 1 27)))
+        )
+      )
+    )
+  )
+)
+~~~

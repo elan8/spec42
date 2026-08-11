@@ -244,3 +244,20 @@ package StateTest {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 67 13) (end 67 15)) (probe (position 67 13))
+      (reference
+        (source (document "d0") (qualified-name "StateTest::s5"))
+        (kind subsetting) (ordinal 0) (authored-target "s4")
+        (range (start 67 13) (end 67 15))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "StateTest::s4") (range (start 62 1) (end 62 43)))
+        )
+      )
+    )
+  )
+)
+~~~

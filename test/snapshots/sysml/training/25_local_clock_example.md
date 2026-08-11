@@ -142,3 +142,38 @@ package 'Local Clock Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 9 20) (end 9 26)) (probe (position 9 20))
+      (reference
+        (source (document "d0") (qualified-name "Local Clock Example::Server::today"))
+        (kind featureTyping) (ordinal 1) (authored-target "String")
+        (range (start 9 20) (end 9 26))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Local Clock Example::String") (range (start 1 1) (end 1 37)))
+        )
+      )
+    )
+    (query (range (start 7 11) (end 7 21)) (probe (position 7 11))
+      (reference
+        (source (document "d0") (qualified-name "Local Clock Example::Server::localClock"))
+        (kind redefinition) (ordinal 0) (authored-target "localClock")
+        (range (start 7 11) (end 7 21))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Local Clock Example::Server::localClock") (range (start 7 2) (end 7 42)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 36)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Local Clock Example::String"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+        (range (start 1 16) (end 1 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

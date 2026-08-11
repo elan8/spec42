@@ -156,3 +156,26 @@ standard library package NumericalFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 15) (end 6 27)) (probe (position 6 15))
+      (reference
+        (source (document "d0") (qualified-name "NumericalFunctions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 6 15) (end 6 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 16) (end 7 40)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "NumericalFunctions::reduce"))
+        (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::reduce")
+        (range (start 7 16) (end 7 40))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

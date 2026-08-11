@@ -209,3 +209,60 @@ package OneToUnrestrictedConnectorsExecution {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 26 16) (end 26 21)) (probe (position 26 16))
+      (reference
+        (source (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Atoms::*")
+        (range (start 26 16) (end 26 21))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 30 16) (end 30 55)) (probe (position 30 16))
+      (reference
+        (source (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork"))
+        (kind membershipImport) (ordinal 0) (authored-target "OneToOneConnectorsExecution::MyBikeFork")
+        (range (start 30 16) (end 30 55))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 28 16) (end 28 56)) (probe (position 28 16))
+      (reference
+        (source (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork1"))
+        (kind membershipImport) (ordinal 0) (authored-target "OneToOneConnectorsExecution::MyBikeFork1")
+        (range (start 28 16) (end 28 56))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 29 16) (end 29 56)) (probe (position 29 16))
+      (reference
+        (source (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::MyBikeFork2"))
+        (kind membershipImport) (ordinal 0) (authored-target "OneToOneConnectorsExecution::MyBikeFork2")
+        (range (start 29 16) (end 29 56))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 60)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeFork"))
+        (kind membershipImport) (ordinal 0) (authored-target "WithoutConnectorsModelToBeExecuted::BikeFork")
+        (range (start 6 16) (end 6 60))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 27 16) (end 27 60)) (probe (position 27 16))
+      (reference
+        (source (document "d0") (qualified-name "OneToUnrestrictedConnectorsExecution::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "OneToUnrestrictedConnectorsModelToBeExecuted::*")
+        (range (start 27 16) (end 27 60))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted") (range (start 1 0) (end 1 434)))
+        )
+      )
+    )
+  )
+)
+~~~

@@ -83,3 +83,40 @@ package Demo {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 8 24) (end 8 28)) (probe (position 8 24))
+      (reference
+        (source (document "d0") (qualified-name "Demo::Derived"))
+        (kind specialization) (ordinal 0) (authored-target "Base")
+        (range (start 8 24) (end 8 28))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Demo::Base") (range (start 5 4) (end 5 68)))
+        )
+      )
+    )
+    (query (range (start 9 16) (end 9 23)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "Demo::host"))
+        (kind featureTyping) (ordinal 0) (authored-target "Derived")
+        (range (start 9 16) (end 9 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Demo::Derived") (range (start 8 4) (end 8 29)))
+        )
+      )
+    )
+    (query (range (start 6 26) (end 6 41)) (probe (position 6 26))
+      (reference
+        (source (document "d0") (qualified-name "Demo::Base::value"))
+        (kind featureTyping) (ordinal 1) (authored-target "StatusNamedType")
+        (range (start 6 26) (end 6 41))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Demo::StatusNamedType") (range (start 4 4) (end 4 29)))
+        )
+      )
+    )
+  )
+)
+~~~

@@ -225,3 +225,58 @@ package 'Fork Join Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Fork Join Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 28 47) (end 28 68)) (probe (position 28 47))
+      (reference
+        (source (document "d0") (qualified-name "Fork Join Example::Brake"))
+        (kind flowTarget) (ordinal 0) (authored-target "braking::brakePressure")
+        (range (start 28 47) (end 28 68))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Fork Join Example::Brake::braking::brakePressure") (range (start 32 3) (end 32 20)))
+        )
+      )
+    )
+    (query (range (start 29 51) (end 29 78)) (probe (position 29 51))
+      (reference
+        (source (document "d0") (qualified-name "Fork Join Example::Brake"))
+        (kind flowTarget) (ordinal 1) (authored-target "braking::modulationFrequency")
+        (range (start 29 51) (end 29 78))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Fork Join Example::Brake::braking::modulationFrequency") (range (start 33 3) (end 33 26)))
+        )
+      )
+    )
+    (query (range (start 28 12) (end 28 43)) (probe (position 28 12))
+      (reference
+        (source (document "d0") (qualified-name "Fork Join Example::Brake"))
+        (kind flowSource) (ordinal 0) (authored-target "monitorBrakePedal::brakePressure")
+        (range (start 28 12) (end 28 43))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Fork Join Example::Brake::monitorBrakePedal::brakePressure") (range (start 19 3) (end 19 21)))
+        )
+      )
+    )
+    (query (range (start 29 12) (end 29 47)) (probe (position 29 12))
+      (reference
+        (source (document "d0") (qualified-name "Fork Join Example::Brake"))
+        (kind flowSource) (ordinal 1) (authored-target "monitorTraction::modulationFrequency")
+        (range (start 29 12) (end 29 47))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Fork Join Example::Brake::monitorTraction::modulationFrequency") (range (start 24 3) (end 24 27)))
+        )
+      )
+    )
+  )
+)
+~~~

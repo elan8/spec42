@@ -80,3 +80,48 @@ package P3 {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 10) (end 6 11)) (probe (position 6 10))
+      (reference
+        (source (document "d0") (qualified-name "P2::a"))
+        (kind featureTyping) (ordinal 0) (authored-target "A")
+        (range (start 6 10) (end 6 11))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "P1::A") (range (start 1 1) (end 1 12)))
+        )
+      )
+    )
+    (query (range (start 12 16) (end 12 17)) (probe (position 12 16))
+      (reference
+        (source (document "d0") (qualified-name "P3::b"))
+        (kind subsetting) (ordinal 0) (authored-target "a")
+        (range (start 12 16) (end 12 17))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 5 16) (end 5 18)) (probe (position 5 16))
+      (reference
+        (source (document "d0") (qualified-name "P2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "P1::*")
+        (range (start 5 16) (end 5 18))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "P1") (range (start 0 0) (end 0 27)))
+        )
+      )
+    )
+    (query (range (start 9 15) (end 9 17)) (probe (position 9 15))
+      (reference
+        (source (document "d0") (qualified-name "*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "P2::*")
+        (range (start 9 15) (end 9 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "P2") (range (start 4 0) (end 4 50)))
+        )
+      )
+    )
+  )
+)
+~~~

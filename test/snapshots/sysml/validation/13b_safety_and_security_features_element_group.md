@@ -225,3 +225,66 @@ package '13b-Safety and Security Features Element Group' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 36 16) (end 36 33)) (probe (position 36 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Safety Features::*")
+        (range (start 36 16) (end 36 33))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 37 16) (end 37 35)) (probe (position 37 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Security Features::*")
+        (range (start 37 16) (end 37 35))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 27 16) (end 27 44)) (probe (position 27 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Security Features::alarm"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle1_c1::interior::alarm")
+        (range (start 27 16) (end 27 44))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 21 16) (end 21 45)) (probe (position 21 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety Features::bumper"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle1_c1::bodyAssy::bumper")
+        (range (start 21 16) (end 21 45))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 19 16) (end 19 47)) (probe (position 19 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety Features::seatBelt"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle1_c1::interior::seatBelt")
+        (range (start 19 16) (end 19 47))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 20 16) (end 20 51)) (probe (position 20 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Safety Features::driverAirBag"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle1_c1::interior::driverAirBag")
+        (range (start 20 16) (end 20 51))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 28 16) (end 28 51)) (probe (position 28 16))
+      (reference
+        (source (document "d0") (qualified-name "13b-Safety and Security Features Element Group::Security Features::keylessEntry"))
+        (kind membershipImport) (ordinal 0) (authored-target "vehicle1_c1::bodyAssy::keylessEntry")
+        (range (start 28 16) (end 28 51))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

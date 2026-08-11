@@ -287,3 +287,38 @@ standard library package RiskMetadata {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 17 23) (end 17 28)) (probe (position 17 23))
+      (reference
+        (source (document "d0") (qualified-name "RiskMetadata::LevelEnum"))
+        (kind specialization) (ordinal 0) (authored-target "Level")
+        (range (start 17 23) (end 17 28))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "RiskMetadata::Level") (range (start 8 1) (end 8 173)))
+        )
+      )
+    )
+    (query (range (start 51 27) (end 51 36)) (probe (position 51 27))
+      (reference
+        (source (document "d0") (qualified-name "RiskMetadata::RiskLevelEnum"))
+        (kind specialization) (ordinal 0) (authored-target "RiskLevel")
+        (range (start 51 27) (end 51 36))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "RiskMetadata::RiskLevel") (range (start 28 1) (end 28 439)))
+        )
+      )
+    )
+    (query (range (start 6 16) (end 6 34)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "RiskMetadata::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 6 16) (end 6 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

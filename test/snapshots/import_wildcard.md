@@ -49,3 +49,18 @@ import ScalarValues::*;
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 0 7) (end 0 19)) (probe (position 0 7))
+      (reference
+        (source (document "d0") (qualified-name "*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 0 7) (end 0 19))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

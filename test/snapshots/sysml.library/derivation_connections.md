@@ -193,3 +193,56 @@ standard library package DerivationConnections {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 0 0) (end 0 10)) (probe (position 0 0))
+      (reference
+        (source (document "d0") (qualified-name "DerivationConnections::derivations"))
+        (kind specialization) (ordinal 0) (authored-target "Derivation")
+        (range (start 0 0) (end 0 10))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DerivationConnections::Derivation") (range (start 16 1) (end 16 1660)))
+        )
+      )
+    )
+    (query (range (start 38 22) (end 38 41)) (probe (position 38 22))
+      (reference
+        (source (document "d0") (qualified-name "DerivationConnections::Derivation::"))
+        (kind redefinition) (ordinal 0) (authored-target "derivedRequirements")
+        (range (start 38 22) (end 38 41))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DerivationConnections::derivedRequirements") (range (start 12 1) (end 12 127)))
+        )
+      )
+    )
+    (query (range (start 35 45) (end 35 65)) (probe (position 35 45))
+      (reference
+        (source (document "d0") (qualified-name "DerivationConnections::Derivation::originalRequirement"))
+        (kind redefinition) (ordinal 0) (authored-target "originalRequirements")
+        (range (start 35 45) (end 35 65))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "DerivationConnections::originalRequirements") (range (start 9 1) (end 9 131)))
+        )
+      )
+    )
+    (query (range (start 7 16) (end 7 41)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "DerivationConnections::allTrue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ControlFunctions::allTrue")
+        (range (start 7 16) (end 7 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 43)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "DerivationConnections::excludes"))
+        (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::excludes")
+        (range (start 6 16) (end 6 43))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

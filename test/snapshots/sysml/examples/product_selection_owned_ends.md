@@ -188,3 +188,30 @@ package ProductSelection_OwnedEnds_SysML {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 22 51) (end 22 67)) (probe (position 22 51))
+      (reference
+        (source (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection"))
+        (kind specialization) (ordinal 0) (authored-target "ProductSelection")
+        (range (start 22 51) (end 22 67))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection") (range (start 7 1) (end 7 166)))
+        )
+      )
+    )
+    (query (range (start 27 52) (end 27 69)) (probe (position 27 52))
+      (reference
+        (source (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::SingleProductSelection1"))
+        (kind specialization) (ordinal 0) (authored-target "ProductSelection1")
+        (range (start 27 52) (end 27 69))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "ProductSelection_OwnedEnds_SysML::ProductSelection1") (range (start 15 1) (end 15 179)))
+        )
+      )
+    )
+  )
+)
+~~~

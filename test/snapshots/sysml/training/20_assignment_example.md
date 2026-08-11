@@ -239,3 +239,18 @@ package 'For Loop Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 33)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "For Loop Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SequenceFunctions::*")
+        (range (start 1 16) (end 1 33))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

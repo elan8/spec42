@@ -291,3 +291,34 @@ package HSUVDynamics {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 28)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "HSUVDynamics::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 1 16) (end 1 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 32)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "HSUVDynamics::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ControlFunctions::*")
+        (range (start 3 16) (end 3 32))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 39)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "HSUVDynamics::size"))
+        (kind membershipImport) (ordinal 0) (authored-target "SequenceFunctions::size")
+        (range (start 2 16) (end 2 39))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

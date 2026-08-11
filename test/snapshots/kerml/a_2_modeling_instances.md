@@ -132,3 +132,18 @@ package ModelingInstancesWithAtoms {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 16 16) (end 16 27)) (probe (position 16 16))
+      (reference
+        (source (document "d0") (qualified-name "ModelingInstancesWithAtoms::atom"))
+        (kind membershipImport) (ordinal 0) (authored-target "Atoms::atom")
+        (range (start 16 16) (end 16 27))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

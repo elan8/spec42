@@ -187,3 +187,34 @@ package AnalysisAnnotation {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 3 16) (end 3 19)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisAnnotation::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ISQ::*")
+        (range (start 3 16) (end 3 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 31)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisAnnotation::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "AnalysisTooling::*")
+        (range (start 2 16) (end 2 31))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "AnalysisAnnotation::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

@@ -136,3 +136,34 @@ package Vehicles_2 {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 25 16) (end 25 18)) (probe (position 25 16))
+      (reference
+        (source (document "d0") (qualified-name "Vehicles_2::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 25 16) (end 25 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 28)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Vehicles_2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "MassRollup_1::*")
+        (range (start 2 16) (end 2 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 16) (end 1 36)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Vehicles_2::String"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::String")
+        (range (start 1 16) (end 1 36))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

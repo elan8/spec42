@@ -97,3 +97,26 @@ standard library package Attributes {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 19) (end 6 34)) (probe (position 6 19))
+      (reference
+        (source (document "d0") (qualified-name "Attributes::DataValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::DataValue")
+        (range (start 6 19) (end 6 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 7 19) (end 7 35)) (probe (position 7 19))
+      (reference
+        (source (document "d0") (qualified-name "Attributes::dataValues"))
+        (kind membershipImport) (ordinal 0) (authored-target "Base::dataValues")
+        (range (start 7 19) (end 7 35))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

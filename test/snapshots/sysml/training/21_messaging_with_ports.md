@@ -168,3 +168,30 @@ package 'Messaging Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 29 13) (end 29 24)) (probe (position 29 13))
+      (reference
+        (source (document "d0") (qualified-name "Messaging Example::camera::takePicture"))
+        (kind flowSource) (ordinal 0) (authored-target "focus::image")
+        (range (start 29 13) (end 29 24))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Messaging Example::camera::takePicture::focus::image") (range (start 26 4) (end 26 19)))
+        )
+      )
+    )
+    (query (range (start 29 28) (end 29 39)) (probe (position 29 28))
+      (reference
+        (source (document "d0") (qualified-name "Messaging Example::camera::takePicture"))
+        (kind flowTarget) (ordinal 0) (authored-target "shoot::image")
+        (range (start 29 28) (end 29 39))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Messaging Example::camera::takePicture::shoot::image") (range (start 32 4) (end 32 18)))
+        )
+      )
+    )
+  )
+)
+~~~

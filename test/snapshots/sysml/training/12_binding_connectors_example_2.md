@@ -129,3 +129,66 @@ package 'Binding Connectors Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 23)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "Binding Connectors Example-2::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 7 16) (end 7 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Binding Connectors Example-2::Vehicle") (range (start 3 1) (end 3 18)))
+        )
+      )
+    )
+    (query (range (start 14 15) (end 14 23)) (probe (position 14 15))
+      (reference
+        (source (document "d0") (qualified-name "Binding Connectors Example-2::vehicle::tank::pump"))
+        (kind featureTyping) (ordinal 0) (authored-target "FuelPump")
+        (range (start 14 15) (end 14 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Binding Connectors Example-2::FuelPump") (range (start 4 1) (end 4 19)))
+        )
+      )
+    )
+    (query (range (start 19 15) (end 19 23)) (probe (position 19 15))
+      (reference
+        (source (document "d0") (qualified-name "Binding Connectors Example-2::vehicle::tank::tank"))
+        (kind featureTyping) (ordinal 0) (authored-target "FuelTank")
+        (range (start 19 15) (end 19 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Binding Connectors Example-2::FuelTank") (range (start 5 1) (end 5 19)))
+        )
+      )
+    )
+    (query (range (start 9 18) (end 9 30)) (probe (position 9 18))
+      (reference
+        (source (document "d0") (qualified-name "Binding Connectors Example-2::vehicle::tank::fuelTankPort"))
+        (kind redefinition) (ordinal 0) (authored-target "fuelTankPort")
+        (range (start 9 18) (end 9 30))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Binding Connectors Example-2::vehicle::tank::fuelTankPort") (range (start 9 3) (end 9 106)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 30)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Binding Connectors Example-2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Port Example::*")
+        (range (start 1 16) (end 1 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 14) (end 8 30)) (probe (position 8 14))
+      (reference
+        (source (document "d0") (qualified-name "Binding Connectors Example-2::vehicle::tank"))
+        (kind featureTyping) (ordinal 0) (authored-target "FuelTankAssembly")
+        (range (start 8 14) (end 8 30))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

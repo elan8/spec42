@@ -351,3 +351,34 @@ package TimeVaryingFeaturesEnhanced {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 48 19) (end 48 37)) (probe (position 48 19))
+      (reference
+        (source (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 48 19) (end 48 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 19) (end 1 38)) (probe (position 1 19))
+      (reference
+        (source (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ExtendedOccurrences::*")
+        (range (start 1 19) (end 1 38))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 47 19) (end 47 40)) (probe (position 47 19))
+      (reference
+        (source (document "d0") (qualified-name "TimeVaryingFeaturesEnhanced::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 47 19) (end 47 40))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

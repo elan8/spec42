@@ -125,3 +125,18 @@ package IssueMetadataExample {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 39)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "IssueMetadataExample::Issue"))
+        (kind membershipImport) (ordinal 0) (authored-target "ModelingMetadata::Issue")
+        (range (start 1 16) (end 1 39))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

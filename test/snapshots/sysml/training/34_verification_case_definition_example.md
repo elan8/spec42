@@ -227,3 +227,28 @@ package 'Verification Case Definition Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 27 25) (end 27 32)) (probe (position 27 25))
+      (reference
+        (source (document "d0") (qualified-name "Verification Case Definition Example::VehicleMassTest::collectData::testVehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 27 25) (end 27 32))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Verification Case Definition Example::Vehicle") (range (start 2 1) (end 2 53)))
+        )
+      )
+    )
+    (query (range (start 3 20) (end 3 29)) (probe (position 3 20))
+      (reference
+        (source (document "d0") (qualified-name "Verification Case Definition Example::Vehicle::mass"))
+        (kind subsetting) (ordinal 0) (authored-target "ISQ::mass")
+        (range (start 3 20) (end 3 29))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

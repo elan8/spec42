@@ -127,3 +127,44 @@ package 'Flow Definition Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 13 13) (end 13 19)) (probe (position 13 13))
+      (reference
+        (source (document "d0") (qualified-name "Flow Definition Example::vehicle::eng"))
+        (kind featureTyping) (ordinal 0) (authored-target "Engine")
+        (range (start 13 13) (end 13 19))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 16) (end 11 23)) (probe (position 11 16))
+      (reference
+        (source (document "d0") (qualified-name "Flow Definition Example::vehicle"))
+        (kind featureTyping) (ordinal 0) (authored-target "Vehicle")
+        (range (start 11 16) (end 11 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Flow Definition Example::Vehicle") (range (start 3 1) (end 3 18)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 30)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Flow Definition Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Port Example::*")
+        (range (start 1 16) (end 1 30))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 18) (end 12 34)) (probe (position 12 18))
+      (reference
+        (source (document "d0") (qualified-name "Flow Definition Example::vehicle::tankAssy"))
+        (kind featureTyping) (ordinal 0) (authored-target "FuelTankAssembly")
+        (range (start 12 18) (end 12 34))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

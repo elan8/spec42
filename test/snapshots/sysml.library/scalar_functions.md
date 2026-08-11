@@ -128,3 +128,18 @@ standard library package ScalarFunctions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 6 15) (end 6 27)) (probe (position 6 15))
+      (reference
+        (source (document "d0") (qualified-name "ScalarFunctions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "ScalarValues::*")
+        (range (start 6 15) (end 6 27))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

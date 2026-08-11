@@ -127,3 +127,18 @@ package 'Interaction Example-2' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 42)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-2::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example::*")
+        (range (start 1 16) (end 1 42))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

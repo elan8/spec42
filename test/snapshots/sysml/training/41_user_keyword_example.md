@@ -136,3 +136,44 @@ package 'User Keyword Example' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 21) (end 7 25)) (probe (position 7 21))
+      (reference
+        (source (document "d0") (qualified-name "User Keyword Example::Device::battery::power"))
+        (kind featureTyping) (ordinal 1) (authored-target "Real")
+        (range (start 7 21) (end 7 25))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "User Keyword Example::Real") (range (start 1 1) (end 1 35)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 34)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "User Keyword Example::Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 16) (end 1 34))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 3 16) (end 3 39)) (probe (position 3 16))
+      (reference
+        (source (document "d0") (qualified-name "User Keyword Example::LevelEnum"))
+        (kind membershipImport) (ordinal 0) (authored-target "RiskMetadata::LevelEnum")
+        (range (start 3 16) (end 3 39))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 2 16) (end 2 43)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "User Keyword Example::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Semantic Metadata Example::*")
+        (range (start 2 16) (end 2 43))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

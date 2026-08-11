@@ -58,3 +58,8 @@ alias Foo for Bar {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

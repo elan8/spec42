@@ -152,3 +152,66 @@ package 'Interaction Example-1' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 12 8) (end 12 27)) (probe (position 12 8))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))
+        (kind flowSource) (ordinal 0) (authored-target "driver::setSpeedSent")
+        (range (start 12 8) (end 12 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 15) (end 1 41)) (probe (position 1 15))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-1::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Event Occurrence Example::*")
+        (range (start 1 15) (end 1 41))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 18 52) (end 18 86)) (probe (position 18 52))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))
+        (kind flowTarget) (ordinal 2) (authored-target "vehicle::engine::fuelCommandReceived")
+        (range (start 18 52) (end 18 86))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 15 8) (end 15 43)) (probe (position 15 8))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))
+        (kind flowSource) (ordinal 1) (authored-target "vehicle::speedometer::sensedSpeedSent")
+        (range (start 15 8) (end 15 43))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 18 8) (end 18 48)) (probe (position 18 8))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))
+        (kind flowSource) (ordinal 2) (authored-target "vehicle::cruiseController::fuelCommandSent")
+        (range (start 18 8) (end 18 48))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 12 31) (end 12 72)) (probe (position 12 31))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))
+        (kind flowTarget) (ordinal 0) (authored-target "vehicle::cruiseController::setSpeedReceived")
+        (range (start 12 31) (end 12 72))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 15 47) (end 15 91)) (probe (position 15 47))
+      (reference
+        (source (document "d0") (qualified-name "Interaction Example-1::CruiseControlInteraction"))
+        (kind flowTarget) (ordinal 1) (authored-target "vehicle::cruiseController::sensedSpeedReceived")
+        (range (start 15 47) (end 15 91))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

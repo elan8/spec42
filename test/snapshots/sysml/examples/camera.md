@@ -86,3 +86,8 @@ part def Camera {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+)
+~~~

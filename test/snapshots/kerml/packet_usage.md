@@ -84,3 +84,26 @@ package 'Packet Usage' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 0 15) (end 0 22)) (probe (position 0 15))
+      (reference
+        (source (document "d0") (qualified-name "*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Packets::*")
+        (range (start 0 15) (end 0 22))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 1 15) (end 1 33)) (probe (position 1 15))
+      (reference
+        (source (document "d0") (qualified-name "Real"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Real")
+        (range (start 1 15) (end 1 33))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

@@ -447,3 +447,58 @@ standard library package VectorCalculations {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 7 16) (end 7 36)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "VectorCalculations::Number"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Number")
+        (range (start 7 16) (end 7 36))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 37)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "VectorCalculations::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 6 16) (end 6 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 19) (end 8 50)) (probe (position 8 19))
+      (reference
+        (source (document "d0") (qualified-name "VectorCalculations::ScalarQuantityValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Quantities::ScalarQuantityValue")
+        (range (start 8 19) (end 8 50))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 19) (end 9 50)) (probe (position 9 19))
+      (reference
+        (source (document "d0") (qualified-name "VectorCalculations::VectorQuantityValue"))
+        (kind membershipImport) (ordinal 0) (authored-target "Quantities::VectorQuantityValue")
+        (range (start 9 19) (end 9 50))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 11 19) (end 11 66)) (probe (position 11 19))
+      (reference
+        (source (document "d0") (qualified-name "VectorCalculations::CoordinateTransformation"))
+        (kind membershipImport) (ordinal 0) (authored-target "MeasurementReferences::CoordinateTransformation")
+        (range (start 11 19) (end 11 66))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 19) (end 10 68)) (probe (position 10 19))
+      (reference
+        (source (document "d0") (qualified-name "VectorCalculations::VectorMeasurementReference"))
+        (kind membershipImport) (ordinal 0) (authored-target "MeasurementReferences::VectorMeasurementReference")
+        (range (start 10 19) (end 10 68))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

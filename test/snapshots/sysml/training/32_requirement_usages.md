@@ -164,3 +164,46 @@ package 'Requirement Usages' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 1 16) (end 1 18)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Usages::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SI::*")
+        (range (start 1 16) (end 1 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 16) (end 6 24)) (probe (position 6 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd"))
+        (kind redefinition) (ordinal 0) (authored-target "massReqd")
+        (range (start 6 16) (end 6 24))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Requirement Usages::fullVehicleMassLimit::massReqd") (range (start 6 2) (end 6 36)))
+        )
+      )
+    )
+    (query (range (start 16 16) (end 16 24)) (probe (position 16 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd"))
+        (kind redefinition) (ordinal 0) (authored-target "massReqd")
+        (range (start 16 16) (end 16 24))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Requirement Usages::emptyVehicleMassLimit::massReqd") (range (start 16 2) (end 16 36)))
+        )
+      )
+    )
+    (query (range (start 2 16) (end 2 41)) (probe (position 2 16))
+      (reference
+        (source (document "d0") (qualified-name "Requirement Usages::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Requirement Definitions::*")
+        (range (start 2 16) (end 2 41))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~

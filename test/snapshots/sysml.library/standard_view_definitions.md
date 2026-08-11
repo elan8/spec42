@@ -309,3 +309,38 @@ standard library package StandardViewDefinitions {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 4 18) (end 4 23)) (probe (position 4 18))
+      (reference
+        (source (document "d0") (qualified-name "StandardViewDefinitions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "SysML::*")
+        (range (start 4 18) (end 4 23))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 32 46) (end 32 65)) (probe (position 32 46))
+      (reference
+        (source (document "d0") (qualified-name "StandardViewDefinitions::ActionFlowView"))
+        (kind specialization) (ordinal 0) (authored-target "InterconnectionView")
+        (range (start 32 46) (end 32 65))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView") (range (start 23 4) (end 23 359)))
+        )
+      )
+    )
+    (query (range (start 52 51) (end 52 70)) (probe (position 52 51))
+      (reference
+        (source (document "d0") (qualified-name "StandardViewDefinitions::StateTransitionView"))
+        (kind specialization) (ordinal 0) (authored-target "InterconnectionView")
+        (range (start 52 51) (end 52 70))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "StandardViewDefinitions::InterconnectionView") (range (start 23 4) (end 23 359)))
+        )
+      )
+    )
+  )
+)
+~~~

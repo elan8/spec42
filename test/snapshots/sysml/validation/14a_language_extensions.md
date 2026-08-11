@@ -121,3 +121,30 @@ package '14a-Language Extensions' {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 12 3) (end 12 27)) (probe (position 12 3))
+      (reference
+        (source (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement"))
+        (kind redefinition) (ordinal 0) (authored-target "annotatedElement")
+        (range (start 12 3) (end 12 27))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::annotatedElement") (range (start 12 3) (end 12 47)))
+        )
+      )
+    )
+    (query (range (start 1 16) (end 1 41)) (probe (position 1 16))
+      (reference
+        (source (document "d0") (qualified-name "14a-Language Extensions::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "User Defined Extensions::*")
+        (range (start 1 16) (end 1 41))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "14a-Language Extensions::User Defined Extensions") (range (start 3 1) (end 3 250)))
+        )
+      )
+    )
+  )
+)
+~~~

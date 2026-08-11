@@ -306,3 +306,52 @@ standard library package VerificationCases {
   )
 )
 ~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 12 47) (end 12 51)) (probe (position 12 47))
+      (reference
+        (source (document "d0") (qualified-name "VerificationCases::VerificationCase"))
+        (kind specialization) (ordinal 0) (authored-target "Case")
+        (range (start 12 47) (end 12 51))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "VerificationCases::Case") (range (start 7 1) (end 7 28)))
+        )
+      )
+    )
+    (query (range (start 7 16) (end 7 27)) (probe (position 7 16))
+      (reference
+        (source (document "d0") (qualified-name "VerificationCases::Case"))
+        (kind membershipImport) (ordinal 0) (authored-target "Cases::Case")
+        (range (start 7 16) (end 7 27))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 8 16) (end 8 28)) (probe (position 8 16))
+      (reference
+        (source (document "d0") (qualified-name "VerificationCases::cases"))
+        (kind membershipImport) (ordinal 0) (authored-target "Cases::cases")
+        (range (start 8 16) (end 8 28))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 10 16) (end 10 37)) (probe (position 10 16))
+      (reference
+        (source (document "d0") (qualified-name "VerificationCases::Boolean"))
+        (kind membershipImport) (ordinal 0) (authored-target "ScalarValues::Boolean")
+        (range (start 10 16) (end 10 37))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 9 16) (end 9 46)) (probe (position 9 16))
+      (reference
+        (source (document "d0") (qualified-name "VerificationCases::RequirementCheck"))
+        (kind membershipImport) (ordinal 0) (authored-target "Requirements::RequirementCheck")
+        (range (start 9 16) (end 9 46))
+        (outcome (status unresolved))
+      )
+    )
+  )
+)
+~~~
