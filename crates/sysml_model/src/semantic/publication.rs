@@ -167,6 +167,20 @@ pub enum ReferenceKind {
     SatisfyTarget,
     AllocateSource,
     AllocateTarget,
+    FlowSource,
+    FlowTarget,
+    SuccessionFlowSource,
+    SuccessionFlowTarget,
+    PerformSource,
+    PerformTarget,
+    TransitionSource,
+    TransitionTarget,
+    ReferenceSource,
+    ReferenceTarget,
+    DependencySource,
+    DependencyTarget,
+    DerivationSource,
+    DerivationTarget,
     NamespaceImport,
     MembershipImport,
 }
@@ -188,7 +202,21 @@ impl ReferenceKind {
             | Self::SatisfySource
             | Self::SatisfyTarget
             | Self::AllocateSource
-            | Self::AllocateTarget => return None,
+            | Self::AllocateTarget
+            | Self::FlowSource
+            | Self::FlowTarget
+            | Self::SuccessionFlowSource
+            | Self::SuccessionFlowTarget
+            | Self::PerformSource
+            | Self::PerformTarget
+            | Self::TransitionSource
+            | Self::TransitionTarget
+            | Self::ReferenceSource
+            | Self::ReferenceTarget
+            | Self::DependencySource
+            | Self::DependencyTarget
+            | Self::DerivationSource
+            | Self::DerivationTarget => return None,
         })
     }
 }
@@ -589,6 +617,30 @@ fn resolve_expression_relationships(
             RelationshipKind::Allocate => {
                 (ReferenceKind::AllocateSource, ReferenceKind::AllocateTarget)
             }
+            RelationshipKind::Flow => (ReferenceKind::FlowSource, ReferenceKind::FlowTarget),
+            RelationshipKind::SuccessionFlow => (
+                ReferenceKind::SuccessionFlowSource,
+                ReferenceKind::SuccessionFlowTarget,
+            ),
+            RelationshipKind::Perform => {
+                (ReferenceKind::PerformSource, ReferenceKind::PerformTarget)
+            }
+            RelationshipKind::Transition | RelationshipKind::InitialState => (
+                ReferenceKind::TransitionSource,
+                ReferenceKind::TransitionTarget,
+            ),
+            RelationshipKind::Reference => (
+                ReferenceKind::ReferenceSource,
+                ReferenceKind::ReferenceTarget,
+            ),
+            RelationshipKind::Dependency => (
+                ReferenceKind::DependencySource,
+                ReferenceKind::DependencyTarget,
+            ),
+            RelationshipKind::Derivation => (
+                ReferenceKind::DerivationSource,
+                ReferenceKind::DerivationTarget,
+            ),
             _ => continue,
         };
         let source_outcome =
