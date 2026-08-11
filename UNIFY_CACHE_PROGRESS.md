@@ -22,7 +22,7 @@ separately and must not be "fixed" by weakening assertions in passing.
 | # | Plan step | Status | Owner |
 |---|-----------|--------|-------|
 | 1 | Round-trip prerequisites, incl. attribute-bag removal | in progress | see B9 table |
-| 2 | Typed BLAKE3 identities, exact source snapshots, metadata v2 | in progress | `feat/source-identity-blake3` |
+| 2 | Typed BLAKE3 identities, exact source snapshots, metadata v2 | done | merged |
 | 3 | Lock-free sharded store, postcard/zstd envelope, capacity, management API | done | merged |
 | 4 | Parse, library-index, closure, library-graph, workspace-graph artifacts | not started | blocked on 2, 3 |
 | 5 | `SemanticBuildService`, route every production surface through it | not started | blocked on 4 |
@@ -46,11 +46,11 @@ the same files; ownership is per key, not per file.
 
 | Chunk | Keys | Status | Branch |
 |-------|------|--------|--------|
-| A | `shortName` | in progress | `feat/b9-shortname-units` |
-| B | unit prefix/conversion/value-expression metadata | in progress | `feat/b9-shortname-units` |
+| A | `shortName` | merged | `feat/b9-shortname-units` |
+| B | unit prefix/conversion/value-expression metadata | merged | `feat/b9-shortname-units` |
 | C | state machine: `source`, `target`, `isInitial`, `targetIsDone`, `stateName`, `finalStateCount` | merged | `feat/b9-state-facts` |
 | D | source fidelity: `doc`, `body`, `text`, `language`, `keyword` (hover use) | merged | `feat/b9-source-fidelity` |
-| E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | not started | |
+| E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | in progress | `feat/b9-analysis-expression` |
 | F | relationship endpoints, type classification, and semantic classification keys: `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes`, `endType`, the `*Type` family, `metaclassRole`, `keyword` (metadata-view use) | not started | |
 | G | presentation cutover and field deletion: `generalView*` rollups, remaining `lsp_server`/`server`/`generator_api`/`workspace` consumers, then delete the field | not started | |
 
