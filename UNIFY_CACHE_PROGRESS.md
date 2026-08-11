@@ -106,6 +106,25 @@ edges from every populated `relationships.typing` entry using workspace-wide res
 resolved an edge the corpus fixture expects to stay unresolved. That interaction needs a
 deliberate design decision, not a drive-by fix, before attribute typing can move.
 
+### Resolving normative language questions
+
+Several findings in this effort are not cache questions at all but SysML/KerML semantics
+questions: whether attribute typing is an ordinary `FeatureTyping`, what scope a type reference
+resolves in, and whether a golden fixture encodes correct behaviour or an implementation artifact.
+
+Do not settle these by reading Spec42's own code, and do not settle them by picking whichever
+answer keeps the fixtures green. The authoritative sources are the specification and the OMG
+pilot implementation, available locally at
+`/Users/luke/Documents/GitHub/SysML-v2-Pilot-Implementation` — in particular `sysml.library/`
+(the normative model library), `org.omg.sysml/` (metamodel and derived-property implementations),
+the Xtext grammars, and the `*.xpect.tests` expectation suites, which frequently encode exactly
+the edge cases in dispute.
+
+When a question of this kind blocks work, investigate there and record the answer with citations,
+distinguishing what the specification states normatively from what the pilot implementation
+merely happens to do. A fixture may then be changed as a deliberate, cited correction — never as
+a quiet edit.
+
 ### Agent worktree hygiene
 
 Each agent worktree builds its own `target/`, at roughly 20 GB apiece. Seven concurrent
