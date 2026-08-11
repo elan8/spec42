@@ -77,7 +77,7 @@ fn resolve_derivation_end_target(
     {
         return Some(target.id.clone());
     }
-    let type_ref = end.attributes.get("endType")?.as_str()?;
+    let type_ref = end.declared_facts.declared_end_reference()?;
     match resolve_expression_endpoint_strict(g, uri, container_prefix, type_ref) {
         ResolveResult::Resolved(id) => Some(id),
         ResolveResult::Ambiguous | ResolveResult::Unresolved => {

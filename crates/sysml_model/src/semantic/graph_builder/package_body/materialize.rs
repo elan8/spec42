@@ -79,11 +79,8 @@ pub(super) fn materialize_feature_decl(
     let semantic_metadata_parent = parent_id.and_then(|pid| {
         g.get_node(pid).and_then(|parent| {
             (parent.element_kind == ElementKind::MetadataDef
-                && parent
-                    .attributes
-                    .get("metaclassRole")
-                    .and_then(|value| value.as_str())
-                    == Some("SemanticMetadata"))
+                && parent.declared_facts.metaclass_role
+                    == Some(crate::semantic::model::KermlMetaclassRole::SemanticMetadata))
             .then_some(pid)
         })
     });
@@ -103,10 +100,6 @@ pub(super) fn materialize_feature_decl(
     } else {
         let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "feature decl");
         let mut attrs = HashMap::new();
-        // `keyword` here also feeds a semantic user-defined-keyword classification in
-        // `sysml_diagnostics::checks::view_metadata_conformance`; it stays on the untyped
-        // attribute map (see `UNIFY_CACHE_PROGRESS.md` chunk F) and is not part of `source_text`.
-        attrs.insert("keyword".to_string(), serde_json::json!(&fv.keyword));
         attrs.insert("text".to_string(), serde_json::json!(&fv.text));
         let node_id = NodeId::new(uri, &qualified);
         add_node_and_recurse(
@@ -121,6 +114,7 @@ pub(super) fn materialize_feature_decl(
         );
         if let Some(node) = g.get_node_mut(&node_id) {
             node.source_text.text = Some(fv.text.clone());
+            node.declared_facts.modeled_keyword = Some(fv.keyword.clone());
         }
     }
 }
@@ -136,9 +130,6 @@ pub(super) fn materialize_classifier_decl(
     let name = extract_modeled_decl_name(&cv.keyword, &cv.text, "_classifier");
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "classifier decl");
     let mut attrs = HashMap::new();
-    // See the matching comment in `materialize_feature_decl`: `keyword` also feeds the
-    // metadata-view semantic check and stays on the untyped attribute map.
-    attrs.insert("keyword".to_string(), serde_json::json!(&cv.keyword));
     attrs.insert("text".to_string(), serde_json::json!(&cv.text));
     let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
@@ -153,6 +144,7 @@ pub(super) fn materialize_classifier_decl(
     );
     if let Some(node) = g.get_node_mut(&node_id) {
         node.source_text.text = Some(cv.text.clone());
+        node.declared_facts.modeled_keyword = Some(cv.keyword.clone());
     }
 }
 

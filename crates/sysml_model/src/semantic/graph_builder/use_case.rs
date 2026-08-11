@@ -322,9 +322,6 @@ pub(super) fn mark_subject_ref(g: &mut SemanticGraph, parent_id: &NodeId) {
         parent_node
             .attributes
             .insert("hasSubject".to_string(), serde_json::json!(true));
-        parent_node
-            .attributes
-            .insert("subjectRef".to_string(), serde_json::json!(true));
     }
 }
 

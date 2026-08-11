@@ -281,11 +281,8 @@ fn contract_omg_style_fmea_metadata_block_no_metadata_typing_warnings() {
         graph.get_node(id).filter(|node| {
             node.name == "SemanticMetadata"
                 && node.element_kind == "metadata def"
-                && node
-                    .attributes
-                    .get("metaclassRole")
-                    .and_then(|value| value.as_str())
-                    == Some("SemanticMetadata")
+                && node.declared_facts.metaclass_role
+                    == Some(sysml_model::semantic::model::KermlMetaclassRole::SemanticMetadata)
         })
     });
     assert!(

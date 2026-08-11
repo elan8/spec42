@@ -306,11 +306,8 @@ pub fn is_reflective_sysml_usage_type(type_ref: &str, target: &SemanticNode) -> 
 }
 
 pub fn is_kerml_metadata_supertype(target: &SemanticNode) -> bool {
-    if target
-        .attributes
-        .get("metaclassRole")
-        .and_then(|value| value.as_str())
-        == Some("SemanticMetadata")
+    if target.declared_facts.metaclass_role
+        == Some(crate::semantic::model::KermlMetaclassRole::SemanticMetadata)
     {
         return true;
     }
