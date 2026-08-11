@@ -67,13 +67,13 @@ package TextualRepresentation {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5bb99bb7a28f7328de54bcbeafe79f8ca9317e68e658348f156f8b8878ba0d86") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation"))) (kind "package") (name "TextualRepresentation") (declared-name "TextualRepresentation") (range (start (line 0) (character 0)) (end (line 0) (character 343))))
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 3) (character 1)) (end (line 3) (character 127))) (parent (node (document "d0") (qualified-name "TextualRepresentation"))))
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation::Real"))) (kind "import") (name "Real") (declared-name "Real") (range (start (line 1) (character 1)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "TextualRepresentation"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
-    (element (id (node (document "d0") (qualified-name "TextualRepresentation::setX"))) (kind "kermlDecl") (name "setX") (declared-name "setX") (range (start (line 11) (character 1)) (end (line 11) (character 139))) (parent (node (document "d0") (qualified-name "TextualRepresentation"))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentation"))) (kind "package") (name "TextualRepresentation") (declared-name "TextualRepresentation"))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentation::C"))) (kind "classifier decl") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "TextualRepresentation"))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentation::Real"))) (kind "import") (name "Real") (declared-name "Real") (parent (node (document "d0") (qualified-name "TextualRepresentation"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::Real") (origin Import) (shape Membership) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "TextualRepresentation::setX"))) (kind "kermlDecl") (name "setX") (declared-name "setX") (parent (node (document "d0") (qualified-name "TextualRepresentation"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "TextualRepresentation::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TextualRepresentation::Real"))) (kind membershipImport) (ordinal 0)) (authored-target "ScalarValues::Real") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

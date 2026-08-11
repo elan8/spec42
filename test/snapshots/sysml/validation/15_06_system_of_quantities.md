@@ -110,11 +110,11 @@ package '15_06-System of Quantities' {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "57d49526f07152be0c68774c777b254ea7efd33db2d139879cb29f02d2644585") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities"))) (kind "package") (name "15_06-System of Quantities") (declared-name "15_06-System of Quantities") (range (start (line 0) (character 0)) (end (line 0) (character 2784))))
-    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "15_06-System of Quantities"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 22))))))
+    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities"))) (kind "package") (name "15_06-System of Quantities") (declared-name "15_06-System of Quantities"))
+    (element (id (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "15_06-System of Quantities"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 1) (character 19)) (end (line 1) (character 22))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_06-System of Quantities::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

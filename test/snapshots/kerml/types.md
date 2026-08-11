@@ -102,7 +102,7 @@ package Types {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "386a281b8085663a83954ccebae369c6b2f8ed1b6cfae0794731a6ef307d4c3b") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Types"))) (kind "package") (name "Types") (declared-name "Types") (range (start (line 0) (character 0)) (end (line 0) (character 964))))
+    (element (id (node (document "d0") (qualified-name "Types"))) (kind "package") (name "Types") (declared-name "Types"))
   )
   (references
   )

@@ -44,12 +44,12 @@ package Expansion {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "6fcd1a00da42419198d6a99ff64a62349b3071a24702933587ea82bbb87177b7") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Expansion"))) (kind "package") (name "Expansion") (declared-name "Expansion") (range (start (line 0) (character 0)) (end (line 0) (character 112))))
-    (element (id (node (document "d0") (qualified-name "Expansion::select"))) (kind "import") (name "select") (declared-name "select") (range (start (line 1) (character 1)) (end (line 1) (character 41))) (parent (node (document "d0") (qualified-name "Expansion"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::select") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 40))))))
-    (element (id (node (document "d0") (qualified-name "Expansion::x"))) (kind "feature decl") (name "x") (declared-name "x") (range (start (line 2) (character 1)) (end (line 2) (character 46))) (parent (node (document "d0") (qualified-name "Expansion"))))
+    (element (id (node (document "d0") (qualified-name "Expansion"))) (kind "package") (name "Expansion") (declared-name "Expansion"))
+    (element (id (node (document "d0") (qualified-name "Expansion::select"))) (kind "import") (name "select") (declared-name "select") (parent (node (document "d0") (qualified-name "Expansion"))) (authored (membership (kind Import) (visibility "private") (import (reference "ControlFunctions::select") (origin Import) (shape Membership) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "Expansion::x"))) (kind "feature decl") (name "x") (declared-name "x") (parent (node (document "d0") (qualified-name "Expansion"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Expansion::select"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::select") (range (start (line 1) (character 16)) (end (line 1) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Expansion::select"))) (kind membershipImport) (ordinal 0)) (authored-target "ControlFunctions::select") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

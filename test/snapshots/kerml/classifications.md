@@ -46,8 +46,8 @@ package Classifications {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "a00cc4b54d97a73467e6dc373e30d09d4ba1cbe574305005b3848236ff9fea71") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Classifications"))) (kind "package") (name "Classifications") (declared-name "Classifications") (range (start (line 0) (character 0)) (end (line 0) (character 132))))
-    (element (id (node (document "d0") (qualified-name "Classifications::T"))) (kind "classifier decl") (name "T") (declared-name "T") (range (start (line 1) (character 1)) (end (line 1) (character 9))) (parent (node (document "d0") (qualified-name "Classifications"))))
+    (element (id (node (document "d0") (qualified-name "Classifications"))) (kind "package") (name "Classifications") (declared-name "Classifications"))
+    (element (id (node (document "d0") (qualified-name "Classifications::T"))) (kind "classifier decl") (name "T") (declared-name "T") (parent (node (document "d0") (qualified-name "Classifications"))))
   )
   (references
   )

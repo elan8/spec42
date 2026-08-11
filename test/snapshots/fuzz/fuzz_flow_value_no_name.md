@@ -60,13 +60,13 @@ package P {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "c7a97b9d18e0ee31e371a3fdb03948e6160f424e7052f92c690b270f16f6721b") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 180))))
-    (element (id (node (document "d0") (qualified-name "P::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (range (start (line 1) (character 4)) (end (line 1) (character 166))) (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle") (range (start (line 1) (character 19)) (end (line 1) (character 26)))))))
-    (element (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (range (start (line 2) (character 8)) (end (line 2) (character 26))) (parent (node (document "d0") (qualified-name "P::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine") (range (start (line 2) (character 19)) (end (line 2) (character 25)))))))
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
+    (element (id (node (document "d0") (qualified-name "P::vehicle"))) (kind "part") (name "vehicle") (declared-name "vehicle") (parent (node (document "d0") (qualified-name "P"))) (authored (membership (kind Feature)) (relationships (typing (reference "Vehicle")))))
+    (element (id (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind "part") (name "eng") (declared-name "eng") (parent (node (document "d0") (qualified-name "P::vehicle"))) (authored (membership (kind Feature)) (relationships (typing (reference "Engine")))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "P::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (range (start (line 1) (character 19)) (end (line 1) (character 26))) (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (range (start (line 2) (character 19)) (end (line 2) (character 25))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "P::vehicle"))) (kind featureTyping) (ordinal 0)) (authored-target "Vehicle") (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "P::vehicle::eng"))) (kind featureTyping) (ordinal 0)) (authored-target "Engine") (outcome (status unresolved)))
   )
   (relationships
   )

@@ -80,7 +80,7 @@ package RelationshipCoverage {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "cec622b2a991cf3bca978916176416ec28b19282ad1a6ef3d30c5c93bbb65b10") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "RelationshipCoverage"))) (kind "package") (name "RelationshipCoverage") (declared-name "RelationshipCoverage") (range (start (line 0) (character 0)) (end (line 0) (character 467))))
+    (element (id (node (document "d0") (qualified-name "RelationshipCoverage"))) (kind "package") (name "RelationshipCoverage") (declared-name "RelationshipCoverage"))
   )
   (references
   )

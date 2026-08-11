@@ -38,10 +38,10 @@ import ScalarValues::*;
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f04fc78cd1d8b899634a177ab1963bcf632cdd3c7e6d4a5b9502bbf39b983268") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 23))) (authored (membership (kind Import) (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 7)) (end (line 0) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (authored (membership (kind Import) (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 0) (character 7)) (end (line 0) (character 19))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

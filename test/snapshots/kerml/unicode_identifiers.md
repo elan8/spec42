@@ -42,8 +42,8 @@ package 'αβ' {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "bc71cc2126695b9b4f16f905938197687270248bed2b21f4400605202a6021c9") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "αβ"))) (kind "package") (name "αβ") (declared-name "αβ") (range (start (line 0) (character 0)) (end (line 0) (character 119))))
-    (element (id (node (document "d0") (qualified-name "αβ::class"))) (kind "classifier decl") (name "class") (declared-name "class") (range (start (line 1) (character 4)) (end (line 1) (character 19))) (parent (node (document "d0") (qualified-name "αβ"))))
+    (element (id (node (document "d0") (qualified-name "αβ"))) (kind "package") (name "αβ") (declared-name "αβ"))
+    (element (id (node (document "d0") (qualified-name "αβ::class"))) (kind "classifier decl") (name "class") (declared-name "class") (parent (node (document "d0") (qualified-name "αβ"))))
   )
   (references
   )

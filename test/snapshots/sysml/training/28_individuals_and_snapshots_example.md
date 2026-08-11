@@ -96,13 +96,13 @@ package 'Individuals and Snapshots Example' {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "441947d6f85108b620190eb3115d90d76ac5f4d84d86cfbab5ccd319a35221f9") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (kind "package") (name "Individuals and Snapshots Example") (declared-name "Individuals and Snapshots Example") (range (start (line 0) (character 0)) (end (line 0) (character 466))))
-    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 44))) (parent (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (authored (membership (kind Import) (visibility "public") (import (reference "Part Definition Example::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 40))))))
-    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind "part def") (name "Vehicle_1") (declared-name "Vehicle_1") (range (start (line 3) (character 1)) (end (line 3) (character 371))) (parent (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle") (range (start (line 3) (character 34)) (end (line 3) (character 41)))))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (kind "package") (name "Individuals and Snapshots Example") (declared-name "Individuals and Snapshots Example"))
+    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (authored (membership (kind Import) (visibility "public") (import (reference "Part Definition Example::*") (origin Import) (shape Namespace) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind "part def") (name "Vehicle_1") (declared-name "Vehicle_1") (parent (node (document "d0") (qualified-name "Individuals and Snapshots Example"))) (authored (membership (kind Owning)) (relationships (specializes (reference "Vehicle")))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Part Definition Example::*") (range (start (line 1) (character 15)) (end (line 1) (character 40))) (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (range (start (line 3) (character 34)) (end (line 3) (character 41))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Snapshots Example::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Part Definition Example::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Individuals and Snapshots Example::Vehicle_1"))) (kind specialization) (ordinal 0)) (authored-target "Vehicle") (outcome (status unresolved)))
   )
   (relationships
   )

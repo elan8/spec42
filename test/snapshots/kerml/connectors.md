@@ -89,9 +89,9 @@ package Connectors {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a584141b68b061427b7446ce41755100e73ae0a8daef9b7f35906542c67f2bb3") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Connectors"))) (kind "package") (name "Connectors") (declared-name "Connectors") (range (start (line 0) (character 0)) (end (line 0) (character 546))))
-    (element (id (node (document "d0") (qualified-name "Connectors::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 2) (character 1)) (end (line 2) (character 440))) (parent (node (document "d0") (qualified-name "Connectors"))))
-    (element (id (node (document "d0") (qualified-name "Connectors::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 28) (character 1)) (end (line 28) (character 78))) (parent (node (document "d0") (qualified-name "Connectors"))))
+    (element (id (node (document "d0") (qualified-name "Connectors"))) (kind "package") (name "Connectors") (declared-name "Connectors"))
+    (element (id (node (document "d0") (qualified-name "Connectors::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Connectors"))))
+    (element (id (node (document "d0") (qualified-name "Connectors::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Connectors"))))
   )
   (references
   )

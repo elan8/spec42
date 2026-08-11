@@ -131,14 +131,14 @@ package ExtendedOccurrences {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "a485154465639c6a7defd7178f21a4f333d44c73322ea2c9768abe1302df8091") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences"))) (kind "package") (name "ExtendedOccurrences") (declared-name "ExtendedOccurrences") (range (start (line 0) (character 0)) (end (line 0) (character 2023))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (kind "classifier decl") (name "ExtendedObject") (declared-name "ExtendedObject") (range (start (line 49) (character 4)) (end (line 49) (character 146))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedOccurrence"))) (kind "classifier decl") (name "ExtendedOccurrence") (declared-name "ExtendedOccurrence") (range (start (line 12) (character 4)) (end (line 12) (character 1554))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Interval"))) (kind "classifier decl") (name "Interval") (declared-name "Interval") (range (start (line 1) (character 4)) (end (line 1) (character 19))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Life"))) (kind "classifier decl") (name "Life") (declared-name "Life") (range (start (line 11) (character 4)) (end (line 11) (character 28))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Moment"))) (kind "classifier decl") (name "Moment") (declared-name "Moment") (range (start (line 2) (character 4)) (end (line 2) (character 29))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Snapshot"))) (kind "classifier decl") (name "Snapshot") (declared-name "Snapshot") (range (start (line 7) (character 4)) (end (line 7) (character 114))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Timeslice"))) (kind "classifier decl") (name "Timeslice") (declared-name "Timeslice") (range (start (line 3) (character 4)) (end (line 3) (character 94))) (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences"))) (kind "package") (name "ExtendedOccurrences") (declared-name "ExtendedOccurrences"))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (kind "classifier decl") (name "ExtendedObject") (declared-name "ExtendedObject") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::ExtendedOccurrence"))) (kind "classifier decl") (name "ExtendedOccurrence") (declared-name "ExtendedOccurrence") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Interval"))) (kind "classifier decl") (name "Interval") (declared-name "Interval") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Life"))) (kind "classifier decl") (name "Life") (declared-name "Life") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Moment"))) (kind "classifier decl") (name "Moment") (declared-name "Moment") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Snapshot"))) (kind "classifier decl") (name "Snapshot") (declared-name "Snapshot") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedOccurrences::Timeslice"))) (kind "classifier decl") (name "Timeslice") (declared-name "Timeslice") (parent (node (document "d0") (qualified-name "ExtendedOccurrences"))))
   )
   (references
   )

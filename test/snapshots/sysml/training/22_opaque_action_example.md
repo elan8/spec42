@@ -86,16 +86,16 @@ package 'Opaque Action Example' {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "ccd9ccb41e406150a11c63d073772165660416d4b1036d548e83ca868ec21cea") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example"))) (kind "package") (name "Opaque Action Example") (declared-name "Opaque Action Example") (range (start (line 0) (character 0)) (end (line 0) (character 307))))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (kind "part def") (name "Sensor") (declared-name "Sensor") (range (start (line 2) (character 1)) (end (line 2) (character 64))) (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind "attribute") (name "ready") (declared-name "ready") (range (start (line 3) (character 2)) (end (line 3) (character 42))) (parent (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean") (range none)) (typing (reference "ScalarValues::Boolean") (range (start (line 3) (character 20)) (end (line 3) (character 41)))))))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (kind "action def") (name "UpdateSensors") (declared-name "UpdateSensors") (range (start (line 6) (character 1)) (end (line 6) (character 200))) (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
-    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind "in out parameter") (name "sensors") (declared-name "sensors") (range (start (line 7) (character 2)) (end (line 7) (character 25))) (parent (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (authored (relationships (typing (reference "sensors : Sensor[*]") (range none)))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example"))) (kind "package") (name "Opaque Action Example") (declared-name "Opaque Action Example"))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (kind "part def") (name "Sensor") (declared-name "Sensor") (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind "attribute") (name "ready") (declared-name "ready") (parent (node (document "d0") (qualified-name "Opaque Action Example::Sensor"))) (authored (membership (kind Feature)) (relationships (typing (reference "Boolean")) (typing (reference "ScalarValues::Boolean")))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (kind "action def") (name "UpdateSensors") (declared-name "UpdateSensors") (parent (node (document "d0") (qualified-name "Opaque Action Example"))))
+    (element (id (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind "in out parameter") (name "sensors") (declared-name "sensors") (parent (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors"))) (authored (relationships (typing (reference "sensors : Sensor[*]")))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (range none) (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 1)) (authored-target "ScalarValues::Boolean") (range (start (line 3) (character 20)) (end (line 3) (character 41))) (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind featureTyping) (ordinal 0)) (authored-target "sensors : Sensor[*]") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 0)) (authored-target "Boolean") (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 1)) (authored-target "ScalarValues::Boolean") (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind featureTyping) (ordinal 0)) (authored-target "sensors : Sensor[*]") (outcome (status unresolved)))
   )
   (relationships
   )

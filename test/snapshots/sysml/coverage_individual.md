@@ -90,12 +90,12 @@ package CoverageIndividual {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "e6303e694313bae52dbf13599fc1cb9173f27ad8ffb059a92daa7cacae3dc96b") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual"))) (kind "package") (name "CoverageIndividual") (declared-name "CoverageIndividual") (range (start (line 0) (character 0)) (end (line 0) (character 664))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (kind "individual def") (name "D1") (declared-name "D1") (range (start (line 1) (character 1)) (end (line 1) (character 19))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (kind "part def") (name "D4") (declared-name "D4") (range (start (line 4) (character 1)) (end (line 4) (character 24))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (kind "occurrence") (name "p1") (declared-name "p1") (range (start (line 19) (character 12)) (end (line 19) (character 15))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (kind "part") (name "p2") (declared-name "p2") (range (start (line 22) (character 1)) (end (line 22) (character 20))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
-    (element (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (kind "state") (name "s1") (declared-name "s1") (range (start (line 25) (character 1)) (end (line 25) (character 21))) (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual"))) (kind "package") (name "CoverageIndividual") (declared-name "CoverageIndividual"))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D1"))) (kind "individual def") (name "D1") (declared-name "D1") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::D4"))) (kind "part def") (name "D4") (declared-name "D4") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p1"))) (kind "occurrence") (name "p1") (declared-name "p1") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::p2"))) (kind "part") (name "p2") (declared-name "p2") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
+    (element (id (node (document "d0") (qualified-name "CoverageIndividual::s1"))) (kind "state") (name "s1") (declared-name "s1") (parent (node (document "d0") (qualified-name "CoverageIndividual"))))
   )
   (references
   )

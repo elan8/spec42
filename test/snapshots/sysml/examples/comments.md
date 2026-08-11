@@ -54,11 +54,11 @@ package Comments {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "0e322d9781ce40d4c5e292383b1a32f3fb930c4bf68f3af2c2273f5d341b9054") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Comments"))) (kind "package") (name "Comments") (declared-name "Comments") (range (start (line 0) (character 0)) (end (line 0) (character 384))))
-    (element (id (node (document "d0") (qualified-name "Comments::C"))) (kind "part def") (name "C") (declared-name "C") (range (start (line 9) (character 1)) (end (line 9) (character 143))) (parent (node (document "d0") (qualified-name "Comments"))))
-    (element (id (node (document "d0") (qualified-name "Comments::C::_documentation"))) (kind "documentation") (name "") (range (start (line 9) (character 1)) (end (line 9) (character 143))) (parent (node (document "d0") (qualified-name "Comments::C"))))
-    (element (id (node (document "d0") (qualified-name "Comments::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 384))) (parent (node (document "d0") (qualified-name "Comments"))))
-    (element (id (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 384))) (parent (node (document "d0") (qualified-name "Comments"))))
+    (element (id (node (document "d0") (qualified-name "Comments"))) (kind "package") (name "Comments") (declared-name "Comments"))
+    (element (id (node (document "d0") (qualified-name "Comments::C"))) (kind "part def") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "Comments"))))
+    (element (id (node (document "d0") (qualified-name "Comments::C::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Comments::C"))))
+    (element (id (node (document "d0") (qualified-name "Comments::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Comments"))))
+    (element (id (node (document "d0") (qualified-name "Comments::_documentation#documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "Comments"))))
   )
   (references
   )

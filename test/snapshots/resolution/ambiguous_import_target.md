@@ -98,17 +98,17 @@ package Use {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1eab7aa02395b376bc91e3a7c5956222dc88b0da8a9f77368a7b142c279f8c23") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Shared"))) (kind "package") (name "Shared") (declared-name "Shared") (range (start (line 0) (character 0)) (end (line 0) (character 34))))
-    (element (id (node (document "d0") (qualified-name "Shared::Thing"))) (kind "part def") (name "Thing") (declared-name "Thing") (range (start (line 0) (character 17)) (end (line 0) (character 32))) (parent (node (document "d0") (qualified-name "Shared"))))
-    (element (id (node (document "d1") (qualified-name "Shared"))) (kind "package") (name "Shared") (declared-name "Shared") (range (start (line 0) (character 0)) (end (line 0) (character 34))))
-    (element (id (node (document "d1") (qualified-name "Shared::Thing"))) (kind "part def") (name "Thing") (declared-name "Thing") (range (start (line 0) (character 17)) (end (line 0) (character 32))) (parent (node (document "d1") (qualified-name "Shared"))))
-    (element (id (node (document "d2") (qualified-name "Use"))) (kind "package") (name "Use") (declared-name "Use") (range (start (line 0) (character 0)) (end (line 0) (character 61))))
-    (element (id (node (document "d2") (qualified-name "Use::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 21))) (parent (node (document "d2") (qualified-name "Use"))) (authored (membership (kind Import) (import (reference "Shared::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 11)) (end (line 1) (character 17))))))
-    (element (id (node (document "d2") (qualified-name "Use::usage"))) (kind "part") (name "usage") (declared-name "usage") (range (start (line 2) (character 4)) (end (line 2) (character 23))) (parent (node (document "d2") (qualified-name "Use"))) (authored (membership (kind Feature)) (relationships (typing (reference "Thing") (range (start (line 2) (character 17)) (end (line 2) (character 22)))))))
+    (element (id (node (document "d0") (qualified-name "Shared"))) (kind "package") (name "Shared") (declared-name "Shared"))
+    (element (id (node (document "d0") (qualified-name "Shared::Thing"))) (kind "part def") (name "Thing") (declared-name "Thing") (parent (node (document "d0") (qualified-name "Shared"))))
+    (element (id (node (document "d1") (qualified-name "Shared"))) (kind "package") (name "Shared") (declared-name "Shared"))
+    (element (id (node (document "d1") (qualified-name "Shared::Thing"))) (kind "part def") (name "Thing") (declared-name "Thing") (parent (node (document "d1") (qualified-name "Shared"))))
+    (element (id (node (document "d2") (qualified-name "Use"))) (kind "package") (name "Use") (declared-name "Use"))
+    (element (id (node (document "d2") (qualified-name "Use::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d2") (qualified-name "Use"))) (authored (membership (kind Import) (import (reference "Shared::*") (origin Import) (shape Namespace) (recursive false)))))
+    (element (id (node (document "d2") (qualified-name "Use::usage"))) (kind "part") (name "usage") (declared-name "usage") (parent (node (document "d2") (qualified-name "Use"))) (authored (membership (kind Feature)) (relationships (typing (reference "Thing")))))
   )
   (references
-    (reference (id (source (node (document "d2") (qualified-name "Use::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Shared::*") (range (start (line 1) (character 11)) (end (line 1) (character 17))) (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "Shared")) (node (document "d1") (qualified-name "Shared")))))
-    (reference (id (source (node (document "d2") (qualified-name "Use::usage"))) (kind featureTyping) (ordinal 0)) (authored-target "Thing") (range (start (line 2) (character 17)) (end (line 2) (character 22))) (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "Shared::Thing")) (node (document "d1") (qualified-name "Shared::Thing")))))
+    (reference (id (source (node (document "d2") (qualified-name "Use::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Shared::*") (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "Shared")) (node (document "d1") (qualified-name "Shared")))) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-ambiguous)))
+    (reference (id (source (node (document "d2") (qualified-name "Use::usage"))) (kind featureTyping) (ordinal 0)) (authored-target "Thing") (outcome (status ambiguous) (candidates (node (document "d0") (qualified-name "Shared::Thing")) (node (document "d1") (qualified-name "Shared::Thing")))))
   )
   (relationships
   )

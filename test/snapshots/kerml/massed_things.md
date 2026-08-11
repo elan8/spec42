@@ -55,13 +55,13 @@ package MassedThings {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "bfd756aa831fb14bc04da32190ccba00be96a9ad77fa859085e757c5c628f754") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 31))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 27))))))
-    (element (id (node (document "d0") (qualified-name "MassedThings"))) (kind "package") (name "MassedThings") (declared-name "MassedThings") (range (start (line 1) (character 0)) (end (line 1) (character 245))))
-    (element (id (node (document "d0") (qualified-name "MassedThings::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (range (start (line 3) (character 1)) (end (line 3) (character 78))) (parent (node (document "d0") (qualified-name "MassedThings"))))
-    (element (id (node (document "d0") (qualified-name "MassedThings::MassedThingAssembly"))) (kind "kermlDecl") (name "MassedThingAssembly") (declared-name "MassedThingAssembly") (range (start (line 8) (character 1)) (end (line 8) (character 137))) (parent (node (document "d0") (qualified-name "MassedThings"))))
+    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "MassedThings"))) (kind "package") (name "MassedThings") (declared-name "MassedThings"))
+    (element (id (node (document "d0") (qualified-name "MassedThings::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (parent (node (document "d0") (qualified-name "MassedThings"))))
+    (element (id (node (document "d0") (qualified-name "MassedThings::MassedThingAssembly"))) (kind "kermlDecl") (name "MassedThingAssembly") (declared-name "MassedThingAssembly") (parent (node (document "d0") (qualified-name "MassedThings"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 0) (character 15)) (end (line 0) (character 27))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

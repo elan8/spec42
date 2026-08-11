@@ -269,17 +269,17 @@ package TimeVaryingCarDriver {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "404e0d5861e8b40043847245c9a25842a0cf2972f48989cbe6779f95476cc8e5") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (kind "package") (name "TimeVaryingCarDriver") (declared-name "TimeVaryingCarDriver") (range (start (line 0) (character 0)) (end (line 0) (character 4313))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 35))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 31))))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car0"))) (kind "classifier decl") (name "Car0") (declared-name "Car0") (range (start (line 9) (character 4)) (end (line 9) (character 562))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1"))) (kind "classifier decl") (name "Car1") (declared-name "Car1") (range (start (line 37) (character 4)) (end (line 37) (character 597))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1_"))) (kind "classifier decl") (name "Car1_") (declared-name "Car1_") (range (start (line 72) (character 4)) (end (line 72) (character 2226))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person0"))) (kind "classifier decl") (name "Person0") (declared-name "Person0") (range (start (line 5) (character 4)) (end (line 5) (character 71))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1"))) (kind "classifier decl") (name "Person1") (declared-name "Person1") (range (start (line 33) (character 4)) (end (line 33) (character 72))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
-    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1_"))) (kind "classifier decl") (name "Person1_") (declared-name "Person1_") (range (start (line 62) (character 4)) (end (line 62) (character 457))) (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (kind "package") (name "TimeVaryingCarDriver") (declared-name "TimeVaryingCarDriver"))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car0"))) (kind "classifier decl") (name "Car0") (declared-name "Car0") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1"))) (kind "classifier decl") (name "Car1") (declared-name "Car1") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Car1_"))) (kind "classifier decl") (name "Car1_") (declared-name "Car1_") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person0"))) (kind "classifier decl") (name "Person0") (declared-name "Person0") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1"))) (kind "classifier decl") (name "Person1") (declared-name "Person1") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
+    (element (id (node (document "d0") (qualified-name "TimeVaryingCarDriver::Person1_"))) (kind "classifier decl") (name "Person1_") (declared-name "Person1_") (parent (node (document "d0") (qualified-name "TimeVaryingCarDriver"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 1) (character 19)) (end (line 1) (character 31))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "TimeVaryingCarDriver::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

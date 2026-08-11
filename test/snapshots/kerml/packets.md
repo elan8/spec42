@@ -105,17 +105,17 @@ package Packets {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "1b0a3aec22c5ca757c2a4d135c42ac784a6b0231d4d3086fd76e47bb12bca31c") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 0) (character 0)) (end (line 0) (character 31))) (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 0) (character 15)) (end (line 0) (character 27))))))
-    (element (id (node (document "d0") (qualified-name "DateTime"))) (kind "import") (name "DateTime") (declared-name "DateTime") (range (start (line 1) (character 0)) (end (line 1) (character 30))) (authored (membership (kind Import) (visibility "private") (import (reference "Time::DateTime") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 1) (character 15)) (end (line 1) (character 29))))))
-    (element (id (node (document "d0") (qualified-name "Packets"))) (kind "package") (name "Packets") (declared-name "Packets") (range (start (line 2) (character 0)) (end (line 2) (character 903))))
-    (element (id (node (document "d0") (qualified-name "Packets::Data"))) (kind "classifier decl") (name "Data") (declared-name "Data") (range (start (line 20) (character 1)) (end (line 20) (character 452))) (parent (node (document "d0") (qualified-name "Packets"))))
-    (element (id (node (document "d0") (qualified-name "Packets::Packet"))) (kind "classifier decl") (name "Packet") (declared-name "Packet") (range (start (line 11) (character 1)) (end (line 11) (character 264))) (parent (node (document "d0") (qualified-name "Packets"))))
-    (element (id (node (document "d0") (qualified-name "Packets::data"))) (kind "feature decl") (name "data") (declared-name "data") (range (start (line 6) (character 1)) (end (line 6) (character 126))) (parent (node (document "d0") (qualified-name "Packets"))))
-    (element (id (node (document "d0") (qualified-name "Packets::header"))) (kind "feature decl") (name "header") (declared-name "header") (range (start (line 4) (character 1)) (end (line 4) (character 28))) (parent (node (document "d0") (qualified-name "Packets"))))
+    (element (id (node (document "d0") (qualified-name "*"))) (kind "import") (name "*") (declared-name "*") (authored (membership (kind Import) (visibility "private") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "DateTime"))) (kind "import") (name "DateTime") (declared-name "DateTime") (authored (membership (kind Import) (visibility "private") (import (reference "Time::DateTime") (origin Import) (shape Membership) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "Packets"))) (kind "package") (name "Packets") (declared-name "Packets"))
+    (element (id (node (document "d0") (qualified-name "Packets::Data"))) (kind "classifier decl") (name "Data") (declared-name "Data") (parent (node (document "d0") (qualified-name "Packets"))))
+    (element (id (node (document "d0") (qualified-name "Packets::Packet"))) (kind "classifier decl") (name "Packet") (declared-name "Packet") (parent (node (document "d0") (qualified-name "Packets"))))
+    (element (id (node (document "d0") (qualified-name "Packets::data"))) (kind "feature decl") (name "data") (declared-name "data") (parent (node (document "d0") (qualified-name "Packets"))))
+    (element (id (node (document "d0") (qualified-name "Packets::header"))) (kind "feature decl") (name "header") (declared-name "header") (parent (node (document "d0") (qualified-name "Packets"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 0) (character 15)) (end (line 0) (character 27))) (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "DateTime"))) (kind membershipImport) (ordinal 0)) (authored-target "Time::DateTime") (range (start (line 1) (character 15)) (end (line 1) (character 29))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "DateTime"))) (kind membershipImport) (ordinal 0)) (authored-target "Time::DateTime") (outcome (status unresolved)) (import (origin import) (shape membership) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

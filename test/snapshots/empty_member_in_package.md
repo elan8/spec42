@@ -32,7 +32,7 @@ package MyPkg {;}
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "11a983feba5a56728927d8fab9766a65e7c413be19a1d78ca2f4560df1370cf3") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "MyPkg"))) (kind "package") (name "MyPkg") (declared-name "MyPkg") (range (start (line 0) (character 0)) (end (line 0) (character 17))))
+    (element (id (node (document "d0") (qualified-name "MyPkg"))) (kind "package") (name "MyPkg") (declared-name "MyPkg"))
   )
   (references
   )

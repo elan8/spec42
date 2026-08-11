@@ -62,9 +62,9 @@ package Classifiers {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "bbd89ba924d113a6e36c5064f2984c023c4412681dbd95db31b1488feca8e554") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Classifiers"))) (kind "package") (name "Classifiers") (declared-name "Classifiers") (range (start (line 0) (character 0)) (end (line 0) (character 374))))
-    (element (id (node (document "d0") (qualified-name "Classifiers::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 14))) (parent (node (document "d0") (qualified-name "Classifiers"))))
-    (element (id (node (document "d0") (qualified-name "Classifiers::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 2) (character 1)) (end (line 2) (character 14))) (parent (node (document "d0") (qualified-name "Classifiers"))))
+    (element (id (node (document "d0") (qualified-name "Classifiers"))) (kind "package") (name "Classifiers") (declared-name "Classifiers"))
+    (element (id (node (document "d0") (qualified-name "Classifiers::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Classifiers"))))
+    (element (id (node (document "d0") (qualified-name "Classifiers::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Classifiers"))))
   )
   (references
   )

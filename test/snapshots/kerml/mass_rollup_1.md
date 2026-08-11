@@ -51,12 +51,12 @@ package MassRollup_1 {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "5921eb11629ca2daccaacc5c585ac41fcaf59c110b0d81d55446501f9f58037b") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "MassRollup_1"))) (kind "package") (name "MassRollup_1") (declared-name "MassRollup_1") (range (start (line 0) (character 0)) (end (line 0) (character 257))))
-    (element (id (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "MassRollup_1"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
-    (element (id (node (document "d0") (qualified-name "MassRollup_1::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (range (start (line 3) (character 1)) (end (line 3) (character 192))) (parent (node (document "d0") (qualified-name "MassRollup_1"))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_1"))) (kind "package") (name "MassRollup_1") (declared-name "MassRollup_1"))
+    (element (id (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind "import") (name "*") (declared-name "*") (parent (node (document "d0") (qualified-name "MassRollup_1"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_1::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (parent (node (document "d0") (qualified-name "MassRollup_1"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "NumericalFunctions::*") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "MassRollup_1::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "NumericalFunctions::*") (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
   )
   (relationships
   )

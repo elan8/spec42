@@ -67,14 +67,14 @@ package Inheritance {
 (semantic-model
   (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "11c9649ec23a10bc21a040a438dd1d7f8f7ed187b86045d1a00cc1008019a78e") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Inheritance"))) (kind "package") (name "Inheritance") (declared-name "Inheritance") (range (start (line 0) (character 0)) (end (line 0) (character 235))))
-    (element (id (node (document "d0") (qualified-name "Inheritance::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 26))) (parent (node (document "d0") (qualified-name "Inheritance"))))
-    (element (id (node (document "d0") (qualified-name "Inheritance::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 5) (character 1)) (end (line 5) (character 30))) (parent (node (document "d0") (qualified-name "Inheritance"))))
-    (element (id (node (document "d0") (qualified-name "Inheritance::us"))) (kind "alias") (name "us") (declared-name "us") (range (start (line 18) (character 1)) (end (line 18) (character 19))) (parent (node (document "d0") (qualified-name "Inheritance"))))
-    (element (id (node (document "d0") (qualified-name "Inheritance::w"))) (kind "feature decl") (name "w") (declared-name "w") (range (start (line 16) (character 1)) (end (line 16) (character 21))) (parent (node (document "d0") (qualified-name "Inheritance"))))
-    (element (id (node (document "d0") (qualified-name "Inheritance::y"))) (kind "feature decl") (name "y") (declared-name "y") (range (start (line 9) (character 1)) (end (line 9) (character 63))) (parent (node (document "d0") (qualified-name "Inheritance"))))
-    (element (id (node (document "d0") (qualified-name "Inheritance::yy"))) (kind "feature decl") (name "yy") (declared-name "yy") (range (start (line 20) (character 1)) (end (line 20) (character 15))) (parent (node (document "d0") (qualified-name "Inheritance"))))
-    (element (id (node (document "d0") (qualified-name "Inheritance::z"))) (kind "alias") (name "z") (declared-name "z") (range (start (line 14) (character 1)) (end (line 14) (character 18))) (parent (node (document "d0") (qualified-name "Inheritance"))))
+    (element (id (node (document "d0") (qualified-name "Inheritance"))) (kind "package") (name "Inheritance") (declared-name "Inheritance"))
+    (element (id (node (document "d0") (qualified-name "Inheritance::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Inheritance"))))
+    (element (id (node (document "d0") (qualified-name "Inheritance::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Inheritance"))))
+    (element (id (node (document "d0") (qualified-name "Inheritance::us"))) (kind "alias") (name "us") (declared-name "us") (parent (node (document "d0") (qualified-name "Inheritance"))))
+    (element (id (node (document "d0") (qualified-name "Inheritance::w"))) (kind "feature decl") (name "w") (declared-name "w") (parent (node (document "d0") (qualified-name "Inheritance"))))
+    (element (id (node (document "d0") (qualified-name "Inheritance::y"))) (kind "feature decl") (name "y") (declared-name "y") (parent (node (document "d0") (qualified-name "Inheritance"))))
+    (element (id (node (document "d0") (qualified-name "Inheritance::yy"))) (kind "feature decl") (name "yy") (declared-name "yy") (parent (node (document "d0") (qualified-name "Inheritance"))))
+    (element (id (node (document "d0") (qualified-name "Inheritance::z"))) (kind "alias") (name "z") (declared-name "z") (parent (node (document "d0") (qualified-name "Inheritance"))))
   )
   (references
   )

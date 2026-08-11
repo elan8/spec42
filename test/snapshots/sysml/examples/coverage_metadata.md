@@ -66,17 +66,17 @@ package Annotated {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "09f4fd17531e2f9f52420cda01132a27aa44df681136c27ef6ee3cb557edf1da") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Annotated"))) (kind "package") (name "Annotated") (declared-name "Annotated") (range (start (line 3) (character 0)) (end (line 3) (character 244))))
-    (element (id (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (kind "part def") (name "AnnotatedPart") (declared-name "AnnotatedPart") (range (start (line 11) (character 16)) (end (line 11) (character 39))) (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (range (start (line 7) (character 4)) (end (line 7) (character 20))) (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (range (start (line 6) (character 4)) (end (line 6) (character 21))) (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::_Classified"))) (kind "metadata keyword") (name "Classified") (declared-name "Classified") (range (start (line 11) (character 4)) (end (line 11) (character 16))) (parent (node (document "d0") (qualified-name "Annotated"))))
-    (element (id (node (document "d0") (qualified-name "Annotated::m"))) (kind "metadata usage") (name "m") (declared-name "m") (range (start (line 9) (character 4)) (end (line 9) (character 50))) (parent (node (document "d0") (qualified-name "Annotated"))) (authored (membership (kind Feature)) (relationships (typing (reference "Classified") (range none)))))
-    (element (id (node (document "d0") (qualified-name "Approval"))) (kind "metadata def") (name "Approval") (declared-name "Approval") (range (start (line 1) (character 0)) (end (line 1) (character 22))))
-    (element (id (node (document "d0") (qualified-name "Classified"))) (kind "metadata def") (name "Classified") (declared-name "Classified") (range (start (line 0) (character 0)) (end (line 0) (character 24))))
+    (element (id (node (document "d0") (qualified-name "Annotated"))) (kind "package") (name "Annotated") (declared-name "Annotated"))
+    (element (id (node (document "d0") (qualified-name "Annotated::AnnotatedPart"))) (kind "part def") (name "AnnotatedPart") (declared-name "AnnotatedPart") (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::Engine"))) (kind "part def") (name "Engine") (declared-name "Engine") (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::Vehicle"))) (kind "part def") (name "Vehicle") (declared-name "Vehicle") (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::_Classified"))) (kind "metadata keyword") (name "Classified") (declared-name "Classified") (parent (node (document "d0") (qualified-name "Annotated"))))
+    (element (id (node (document "d0") (qualified-name "Annotated::m"))) (kind "metadata usage") (name "m") (declared-name "m") (parent (node (document "d0") (qualified-name "Annotated"))) (authored (membership (kind Feature)) (relationships (typing (reference "Classified")))))
+    (element (id (node (document "d0") (qualified-name "Approval"))) (kind "metadata def") (name "Approval") (declared-name "Approval"))
+    (element (id (node (document "d0") (qualified-name "Classified"))) (kind "metadata def") (name "Classified") (declared-name "Classified"))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)) (authored-target "Classified") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Annotated::_Classified")))))
+    (reference (id (source (node (document "d0") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)) (authored-target "Classified") (outcome (status resolved) (target (node (document "d0") (qualified-name "Annotated::_Classified")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "d0") (qualified-name "Annotated::m"))) (target (node (document "d0") (qualified-name "Annotated::_Classified"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)))

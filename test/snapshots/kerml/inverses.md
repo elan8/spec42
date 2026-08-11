@@ -59,9 +59,9 @@ package Inverses {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "4ae52aa499248f0bbc9aa17266e6a7dd3df26dde1807060e2d796bcc9567831b") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "Inverses"))) (kind "package") (name "Inverses") (declared-name "Inverses") (range (start (line 0) (character 0)) (end (line 0) (character 249))))
-    (element (id (node (document "d0") (qualified-name "Inverses::A"))) (kind "classifier decl") (name "A") (declared-name "A") (range (start (line 1) (character 1)) (end (line 1) (character 79))) (parent (node (document "d0") (qualified-name "Inverses"))))
-    (element (id (node (document "d0") (qualified-name "Inverses::B"))) (kind "classifier decl") (name "B") (declared-name "B") (range (start (line 6) (character 1)) (end (line 6) (character 30))) (parent (node (document "d0") (qualified-name "Inverses"))))
+    (element (id (node (document "d0") (qualified-name "Inverses"))) (kind "package") (name "Inverses") (declared-name "Inverses"))
+    (element (id (node (document "d0") (qualified-name "Inverses::A"))) (kind "classifier decl") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "Inverses"))))
+    (element (id (node (document "d0") (qualified-name "Inverses::B"))) (kind "classifier decl") (name "B") (declared-name "B") (parent (node (document "d0") (qualified-name "Inverses"))))
   )
   (references
   )

@@ -100,13 +100,13 @@ package ExtendedExamples {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "22ff8990e8de6d1522d19d30f2eb6ee8803010376d14ac6d65f3c78e48a2324e") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples"))) (kind "package") (name "ExtendedExamples") (declared-name "ExtendedExamples") (range (start (line 0) (character 0)) (end (line 0) (character 333))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 1) (character 4)) (end (line 1) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 2) (character 4)) (end (line 2) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 5) (character 4)) (end (line 5) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 6) (character 4)) (end (line 6) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 7) (character 4)) (end (line 7) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
-    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (range (start (line 8) (character 4)) (end (line 8) (character 15))) (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples"))) (kind "package") (name "ExtendedExamples") (declared-name "ExtendedExamples"))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword2"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword3"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword4"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
+    (element (id (node (document "d0") (qualified-name "ExtendedExamples::_situation#metadata_keyword5"))) (kind "metadata keyword") (name "situation") (declared-name "situation") (parent (node (document "d0") (qualified-name "ExtendedExamples"))))
   )
   (references
   )

@@ -124,10 +124,10 @@ package CommentTest {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "71a49d648e41b8100cb032c1a6868dd51734bc1a8124bfc011efb05fc1134669") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "CommentTest"))) (kind "package") (name "CommentTest") (declared-name "CommentTest") (range (start (line 2) (character 0)) (end (line 2) (character 685))))
-    (element (id (node (document "d0") (qualified-name "CommentTest::A"))) (kind "part def") (name "A") (declared-name "A") (range (start (line 42) (character 1)) (end (line 42) (character 12))) (parent (node (document "d0") (qualified-name "CommentTest"))))
-    (element (id (node (document "d0") (qualified-name "CommentTest::C"))) (kind "part def") (name "C") (declared-name "C") (range (start (line 36) (character 1)) (end (line 36) (character 161))) (parent (node (document "d0") (qualified-name "CommentTest"))))
-    (element (id (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (kind "documentation") (name "") (range (start (line 36) (character 1)) (end (line 36) (character 161))) (parent (node (document "d0") (qualified-name "CommentTest::C"))))
+    (element (id (node (document "d0") (qualified-name "CommentTest"))) (kind "package") (name "CommentTest") (declared-name "CommentTest"))
+    (element (id (node (document "d0") (qualified-name "CommentTest::A"))) (kind "part def") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "CommentTest"))))
+    (element (id (node (document "d0") (qualified-name "CommentTest::C"))) (kind "part def") (name "C") (declared-name "C") (parent (node (document "d0") (qualified-name "CommentTest"))))
+    (element (id (node (document "d0") (qualified-name "CommentTest::C::_documentation"))) (kind "documentation") (name "") (parent (node (document "d0") (qualified-name "CommentTest::C"))))
   )
   (references
   )

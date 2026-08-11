@@ -48,8 +48,8 @@ package P {
 (semantic-model
   (publication (phase evaluated) (completeness editor-recovery) (has-evaluation true) (source-digest "d53ebad1f320716a2531ac6fd8d40ee848774b5bfca9ee9291ca1996f6eb8f51") (contract-version "canonical-resolution-v1"))
   (structure
-    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 127))))
-    (element (id (node (document "d0") (qualified-name "P::A"))) (kind "action def") (name "A") (declared-name "A") (range (start (line 1) (character 0)) (end (line 1) (character 113))) (parent (node (document "d0") (qualified-name "P"))))
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P"))
+    (element (id (node (document "d0") (qualified-name "P::A"))) (kind "action def") (name "A") (declared-name "A") (parent (node (document "d0") (qualified-name "P"))))
   )
   (references
   )
