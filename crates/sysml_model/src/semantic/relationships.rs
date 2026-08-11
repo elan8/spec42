@@ -438,7 +438,6 @@ pub fn add_typing_edge_if_exists<T: TypeReferenceTarget + ?Sized>(
     let _ = container_prefix;
     let reference = type_ref.type_reference_target();
     record_declared_relationship_target(g, &source_id, RelationshipKind::Typing, reference);
-    add_typing_edge_for_node(g, &source_id, reference);
 }
 
 /// Adds a specializes edge if source exists and target can be resolved. Same resolution as typing:
@@ -459,7 +458,6 @@ pub fn add_specializes_edge_if_exists<T: TypeReferenceTarget + ?Sized>(
     let _ = container_prefix;
     let reference = specializes_ref.type_reference_target();
     record_declared_relationship_target(g, &source_id, RelationshipKind::Specializes, reference);
-    add_specializes_edges_for_node(g, &source_id, reference);
 }
 
 pub fn add_typing_edge_for_node(g: &mut SemanticGraph, source_id: &NodeId, type_ref: &str) {

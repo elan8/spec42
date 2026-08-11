@@ -83,11 +83,6 @@ pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
             }
         }
     }
-    crate::semantic::relationships::resolve_pending_relationships_for_uri(&mut g, uri);
-    // Keep a standalone document graph semantically equivalent to the local portion of a
-    // workspace graph. In particular, verified requirements owned by objectives link their
-    // resolved target back to the enclosing verification case after the whole document exists.
-    crate::semantic::relationships::link_case_subject_relationships(&mut g);
     g.assert_no_pending_declared_membership_facts();
     g
 }

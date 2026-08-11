@@ -1017,6 +1017,7 @@ impl SemanticGraphData {
     }
 
     /// Returns a stable snapshot of all graph edges for crate-private semantic phases.
+    #[cfg(test)]
     pub(crate) fn semantic_edges(&self) -> Vec<(NodeId, NodeId, SemanticEdge)> {
         self.iter_edges().collect()
     }

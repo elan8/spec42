@@ -14,7 +14,7 @@ use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
     DeclaredRelationshipFacts, DeclaredRelationshipTarget, NodeId, RelationshipKind, SemanticNode,
 };
-use crate::semantic::pipeline::{build_and_link_graph, build_and_link_graph_parallel};
+use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
 
 /// An exact set of source documents admitted to one semantic build.
@@ -274,9 +274,22 @@ impl<'a> ResolutionDb<'a> {
     }
 
     pub(crate) fn solve(self) -> Result<ResolutionState, ResolutionFailure> {
+        self.solve_with_max_passes(1_000)
+    }
+
+    fn solve_with_max_passes(
+        self,
+        max_passes: usize,
+    ) -> Result<ResolutionState, ResolutionFailure> {
+        if max_passes == 0 {
+            return Err(ResolutionFailure::DidNotConverge {
+                passes: 0,
+                changing_families: vec!["authored-reference-resolution".to_string()],
+                pending_references: authored_reference_ids(self.graph),
+            });
+        }
         let mut facts = Vec::new();
         let mut relationships = Vec::new();
-        let edges = self.graph.semantic_edges();
         let nodes = self.graph.semantic_nodes();
 
         // The graph linker has already materialized the structural relationship pass.  We
@@ -286,27 +299,8 @@ impl<'a> ResolutionDb<'a> {
             for (kind, targets) in authored_relationships(&node.declared_facts.relationships) {
                 let relationship_kind = kind.relationship_kind();
                 for (ordinal, authored) in targets.into_iter().enumerate() {
-                    let mut candidates = relationship_kind
-                        .as_ref()
-                        .map(|relationship_kind| {
-                            edges
-                                .iter()
-                                .filter(|(source, target, edge)| {
-                                    *source == node.id
-                                        && edge.kind == *relationship_kind
-                                        && authored_target_matches(target, &authored.reference)
-                                })
-                                .map(|(_, target, _)| target.clone())
-                                .collect::<Vec<_>>()
-                        })
-                        .unwrap_or_default();
-                    // Qualified-name duplicates are a genuine ambiguity, even where the graph
-                    // linker happened to retain one edge for an older consumer.
-                    candidates.extend(explicit_name_candidates(
-                        self.graph,
-                        &node,
-                        &authored.reference,
-                    ));
+                    let mut candidates =
+                        explicit_name_candidates(self.graph, &node, &authored.reference);
                     candidates.sort_by(node_id_order);
                     candidates.dedup();
                     let reference = AuthoredReferenceId {
@@ -391,15 +385,21 @@ impl<'a> ResolutionDb<'a> {
     }
 }
 
-fn authored_target_matches(target: &NodeId, authored: &str) -> bool {
-    let normalized = authored
-        .trim()
-        .trim_start_matches('~')
-        .trim_matches(['\'', '"'])
-        .replace('.', "::");
-    target.qualified_name == normalized
-        || target.qualified_name.ends_with(&format!("::{normalized}"))
-        || target.qualified_name.rsplit("::").next() == Some(normalized.as_str())
+fn authored_reference_ids(graph: &SemanticGraph) -> Vec<AuthoredReferenceId> {
+    let mut references = Vec::new();
+    for node in graph.semantic_nodes() {
+        for (kind, targets) in authored_relationships(&node.declared_facts.relationships) {
+            references.extend(targets.into_iter().enumerate().map(|(ordinal, _)| {
+                AuthoredReferenceId {
+                    source: node.id.clone(),
+                    kind,
+                    authored_ordinal: ordinal as u32,
+                }
+            }));
+        }
+    }
+    references.sort();
+    references
 }
 
 fn explicit_name_candidates(
@@ -448,6 +448,15 @@ fn explicit_name_candidates(
             .get_node(&current)
             .and_then(|node| node.parent_id.clone());
     }
+    // Imports are consulted only after lexical scope has no binding. The import resolver is the
+    // owning implementation for visibility, recursive exports, and cycle guards.
+    candidates.extend(
+        crate::semantic::import_resolution::resolve_imported_node_ids_for_simple_name(
+            graph,
+            source,
+            &normalized,
+        ),
+    );
     candidates.extend(children.get(&None).into_iter().flatten().cloned());
     candidates
 }
@@ -596,12 +605,11 @@ pub fn build_semantic_model(
 ) -> Result<SemanticModel, SemanticBuildFailure> {
     let identity = SemanticModelIdentity::for_request(&request.sources, &request.configuration);
     let documents = request.sources.documents();
-    let (graph, _) = match request.construction {
-        ConstructionStrategy::Sequential => {
-            build_and_link_graph(documents).map_err(SemanticBuildFailure::InvalidInput)?
-        }
-        ConstructionStrategy::Parallel => build_and_link_graph_parallel(documents),
-    };
+    let (mut graph, _) = build_structural_graph(documents, request.construction);
+    // A few older materializers still emit relationship-shaped edges while creating source
+    // nodes. Remove every resolver-owned edge before candidate discovery so the canonical solver
+    // cannot accidentally observe a result produced by a fragment builder.
+    graph.remove_resolution_edges();
     let resolution = ResolutionDb::new(&graph)
         .solve()
         .map_err(SemanticBuildFailure::Resolution)?;
@@ -726,6 +734,78 @@ mod tests {
             fact.reference.kind == ReferenceKind::FeatureTyping
                 && matches!(fact.outcome, ResolutionOutcome::Unresolved)
         }));
+    }
+
+    #[test]
+    fn imported_candidates_are_ambiguous_in_canonical_order() {
+        let model = build(
+            "package A { part def T; }
+             package B { part def T; }
+             package C {
+                 import A::*;
+                 import B::*;
+                 part p : T;
+             }",
+        );
+        let fact = model
+            .resolution()
+            .facts()
+            .iter()
+            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
+            .expect("typing fact");
+        let ResolutionOutcome::Ambiguous { candidates } = &fact.outcome else {
+            panic!(
+                "expected imported duplicate to remain ambiguous: {:?}",
+                fact.outcome
+            );
+        };
+        assert_eq!(candidates.len(), 2);
+        assert!(candidates[0].qualified_name < candidates[1].qualified_name);
+    }
+
+    #[test]
+    fn inner_lexical_binding_shadows_outer_import_even_when_incompatible() {
+        let model = build(
+            "package A { part def T; }
+             package C {
+                 import A::*;
+                 part T;
+                 part p : T;
+             }",
+        );
+        let fact = model
+            .resolution()
+            .facts()
+            .iter()
+            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
+            .expect("typing fact");
+        let ResolutionOutcome::Resolved { target } = &fact.outcome else {
+            panic!("inner lexical binding must be retained: {:?}", fact.outcome);
+        };
+        assert_eq!(target.qualified_name, "C::T");
+    }
+
+    #[test]
+    fn resolution_bound_reports_failure_without_publishing() {
+        let snapshot = ImmutableSourceSnapshot::new(vec![document(
+            "memory://test/a.sysml",
+            "package A { part p : Missing; }",
+        )])
+        .unwrap();
+        let (mut graph, _) =
+            build_structural_graph(snapshot.documents(), ConstructionStrategy::Sequential);
+        graph.remove_resolution_edges();
+        let failure = ResolutionDb::new(&graph)
+            .solve_with_max_passes(0)
+            .expect_err("zero pass bound must fail explicitly");
+        assert!(matches!(
+            failure,
+            ResolutionFailure::DidNotConverge {
+                passes: 0,
+                pending_references: ref pending,
+                ..
+            } if !pending.is_empty()
+        ));
     }
 
     fn build(source: &str) -> SemanticModel {

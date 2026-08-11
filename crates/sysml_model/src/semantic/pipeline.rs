@@ -127,6 +127,129 @@ fn parse_document(document: &SysmlDocument) -> WorkspaceParsedDocument {
     }
 }
 
+/// Build only the stable authored graph used as input to the canonical publication resolver.
+///
+/// This deliberately stops before relationship linking, pending-queue draining, derivation
+/// wiring, effective-fact refresh, or expression evaluation. Those operations may consume a
+/// settled `ResolutionState`, but none may mutate the structural input while candidates are being
+/// discovered.
+pub(crate) fn build_structural_graph(
+    documents: &[SysmlDocument],
+    strategy: crate::semantic::publication::ConstructionStrategy,
+) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
+    match strategy {
+        crate::semantic::publication::ConstructionStrategy::Sequential => {
+            build_structural_graph_sequential(documents)
+        }
+        crate::semantic::publication::ConstructionStrategy::Parallel => {
+            build_structural_graph_parallel(documents)
+        }
+    }
+}
+
+fn build_structural_graph_sequential(
+    documents: &[SysmlDocument],
+) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
+    let mut graph = SemanticGraph::new();
+    graph.set_standard_library_uris(
+        documents
+            .iter()
+            .filter(|document| {
+                matches!(
+                    document.source_kind,
+                    SysmlDocumentSourceKind::StandardLibrary
+                )
+            })
+            .map(|document| document.uri.clone()),
+    );
+    let mut parsed_docs = Vec::new();
+    let mut workspace_docs = Vec::new();
+    let mut library_docs = Vec::new();
+    for document in documents {
+        match document.source_kind {
+            SysmlDocumentSourceKind::StandardLibrary | SysmlDocumentSourceKind::Library => {
+                library_docs.push(document)
+            }
+            SysmlDocumentSourceKind::Workspace | SysmlDocumentSourceKind::External => {
+                workspace_docs.push(document)
+            }
+        }
+    }
+    let mut workspace_packages = HashSet::new();
+    for document in workspace_docs {
+        let entry = parse_document(document);
+        workspace_packages.extend(declared_packages_from_parsed(&entry.parsed));
+        graph.merge(build_graph_from_doc(&entry.parsed, &entry.uri));
+        parsed_docs.push(entry);
+    }
+    let workspace_packages = most_specific_packages(workspace_packages);
+    for document in library_docs {
+        let entry = parse_document(document);
+        graph.merge_skip_existing_qualified_names(
+            build_graph_from_doc(&entry.parsed, &entry.uri),
+            &workspace_packages,
+        );
+        parsed_docs.push(entry);
+    }
+    graph.invalidate_query_indexes();
+    (graph, parsed_docs)
+}
+
+fn build_structural_graph_parallel(
+    documents: &[SysmlDocument],
+) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
+    let entries: Vec<SourceTaggedDocument> = documents
+        .par_iter()
+        .map(|document| (document.source_kind, parse_document(document)))
+        .collect();
+    let (workspace_entries, library_entries): (
+        Vec<SourceTaggedDocument>,
+        Vec<SourceTaggedDocument>,
+    ) = entries.into_iter().partition(|(kind, _)| {
+        !matches!(
+            kind,
+            SysmlDocumentSourceKind::StandardLibrary | SysmlDocumentSourceKind::Library
+        )
+    });
+    let workspace_built: Vec<(SemanticGraph, WorkspaceParsedDocument)> = workspace_entries
+        .into_par_iter()
+        .map(|(_, entry)| (build_graph_from_doc(&entry.parsed, &entry.uri), entry))
+        .collect();
+    let workspace_packages = most_specific_packages(
+        workspace_built
+            .iter()
+            .flat_map(|(_, entry)| declared_packages_from_parsed(&entry.parsed))
+            .collect(),
+    );
+    let mut graph = SemanticGraph::new();
+    let mut parsed_docs = Vec::new();
+    for (doc_graph, entry) in workspace_built {
+        graph.merge(doc_graph);
+        parsed_docs.push(entry);
+    }
+    let library_built: Vec<(SemanticGraph, WorkspaceParsedDocument)> = library_entries
+        .into_par_iter()
+        .map(|(_, entry)| (build_graph_from_doc(&entry.parsed, &entry.uri), entry))
+        .collect();
+    for (doc_graph, entry) in library_built {
+        graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
+        parsed_docs.push(entry);
+    }
+    graph.add_standard_library_uris(
+        documents
+            .iter()
+            .filter(|document| {
+                matches!(
+                    document.source_kind,
+                    SysmlDocumentSourceKind::StandardLibrary
+                )
+            })
+            .map(|document| document.uri.clone()),
+    );
+    graph.invalidate_query_indexes();
+    (graph, parsed_docs)
+}
+
 /// Parses, builds, and links a semantic graph from many documents in parallel — the
 /// full-workspace equivalent of [`patch_graph_for_document`]. Same end result as
 /// [`build_and_link_graph`] (same nodes, same edges), computed differently: parsing runs in
