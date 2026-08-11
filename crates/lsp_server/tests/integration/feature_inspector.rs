@@ -130,6 +130,83 @@ fn lsp_feature_inspector_resolves_same_file_typing() {
     );
 }
 
+/// The inspector's typing intent/targets come from the typed declared typing fact, not the legacy
+/// `*Type` attribute projections. Exercise constructs whose projection keys were `useCaseType`,
+/// `concernType`, `stateType`, and `viewType` in both the resolved and unresolved case: the typed
+/// fact must drive exactly the same observable `typing.status`/`typing.targets` as before.
+#[test]
+fn lsp_feature_inspector_typing_comes_from_typed_facts_for_non_part_constructs() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_typed_facts.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  use case def Checkout;\n",
+        "  concern def Safety;\n",
+        "  state def Idle;\n",
+        "  view def Overview;\n",
+        "  use case buy : Checkout;\n",
+        "  concern hazards : Safety;\n",
+        "  state waiting : Idle;\n",
+        "  view summary : Overview;\n",
+        "  use case broken : MissingUseCaseDef;\n",
+        "  concern brokenConcern : MissingConcernDef;\n",
+        "  state brokenState : MissingStateDef;\n",
+        "  view brokenView : MissingViewDef;\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_typed_facts");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    for (line, character, name, target) in [
+        (5u32, 12u32, "buy", "Checkout"),
+        (6, 12, "hazards", "Safety"),
+        (7, 10, "waiting", "Idle"),
+        (8, 9, "summary", "Overview"),
+    ] {
+        let response = inspect(&mut session, uri, line, character);
+        let element = &response["result"]["containingElement"];
+        assert_eq!(element["name"].as_str(), Some(name));
+        assert_eq!(
+            element["typing"]["status"].as_str(),
+            Some("resolved"),
+            "{name} should resolve from its typed typing fact, got {element:#?}"
+        );
+        let targets = element["typing"]["targets"]
+            .as_array()
+            .expect("typing targets");
+        assert!(
+            targets
+                .iter()
+                .any(|candidate| candidate["name"].as_str() == Some(target)),
+            "expected {target} typing target for {name}, got {targets:#?}"
+        );
+    }
+
+    for (line, character, name) in [
+        (9u32, 12u32, "broken"),
+        (10, 12, "brokenConcern"),
+        (11, 10, "brokenState"),
+        (12, 9, "brokenView"),
+    ] {
+        let response = inspect(&mut session, uri, line, character);
+        let element = &response["result"]["containingElement"];
+        assert_eq!(element["name"].as_str(), Some(name));
+        assert_eq!(
+            element["typing"]["status"].as_str(),
+            Some("unresolved"),
+            "{name} declared a typing that cannot resolve, got {element:#?}"
+        );
+        assert_eq!(
+            element["typing"]["targets"]
+                .as_array()
+                .map(|targets| targets.len()),
+            Some(0),
+            "{name} must not present a guessed typing target"
+        );
+    }
+}
+
 #[test]
 fn lsp_feature_inspector_resolves_cross_file_typing() {
     let mut session = TestSession::new();
