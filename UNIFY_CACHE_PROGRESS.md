@@ -334,36 +334,37 @@ table, the only other thing standing between the repository and deleting
 `SemanticNode.attributes` is the `generalView*` rollup refactor described above, which is
 unblocked and can proceed independently whenever a future chunk has budget for it.
 
-### Chunk G is blocked on a provenance decision
+### Chunk G's provenance defect is fixed
 
-An attempt to retire the unblocked attribute keys (`feat/b9-chunk-g-partial`) was reverted from
-the integration branch. It is preserved on its branch and is mostly good work; one change in it
-needs a decision before any of it can land.
+The earlier attempt (`feat/b9-chunk-g-partial`, reverted by `ab0d0fd6`) recorded the metadata-def
+restriction shorthand's entailed subsetting (`:>> annotatedElement`, `:>> baseType`) as a second
+`DeclaredRelationshipTarget`, which has no provenance field and therefore published the entailed
+relationship as `(provenance authored)`. That was wrong: KerML's `Redefinition` specializes
+`Subsetting` (`org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot metamodel — normative, not a
+pilot-only behaviour), so the subsetting is genuinely entailed but nobody authors it.
 
-Retiring the `subsetsFeature` key exposed that the metadata-def restriction shorthand
-(`:>> annotatedElement`, `:>> baseType` inside a `metadata def`) carries a **dual** relationship:
-the authored redefinition, plus a subsetting. The subsetting is genuinely load-bearing — the
-pre-existing contract test
-`resolution_contract::contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_kind`
-depends on it to avoid an incompatible-type-kind diagnostic — so it cannot simply be dropped.
+Fixed on `feat/b9-chunk-g-implied-subsetting` by adding
+`ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting` and publishing the subsetting as a
+graph edge with `RelationshipProvenance::Implied(..)` in
+`relationships::link_subsetting_family_edges_for_node`, alongside the authored `Redefinition` edge
+to the same resolved target — never as a declared fact. The rule is deliberately narrowed to the
+metadata-def restriction shorthand rather than widened to every redefinition (KerML's entailment is
+universal, but publishing it for every redefinition would move a large number of corpus fixtures;
+see the variant's doc comment for that follow-up).
 
-Previously that subsetting lived only in the untyped attribute map, where it produced no graph
-edge. Recording it as a typed declared fact makes it a real edge, which changed the
-`sysml/examples/ahfprofile_lib.md` golden by adding four `subsetting` relationships.
+`sysml/examples/ahfprofile_lib.md` gained the expected four implied `subsetting` relationships,
+correctly tagged `(provenance (implied (rule metadata-redefinition-entails-subsetting)))`. One other
+corpus fixture, `sysml/validation/14c_language_extensions.md`, moved for the same reason (four more
+`baseType` restrictions under `FMEAMetadata`) plus a downstream multiplicity-derivation consequence:
+`baseType` no longer shows the implied `1..1` default because it now correctly inherits multiplicity
+through the previously-missing subsetting edge. No other fixture moved.
 
-The problem is provenance, not the relationship. `DeclaredRelationshipTarget` has no provenance
-field because declared facts are authored by definition, so recording the subsetting there
-publishes it as `(provenance authored)`. But it is not authored — it is *entailed* by the
-redefinition, since KerML's `Redefinition` specializes `Subsetting`. `AGENTS.md` is explicit:
-never make an implied relationship appear explicitly declared.
-
-The decision needed: record this subsetting through the implied-relationship mechanism with an
-appropriate `ImpliedRelationshipRule` identity rather than as a declared fact. The golden fixture
-should then change deliberately, showing `(provenance implied ...)`, with that rationale cited.
-
-Until that is settled the fixture must not move, so chunk G stays reverted. This is worth
-recording as a finding in its own right: the untyped attribute map was concealing a relationship
-whose provenance had never been classified.
+Chunk G is otherwise complete: the two named tests
+(`resolution_contract::contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_kind`,
+`metadata_semantics::metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element`) were
+migrated to assert the graph edge instead of the declared fact, and the rest of the reverted branch's
+work (chunk D's dual-write retirement, the relationship-target family retirement, the boundary DTO
+projections, the guardrail extensions) landed unchanged.
 
 ### Resolving normative language questions
 
