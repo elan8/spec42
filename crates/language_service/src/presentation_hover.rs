@@ -17,6 +17,22 @@ fn first_attr_str<'a>(node: &'a SemanticNode, keys: &[&str]) -> Option<&'a str> 
     keys.iter().find_map(|key| attr_str(node, key))
 }
 
+/// Comma-joined display text for the node's authored `specializes` clause, sourced from the
+/// typed `DeclaredRelationshipFacts::specializes` fact rather than the legacy attribute map.
+fn specializes_display(node: &SemanticNode) -> Option<String> {
+    let targets = &node.declared_facts.relationships.specializes;
+    if targets.is_empty() {
+        return None;
+    }
+    Some(
+        targets
+            .iter()
+            .map(|target| target.reference.as_str())
+            .collect::<Vec<_>>()
+            .join(", "),
+    )
+}
+
 fn json_value_to_inline_text(value: &serde_json::Value) -> Option<String> {
     match value {
         serde_json::Value::String(text) => Some(text.clone()),
@@ -135,7 +151,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             let prefix = attr_str(node, "definitionPrefix")
                 .map(|p| format!("{p} "))
                 .unwrap_or_default();
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("{prefix}part def {}{specializes};", node.name)
@@ -171,7 +187,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             )
         }
         "port def" => {
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("port def {}{specializes};", node.name)
@@ -183,13 +199,13 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("port {}{}{};", node.name, type_part, multiplicity)
         }
         "item def" => {
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("item def {}{specializes};", node.name)
         }
         "individual def" => {
-            let specializes = attr_str(node, "specializes")
+            let specializes = specializes_display(node)
                 .map(|base| format!(" :> {}", base))
                 .unwrap_or_default();
             format!("individual def {}{specializes};", node.name)

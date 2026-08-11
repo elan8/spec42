@@ -189,18 +189,15 @@ fn has_typing_intent(node: &SemanticNode) -> bool {
 }
 
 fn has_specialization_intent(node: &SemanticNode) -> bool {
-    node.attributes
-        .get("specializes")
-        .and_then(|value| value.as_str())
-        .is_some()
+    !node.declared_facts.relationships.specializes.is_empty()
 }
 
-fn has_relationship_intent(node: &SemanticNode, attribute_keys: &[&str]) -> bool {
-    attribute_keys.iter().any(|key| {
-        node.attributes
-            .get(*key)
-            .is_some_and(|value| !value.is_null())
-    })
+/// Typed replacement for the legacy attribute-map based relationship-intent check, for the
+/// redefines/subsetting family, whose
+/// authored declarations are always carried by `DeclaredRelationshipFacts` rather than the
+/// legacy attribute map.
+fn has_typed_relationship_intent(target_lists: &[&[sysml_model::DeclaredRelationshipTarget]]) -> bool {
+    target_lists.iter().any(|targets| !targets.is_empty())
 }
 
 fn resolution(has_intent: bool, targets: Vec<&SemanticNode>) -> SysmlFeatureInspectorResolutionDto {
@@ -344,19 +341,58 @@ fn relationship_targets_with_fallback<'a>(
     }))
 }
 
+/// Resolved-or-declared targets for a relationship kind whose authored form is already carried
+/// by a typed `DeclaredRelationshipFacts` field (`redefines`/`subsetsFeature`/
+/// `referencesFeature`/`crossesFeature`/`specializes`). Prefers the published edge; falls back to
+/// the typed declared targets -- never the legacy attribute map -- when the relationship is
+/// unresolved.
+fn relationship_targets_with_typed_fallback<'a>(
+    semantic_graph: &'a SemanticGraph,
+    node: &'a SemanticNode,
+    kind: RelationshipKind,
+    declared_targets: &[sysml_model::DeclaredRelationshipTarget],
+) -> Vec<&'a SemanticNode> {
+    let direct = semantic_graph.outgoing_targets_by_kind(node, kind);
+    if !direct.is_empty() {
+        return distinct_nodes(direct);
+    }
+    distinct_nodes(
+        declared_targets
+            .iter()
+            .flat_map(|target| declared_target_candidates(semantic_graph, node, &target.reference)),
+    )
+}
+
+/// The redefines/subsetting-family typed declared target list for a relationship kind. These are
+/// always dual-written by SysML producers into `DeclaredRelationshipFacts`.
+fn typed_subsetting_family_targets(
+    node: &SemanticNode,
+    kind: RelationshipKind,
+) -> &[sysml_model::DeclaredRelationshipTarget] {
+    let relationships = &node.declared_facts.relationships;
+    match kind {
+        RelationshipKind::Redefinition => &relationships.redefinition,
+        RelationshipKind::Subsetting => &relationships.subsetting,
+        RelationshipKind::ReferenceSubsetting => &relationships.reference_subsetting,
+        RelationshipKind::CrossSubsetting => &relationships.cross_subsetting,
+        _ => &[],
+    }
+}
+
 fn subsetting_targets<'a>(
     semantic_graph: &'a SemanticGraph,
     node: &'a SemanticNode,
 ) -> Vec<&'a SemanticNode> {
     distinct_nodes(
         [
-            (RelationshipKind::Subsetting, "subsetsFeature"),
-            (RelationshipKind::ReferenceSubsetting, "referencesFeature"),
-            (RelationshipKind::CrossSubsetting, "crossesFeature"),
+            RelationshipKind::Subsetting,
+            RelationshipKind::ReferenceSubsetting,
+            RelationshipKind::CrossSubsetting,
         ]
         .into_iter()
-        .flat_map(|(kind, key)| {
-            relationship_targets_with_fallback(semantic_graph, node, kind, &[key])
+        .flat_map(|kind| {
+            let targets = typed_subsetting_family_targets(node, kind.clone());
+            relationship_targets_with_typed_fallback(semantic_graph, node, kind, targets)
         }),
     )
 }
@@ -377,13 +413,16 @@ fn effective_typing_targets<'a>(
 
     let mut visited = HashSet::new();
     let mut queue: VecDeque<&SemanticNode> = [
-        (RelationshipKind::Redefinition, "redefines"),
-        (RelationshipKind::Subsetting, "subsetsFeature"),
-        (RelationshipKind::ReferenceSubsetting, "referencesFeature"),
-        (RelationshipKind::CrossSubsetting, "crossesFeature"),
+        RelationshipKind::Redefinition,
+        RelationshipKind::Subsetting,
+        RelationshipKind::ReferenceSubsetting,
+        RelationshipKind::CrossSubsetting,
     ]
     .into_iter()
-    .flat_map(|(kind, key)| relationship_targets_with_fallback(semantic_graph, node, kind, &[key]))
+    .flat_map(|kind| {
+        let targets = typed_subsetting_family_targets(node, kind.clone());
+        relationship_targets_with_typed_fallback(semantic_graph, node, kind, targets)
+    })
     .collect();
     while let Some(candidate) = queue.pop_front() {
         if !visited.insert(candidate.id.clone()) {
@@ -398,17 +437,18 @@ fn effective_typing_targets<'a>(
         if !typing.is_empty() {
             return distinct_nodes(typing);
         }
-        for (kind, key) in [
-            (RelationshipKind::Redefinition, "redefines"),
-            (RelationshipKind::Subsetting, "subsetsFeature"),
-            (RelationshipKind::ReferenceSubsetting, "referencesFeature"),
-            (RelationshipKind::CrossSubsetting, "crossesFeature"),
+        for kind in [
+            RelationshipKind::Redefinition,
+            RelationshipKind::Subsetting,
+            RelationshipKind::ReferenceSubsetting,
+            RelationshipKind::CrossSubsetting,
         ] {
-            queue.extend(relationship_targets_with_fallback(
+            let targets = typed_subsetting_family_targets(candidate, kind.clone());
+            queue.extend(relationship_targets_with_typed_fallback(
                 semantic_graph,
                 candidate,
                 kind,
-                &[key],
+                targets,
             ));
         }
     }
@@ -554,11 +594,11 @@ fn inherited_features(
                 declared_in: element_ref(owner),
             });
         }
-        queue.extend(relationship_targets_with_fallback(
+        queue.extend(relationship_targets_with_typed_fallback(
             semantic_graph,
             owner,
             RelationshipKind::Specializes,
-            &["specializes"],
+            &owner.declared_facts.relationships.specializes,
         ));
     }
     inherited
@@ -600,18 +640,18 @@ pub(crate) fn feature_inspector_element(
         TYPING_ATTRIBUTE_KEYS,
     );
     let effective_typing_targets = effective_typing_targets(semantic_graph, node);
-    let specialization_targets = relationship_targets_with_fallback(
+    let specialization_targets = relationship_targets_with_typed_fallback(
         semantic_graph,
         node,
         RelationshipKind::Specializes,
-        &["specializes"],
+        &node.declared_facts.relationships.specializes,
     );
     let subsetting_targets = subsetting_targets(semantic_graph, node);
-    let redefinition_targets = relationship_targets_with_fallback(
+    let redefinition_targets = relationship_targets_with_typed_fallback(
         semantic_graph,
         node,
         RelationshipKind::Redefinition,
-        &["redefines"],
+        typed_subsetting_family_targets(node, RelationshipKind::Redefinition),
     );
     let inherited_features = inherited_features(semantic_graph, node, &effective_typing_targets);
     let documentation = node
@@ -658,27 +698,25 @@ pub(crate) fn feature_inspector_element(
         typing: resolution(has_typing_intent(node), typing_targets),
         effective_typing: resolution(
             has_typing_intent(node)
-                || has_relationship_intent(
-                    node,
-                    &[
-                        "redefines",
-                        "subsetsFeature",
-                        "referencesFeature",
-                        "crossesFeature",
-                    ],
-                ),
+                || has_typed_relationship_intent(&[
+                    &node.declared_facts.relationships.redefinition,
+                    &node.declared_facts.relationships.subsetting,
+                    &node.declared_facts.relationships.reference_subsetting,
+                    &node.declared_facts.relationships.cross_subsetting,
+                ]),
             effective_typing_targets,
         ),
         specialization: resolution(has_specialization_intent(node), specialization_targets),
         subsetting: resolution(
-            has_relationship_intent(
-                node,
-                &["subsetsFeature", "referencesFeature", "crossesFeature"],
-            ),
+            has_typed_relationship_intent(&[
+                &node.declared_facts.relationships.subsetting,
+                &node.declared_facts.relationships.reference_subsetting,
+                &node.declared_facts.relationships.cross_subsetting,
+            ]),
             subsetting_targets,
         ),
         redefinition: resolution(
-            has_relationship_intent(node, &["redefines"]),
+            has_typed_relationship_intent(&[&node.declared_facts.relationships.redefinition]),
             redefinition_targets,
         ),
         inherited_features,
