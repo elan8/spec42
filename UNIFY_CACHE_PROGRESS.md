@@ -387,6 +387,37 @@ migrated to assert the graph edge instead of the declared fact, and the rest of 
 work (chunk D's dual-write retirement, the relationship-target family retirement, the boundary DTO
 projections, the guardrail extensions) landed unchanged.
 
+### B9 remaining work: the analysis-result cluster
+
+Cases A and B are merged: the `*Type` keys already paired into `relationships.typing` are retired,
+and `payloadType`/`acceptType` have typed declared facts following the `interface_end_type`
+precedent — a typed authored reference that deliberately does *not* enter `relationships.typing`,
+so no edge is republished and the resolution defect's blast radius does not widen. No golden
+fixture moved, which is the evidence that this pattern is sound.
+
+**This supersedes the earlier claim that the residue was blocked on the resolution-scoping
+defect.** It is not. `interface_end_type` already demonstrated the way through, and the same shape
+applies to the rest.
+
+What remains is the analysis-result cluster, investigated but not yet landed:
+
+| Key | Disposition |
+|-----|-------------|
+| `analysisResultCount` | Semantic. Read by `analysis_typing.rs:258` and `requirement_case_conformance.rs:574` to decide a diagnostic. Needs a typed derived fact; zero is meaningful, so not an `Option`. |
+| `analysisResultMode` | Semantic. Written at several sites in `graph_builder/analysis_case.rs` and propagated to an inheriting usage by `analysis_typing.rs`. Only the value `"value"` is ever written. |
+| `returnType` / `analysisResultType` | Semantic. `analysis_typing.rs` reads `returnType` from a result node and writes `analysisResultType` onto the usage — a derived fact stored back onto a node, which is the pattern B9 names. |
+| `inheritedAnalysisResult` | **No reader.** Delete outright. |
+| `isRedefinition` | **No reader.** Delete outright. |
+
+These are *derived*, not authored, so they belong in a typed structure kept distinct from
+`DeclaredAnalysisCaseFacts` — a consumer must be able to tell a declared analysis fact from one
+the analysis pass computed. `renderingType` still needs its Case D split, and `hasSubject` /
+`objectiveCount` sit in the same producer and should be audited with them.
+
+Roughly 197 attribute writes remain across all keys. The field deletion itself, the
+`serde_json::Value` source guardrail, and removing the now-vestigial `attrs`/`HashMap` plumbing
+through `add_node_and_recurse` are the closing steps.
+
 ### Resolving normative language questions
 
 Several findings in this effort are not cache questions at all but SysML/KerML semantics
@@ -506,6 +537,37 @@ visible in the `14c_language_extensions.md` golden.
 Fixing it properly means widening the entailment to all redefinitions. That is recommended
 follow-up work and needs a fixture survey first: even the narrow rule moved one corpus golden that
 was not predicted.
+
+### B9 remaining work: the analysis-result cluster
+
+Cases A and B are merged: the `*Type` keys already paired into `relationships.typing` are retired,
+and `payloadType`/`acceptType` have typed declared facts following the `interface_end_type`
+precedent — a typed authored reference that deliberately does *not* enter `relationships.typing`,
+so no edge is republished and the resolution defect's blast radius does not widen. No golden
+fixture moved, which is the evidence that this pattern is sound.
+
+**This supersedes the earlier claim that the residue was blocked on the resolution-scoping
+defect.** It is not. `interface_end_type` already demonstrated the way through, and the same shape
+applies to the rest.
+
+What remains is the analysis-result cluster, investigated but not yet landed:
+
+| Key | Disposition |
+|-----|-------------|
+| `analysisResultCount` | Semantic. Read by `analysis_typing.rs:258` and `requirement_case_conformance.rs:574` to decide a diagnostic. Needs a typed derived fact; zero is meaningful, so not an `Option`. |
+| `analysisResultMode` | Semantic. Written at several sites in `graph_builder/analysis_case.rs` and propagated to an inheriting usage by `analysis_typing.rs`. Only the value `"value"` is ever written. |
+| `returnType` / `analysisResultType` | Semantic. `analysis_typing.rs` reads `returnType` from a result node and writes `analysisResultType` onto the usage — a derived fact stored back onto a node, which is the pattern B9 names. |
+| `inheritedAnalysisResult` | **No reader.** Delete outright. |
+| `isRedefinition` | **No reader.** Delete outright. |
+
+These are *derived*, not authored, so they belong in a typed structure kept distinct from
+`DeclaredAnalysisCaseFacts` — a consumer must be able to tell a declared analysis fact from one
+the analysis pass computed. `renderingType` still needs its Case D split, and `hasSubject` /
+`objectiveCount` sit in the same producer and should be audited with them.
+
+Roughly 197 attribute writes remain across all keys. The field deletion itself, the
+`serde_json::Value` source guardrail, and removing the now-vestigial `attrs`/`HashMap` plumbing
+through `add_node_and_recurse` are the closing steps.
 
 ### Resolving normative language questions
 
