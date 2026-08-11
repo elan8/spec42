@@ -172,6 +172,22 @@ spelling remain available separately where syntax fidelity or provenance require
 protocol adapters, and stable external identity projections resolve IDs back to text only at their
 boundaries.
 
+The publication string table stores each distinct UTF-8 byte sequence once in one contiguous byte
+arena. A dense span table maps opaque `TextId` values to byte ranges, and a private hash index stores
+only `TextId` values; collision checks resolve an ID through the arena and compare borrowed bytes.
+The index never owns a second string key, facts never retain pointers into a growable buffer, and
+hash iteration never assigns IDs or orders output. Construction can therefore reallocate safely:
+typed IDs remain stable, while `&str` borrows exist only for the duration of an immutable table
+borrow. Freezing converts the byte and span stores to immutable slices and retains or rebuilds the
+lookup index only where a supported service requires text-to-ID lookup.
+
+Document workers use a distinct `LocalTextId` domain and a disposable local byte table. Canonical
+merge visits fragments in immutable-source order and local strings in ascending local-ID order,
+interns them into the publication table, and builds a checked local-to-publication remap. Temporary
+worker copies are discarded at the merge barrier; the published model contains one copy. Cache
+encoding serializes canonical bytes and spans, never hash buckets, random seeds, or capacity, and
+rebuilds the disposable index after validating UTF-8 and every range.
+
 Every compact identity domain is represented by a distinct opaque newtype: string symbols, node
 ordinals, authored-reference ordinals, fact slots, and similar indexes are never aliases for
 `usize` or interchangeable integer fields. Their numeric representation and conversions remain
