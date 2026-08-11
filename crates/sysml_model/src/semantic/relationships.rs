@@ -13,14 +13,15 @@ use crate::semantic::import_resolution::{
     resolve_type_reference_targets,
 };
 use crate::semantic::kinds::{
-    self, element_kind_allowed, SUBJECT_TYPE_TARGET_KINDS, VERIFIED_REQUIREMENT_TARGET_KINDS,
+    self, element_kind_allowed, METADATA_RESTRICTION_FEATURE_NAMES, SUBJECT_TYPE_TARGET_KINDS,
+    VERIFIED_REQUIREMENT_TARGET_KINDS,
 };
 pub use crate::semantic::kinds::{
     ANNOTATED_ELEMENT_TARGET_KINDS, SPECIALIZES_TARGET_KINDS, TYPING_TARGET_KINDS,
 };
 use crate::semantic::model::{
-    ConnectStatementDetail, ConstructionOwner, DeclaredRelationshipTarget, ElementKind, NodeId,
-    RelationshipKind, SemanticEdge, SemanticNode,
+    ConnectStatementDetail, ConstructionOwner, DeclaredRelationshipTarget, ElementKind,
+    ImpliedRelationshipRule, NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::reference_resolution::{
     resolve_expression_endpoint_strict, resolve_inherited_member_via_type, ResolveResult,
@@ -215,6 +216,32 @@ fn link_subsetting_family_edges_for_node(g: &mut SemanticGraph, node_id: &NodeId
                     &target_id,
                     SemanticEdge::plain(kind.clone(), ConstructionOwner::DocumentConstruction),
                 );
+                // KerML's `Redefinition` specializes `Subsetting`
+                // (`org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot metamodel), so a
+                // `:>>` redefinition of a `metadata def` restriction feature
+                // (`annotatedElement`/`baseType`) is also, structurally, a subsetting of that
+                // feature. Nobody authors that subsetting, so it is published here as an
+                // *implied* edge alongside the authored redefinition edge, to the same resolved
+                // target, rather than recorded as a second declared fact (see
+                // `ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting`). Deliberately
+                // narrowed to the metadata restriction shorthand -- see that rule's doc comment
+                // for why this is not widened to every redefinition.
+                if kind == RelationshipKind::Redefinition
+                    && owner
+                        .as_ref()
+                        .is_some_and(|owner| owner.element_kind == ElementKind::MetadataDef)
+                    && METADATA_RESTRICTION_FEATURE_NAMES.contains(&target.reference.as_str())
+                {
+                    add_semantic_edge_once(
+                        g,
+                        node_id,
+                        &target_id,
+                        SemanticEdge::implied(
+                            RelationshipKind::Subsetting,
+                            ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+                        ),
+                    );
+                }
             }
         }
     }

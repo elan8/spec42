@@ -985,6 +985,9 @@ fn relationship_provenance_discriminator(
         sysml_model::RelationshipProvenance::Implied(
             sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
         ) => "implied:universal-standard-library-relationship",
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+        ) => "implied:metadata-redefinition-entails-subsetting",
         sysml_model::RelationshipProvenance::Derived(
             sysml_model::DerivedRelationshipRule::CaseSubjectFromTypedSubject,
         ) => "derived:case-subject-from-typed-subject",
@@ -1000,6 +1003,11 @@ fn host_relationship_provenance(
             sysml_model::ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
         ) => HostRelationshipProvenance::Implied(
             HostImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+        ),
+        sysml_model::RelationshipProvenance::Implied(
+            sysml_model::ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
+        ) => HostRelationshipProvenance::Implied(
+            HostImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting,
         ),
         sysml_model::RelationshipProvenance::Derived(
             sysml_model::DerivedRelationshipRule::CaseSubjectFromTypedSubject,

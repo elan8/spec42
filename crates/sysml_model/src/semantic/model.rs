@@ -900,6 +900,24 @@ pub enum RelationshipProvenance {
 #[serde(rename_all = "camelCase")]
 pub enum ImpliedRelationshipRule {
     UniversalStandardLibraryRelationship,
+    /// KerML's `Redefinition` specializes `Subsetting`
+    /// (`org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot metamodel: `eClassifiers
+    /// xsi:type="ecore:EClass" name="Redefinition" eSuperTypes="#//Subsetting"`) -- every
+    /// authored redefinition is therefore *also*, structurally, a subsetting of the same target.
+    /// Nothing authors that subsetting, so it must never be recorded as a declared fact
+    /// (`DeclaredRelationshipTarget` has no provenance field precisely because declared facts are
+    /// authored by definition); it is published as an implied edge alongside the authored
+    /// `Redefinition` edge, to the same resolved target.
+    ///
+    /// Deliberately narrow: only published for a `:>>` redefinition of a metadata-def restriction
+    /// feature (`annotatedElement`/`baseType`, `kinds::METADATA_RESTRICTION_FEATURE_NAMES`),
+    /// matching today's only consumer that depends on the entailed subsetting (the
+    /// incompatible-type-kind check for `metadata def` restriction shorthand). The specification
+    /// entailment is universal to every `Redefinition`, not only this shorthand -- widening this
+    /// rule to publish an implied `Subsetting` edge for *every* redefinition is legitimate future
+    /// work, but is a separate, deliberately sequenced change: it would move a large number of
+    /// corpus golden fixtures. See `UNIFY_CACHE_PROGRESS.md` chunk G.
+    MetadataRedefinitionEntailsSubsetting,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

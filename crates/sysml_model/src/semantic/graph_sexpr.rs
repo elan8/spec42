@@ -995,6 +995,9 @@ fn render_resolved_relationship(
                 ImpliedRelationshipRule::UniversalStandardLibraryRelationship => {
                     "universal-standard-library-relationship"
                 }
+                ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting => {
+                    "metadata-redefinition-entails-subsetting"
+                }
             };
             let _ = write!(output, " (provenance (implied (rule {rule})))");
         }

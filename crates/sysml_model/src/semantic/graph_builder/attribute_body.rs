@@ -9,10 +9,9 @@ use super::{
     add_node_and_recurse, attach_declared_name, attach_declared_subsetting_family, expressions,
     qualified_name_for_node, unit_metadata, usage_builders,
 };
-use crate::semantic::ast_util::{span_to_range, subsetting_target, typing_targets};
+use crate::semantic::ast_util::{span_to_range, typing_targets};
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::kinds::METADATA_RESTRICTION_FEATURE_NAMES;
-use crate::semantic::model::{ElementKind, NodeId, RelationshipKind};
+use crate::semantic::model::{NodeId, RelationshipKind};
 use crate::semantic::relationships::add_typing_edge_if_exists;
 
 /// Attaches any `doc` comments written inside a nested attribute def/usage's own
@@ -106,20 +105,6 @@ pub(super) fn build_from_attribute_body(
                         serde_json::json!(targets.join(", ")),
                     );
                 }
-                // A `:>>` redefinition of a semantic-metadata restriction feature
-                // (`annotatedElement`/`baseType`) is also, semantically, a subsetting of that
-                // feature (redefinition implies subsetting per KerML); the typed
-                // `DeclaredRelationshipFacts::subsetting` fact records this dual relationship
-                // explicitly rather than only the redefinition (was `attrs["subsetsFeature"]`
-                // set alongside `attrs["redefines"]` for this gate, `UNIFY_CACHE_PROGRESS.md`
-                // chunk G).
-                let restricts_metadata_feature = subsetting_target(value.redefines.as_deref())
-                    .is_some_and(|r| {
-                        g.get_node(parent_id).is_some_and(|parent| {
-                            parent.element_kind == ElementKind::MetadataDef
-                                && METADATA_RESTRICTION_FEATURE_NAMES.contains(&r)
-                        })
-                    });
                 add_node_and_recurse(
                     g,
                     uri,
@@ -147,17 +132,15 @@ pub(super) fn build_from_attribute_body(
                     value.references.as_deref(),
                     value.crosses.as_deref(),
                 );
-                if restricts_metadata_feature {
-                    if let Some(node) = g.get_node_mut(&node_id) {
-                        for target in crate::semantic::ast_util::declared_subsetting_targets(
-                            value.redefines.as_deref(),
-                        ) {
-                            node.declared_facts
-                                .relationships
-                                .record_target(&RelationshipKind::Subsetting, target);
-                        }
-                    }
-                }
+                // The KerML entailment that a `:>>` redefinition of a semantic-metadata
+                // restriction feature (`annotatedElement`/`baseType`) is also a subsetting of
+                // that feature (`Redefinition` specializes `Subsetting`,
+                // `org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot) is published as an
+                // *implied* graph edge by `relationships::link_subsetting_family_edges_for_node`,
+                // not recorded here as a second declared fact -- `DeclaredRelationshipTarget` has
+                // no provenance field, so writing it here would make an entailed relationship
+                // look authored (`UNIFY_CACHE_PROGRESS.md` chunk G, `AGENTS.md` "One semantic
+                // system").
                 if let Some(node) = g.get_node_mut(&node_id) {
                     node.declared_facts.unit = unit_metadata::attribute_usage_unit_facts(value);
                 }
