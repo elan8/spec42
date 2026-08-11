@@ -171,6 +171,13 @@ maps while resolving a reference. Conversion back to stable public identities ha
 publication boundary. The string table is owned immutable publication data; lookup indexes over
 its IDs remain private disposable accelerators and never become semantic authorities.
 
+Qualified names and feature chains are segmented by the parser/source adapter while typed token
+boundaries are still available. It interns each segment once and records separator semantics,
+absolute scope, authored spelling, and range as distinct typed facts. The resolver consumes a
+borrowed compact slice of segment IDs; it never reconstructs grammar by splitting or joining text,
+and it never allocates a per-lookup segment vector. This follows the sibling compiler's
+canonicalization model: token-driven segment extraction followed by compact segment-block storage.
+
 Performance is nevertheless a measured acceptance criterion, not an article of faith. The
 whole-model solver is the correctness oracle. Representative CLI and LSP benchmarks must record
 construction, solve, and downstream query time separately. If solving is too slow, optimization
