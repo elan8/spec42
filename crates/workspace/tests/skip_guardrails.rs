@@ -12,7 +12,7 @@ use syn::{Attribute, Expr, ExprLit, Lit, Meta};
 
 const FIXTURES: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/tests/fixtures/sysml_compatibility"
+    "/../../test/snapshots"
 );
 
 const GENERIC_SEMANTIC_GRAPH_SKIP_REASON: &str =

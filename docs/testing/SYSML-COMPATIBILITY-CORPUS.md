@@ -1,14 +1,14 @@
 # SysML snapshot compatibility corpus
 
-`crates/workspace/tests/fixtures/sysml_compatibility` contains 479 Markdown
+`test/snapshots` contains 479 Markdown
 fixtures covering SysML and KerML source, parser recovery, semantic construction,
 and formatter behavior. OMG JSON interchange fixtures are deliberately excluded
 from this corpus.
 
-Run the portable compatibility runner with:
+Run the standalone snapshot runner with:
 
 ```sh
-cargo test -p workspace --test sysml_compatibility_corpus -- --nocapture
+cargo run -p spec42-snapshot -- check
 ```
 
 The runner accounts for every fixture and performs these checks:
@@ -30,21 +30,15 @@ and becomes a failure when graph facts materialize. Refresh these sections
 deliberately with:
 
 ```sh
-cargo test -p workspace --no-default-features --test sysml_compatibility_corpus \
-  regenerate_semantic_graph_sections -- --ignored
+cargo run -p spec42-snapshot -- update
 ```
 
-Use `SPEC42_SEMANTIC_GRAPH_FIXTURE=<relative fixture path>` with the ignored
-`print_semantic_graph_fixture` test to inspect one complete rendering before
+Use `--fixture=<relative path>` to inspect one complete rendering before
 accepting a refresh. `TOKENS`, `AST`, `EXPECTED`, and `PROBLEMS` are retained
-as evidence but are not direct assertions because their internal
-representations and diagnostic wording are implementation-specific. A
-non-matching parser acceptance result or formatter golden produces an explicit
-`SKIP` message (with its reason) under `--nocapture`; it is never silently
-dropped. A non-UTF-8 fuzz fixture is likewise reported as skipped because the
-pinned parser API accepts UTF-8 text. These skips are future compatibility work,
-not passing conformance claims.
+as evidence but are not owned by this runner. A non-UTF-8 fuzz fixture is
+reported as skipped because the pinned parser API accepts UTF-8 text. These
+skips are future compatibility work, not passing conformance claims.
 
-The runner's count guard prevents accidental loss of fixtures. When deliberately
-refreshing the corpus, update `IN_SCOPE_SNAPSHOT_COUNT` in the test and record
-the new count here or in the commit message.
+The runner's path and count guard prevent accidental loss of fixtures. When
+deliberately refreshing the corpus, record the new count here or in the commit
+message.
