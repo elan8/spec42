@@ -101,6 +101,11 @@ pub fn build_and_link_graph(
     documents: &[SysmlDocument],
 ) -> Result<(SemanticGraph, Vec<WorkspaceParsedDocument>), String> {
     let mut graph = SemanticGraph::new();
+    graph.set_source_origins(
+        documents
+            .iter()
+            .map(|document| (document.uri.clone(), source_role_for(document.source_kind))),
+    );
     graph.set_standard_library_uris(
         documents
             .iter()
@@ -423,6 +428,12 @@ pub fn link_parsed_documents_parallel_from(
 
     let mut uris: Vec<Url> = base_graph.all_uris();
     let mut graph = base_graph;
+    graph.set_source_origins(
+        workspace_entries
+            .iter()
+            .chain(library_entries.iter())
+            .map(|(kind, entry)| (entry.uri.clone(), source_role_for(*kind))),
+    );
     graph.add_standard_library_uris(
         library_entries
             .iter()

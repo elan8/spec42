@@ -11,7 +11,7 @@ use crate::semantic::ast_util::{
     declared_subsetting_targets, declared_typing_targets, span_to_range, subsetting_target,
     typing_targets,
 };
-use crate::semantic::graph::SemanticGraph;
+use crate::semantic::graph::{insert_canonical, SemanticGraph};
 use crate::semantic::model::{
     ConstructionOwner, DeclaredFeatureProperties, DeclaredRelationshipTarget, ElementKind, NodeId,
     RelationshipKind, SemanticEdge, SemanticNode,
@@ -300,14 +300,18 @@ pub(super) fn add_node_and_recurse(
     g.register_short_name_alias(&node_id, &node);
     let idx = g.graph.add_node(node);
     g.node_index_by_id.insert(node_id.clone(), idx);
+    // `nodes_by_uri` stays insertion (AST-traversal) ordered -- see the matching comment in
+    // `SemanticGraphData::merge_inner`.
     g.nodes_by_uri
         .entry(uri.clone())
         .or_default()
         .push(node_id.clone());
-    g.node_ids_by_qualified_name
-        .entry(qualified.to_string())
-        .or_default()
-        .push(NodeId::new(uri, qualified));
+    insert_canonical(
+        g.node_ids_by_qualified_name
+            .entry(qualified.to_string())
+            .or_default(),
+        NodeId::new(uri, qualified),
+    );
     if let Some(pid) = parent_id {
         g.children_by_parent_id
             .entry(pid.clone())
