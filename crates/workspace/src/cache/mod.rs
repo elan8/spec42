@@ -7,6 +7,7 @@
 //! site to use it — those are later slices of the plan's cutover.
 
 pub mod api;
+pub mod artifacts;
 pub mod config;
 pub mod envelope;
 pub mod store;
