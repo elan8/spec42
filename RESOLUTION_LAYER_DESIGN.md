@@ -1020,6 +1020,50 @@ The upstream work should be one migration branch and one final semantic cutover,
 reviewable commits. Intermediate commits may introduce new types before deletion, but no release or
 merge may expose two supported resolution systems.
 
+### 10.1 Minimum ownership-complete cutover closure
+
+The immutable resolver cannot be cut over one convenient reference kind at a time when that kind's
+scope depends on facts still owned by the mutable graph. The minimum semantic cutover includes all
+facts that participate in scope, effective naming, or type-directed continuation:
+
+- dense declarations, ownership, membership, visibility, declared names, and short names;
+- alias targets and alias bindings;
+- specialization, typing (including conjugation), subsetting, redefinition,
+  reference-subsetting, cross-subsetting, and intersecting or an explicit unsupported outcome;
+- namespace, membership, recursive, and expose imports with their typed shape and visibility;
+- connection, bind, satisfy, allocate, flow, and succession-flow endpoint pairs;
+- dependency, derivation, verified-requirement, case-subject, perform, transition, and initial-state
+  inputs whose results affect canonical relationships;
+- typed construction-known relationships such as annotation and port conjugation, which must not
+  be converted back into textual lookup requests; and
+- multiplicity, feature values/properties, and owned expressions required for downstream semantic
+  parity even when they are not lexical-lookup inputs.
+
+An exhaustive parser-to-fragment visitor accounts for every AST variant. Parser fields that lack a
+typed path, absolute scope, separator semantics, or exact target provenance publish an explicit
+unsupported construction fact; adapters do not split a `String`, inspect a sentinel spelling, use a
+debug formatter, or assign the containing range to missing segment spans. In particular, alias,
+dependency, derivation, view-body satisfy, intersecting, and conjugated typing cannot disappear
+because the previous mutable builder failed to feed them into its canonical fact collection.
+
+The solve order reflects the actual dependency closure:
+
+1. construct and deterministically merge nodes, memberships, bindings, typed paths, source roles,
+   and exact provenance;
+2. compile parent/child, local-binding, authored-reference, import, standard-library, and direct
+   structural-relationship indexes;
+3. solve the cyclic scope component containing alias binding, specialization, redefinition and
+   effective names, inherited membership, imports, exports, visibility, and recursion;
+4. solve typing and the remaining simple authored paths against the settled scope products;
+5. resolve expression endpoints by lexical first-segment lookup followed by typed feature-chain
+   continuation; and
+6. derive construction-known and settlement-derived relationships, then build immutable outcome,
+   adjacency, diagnostic, navigation, and query indexes at the publication barrier.
+
+No intermediate semantic publication places this IR beside a graph-backed resolver. Preparatory
+parser and fragment infrastructure may land privately, but the semantic cutover replaces the whole
+closure above and deletes its graph-based construction, resolution, and consumer paths together.
+
 ### Step 1: evidence harness and blast-radius gate
 
 - Inventory every caller of the old resolution helpers and classify it using the four categories
