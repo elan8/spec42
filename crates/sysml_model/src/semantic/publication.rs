@@ -413,6 +413,16 @@ fn explicit_name_candidates(
         .trim_matches(['\'', '"'])
         .replace('.', "::");
     if normalized.contains("::") {
+        let mut parent = source.parent_id.clone();
+        while let Some(current) = parent {
+            let qualified = format!("{}::{normalized}", current.qualified_name);
+            if let Some(ids) = graph.node_ids_for_qualified_name(&qualified) {
+                return ids.to_vec();
+            }
+            parent = graph
+                .get_node(&current)
+                .and_then(|node| node.parent_id.clone());
+        }
         return graph
             .node_ids_for_qualified_name(&normalized)
             .unwrap_or(&[])
@@ -783,6 +793,27 @@ mod tests {
             panic!("inner lexical binding must be retained: {:?}", fact.outcome);
         };
         assert_eq!(target.qualified_name, "C::T");
+    }
+
+    #[test]
+    fn qualified_segments_are_resolved_from_the_innermost_namespace() {
+        let model = build(
+            "package A { part def T; }
+             package C {
+                 package A { part def T; }
+                 part p : A::T;
+             }",
+        );
+        let fact = model
+            .resolution()
+            .facts()
+            .iter()
+            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
+            .expect("typing fact");
+        let ResolutionOutcome::Resolved { target } = &fact.outcome else {
+            panic!("qualified target should resolve: {:?}", fact.outcome);
+        };
+        assert_eq!(target.qualified_name, "C::A::T");
     }
 
     #[test]
