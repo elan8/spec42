@@ -77,16 +77,9 @@ fn main() -> Result<(), String> {
     for result in results {
         match result.result {
             Ok(FixtureOutcome::Clean) => {}
-            Ok(FixtureOutcome::Skipped) => {
-                eprintln!("SKIP {}: snapshot is not UTF-8", result.path.display());
-            }
             Ok(FixtureOutcome::StaleText(updated)) => match cli.command {
                 Command::Check => stale.push(result.path),
                 Command::Update => writes.push((result.path, updated.into_bytes())),
-            },
-            Ok(FixtureOutcome::StaleBytes(updated)) => match cli.command {
-                Command::Check => stale.push(result.path),
-                Command::Update => writes.push((result.path, updated)),
             },
             Err(error) => failures.push((result.path, error)),
         }
@@ -118,8 +111,6 @@ fn main() -> Result<(), String> {
 enum FixtureOutcome {
     Clean,
     StaleText(String),
-    StaleBytes(Vec<u8>),
-    Skipped,
 }
 
 struct FixtureWorkResult {
@@ -133,18 +124,8 @@ fn sort_work_results(results: &mut [FixtureWorkResult]) {
 
 fn evaluate_fixture(path: &Path) -> Result<FixtureOutcome, String> {
     let bytes = fs::read(path).map_err(|error| format!("read failed: {error}"))?;
-    let original = match String::from_utf8(bytes) {
-        Ok(original) => original,
-        Err(error) => {
-            let bytes = error.into_bytes();
-            let normalized = remove_non_canonical_sections_bytes(&bytes);
-            return Ok(if normalized == bytes {
-                FixtureOutcome::Skipped
-            } else {
-                FixtureOutcome::StaleBytes(normalized)
-            });
-        }
-    };
+    let original =
+        String::from_utf8(bytes).map_err(|error| format!("snapshot is not UTF-8: {error}"))?;
     let updated = regenerate_snapshot(&original, path)?;
     Ok(if updated == original {
         FixtureOutcome::Clean
@@ -512,43 +493,6 @@ fn canonicalize_sections(fixture: &str) -> String {
     output
 }
 
-fn remove_non_canonical_sections_bytes(fixture: &[u8]) -> Vec<u8> {
-    let mut headings = Vec::new();
-    let mut offset = 0;
-    for line in fixture.split_inclusive(|byte| *byte == b'\n') {
-        let content = line.strip_suffix(b"\n").unwrap_or(line);
-        if let Some(name) = content.strip_prefix(b"# ") {
-            headings.push((offset, name));
-        }
-        offset += line.len();
-    }
-
-    let mut ranges = Vec::new();
-    for (index, (start, name)) in headings.iter().enumerate() {
-        if !SECTION_ORDER
-            .iter()
-            .any(|section| *name == section.as_bytes())
-        {
-            let end = headings
-                .get(index + 1)
-                .map_or(fixture.len(), |(next_start, _)| *next_start);
-            ranges.push((*start, end));
-        }
-    }
-    if ranges.is_empty() {
-        return fixture.to_vec();
-    }
-
-    let mut output = Vec::with_capacity(fixture.len());
-    let mut cursor = 0;
-    for (start, end) in ranges {
-        output.extend_from_slice(&fixture[cursor..start]);
-        cursor = end;
-    }
-    output.extend_from_slice(&fixture[cursor..]);
-    output
-}
-
 fn replace_section(fixture: &str, name: &str, replacement: &str) -> Option<String> {
     let marker = format!("# {name}\n");
     let section_start = fixture.find(&marker)? + marker.len();
@@ -694,16 +638,5 @@ mod tests {
         assert!(!canonical.contains("# EXTRA\n"));
         assert!(!canonical.contains("# NOTES\n"));
         assert_eq!(canonicalize_sections(&canonical), canonical);
-    }
-
-    #[test]
-    fn removes_out_of_contract_sections_from_non_utf8_markdown() {
-        let fixture = b"# META\nmeta\n# SOURCE\nsource \xff\n# EXTRA\nextra\n# SMG\nsmg\n";
-        let normalized = remove_non_canonical_sections_bytes(fixture);
-        assert_eq!(
-            normalized,
-            b"# META\nmeta\n# SOURCE\nsource \xff\n# SMG\nsmg\n"
-        );
-        assert_eq!(remove_non_canonical_sections_bytes(&normalized), normalized);
     }
 }

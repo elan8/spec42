@@ -257,10 +257,6 @@ The prototype changed no repository file and is not a deliverable. Its result wa
 
 | Measurement | Result |
 |---|---:|
-| Markdown fixtures discovered | 479 |
-| Readable UTF-8 fixtures | 478 |
-| Explicitly malformed UTF-8 fixture | `fuzz_crash_2.md` |
-| Multi-document fixtures in the readable set | 1 |
 | Parallel-full differences from sequential whole | 0 |
 | Forward whole-replacement differences | 0 |
 | Reverse whole-replacement differences | 0 |
@@ -968,12 +964,10 @@ merge may expose two supported resolution systems.
 - Compare sequential, parallel, forward/reverse replacement, and the old scoped path before its
   deletion.
 - Build the corrected scope resolver as an isolated prototype using the target contracts.
-- Run all 478 readable compatibility fixtures and focused multi-document cases.
+- Run every discovered semantic snapshot and focused multi-document cases.
 - Publish a fixture-by-fixture report classifying every output change as Pilot-backed correction,
   existing defect preserved, or regression.
 - Stop if any change is unexplained. Do not begin the behavior cutover without this report.
-
-This step also records `fuzz_crash_2.md` as malformed rather than silently omitting it.
 
 ### Step 2: contracts and immutable resolver core
 

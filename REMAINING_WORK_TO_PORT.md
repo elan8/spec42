@@ -122,8 +122,6 @@ or diagnostic messages.
 
 - Keep all discovered fixtures accounted for by the harness.
 - Replace semantic-graph skip metadata as structured parser or semantic facts become available.
-- The single non-UTF-8 fixture needs an explicit byte-input parser/recovery contract before it can
-  be exercised like the UTF-8 corpus; it must remain a named skip until then.
 - Golden regeneration remains a deliberate maintenance command. The normal test path must assert
   exact semantic graph, diagnostic, and formatter output and must reject stale or unexplained skip
   metadata.
