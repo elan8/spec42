@@ -2444,8 +2444,8 @@ impl<'a> ResolutionView<'a> {
         let mut references = index
             .matching_fact_indices(position)
             .into_iter()
-            .filter_map(|fact_index| self.model.resolution.facts.get(fact_index))
             .map(|fact| {
+                let fact = &self.model.resolution.facts[fact];
                 Ok(NavigationReference {
                     source: fact.reference.source.clone(),
                     range: fact.authored_range.ok_or_else(|| {
