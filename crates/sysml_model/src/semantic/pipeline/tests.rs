@@ -1,7 +1,7 @@
 use super::*;
 use crate::semantic::model::{
-    EvaluatedValue, EvaluationPublicationState, EvaluationStatus, ExpressionEvaluationQuery,
-    RelationshipKind, SemanticNode,
+    ConstructionOwner, EvaluatedValue, EvaluationPublicationState, EvaluationStatus,
+    ExpressionEvaluationQuery, RelationshipKind, SemanticNode,
 };
 
 fn expression_value(graph: &SemanticGraph, node: &SemanticNode) -> Option<EvaluatedValue> {
@@ -867,4 +867,298 @@ fn benchmark_frontier_relink_vs_full_relink_on_cross_referenced_fixture() {
         "frontier relink benchmark ({PAIR_COUNT} pairs, {ITERATIONS} iterations): \
              full={full_total:?} frontier={frontier_total:?}"
     );
+}
+
+// --- B1: cross-document edge ownership regression suite ---
+//
+// `ROUNDTRIP_SEMGRAPH_PREREQS.md` B1: `cross_document_edges_by_source_uri` must be an
+// accurate record of which Typing/Specializes/Subject edges the workspace cross-document
+// linking pass owns, *no matter which construction path produced the graph* -- a normal
+// whole-graph `build_and_link_graph`, `build_and_link_graph_parallel`, a decoded (serde
+// round-tripped) graph, or one assembled one document at a time via
+// `patch_graph_for_document_scoped`. Every test below starts from a **normal whole-graph
+// build** (not a scoped-patch-assembled graph) before exercising the scoped/incremental
+// refresh path, since that is exactly the path a purely scoped-construction test suite would
+// never exercise.
+
+/// Simulates a "decoded" graph: resets every `#[serde(skip)]` derived index --including
+/// `cross_document_edges_by_source_uri`-- to its default and re-runs `rebuild_derived_indexes()`,
+/// exactly what real deserialization does. A literal serde round-trip through postcard (the
+/// project's actual cache codec) is blocked today by `SemanticNode.attributes:
+/// HashMap<String, serde_json::Value>` (see B9's `deserialize_any` note), which is out of
+/// scope here; `SemanticGraphData::simulate_decode_reset_for_test` exercises the exact same
+/// post-deserialize contract without depending on a working full-graph codec.
+fn roundtrip_through_serde(graph: &SemanticGraph) -> SemanticGraph {
+    let mut data = graph.clone().into_data();
+    data.simulate_decode_reset_for_test();
+    SemanticGraph::from_data(data)
+}
+
+/// The set of (source qualified name, target qualified name, kind) triples for every
+/// Typing/Specializes/Subject edge owned by `ConstructionOwner::WorkspaceCrossDocumentLinking`
+/// -- i.e. exactly what `cross_document_edges_by_source_uri` should account for.
+fn cross_document_owned_edge_triples(
+    graph: &SemanticGraph,
+) -> std::collections::BTreeSet<(String, String, String)> {
+    graph
+        .graph
+        .edge_indices()
+        .filter_map(|edge_idx| {
+            let weight = &graph.graph[edge_idx];
+            if weight.owner != ConstructionOwner::WorkspaceCrossDocumentLinking {
+                return None;
+            }
+            if !matches!(
+                weight.kind,
+                RelationshipKind::Typing
+                    | RelationshipKind::Specializes
+                    | RelationshipKind::Subject
+            ) {
+                return None;
+            }
+            let (src, tgt) = graph.graph.edge_endpoints(edge_idx).expect("endpoints");
+            Some((
+                graph.graph[src].id.qualified_name.clone(),
+                graph.graph[tgt].id.qualified_name.clone(),
+                weight.kind.as_str().to_string(),
+            ))
+        })
+        .collect()
+}
+
+/// Flattens `cross_document_edges_by_source_uri` into the same triple shape as
+/// `cross_document_owned_edge_triples`, resolving each `NodeId` back to its qualified name via
+/// the live graph (both share `SemanticGraphData::get_node`).
+fn recorded_cross_document_edge_triples(
+    graph: &SemanticGraph,
+) -> std::collections::BTreeSet<(String, String, String)> {
+    graph
+        .cross_document_edges_by_source_uri
+        .values()
+        .flatten()
+        .map(|(src_id, tgt_id, kind)| {
+            (
+                src_id.qualified_name.clone(),
+                tgt_id.qualified_name.clone(),
+                kind.as_str().to_string(),
+            )
+        })
+        .collect()
+}
+
+/// Core B1 regression: build A+B as a normal whole-graph build (not a scoped-patch
+/// assembly), edit A away so B's cross-document typing edge becomes unresolved, then edit A
+/// back so the same edge resolves again -- via the scoped/incremental refresh path
+/// (`patch_graph_for_document_scoped`, which calls `refresh_relationship_frontier`) applied
+/// directly on top of the whole-graph build. After every step, B's Typing/Specializes/Subject
+/// edges (and the `cross_document_edges_by_source_uri` bookkeeping behind them) must match a
+/// fresh full rebuild of the same document set -- proving ownership was established correctly
+/// by the whole build, not only by the scoped-patch path that originally recorded it.
+#[test]
+fn full_build_then_scoped_refresh_matches_full_rebuild_at_every_step() {
+    let (a_uri, a_doc, b_uri, b_doc) = two_file_typing_fixture();
+
+    let mut graph = {
+        let (built, _) = build_and_link_graph(&[a_doc.clone(), b_doc.clone()]).expect("build");
+        built
+    };
+
+    let assert_matches_fresh_rebuild = |graph: &SemanticGraph, a_content: &str, step: &str| {
+        let baseline_docs = vec![memory_doc("A.sysml", a_content), b_doc.clone()];
+        let (baseline, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+        assert_eq!(
+            node_qualified_names(graph),
+            node_qualified_names(&baseline),
+            "{step}: node set diverged from a fresh full rebuild"
+        );
+        assert_eq!(
+            edge_triples(graph),
+            edge_triples(&baseline),
+            "{step}: edge set diverged from a fresh full rebuild"
+        );
+        assert_eq!(
+            cross_document_owned_edge_triples(graph),
+            cross_document_owned_edge_triples(&baseline),
+            "{step}: cross-document-owned edge set diverged from a fresh full rebuild"
+        );
+        assert_eq!(
+            recorded_cross_document_edge_triples(graph),
+            cross_document_owned_edge_triples(graph),
+            "{step}: cross_document_edges_by_source_uri bookkeeping diverged from the \
+                 graph's own owned-edge state"
+        );
+    };
+    assert_matches_fresh_rebuild(&graph, &a_doc.content, "initial full build");
+
+    let typing_edge = (
+        "B::x".to_string(),
+        "A::Thing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    assert!(edge_triples(&graph).contains(&typing_edge));
+
+    // Step 1: rename A's target away via the scoped path. B's edge must disappear -- an
+    // unresolved reference is observably a removed edge, never a stale one left pointing at
+    // a node that no longer exists.
+    let renamed_a = "package A { part def Widget; }";
+    apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+    assert!(
+        !edge_triples(&graph).contains(&typing_edge),
+        "unresolved reference must remove the stale edge, not leave it in place"
+    );
+    assert_matches_fresh_rebuild(&graph, renamed_a, "after renaming A's target away");
+
+    // Step 2: restore A. B's edge must reappear.
+    apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+    assert!(
+        edge_triples(&graph).contains(&typing_edge),
+        "edge should be restored once the referenced type reappears"
+    );
+    assert_matches_fresh_rebuild(&graph, &a_doc.content, "after restoring A's target");
+    let _ = &b_uri;
+}
+
+/// Sibling of the core regression starting from a **decoded** graph (serde round-tripped, the
+/// exact scenario B1 describes: `cross_document_edges_by_source_uri` is `#[serde(skip)]` and
+/// starts empty after decode) rather than a live whole-graph build. The decoded graph must
+/// behave identically to the live one at every step.
+#[test]
+fn decoded_full_build_then_scoped_refresh_matches_full_rebuild_at_every_step() {
+    let (a_uri, a_doc, _b_uri, b_doc) = two_file_typing_fixture();
+    let (built, _) = build_and_link_graph(&[a_doc.clone(), b_doc.clone()]).expect("build");
+    let mut graph = roundtrip_through_serde(&built);
+
+    // Immediately after decode, the skipped map must already be fully reconstructed --
+    // not merely "repaired lazily by whatever runs next".
+    assert_eq!(
+        recorded_cross_document_edge_triples(&graph),
+        cross_document_owned_edge_triples(&built),
+        "decode must eagerly rebuild cross_document_edges_by_source_uri from graph edges"
+    );
+
+    let typing_edge = (
+        "B::x".to_string(),
+        "A::Thing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    assert!(edge_triples(&graph).contains(&typing_edge));
+
+    let renamed_a = "package A { part def Widget; }";
+    apply_scoped_patch(&mut graph, &a_uri, renamed_a);
+    assert!(
+        !edge_triples(&graph).contains(&typing_edge),
+        "decoded graph must drop the stale edge on refresh, exactly like a live graph"
+    );
+    let baseline_docs_renamed = vec![memory_doc("A.sysml", renamed_a), b_doc.clone()];
+    let (baseline_renamed, _) = build_and_link_graph(&baseline_docs_renamed).expect("baseline");
+    assert_eq!(edge_triples(&graph), edge_triples(&baseline_renamed));
+
+    apply_scoped_patch(&mut graph, &a_uri, &a_doc.content);
+    assert!(edge_triples(&graph).contains(&typing_edge));
+    let baseline_docs_restored = vec![a_doc.clone(), b_doc.clone()];
+    let (baseline_restored, _) = build_and_link_graph(&baseline_docs_restored).expect("baseline");
+    assert_eq!(edge_triples(&graph), edge_triples(&baseline_restored));
+}
+
+/// Covers the "new target differs" half of B1's required resolution: A is edited so B's
+/// reference still resolves, but to a *different* node than before. Starting from a normal
+/// whole-graph build, the scoped refresh must retarget B's edge -- not leave the old target
+/// alongside the new one.
+#[test]
+fn full_build_then_scoped_refresh_retargets_edge_when_new_target_differs() {
+    let (a_uri, a_doc, _b_uri, b_doc) = two_file_fixture(
+        "A.sysml",
+        "package A { part def Thing; part def OtherThing; }",
+        "B.sysml",
+        "package B { private import A::*; part x : Thing; }",
+    );
+    let (mut graph, _) = build_and_link_graph(&[a_doc.clone(), b_doc.clone()]).expect("build");
+
+    let old_edge = (
+        "B::x".to_string(),
+        "A::Thing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    let new_edge = (
+        "B::x".to_string(),
+        "A::OtherThing".to_string(),
+        RelationshipKind::Typing.as_str().to_string(),
+    );
+    assert!(edge_triples(&graph).contains(&old_edge));
+    assert!(!edge_triples(&graph).contains(&new_edge));
+
+    // Force a genuine retarget: remove `Thing` first (B's edge must drop), then reintroduce
+    // `Thing` as a structurally distinct node (a fresh specialization of `OtherThing`, not the
+    // original bare definition) -- node identity is qualified-name-based, so this is the same
+    // `NodeId` as before but a different underlying declaration, exercising the "new target
+    // differs" case even though the qualified name round-trips.
+    apply_scoped_patch(&mut graph, &a_uri, "package A { part def OtherThing; }");
+    assert!(!edge_triples(&graph).contains(&old_edge));
+
+    let retargeted_a = "package A { part def OtherThing; part def Thing :> OtherThing; }";
+    apply_scoped_patch(&mut graph, &a_uri, retargeted_a);
+
+    let baseline_docs = vec![memory_doc("A.sysml", retargeted_a), b_doc.clone()];
+    let (baseline, _) = build_and_link_graph(&baseline_docs).expect("baseline build");
+
+    assert_eq!(
+        node_qualified_names(&graph),
+        node_qualified_names(&baseline)
+    );
+    assert_eq!(edge_triples(&graph), edge_triples(&baseline));
+    assert!(
+        edge_triples(&graph).contains(&old_edge),
+        "B::x -> A::Thing should resolve again once A::Thing exists, now as a distinct node"
+    );
+    assert_eq!(
+        cross_document_owned_edge_triples(&graph),
+        cross_document_owned_edge_triples(&baseline)
+    );
+}
+
+/// Ownership-state equality across construction paths: build the same A+B document set via
+/// whole-graph (`build_and_link_graph`), parallel (`build_and_link_graph_parallel`), and
+/// document-at-a-time scoped-patch construction, and confirm all three agree on exactly which
+/// edges are owned by `ConstructionOwner::WorkspaceCrossDocumentLinking` -- the same set that
+/// `cross_document_edges_by_source_uri` is built from. This is the B1 requirement that whole,
+/// parallel, and incremental builds establish identical ownership, not merely identical edges.
+#[test]
+fn whole_parallel_and_incremental_builds_agree_on_cross_document_edge_ownership() {
+    let (a_uri, a_doc, b_uri, b_doc) = two_file_typing_fixture();
+    let documents = vec![a_doc.clone(), b_doc.clone()];
+
+    let (whole_graph, _) = build_and_link_graph(&documents).expect("whole build");
+    let (parallel_graph, _) = build_and_link_graph_parallel(&documents);
+
+    let mut incremental_graph = SemanticGraph::new();
+    apply_scoped_patch(&mut incremental_graph, &a_uri, &a_doc.content);
+    apply_scoped_patch(&mut incremental_graph, &b_uri, &b_doc.content);
+
+    let whole_owned = cross_document_owned_edge_triples(&whole_graph);
+    let parallel_owned = cross_document_owned_edge_triples(&parallel_graph);
+    let incremental_owned = cross_document_owned_edge_triples(&incremental_graph);
+
+    assert!(
+        !whole_owned.is_empty(),
+        "fixture must actually exercise a cross-document edge"
+    );
+    assert_eq!(
+        whole_owned, parallel_owned,
+        "whole vs parallel ownership diverged"
+    );
+    assert_eq!(
+        whole_owned, incremental_owned,
+        "whole vs incremental ownership diverged"
+    );
+
+    // And the edge sets themselves (not just the owned subset) must also agree, and the
+    // recorded bookkeeping must exactly mirror the owned edges in every construction.
+    assert_eq!(edge_triples(&whole_graph), edge_triples(&parallel_graph));
+    assert_eq!(edge_triples(&whole_graph), edge_triples(&incremental_graph));
+    for graph in [&whole_graph, &parallel_graph, &incremental_graph] {
+        assert_eq!(
+            recorded_cross_document_edge_triples(graph),
+            cross_document_owned_edge_triples(graph)
+        );
+    }
 }
