@@ -1124,7 +1124,7 @@ mod tests {
             content: content.to_string(),
             path_hint: None,
             source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
-            sha256: None,
+            content_digest: None,
             byte_size: None,
         };
         InMemoryDocumentProvider::new(vec![doc])
@@ -2490,7 +2490,7 @@ package Demo {
             content: lib_content.to_string(),
             path_hint: None,
             source_kind: sysml_model::SysmlDocumentSourceKind::Library,
-            sha256: None,
+            content_digest: None,
             byte_size: None,
         };
         let workspace_doc = sysml_model::SysmlDocument {
@@ -2498,7 +2498,7 @@ package Demo {
             content: workspace_content.to_string(),
             path_hint: None,
             source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
-            sha256: None,
+            content_digest: None,
             byte_size: None,
         };
         let provider = InMemoryDocumentProvider::new(vec![lib_doc, workspace_doc]);
@@ -2582,7 +2582,7 @@ package Demo {
                 // (`pipeline.rs`'s `set_standard_library_uris`). A plain `Library` document is a
                 // valid target for ordinary typing, but not for this rule specifically.
                 source_kind: sysml_model::SysmlDocumentSourceKind::StandardLibrary,
-                sha256: None,
+                content_digest: None,
                 byte_size: None,
             },
             sysml_model::SysmlDocument {
@@ -2590,7 +2590,7 @@ package Demo {
                 content: workspace_content.to_owned(),
                 path_hint: None,
                 source_kind: sysml_model::SysmlDocumentSourceKind::Workspace,
-                sha256: None,
+                content_digest: None,
                 byte_size: None,
             },
         ]);

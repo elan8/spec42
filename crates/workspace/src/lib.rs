@@ -55,7 +55,7 @@ pub use semantic::{
     add_cross_document_edges_for_uri, build_graph_from_doc, evaluate_expressions,
     hover_markdown_for_node, NodeId, RelationshipKind, SemanticGraph, SemanticNode,
 };
-pub use sysml_model::ElementKind;
+pub use sysml_model::{ContentDigest, ElementKind, RootDigest};
 
 pub use session::{PublicationToken, RelinkToken, SessionLifecycle, WorkspaceSession};
 pub use snapshot::discovery::{discover_target_files, path_to_file_url, resolve_workspace_root};

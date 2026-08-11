@@ -18,12 +18,8 @@ fn read_source_exactly_once(path: &Path) -> Result<(String, ContentDigest, i64),
         fs::read(path).map_err(|err| format!("failed to read {}: {err}", path.display()))?;
     let digest = ContentDigest::of_bytes(&bytes);
     let byte_len = bytes.len() as i64;
-    let content = String::from_utf8(bytes).map_err(|err| {
-        format!(
-            "failed to decode {} as UTF-8: {err}",
-            path.display()
-        )
-    })?;
+    let content = String::from_utf8(bytes)
+        .map_err(|err| format!("failed to decode {} as UTF-8: {err}", path.display()))?;
     Ok((content, digest, byte_len))
 }
 

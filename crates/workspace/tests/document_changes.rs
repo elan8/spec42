@@ -14,7 +14,7 @@ fn memory_doc(path: &str, content: &str) -> workspace::SysmlDocument {
                 .into_owned(),
         ),
         source_kind: SysmlDocumentSourceKind::Workspace,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     }
 }
@@ -34,7 +34,7 @@ fn apply_document_changes_replaces_changed_uri() {
     assert_eq!(merged.len(), 2);
     assert!(merged.iter().any(|doc| doc.content.contains("Three")));
     assert!(!merged.iter().any(|doc| doc.content.contains("One")));
-    assert!(merged.iter().all(|doc| doc.sha256.is_some()));
+    assert!(merged.iter().all(|doc| doc.content_digest.is_some()));
 }
 
 #[test]

@@ -21,14 +21,14 @@ fn semantic_comparison_report_round_trips_through_json() {
             engine_version: "0.33.0".to_string(),
             library_catalog_hash: "prev".to_string(),
             built_at: "2026-06-22T11:00:00Z".to_string(),
-            document_hashes: BTreeMap::new(),
+            document_digests: BTreeMap::new(),
         },
         next_artifact: workspace::HostArtifactMetadata {
             schema_versions: HostSchemaVersions::current(),
             engine_version: "0.33.0".to_string(),
             library_catalog_hash: "next".to_string(),
             built_at: "2026-06-22T12:00:00Z".to_string(),
-            document_hashes: BTreeMap::new(),
+            document_digests: BTreeMap::new(),
         },
         identity_preservation: IdentityPreservationStatus::IncompatibleEnvironment,
         elements: HostElementComparison::default(),
@@ -48,7 +48,7 @@ fn semantic_comparison_report_round_trips_through_json() {
 fn persisted_schema_1_report_defaults_sections_added_in_schema_2() {
     let persisted_schema_1 = serde_json::json!({
         "schema_versions": {
-            "artifact_metadata_version": 1,
+            "artifact_metadata_version": 2,
             "projection_schema_version": 14,
             "renderer_compatibility_version": 1,
             "comparison_schema_version": 1
@@ -56,7 +56,7 @@ fn persisted_schema_1_report_defaults_sections_added_in_schema_2() {
         "compared_at": "2026-06-22T12:00:00Z",
         "previous_artifact": {
             "schema_versions": {
-                "artifact_metadata_version": 1,
+                "artifact_metadata_version": 2,
                 "projection_schema_version": 14,
                 "renderer_compatibility_version": 1,
                 "comparison_schema_version": 1
@@ -64,11 +64,11 @@ fn persisted_schema_1_report_defaults_sections_added_in_schema_2() {
             "engine_version": "0.33.0",
             "library_catalog_hash": "catalog",
             "built_at": "2026-06-22T11:00:00Z",
-            "document_hashes": {}
+            "document_digests": {}
         },
         "next_artifact": {
             "schema_versions": {
-                "artifact_metadata_version": 1,
+                "artifact_metadata_version": 2,
                 "projection_schema_version": 14,
                 "renderer_compatibility_version": 1,
                 "comparison_schema_version": 1
@@ -76,7 +76,7 @@ fn persisted_schema_1_report_defaults_sections_added_in_schema_2() {
             "engine_version": "0.33.0",
             "library_catalog_hash": "catalog",
             "built_at": "2026-06-22T12:00:00Z",
-            "document_hashes": {}
+            "document_digests": {}
         },
         "identity_preservation": "preserved",
         "elements": {

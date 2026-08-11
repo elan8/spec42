@@ -80,7 +80,8 @@ fn can_use_incremental_update(
     if !is_workspace_document(changed) {
         return false;
     }
-    if previous.metadata().library_catalog_hash != engine.library_catalog().content_hash {
+    if previous.metadata().library_catalog_hash != engine.library_catalog().root_digest.to_string()
+    {
         return false;
     }
     merged_documents.iter().any(|doc| doc.uri == changed.uri)

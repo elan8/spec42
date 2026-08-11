@@ -47,7 +47,7 @@ fn file_document(path: &std::path::Path, content: &str) -> SysmlDocument {
             .file_name()
             .map(|name| name.to_string_lossy().replace('\\', "/")),
         source_kind: SysmlDocumentSourceKind::Workspace,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     }
 }

@@ -557,11 +557,19 @@ mod tests {
     #[test]
     fn root_digest_changes_when_a_source_byte_changes() {
         let a = SourceManifest::new(
-            vec![entry("file:///a.sysml", SourceRole::Workspace, b"package A;")],
+            vec![entry(
+                "file:///a.sysml",
+                SourceRole::Workspace,
+                b"package A;",
+            )],
             vec![],
         );
         let b = SourceManifest::new(
-            vec![entry("file:///a.sysml", SourceRole::Workspace, b"package B;")],
+            vec![entry(
+                "file:///a.sysml",
+                SourceRole::Workspace,
+                b"package B;",
+            )],
             vec![],
         );
         assert_ne!(a.root_digest(), b.root_digest());
@@ -595,16 +603,8 @@ mod tests {
 
     #[test]
     fn root_digest_commits_library_root_precedence_order_not_sorted_uri() {
-        let root_a = vec![entry(
-            "file:///lib_a/x.sysml",
-            SourceRole::Library,
-            b"aaa",
-        )];
-        let root_b = vec![entry(
-            "file:///lib_b/y.sysml",
-            SourceRole::Library,
-            b"bbb",
-        )];
+        let root_a = vec![entry("file:///lib_a/x.sysml", SourceRole::Library, b"aaa")];
+        let root_b = vec![entry("file:///lib_b/y.sysml", SourceRole::Library, b"bbb")];
 
         let a_then_b = SourceManifest::new(vec![], vec![root_a.clone(), root_b.clone()]);
         let b_then_a = SourceManifest::new(vec![], vec![root_b, root_a]);

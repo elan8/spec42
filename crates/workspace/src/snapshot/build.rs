@@ -6,10 +6,9 @@ use std::sync::{Arc, OnceLock};
 use std::time::Instant;
 
 use language_service::InMemoryWorkspace;
-use sha2::{Digest, Sha256};
 use sysml_model::{
-    IbdDataDto, SemanticGraph, SysmlDocument, SysmlDocumentProvider, SysmlVisualizationResultDto,
-    WorkspaceParsedDocument, WorkspaceRenderSnapshot,
+    ContentDigest, IbdDataDto, SemanticGraph, SysmlDocument, SysmlDocumentProvider,
+    SysmlVisualizationResultDto, WorkspaceParsedDocument, WorkspaceRenderSnapshot,
 };
 use url::Url;
 
@@ -265,15 +264,18 @@ pub(crate) fn build_workspace_snapshot(
         project_host_semantic_model(&semantic_graph, &target_files, &library_urls)?;
     context.check_continue(HostPipelinePhase::ProjectingModel)?;
 
-    let document_hashes = documents
+    let document_digests = documents
         .iter()
-        .map(|doc| (doc.uri.to_string(), doc.sha256.clone().unwrap_or_default()))
+        .filter_map(|doc| {
+            doc.content_digest
+                .map(|digest| (doc.uri.to_string(), digest))
+        })
         .collect::<BTreeMap<_, _>>();
 
     let snapshot_metadata = HostArtifactMetadata::new(
         metadata.engine_version.clone(),
-        catalog.content_hash.clone(),
-        document_hashes,
+        catalog.root_digest.to_string(),
+        document_digests,
     );
 
     Ok(HostWorkspaceSnapshot {
@@ -317,15 +319,18 @@ pub(crate) fn assemble_host_workspace_snapshot(
     workspace_root_uri: Url,
     build_instant: Instant,
 ) -> HostWorkspaceSnapshot {
-    let document_hashes = documents
+    let document_digests = documents
         .iter()
-        .map(|doc| (doc.uri.to_string(), doc.sha256.clone().unwrap_or_default()))
+        .filter_map(|doc| {
+            doc.content_digest
+                .map(|digest| (doc.uri.to_string(), digest))
+        })
         .collect::<BTreeMap<_, _>>();
 
     let snapshot_metadata = HostArtifactMetadata::new(
         metadata.engine_version.clone(),
-        catalog.content_hash.clone(),
-        document_hashes,
+        catalog.root_digest.to_string(),
+        document_digests,
     );
 
     HostWorkspaceSnapshot {
@@ -349,7 +354,7 @@ pub(crate) fn assemble_host_workspace_snapshot(
     }
 }
 
-/// Normalizes each document's URI (Windows drive-letter case) and populates `sha256`/
+/// Normalizes each document's URI (Windows drive-letter case) and populates `content_digest`/
 /// `byte_size`. Public so embedders computing [`HostArtifactMetadata`] directly off an
 /// [`crate::IncrementalWorkspace`] (bypassing this snapshot pipeline) reuse the same
 /// normalization instead of hashing un-normalized URIs — see `path_to_file_url`'s doc comment
@@ -362,9 +367,7 @@ pub fn enrich_document_hashes(documents: &mut [SysmlDocument]) {
         document.uri = language_service::uri::normalize_uri(&document.uri);
         let bytes = document.content.as_bytes();
         document.byte_size = Some(bytes.len() as i64);
-        let mut hasher = Sha256::new();
-        hasher.update(bytes);
-        document.sha256 = Some(format!("{:x}", hasher.finalize()));
+        document.content_digest = Some(ContentDigest::of_bytes(bytes));
     }
 }
 
