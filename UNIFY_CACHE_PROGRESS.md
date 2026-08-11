@@ -51,7 +51,7 @@ the same files; ownership is per key, not per file.
 | C | state machine: `source`, `target`, `isInitial`, `targetIsDone`, `stateName`, `finalStateCount` | merged | `feat/b9-state-facts` |
 | D | source fidelity: `doc`, `body`, `text`, `language`, `keyword` (hover use) | merged | `feat/b9-source-fidelity` |
 | E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | merged | `feat/b9-analysis-expression` |
-| F | relationship endpoints, type classification, and semantic classification keys: `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes`, `endType`, the `*Type` family, `metaclassRole`, `keyword` (metadata-view use) | in progress | `feat/b9-relationship-classification` |
+| F | relationship endpoints, type classification, and semantic classification keys | partly merged; `*Type` family and presentation readers in progress | `feat/b9-type-family-cutover` |
 | G | presentation cutover and field deletion: `generalView*` rollups, remaining `lsp_server`/`server`/`generator_api`/`workspace` consumers, then delete the field | not started | |
 
 Chunk C additionally deleted `stateName` outright as a redundant duplicate of the node's own
@@ -153,8 +153,8 @@ Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemantic
 |---------|---------|--------|
 | B1 | Typed edge construction ownership; rebuild cross-document ownership from it | done |
 | B2 | Omit lookup/containment indexes from the record; rebuild and validate them | not started |
-| B3 | Complete source roles and canonical resolution precedence | not started |
-| B4 | `SemanticPublication` identity, phase, completeness | in progress |
+| B3 | Complete source roles and canonical resolution precedence | in progress |
+| B4 | `SemanticPublication` identity, phase, completeness | done |
 | B5 | `SemanticGraphRecordV1` replaces direct runtime serde | not started |
 | B6 | Graph hit rehydrates sources and ASTs; no concealed missing input | not started |
 | B7 | Typed `GraphInvariantError` and single cache-import validator | not started |
