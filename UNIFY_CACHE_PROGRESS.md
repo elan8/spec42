@@ -50,8 +50,8 @@ the same files; ownership is per key, not per file.
 | B | unit prefix/conversion/value-expression metadata | merged | `feat/b9-shortname-units` |
 | C | state machine: `source`, `target`, `isInitial`, `targetIsDone`, `stateName`, `finalStateCount` | merged | `feat/b9-state-facts` |
 | D | source fidelity: `doc`, `body`, `text`, `language`, `keyword` (hover use) | merged | `feat/b9-source-fidelity` |
-| E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | in progress | `feat/b9-analysis-expression` |
-| F | relationship endpoints, type classification, and semantic classification keys: `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes`, `endType`, the `*Type` family, `metaclassRole`, `keyword` (metadata-view use) | not started | |
+| E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | merged | `feat/b9-analysis-expression` |
+| F | relationship endpoints, type classification, and semantic classification keys: `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes`, `endType`, the `*Type` family, `metaclassRole`, `keyword` (metadata-view use) | in progress | `feat/b9-relationship-classification` |
 | G | presentation cutover and field deletion: `generalView*` rollups, remaining `lsp_server`/`server`/`generator_api`/`workspace` consumers, then delete the field | not started | |
 
 Chunk C additionally deleted `stateName` outright as a redundant duplicate of the node's own
@@ -60,6 +60,20 @@ over the graph rather than storing a counter as a fact.
 
 Chunk D reclassified `metaclassRole`: it has no documentation or hover consumer at all, and its
 only two readers make a genuine semantic classification decision, so it moved to chunk F.
+
+Chunk E deleted `originRange`, `analysisKind`, `analysisParams`, `analysisReturn` and
+`parameters` outright: an exhaustive search found no reader for any of them. A key with no
+reader is deleted, not migrated. It also introduced
+`semantic/model_projection.rs::project_expression_text_attributes`, which re-projects typed facts
+onto a *boundary DTO's* JSON map at transport construction sites only. Nothing is written back
+onto `SemanticNode`; that projection is the precedent for how later chunks may serve presentation
+consumers without reintroducing a second semantic authority.
+
+### Agent worktree hygiene
+
+Each agent worktree builds its own `target/`, at roughly 20 GB apiece. Seven concurrent
+worktrees exhausted the disk mid-merge. Agents must run `cargo clean` as their final action after
+committing and verifying, and merged worktrees should be removed promptly.
 
 ### Transitional dual population
 
@@ -100,7 +114,7 @@ Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemantic
 
 | Blocker | Summary | Status |
 |---------|---------|--------|
-| B1 | Typed edge construction ownership; rebuild cross-document ownership from it | not started |
+| B1 | Typed edge construction ownership; rebuild cross-document ownership from it | in progress |
 | B2 | Omit lookup/containment indexes from the record; rebuild and validate them | not started |
 | B3 | Complete source roles and canonical resolution precedence | not started |
 | B4 | `SemanticPublication` identity, phase, completeness | not started |
