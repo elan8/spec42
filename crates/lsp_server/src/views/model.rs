@@ -365,11 +365,7 @@ fn node_expects_resolution(node: &semantic::SemanticNode) -> bool {
     TYPING_ATTRIBUTE_KEYS
         .iter()
         .any(|key| node.attributes.get(*key).and_then(|v| v.as_str()).is_some())
-        || node
-            .attributes
-            .get("specializes")
-            .and_then(|v| v.as_str())
-            .is_some()
+        || !node.declared_facts.relationships.specializes.is_empty()
 }
 
 fn count_resolution_stats(semantic_graph: &semantic::SemanticGraph, uri: &Url) -> (u32, u32) {
