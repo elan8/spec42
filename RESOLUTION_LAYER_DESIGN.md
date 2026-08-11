@@ -157,6 +157,12 @@ spelling remain available separately where syntax fidelity or provenance require
 protocol adapters, and stable external identity projections resolve IDs back to text only at their
 boundaries.
 
+Every compact identity domain is represented by a distinct opaque newtype: string symbols, node
+ordinals, authored-reference ordinals, fact slots, and similar indexes are never aliases for
+`usize` or interchangeable integer fields. Their numeric representation and conversions remain
+private to the owning table. Semantic code obtains an ID only through that owner's typed API, so
+the compiler rejects cross-domain lookup and arbitrary integer construction.
+
 The resolver's working representation is compiled once from those source-faithful structural
 facts. Hot paths use dense node/reference ordinals, interned string identities, compact slot arrays,
 and indexed adjacency or membership ranges. They do not use owned `String`, `Url`, or compound
