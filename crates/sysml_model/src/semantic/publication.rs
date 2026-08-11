@@ -1506,6 +1506,22 @@ mod tests {
     }
 
     #[test]
+    fn generic_flow_builder_targets_are_resolved_canonically() {
+        let model = build(
+            "package P { action def ExecuteMission { action validateRoute; action startMission; first validateRoute then startMission; } }",
+        );
+        assert!(model.resolution().facts().iter().any(|fact| {
+            fact.reference.kind == ReferenceKind::FlowSource
+                && matches!(fact.outcome, ResolutionOutcome::Resolved { .. })
+        }));
+        assert!(model
+            .resolution()
+            .relationships()
+            .iter()
+            .any(|relationship| relationship.kind == RelationshipKind::Flow));
+    }
+
+    #[test]
     fn multi_document_resolution_is_independent_of_source_order() {
         let first = document("memory://test/a.sysml", "package A { part def T; }");
         let second = document(
