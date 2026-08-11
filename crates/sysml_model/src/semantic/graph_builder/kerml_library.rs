@@ -69,8 +69,12 @@ fn add_kerml_library_decl_node(g: &mut SemanticGraph, input: KermlLibraryNodeInp
     );
     attrs.insert("text".to_string(), serde_json::json!(text));
     if let Some(role) = metaclass_role {
+        // `metaclassRole` drives semantic classification (`is_kerml_metadata_supertype` and the
+        // `SemanticMetadata` parent check below and in `materialize_feature_decl`); it is not a
+        // source-fidelity value and stays on the untyped attribute map (chunk F).
         attrs.insert("metaclassRole".to_string(), serde_json::json!(role));
     }
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -81,6 +85,9 @@ fn add_kerml_library_decl_node(g: &mut SemanticGraph, input: KermlLibraryNodeInp
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(text.to_string());
+    }
     if metaclass_role == Some("SemanticMetadata") {
         let node_id = NodeId::new(uri, &qualified);
         for feature_name in extract_kerml_feature_names_from_text(text) {
@@ -139,6 +146,7 @@ pub(super) fn add_kerml_library_feature_node(
                 serde_json::json!(bnf_production),
             );
             attrs.insert("text".to_string(), serde_json::json!(text));
+            let node_id = NodeId::new(uri, &qualified);
             add_node_and_recurse(
                 g,
                 uri,
@@ -149,6 +157,9 @@ pub(super) fn add_kerml_library_feature_node(
                 attrs,
                 Some(parent_id),
             );
+            if let Some(node) = g.get_node_mut(&node_id) {
+                node.source_text.text = Some(text.to_string());
+            }
             return;
         }
     }
@@ -159,6 +170,7 @@ pub(super) fn add_kerml_library_feature_node(
         serde_json::json!(bnf_production),
     );
     attrs.insert("text".to_string(), serde_json::json!(text));
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -169,6 +181,9 @@ pub(super) fn add_kerml_library_feature_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.text = Some(text.to_string());
+    }
 }
 
 pub(super) fn build_kerml_semantic_decl(

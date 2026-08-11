@@ -677,6 +677,7 @@ fn add_action_body_decl(
     let mut attrs = HashMap::new();
     attrs.insert("keyword".to_string(), serde_json::json!(&d.keyword));
     attrs.insert("text".to_string(), serde_json::json!(&d.text));
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -687,6 +688,10 @@ fn add_action_body_decl(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.source_text.keyword = Some(d.keyword.clone());
+        node.source_text.text = Some(d.text.clone());
+    }
 }
 
 fn materialize_nested_action_usage(
