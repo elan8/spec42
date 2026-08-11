@@ -120,6 +120,21 @@ immutable SemanticModel {
        all downstream consumers
 ```
 
+Here, `stable structural graph` means the new immutable semantic IR owned by the publication. It
+does **not** mean retaining the existing mutable `SemanticGraph` and treating a clone or read-only
+borrow of it as the new architecture. The immutable IR is constructed directly from parser-owned
+typed syntax into compact node, string, qualified-reference, and authored-fact tables. Its node and
+fact identities are opaque dense domains owned by that publication.
+
+The existing `SemanticGraph` is migration debt. It may remain temporarily behind isolated adapters
+for semantic families that have not yet been ported, but it is not extended with new facts,
+indexes, linkers, caches, lookup helpers, or resolution behavior. A migrated fact family is removed
+from the mutable graph path in the same change that makes the immutable IR authoritative; there is
+no dual read, fallback, parity arbitration, or post-construction join between parser facts and
+legacy graph nodes. In particular, the new builder never scans the old graph by URI, name, kind, or
+source range to rediscover semantic ownership. It receives the owning opaque node identity when it
+constructs the immutable node and records authored facts at that point.
+
 This is also the reason graph mutation is forbidden during resolution. The graph is a prerequisite
 of every resolution query and must keep one identity throughout the solve. Mutating it would:
 
