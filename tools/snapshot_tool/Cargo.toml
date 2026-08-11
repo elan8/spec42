@@ -1,5 +1,5 @@
 [package]
-name = "spec42-snapshot-tool"
+name = "spec42-snapshot"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
