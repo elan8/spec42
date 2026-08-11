@@ -1410,6 +1410,148 @@ pub struct SemanticModel {
     phase: SemanticPhase,
     completeness: SemanticCompleteness,
     indexes: SemanticQueryIndexes,
+    navigation_index: BTreeMap<url::Url, NavigationIntervalIndex>,
+}
+
+#[derive(Debug, Clone)]
+struct NavigationIntervalNode {
+    range: TextRange,
+    fact_index: usize,
+    max_end: TextPosition,
+    left: Option<usize>,
+    right: Option<usize>,
+}
+
+#[derive(Debug, Clone, Default)]
+struct NavigationIntervalIndex {
+    nodes: Vec<NavigationIntervalNode>,
+    root: Option<usize>,
+}
+
+impl NavigationIntervalIndex {
+    fn from_entries(mut entries: Vec<(TextRange, usize)>) -> Self {
+        entries.sort_by(|(left_range, left_index), (right_range, right_index)| {
+            navigation_interval_order(left_range)
+                .cmp(&navigation_interval_order(right_range))
+                .then(left_index.cmp(right_index))
+        });
+        let mut nodes = Vec::with_capacity(entries.len());
+        let root = Self::build_tree(&entries, &mut nodes);
+        Self { nodes, root }
+    }
+
+    fn build_tree(
+        entries: &[(TextRange, usize)],
+        nodes: &mut Vec<NavigationIntervalNode>,
+    ) -> Option<usize> {
+        if entries.is_empty() {
+            return None;
+        }
+        let middle = entries.len() / 2;
+        let node_index = nodes.len();
+        let (range, fact_index) = entries[middle];
+        nodes.push(NavigationIntervalNode {
+            range,
+            fact_index,
+            max_end: range.end,
+            left: None,
+            right: None,
+        });
+        let left = Self::build_tree(&entries[..middle], nodes);
+        let right = Self::build_tree(&entries[middle + 1..], nodes);
+        let mut max_end = range.end;
+        if let Some(left) = left {
+            max_end = max_position(max_end, nodes[left].max_end);
+        }
+        if let Some(right) = right {
+            max_end = max_position(max_end, nodes[right].max_end);
+        }
+        nodes[node_index] = NavigationIntervalNode {
+            range,
+            fact_index,
+            max_end,
+            left,
+            right,
+        };
+        Some(node_index)
+    }
+
+    fn matching_fact_indices(&self, position: TextPosition) -> Vec<usize> {
+        let mut matches = Vec::new();
+        self.visit(self.root, position, &mut matches);
+        matches
+    }
+
+    fn visit(&self, node_index: Option<usize>, position: TextPosition, matches: &mut Vec<usize>) {
+        let Some(node_index) = node_index else {
+            return;
+        };
+        let node = &self.nodes[node_index];
+        if node
+            .left
+            .is_some_and(|left| position_at_or_before(position, self.nodes[left].max_end))
+        {
+            self.visit(node.left, position, matches);
+        }
+        if position_at_or_after(position, node.range.start)
+            && position_at_or_before(position, node.range.end)
+        {
+            matches.push(node.fact_index);
+        }
+        if position_at_or_after(position, node.range.start)
+            && node
+                .right
+                .is_some_and(|right| position_at_or_before(position, self.nodes[right].max_end))
+        {
+            self.visit(node.right, position, matches);
+        }
+    }
+}
+
+fn position_key(position: TextPosition) -> (u32, u32) {
+    (position.line, position.character)
+}
+
+fn position_at_or_before(left: TextPosition, right: TextPosition) -> bool {
+    position_key(left) <= position_key(right)
+}
+
+fn position_at_or_after(left: TextPosition, right: TextPosition) -> bool {
+    position_key(left) >= position_key(right)
+}
+
+fn max_position(left: TextPosition, right: TextPosition) -> TextPosition {
+    if position_at_or_after(left, right) {
+        left
+    } else {
+        right
+    }
+}
+
+fn navigation_range_order(range: &TextRange) -> (u32, u32, u32, u32, u32, u32) {
+    let line_span = range.end.line.saturating_sub(range.start.line);
+    let character_span = if line_span == 0 {
+        range.end.character.saturating_sub(range.start.character)
+    } else {
+        range.end.character
+    };
+    (
+        line_span,
+        character_span,
+        range.start.line,
+        range.start.character,
+        range.end.line,
+        range.end.character,
+    )
+}
+
+fn navigation_interval_order(range: &TextRange) -> (u32, u32, u32, u32) {
+    (
+        range.start.line,
+        range.start.character,
+        range.end.line,
+        range.end.character,
+    )
 }
 
 /// A source reference outcome owned by the resolution phase for diagnostics.
@@ -1636,7 +1778,252 @@ impl BuilderDiagnosticInput {
     }
 }
 
+/// A complete source-fidelity navigation result owned by the settled semantic model.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NavigationReference {
+    pub source: NodeId,
+    pub range: TextRange,
+    pub kind: ReferenceKind,
+    pub authored_ordinal: u32,
+    pub authored_target: String,
+    pub outcome: NavigationOutcome,
+}
+
+/// Exhaustive navigation outcome. Unsupported and unresolved references are preserved rather
+/// than being represented as a missing target.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum NavigationOutcome {
+    Resolved(NavigationTarget),
+    Unresolved,
+    Ambiguous(Vec<NavigationTarget>),
+    UnsupportedFiltered,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct NavigationTarget {
+    pub id: NodeId,
+    pub range: TextRange,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum NavigationQueryError {
+    MissingTarget(NodeId),
+    MissingAuthoredRange(NodeId),
+}
+
+impl fmt::Display for NavigationQueryError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::MissingTarget(id) => write!(
+                formatter,
+                "resolved navigation target is not present in the published model: {}::{}",
+                id.uri, id.qualified_name
+            ),
+            Self::MissingAuthoredRange(id) => write!(
+                formatter,
+                "navigation reference has no authored range: {}::{}",
+                id.uri, id.qualified_name
+            ),
+        }
+    }
+}
+
+fn quote_navigation(value: &str) -> String {
+    serde_json::to_string(value).expect("navigation strings are serializable")
+}
+
+fn render_navigation_range(range: TextRange) -> String {
+    format!(
+        "(start {} {}) (end {} {})",
+        range.start.line, range.start.character, range.end.line, range.end.character
+    )
+}
+
+fn write_navigation_reference(
+    output: &mut dyn fmt::Write,
+    reference: &NavigationReference,
+    document_ids: &BTreeMap<url::Url, String>,
+) -> fmt::Result {
+    writeln!(output, "      (reference")?;
+    writeln!(
+        output,
+        "        (source (document {}) (qualified-name {}))",
+        quote_navigation(
+            document_ids
+                .get(&reference.source.uri)
+                .expect("source document identity")
+        ),
+        quote_navigation(&reference.source.qualified_name)
+    )?;
+    writeln!(
+        output,
+        "        (kind {}) (ordinal {}) (authored-target {})",
+        reference_kind_name(reference.kind),
+        reference.authored_ordinal,
+        quote_navigation(&reference.authored_target)
+    )?;
+    writeln!(
+        output,
+        "        (range {})",
+        render_navigation_range(reference.range)
+    )?;
+    match &reference.outcome {
+        NavigationOutcome::Resolved(target) => {
+            writeln!(output, "        (outcome (status resolved)")?;
+            write_navigation_target(output, "          ", target, document_ids)?;
+            writeln!(output, "        )")?;
+        }
+        NavigationOutcome::Unresolved => {
+            writeln!(output, "        (outcome (status unresolved))")?;
+        }
+        NavigationOutcome::UnsupportedFiltered => {
+            writeln!(output, "        (outcome (status unsupported-filtered))")?;
+        }
+        NavigationOutcome::Ambiguous(targets) => {
+            writeln!(output, "        (outcome (status ambiguous)")?;
+            for target in targets {
+                write_navigation_target(output, "          ", target, document_ids)?;
+            }
+            writeln!(output, "        )")?;
+        }
+    }
+    writeln!(output, "      )")
+}
+
+fn write_navigation_target(
+    output: &mut dyn fmt::Write,
+    indent: &str,
+    target: &NavigationTarget,
+    document_ids: &BTreeMap<url::Url, String>,
+) -> fmt::Result {
+    writeln!(
+        output,
+        "{indent}(target (document {}) (qualified-name {}) (range {}))",
+        quote_navigation(
+            document_ids
+                .get(&target.id.uri)
+                .expect("target document identity")
+        ),
+        quote_navigation(&target.id.qualified_name),
+        render_navigation_range(target.range)
+    )
+}
+
+fn reference_kind_name(kind: ReferenceKind) -> &'static str {
+    match kind {
+        ReferenceKind::FeatureTyping => "featureTyping",
+        ReferenceKind::Specialization => "specialization",
+        ReferenceKind::Subsetting => "subsetting",
+        ReferenceKind::Redefinition => "redefinition",
+        ReferenceKind::ReferenceSubsetting => "referenceSubsetting",
+        ReferenceKind::CrossSubsetting => "crossSubsetting",
+        ReferenceKind::ConnectionSource => "connectionSource",
+        ReferenceKind::ConnectionTarget => "connectionTarget",
+        ReferenceKind::BindSource => "bindSource",
+        ReferenceKind::BindTarget => "bindTarget",
+        ReferenceKind::SatisfySource => "satisfySource",
+        ReferenceKind::SatisfyTarget => "satisfyTarget",
+        ReferenceKind::AllocateSource => "allocateSource",
+        ReferenceKind::AllocateTarget => "allocateTarget",
+        ReferenceKind::FlowSource => "flowSource",
+        ReferenceKind::FlowTarget => "flowTarget",
+        ReferenceKind::SuccessionFlowSource => "successionFlowSource",
+        ReferenceKind::SuccessionFlowTarget => "successionFlowTarget",
+        ReferenceKind::PerformSource => "performSource",
+        ReferenceKind::PerformTarget => "performTarget",
+        ReferenceKind::TransitionSource => "transitionSource",
+        ReferenceKind::TransitionTarget => "transitionTarget",
+        ReferenceKind::InitialStateSource => "initialStateSource",
+        ReferenceKind::InitialStateTarget => "initialStateTarget",
+        ReferenceKind::ReferenceSource => "referenceSource",
+        ReferenceKind::ReferenceTarget => "referenceTarget",
+        ReferenceKind::DependencySource => "dependencySource",
+        ReferenceKind::DependencyTarget => "dependencyTarget",
+        ReferenceKind::DerivationSource => "derivationSource",
+        ReferenceKind::DerivationTarget => "derivationTarget",
+        ReferenceKind::NamespaceImport => "namespaceImport",
+        ReferenceKind::MembershipImport => "membershipImport",
+    }
+}
+
 impl SemanticModel {
+    /// Streams canonical navigation probes and their owner-computed query results.
+    pub fn write_navigation_debug_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        let document_ids = self.navigation_document_ids();
+        let mut probes = self
+            .resolution
+            .facts
+            .iter()
+            .filter_map(|fact| {
+                fact.authored_range
+                    .map(|range| (fact.reference.source.uri.clone(), range))
+            })
+            .collect::<Vec<_>>();
+        probes.sort_by(|(left_uri, left_range), (right_uri, right_range)| {
+            left_uri
+                .cmp(right_uri)
+                .then(navigation_range_order(left_range).cmp(&navigation_range_order(right_range)))
+        });
+        probes.dedup();
+
+        writeln!(output, "(navigation")?;
+        let mut current_uri = None;
+        for (uri, range) in probes {
+            if current_uri.as_ref() != Some(&uri) {
+                if current_uri.is_some() {
+                    writeln!(output, "  )")?;
+                }
+                writeln!(
+                    output,
+                    "  (document {}",
+                    quote_navigation(document_ids.get(&uri).expect("probe document identity"))
+                )?;
+                current_uri = Some(uri.clone());
+            }
+            let matches = self
+                .view()
+                .navigation_references_at_position(&uri, range.start)
+                .map_err(|_| fmt::Error)?;
+            writeln!(
+                output,
+                "    (query (range {}) (probe (position {} {}))",
+                render_navigation_range(range),
+                range.start.line,
+                range.start.character
+            )?;
+            for reference in matches {
+                write_navigation_reference(output, &reference, &document_ids)?;
+            }
+            writeln!(output, "    )")?;
+        }
+        if current_uri.is_some() {
+            writeln!(output, "  )")?;
+        }
+        write!(output, ")")
+    }
+
+    fn navigation_document_ids(&self) -> BTreeMap<url::Url, String> {
+        let mut uris = BTreeMap::new();
+        for fact in &self.resolution.facts {
+            uris.insert(fact.reference.source.uri.clone(), ());
+            match &fact.outcome {
+                ResolutionOutcome::Resolved { target } => {
+                    uris.insert(target.uri.clone(), ());
+                }
+                ResolutionOutcome::Ambiguous { candidates } => {
+                    for candidate in candidates {
+                        uris.insert(candidate.uri.clone(), ());
+                    }
+                }
+                ResolutionOutcome::Unresolved | ResolutionOutcome::UnsupportedFiltered => {}
+            }
+        }
+        uris.into_keys()
+            .enumerate()
+            .map(|(index, uri)| (uri, format!("d{index}")))
+            .collect()
+    }
+
     pub fn identity(&self) -> &SemanticModelIdentity {
         &self.identity
     }
@@ -2043,6 +2430,73 @@ pub struct ResolutionView<'a> {
 }
 
 impl<'a> ResolutionView<'a> {
+    /// Returns all authored references containing a source position in canonical narrowest-first
+    /// order. The interval index is immutable after publication and returns exhaustive typed
+    /// outcomes without exposing resolver facts or graph storage.
+    pub fn navigation_references_at_position(
+        &self,
+        uri: &url::Url,
+        position: TextPosition,
+    ) -> Result<Vec<NavigationReference>, NavigationQueryError> {
+        let Some(index) = self.model.navigation_index.get(uri) else {
+            return Ok(Vec::new());
+        };
+        let mut references = index
+            .matching_fact_indices(position)
+            .into_iter()
+            .filter_map(|fact_index| self.model.resolution.facts.get(fact_index))
+            .map(|fact| {
+                Ok(NavigationReference {
+                    source: fact.reference.source.clone(),
+                    range: fact.authored_range.ok_or_else(|| {
+                        NavigationQueryError::MissingAuthoredRange(fact.reference.source.clone())
+                    })?,
+                    kind: fact.reference.kind,
+                    authored_ordinal: fact.reference.authored_ordinal,
+                    authored_target: fact.authored_target.clone(),
+                    outcome: self.navigation_outcome(&fact.outcome)?,
+                })
+            })
+            .collect::<Result<Vec<_>, NavigationQueryError>>()?;
+        references.sort_by(|left, right| {
+            navigation_range_order(&left.range)
+                .cmp(&navigation_range_order(&right.range))
+                .then(left.source.cmp(&right.source))
+                .then(left.kind.cmp(&right.kind))
+                .then(left.authored_ordinal.cmp(&right.authored_ordinal))
+        });
+        Ok(references)
+    }
+
+    fn navigation_outcome(
+        &self,
+        outcome: &ResolutionOutcome,
+    ) -> Result<NavigationOutcome, NavigationQueryError> {
+        match outcome {
+            ResolutionOutcome::Resolved { target } => {
+                Ok(NavigationOutcome::Resolved(self.navigation_target(target)?))
+            }
+            ResolutionOutcome::Unresolved => Ok(NavigationOutcome::Unresolved),
+            ResolutionOutcome::UnsupportedFiltered => Ok(NavigationOutcome::UnsupportedFiltered),
+            ResolutionOutcome::Ambiguous { candidates } => Ok(NavigationOutcome::Ambiguous(
+                candidates
+                    .iter()
+                    .map(|candidate| self.navigation_target(candidate))
+                    .collect::<Result<Vec<_>, _>>()?,
+            )),
+        }
+    }
+
+    fn navigation_target(&self, id: &NodeId) -> Result<NavigationTarget, NavigationQueryError> {
+        let Some(node) = self.model.structural_graph.get_node(id) else {
+            return Err(NavigationQueryError::MissingTarget(id.clone()));
+        };
+        Ok(NavigationTarget {
+            id: id.clone(),
+            range: node.range,
+        })
+    }
+
     pub fn outcome(&self, reference: &AuthoredReferenceId) -> Option<&'a ResolutionOutcome> {
         self.model.resolution.outcome(reference)
     }
@@ -2106,6 +2560,7 @@ pub(crate) fn build_semantic_model_with_max_passes(
         None
     };
     let indexes = SemanticQueryIndexes::from_state(&resolution);
+    let navigation_index = build_navigation_indexes(&resolution);
     Ok(SemanticModel {
         identity,
         structural_graph,
@@ -2118,7 +2573,26 @@ pub(crate) fn build_semantic_model_with_max_passes(
         },
         completeness,
         indexes,
+        navigation_index,
     })
+}
+
+fn build_navigation_indexes(
+    resolution: &ResolutionState,
+) -> BTreeMap<url::Url, NavigationIntervalIndex> {
+    let mut entries_by_uri = BTreeMap::<url::Url, Vec<(TextRange, usize)>>::new();
+    for (fact_index, fact) in resolution.facts.iter().enumerate() {
+        if let Some(range) = fact.authored_range {
+            entries_by_uri
+                .entry(fact.reference.source.uri.clone())
+                .or_default()
+                .push((range, fact_index));
+        }
+    }
+    entries_by_uri
+        .into_iter()
+        .map(|(uri, entries)| (uri, NavigationIntervalIndex::from_entries(entries)))
+        .collect()
 }
 
 #[cfg(test)]
@@ -2135,6 +2609,31 @@ mod tests {
             None,
         )
         .expect("test URI")
+    }
+
+    #[test]
+    fn interval_index_returns_overlaps_without_scanning_unrelated_subtrees() {
+        let index = NavigationIntervalIndex::from_entries(vec![
+            (
+                TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 2)),
+                0,
+            ),
+            (
+                TextRange::new(TextPosition::new(0, 1), TextPosition::new(0, 8)),
+                1,
+            ),
+            (
+                TextRange::new(TextPosition::new(2, 0), TextPosition::new(2, 2)),
+                2,
+            ),
+        ]);
+        assert_eq!(
+            index.matching_fact_indices(TextPosition::new(0, 1)),
+            vec![0, 1]
+        );
+        assert!(index
+            .matching_fact_indices(TextPosition::new(1, 0))
+            .is_empty());
     }
 
     #[test]
