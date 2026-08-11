@@ -428,17 +428,9 @@ fn explicit_name_candidates(
             .unwrap_or(&[])
             .to_vec();
     }
-    let nodes = graph.semantic_nodes();
     let mut children = BTreeMap::<Option<NodeId>, Vec<NodeId>>::new();
-    for node in nodes {
-        if node.name == normalized
-            || node.declared_name.as_deref() == Some(normalized.as_str())
-            || node
-                .attributes
-                .get("shortName")
-                .and_then(serde_json::Value::as_str)
-                == Some(normalized.as_str())
-        {
+    for node in graph.semantic_nodes() {
+        if simple_name_matches(&node, &normalized) {
             children
                 .entry(node.parent_id.clone())
                 .or_default()
@@ -453,6 +445,11 @@ fn explicit_name_candidates(
             if !candidates.is_empty() {
                 return candidates;
             }
+        }
+        let mut visited = BTreeMap::new();
+        let inherited = inherited_members_named(graph, &current, &normalized, &mut visited);
+        if !inherited.is_empty() {
+            return inherited;
         }
         parent = graph
             .get_node(&current)
@@ -469,6 +466,54 @@ fn explicit_name_candidates(
     );
     candidates.extend(children.get(&None).into_iter().flatten().cloned());
     candidates
+}
+
+fn simple_name_matches(node: &SemanticNode, name: &str) -> bool {
+    node.name == name
+        || node.declared_name.as_deref() == Some(name)
+        || node
+            .attributes
+            .get("shortName")
+            .and_then(serde_json::Value::as_str)
+            == Some(name)
+}
+
+/// Collect members inherited through specialization. The visited set is keyed by semantic owner
+/// identity, so recursive specialization cycles terminate and a diamond is deduplicated.
+fn inherited_members_named(
+    graph: &SemanticGraph,
+    owner_id: &NodeId,
+    member_name: &str,
+    visited: &mut BTreeMap<NodeId, ()>,
+) -> Vec<NodeId> {
+    if visited.insert(owner_id.clone(), ()).is_some() {
+        return Vec::new();
+    }
+    let Some(owner) = graph.get_node(owner_id) else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for specialization in &owner.declared_facts.relationships.specializes {
+        let bases = explicit_name_candidates(graph, owner, &specialization.reference);
+        for base_id in bases {
+            for node in graph.semantic_nodes() {
+                if node.parent_id.as_ref() == Some(&base_id)
+                    && simple_name_matches(&node, member_name)
+                {
+                    out.push(node.id.clone());
+                }
+            }
+            out.extend(inherited_members_named(
+                graph,
+                &base_id,
+                member_name,
+                visited,
+            ));
+        }
+    }
+    out.sort_by(node_id_order);
+    out.dedup();
+    out
 }
 
 fn authored_relationships(
@@ -830,6 +875,28 @@ mod tests {
             .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
             .expect("typing fact");
         assert!(matches!(fact.outcome, ResolutionOutcome::Unresolved));
+    }
+
+    #[test]
+    fn inherited_members_are_resolved_and_deduplicated_across_a_diamond() {
+        let model = build(
+            "package M {
+                 part def Base { part def Member; }
+                 part def Left :> Base;
+                 part def Right :> Base;
+                 part def Diamond :> Left, Right { part p : Member; }
+             }",
+        );
+        let fact = model
+            .resolution()
+            .facts()
+            .iter()
+            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
+            .expect("typing fact");
+        let ResolutionOutcome::Resolved { target } = &fact.outcome else {
+            panic!("inherited member should resolve: {:?}", fact.outcome);
+        };
+        assert_eq!(target.qualified_name, "M::Base::Member");
     }
 
     #[test]
