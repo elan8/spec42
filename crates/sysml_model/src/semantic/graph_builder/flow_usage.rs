@@ -177,6 +177,20 @@ fn add_flow_edge_if_both_exist(
     let (Some(from), Some(to)) = (&flow.from, &flow.to) else {
         return;
     };
+    if g.structural_input_only {
+        expressions::record_declared_expression_relationship(
+            g,
+            parent_id.clone(),
+            relationship_kind_for_flow(flow.kind),
+            expressions::expr_node_to_qualified_string(from),
+            expressions::expr_node_to_qualified_string(to),
+            span_to_range(&from.span),
+            Some(span_to_range(&to.span)),
+            false,
+            None,
+        );
+        return;
+    }
     let from_str = expressions::expr_node_to_qualified_string(from);
     let to_str = expressions::expr_node_to_qualified_string(to);
     if from_str.is_empty() || to_str.is_empty() {
