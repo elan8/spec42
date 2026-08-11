@@ -680,6 +680,9 @@ pub(crate) fn feature_inspector_element(
             sysml_model::semantic::model_projection::project_source_text_attributes(
                 &mut attrs, node,
             );
+            sysml_model::semantic::model_projection::project_type_reference_attributes(
+                &mut attrs, node,
+            );
             attrs
         },
         evaluation: evaluation(semantic_graph, node),
