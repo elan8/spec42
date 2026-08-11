@@ -57,7 +57,8 @@ pub use semantic::model::{
     ImpliedFeatureOwnership, ImpliedFeatureValueBinding, ImpliedMultiplicity,
     ImpliedRelationshipRule, ImportOrigin, ImportShape, MembershipVisibilityProvenance,
     NodeEvaluationFacts, NodeId, RelationshipKind, RelationshipProvenance, SemanticEdge,
-    SemanticNode, StandardLibraryElement, UniversalStandardLibraryRelationship, VisibilityKind,
+    SemanticNode, StandardLibraryElement, TransitionEndpointFacts,
+    UniversalStandardLibraryRelationship, VisibilityKind,
 };
 pub use semantic::pipeline::{
     build_and_link_graph, build_and_link_graph_parallel, evaluate_workspace_graph,

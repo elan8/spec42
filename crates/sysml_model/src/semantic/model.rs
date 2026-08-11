@@ -1091,6 +1091,26 @@ pub struct DeclaredSemanticFacts {
     /// feature's value is X". Projected as `HostElementFacts::content_expression_id`.
     #[serde(default)]
     pub own_expression: Option<DeclaredExpression>,
+    /// Set on a `Transition` node: the authored source/target endpoint references plus the
+    /// `initial`/`done` state-machine flags derived from them. Endpoint resolution to concrete
+    /// node IDs happens downstream (e.g. `sysml_diagnostics::behavior_conformance`), the same
+    /// two-step handoff `ConnectStatementDetail`'s `source_expression`/`target_expression` use.
+    #[serde(default)]
+    pub transition_endpoints: Option<TransitionEndpointFacts>,
+}
+
+/// Typed source/target endpoint facts for a `transition` statement's `Transition` node.
+/// Mirrors [`ConnectStatementDetail`] for state-machine transitions instead of connect usages.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransitionEndpointFacts {
+    /// Authored source endpoint reference, qualified relative to the enclosing state definition.
+    pub source_expression: String,
+    /// Authored target endpoint reference, qualified relative to the enclosing state definition.
+    pub target_expression: String,
+    /// True when this transition was declared with the `initial` keyword.
+    pub is_initial: bool,
+    /// True when the target endpoint resolves to the implicit `done` pseudostate.
+    pub target_is_done: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
