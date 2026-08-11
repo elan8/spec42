@@ -123,7 +123,7 @@ fn full_and_incremental_typed_expression_evaluation_match() {
         content: content.to_string(),
         path_hint: None,
         source_kind: SysmlDocumentSourceKind::Workspace,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let (full, _) = build_and_link_graph(&[document]).expect("full graph");

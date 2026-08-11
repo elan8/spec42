@@ -361,7 +361,7 @@ fn parser_backed_resolution_prefers_nearest_lexical_scope() {
         .to_string(),
         path_hint: None,
         source_kind: SysmlDocumentSourceKind::Workspace,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     };
     let (graph, _) = build_and_link_graph(&[document]).expect("graph");

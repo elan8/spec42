@@ -272,6 +272,184 @@ impl ArtifactKey {
     }
 }
 
+/// The role a source plays in a workspace build (plan §5.2). This is committed into the
+/// [`RootDigest`] so that reclassifying a source (e.g. promoting a library to the standard
+/// library) changes the identity of the manifest that contains it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+pub enum SourceRole {
+    Workspace,
+    StandardLibrary,
+    Library,
+    External,
+}
+
+impl SourceRole {
+    fn tag(self) -> u8 {
+        match self {
+            SourceRole::Workspace => 0,
+            SourceRole::StandardLibrary => 1,
+            SourceRole::Library => 2,
+            SourceRole::External => 3,
+        }
+    }
+}
+
+/// One admitted source's identity within a [`SourceManifest`] (plan §5.2).
+///
+/// `path_hint` is provenance only, never identity: it is not fed into the leaf digest or the
+/// root digest computation. `library_root_slot`/`relative_path` are populated for entries that
+/// originate from a configured, ordered library root; they are `None` for workspace and other
+/// entries that are not root-scoped.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SourceManifestEntry {
+    /// Normalized URI identifying this source. This is the identity used for sorting workspace
+    /// entries and for the leaf digest.
+    pub uri: String,
+    /// Provenance-only display path. Never used as identity.
+    pub path_hint: Option<String>,
+    pub role: SourceRole,
+    pub content_digest: ContentDigest,
+    pub byte_len: u64,
+    /// Index of the configured library root this entry came from, in configured precedence
+    /// order (not sorted). `None` for entries not scoped to a library root.
+    pub library_root_slot: Option<u32>,
+    /// Path relative to `library_root_slot`'s root, when applicable.
+    pub relative_path: Option<String>,
+}
+
+impl SourceManifestEntry {
+    const DOMAIN: &'static str = "spec42.cache.source_manifest.entry.v1";
+
+    /// The per-entry leaf digest: a domain-separated, length-prefixed commitment to every
+    /// identity-relevant field. `path_hint` is deliberately excluded.
+    pub fn leaf_digest(&self) -> Blake3Digest {
+        let mut enc = CanonicalEncoder::new(Self::DOMAIN);
+        enc.field(self.uri.as_bytes());
+        enc.field(&[self.role.tag()]);
+        enc.field(self.content_digest.as_bytes());
+        enc.field_u64(self.byte_len);
+        enc.field_u64(self.library_root_slot.map(|s| s as u64 + 1).unwrap_or(0));
+        enc.field(self.relative_path.as_deref().unwrap_or("").as_bytes());
+        enc.finish()
+    }
+}
+
+/// The full set of admitted sources for a build, together with the ordering policy used to
+/// commit them (plan §5.2).
+///
+/// Workspace (and other non-root-scoped) entries are sorted by normalized URI before hashing.
+/// Library-root entries preserve their configured root precedence order exactly as supplied to
+/// [`SourceManifest::new`]/[`SourceManifestBuilder`]: they are never re-sorted by URI. Both the
+/// entries themselves and this ordering policy are committed into [`RootDigest`], so reordering
+/// library roots, changing any entry's role, URI, or content, changes the digest.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SourceManifest {
+    /// Non-root-scoped entries (typically workspace sources), sorted by normalized URI.
+    workspace_entries: Vec<SourceManifestEntry>,
+    /// Library-root-scoped entries, grouped by configured root slot in configured precedence
+    /// order. Each inner vector is itself sorted by relative path for determinism, but the
+    /// outer (root-slot) order is never resorted.
+    library_root_entries: Vec<Vec<SourceManifestEntry>>,
+}
+
+/// Domain tag for the ordering policy marker mixed into the root digest, so that a change to
+/// the ordering *policy itself* (not just entry order) would also be observable if the policy
+/// ever gained variants.
+const ORDERING_POLICY_TAG: &str = "workspace:sorted-by-uri;library-roots:configured-order";
+
+impl SourceManifest {
+    /// Builds a manifest from workspace entries (sorted here by normalized URI) and library-root
+    /// entries already grouped by configured root slot, in configured precedence order. Each
+    /// root-slot group is sorted by relative path for determinism within the root.
+    pub fn new(
+        mut workspace_entries: Vec<SourceManifestEntry>,
+        mut library_root_entries: Vec<Vec<SourceManifestEntry>>,
+    ) -> Self {
+        workspace_entries.sort_by(|a, b| a.uri.cmp(&b.uri));
+        for group in &mut library_root_entries {
+            group.sort_by(|a, b| {
+                a.relative_path
+                    .as_deref()
+                    .unwrap_or("")
+                    .cmp(b.relative_path.as_deref().unwrap_or(""))
+            });
+        }
+        Self {
+            workspace_entries,
+            library_root_entries,
+        }
+    }
+
+    pub fn workspace_entries(&self) -> &[SourceManifestEntry] {
+        &self.workspace_entries
+    }
+
+    /// Library-root entry groups in configured precedence order (slot 0 first).
+    pub fn library_root_entries(&self) -> &[Vec<SourceManifestEntry>] {
+        &self.library_root_entries
+    }
+
+    pub fn all_entries(&self) -> impl Iterator<Item = &SourceManifestEntry> {
+        self.workspace_entries
+            .iter()
+            .chain(self.library_root_entries.iter().flatten())
+    }
+
+    /// Computes the [`RootDigest`] that transitively commits every entry's role, identity,
+    /// content digest, byte length, and the ordering policy applied. Reordering library roots,
+    /// changing any single entry's role/URI/content, or changing the manifest's ordering policy
+    /// all change this digest.
+    pub fn root_digest(&self) -> RootDigest {
+        let mut enc = CanonicalEncoder::new(RootDigest::DOMAIN);
+        enc.field(ORDERING_POLICY_TAG.as_bytes());
+
+        enc.field_u64(self.workspace_entries.len() as u64);
+        for entry in &self.workspace_entries {
+            enc.field(entry.leaf_digest().as_bytes());
+        }
+
+        enc.field_u64(self.library_root_entries.len() as u64);
+        for (slot, group) in self.library_root_entries.iter().enumerate() {
+            enc.field_u64(slot as u64);
+            enc.field_u64(group.len() as u64);
+            for entry in group {
+                enc.field(entry.leaf_digest().as_bytes());
+            }
+        }
+
+        RootDigest::from_encoder(&enc)
+    }
+}
+
+/// Incremental constructor for [`SourceManifest`]. Callers push entries in configured order and
+/// call [`SourceManifestBuilder::build`] to sort workspace entries and finalize the manifest.
+#[derive(Debug, Default, Clone)]
+pub struct SourceManifestBuilder {
+    workspace_entries: Vec<SourceManifestEntry>,
+    library_root_entries: Vec<Vec<SourceManifestEntry>>,
+}
+
+impl SourceManifestBuilder {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn push_workspace_entry(&mut self, entry: SourceManifestEntry) -> &mut Self {
+        self.workspace_entries.push(entry);
+        self
+    }
+
+    /// Declares the next library root slot (in configured precedence order) and its entries.
+    pub fn push_library_root(&mut self, entries: Vec<SourceManifestEntry>) -> &mut Self {
+        self.library_root_entries.push(entries);
+        self
+    }
+
+    pub fn build(self) -> SourceManifest {
+        SourceManifest::new(self.workspace_entries, self.library_root_entries)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -362,5 +540,115 @@ mod tests {
         let hex = key.hex();
         let (a, b) = key.shard();
         assert_eq!(format!("{a}{b}"), &hex[0..4]);
+    }
+
+    fn entry(uri: &str, role: SourceRole, content: &[u8]) -> SourceManifestEntry {
+        SourceManifestEntry {
+            uri: uri.to_string(),
+            path_hint: Some(uri.to_string()),
+            role,
+            content_digest: ContentDigest::of_bytes(content),
+            byte_len: content.len() as u64,
+            library_root_slot: None,
+            relative_path: None,
+        }
+    }
+
+    #[test]
+    fn root_digest_changes_when_a_source_byte_changes() {
+        let a = SourceManifest::new(
+            vec![entry("file:///a.sysml", SourceRole::Workspace, b"package A;")],
+            vec![],
+        );
+        let b = SourceManifest::new(
+            vec![entry("file:///a.sysml", SourceRole::Workspace, b"package B;")],
+            vec![],
+        );
+        assert_ne!(a.root_digest(), b.root_digest());
+    }
+
+    #[test]
+    fn root_digest_changes_when_a_uri_changes() {
+        let a = SourceManifest::new(
+            vec![entry("file:///a.sysml", SourceRole::Workspace, b"same")],
+            vec![],
+        );
+        let b = SourceManifest::new(
+            vec![entry("file:///b.sysml", SourceRole::Workspace, b"same")],
+            vec![],
+        );
+        assert_ne!(a.root_digest(), b.root_digest());
+    }
+
+    #[test]
+    fn root_digest_changes_when_a_source_role_changes() {
+        let a = SourceManifest::new(
+            vec![entry("file:///a.sysml", SourceRole::Workspace, b"same")],
+            vec![],
+        );
+        let b = SourceManifest::new(
+            vec![entry("file:///a.sysml", SourceRole::Library, b"same")],
+            vec![],
+        );
+        assert_ne!(a.root_digest(), b.root_digest());
+    }
+
+    #[test]
+    fn root_digest_commits_library_root_precedence_order_not_sorted_uri() {
+        let root_a = vec![entry(
+            "file:///lib_a/x.sysml",
+            SourceRole::Library,
+            b"aaa",
+        )];
+        let root_b = vec![entry(
+            "file:///lib_b/y.sysml",
+            SourceRole::Library,
+            b"bbb",
+        )];
+
+        let a_then_b = SourceManifest::new(vec![], vec![root_a.clone(), root_b.clone()]);
+        let b_then_a = SourceManifest::new(vec![], vec![root_b, root_a]);
+
+        assert_ne!(
+            a_then_b.root_digest(),
+            b_then_a.root_digest(),
+            "swapping configured library-root precedence order must change the RootDigest even \
+             though the same entries (by URI) are present in both manifests"
+        );
+    }
+
+    #[test]
+    fn same_size_same_shape_different_content_changes_digest() {
+        // Two same-length fixtures whose bytes differ only in content, proving byte length
+        // alone is never sufficient identity.
+        let a = entry("file:///a.sysml", SourceRole::Workspace, b"part def Foo;");
+        let b = entry("file:///a.sysml", SourceRole::Workspace, b"part def Bar;");
+        assert_eq!(a.byte_len, b.byte_len);
+        assert_ne!(a.content_digest, b.content_digest);
+        let ma = SourceManifest::new(vec![a], vec![]);
+        let mb = SourceManifest::new(vec![b], vec![]);
+        assert_ne!(ma.root_digest(), mb.root_digest());
+    }
+
+    #[test]
+    fn builder_produces_same_manifest_as_direct_constructor() {
+        let mut builder = SourceManifestBuilder::new();
+        builder.push_workspace_entry(entry("file:///a.sysml", SourceRole::Workspace, b"x"));
+        builder.push_library_root(vec![entry(
+            "file:///lib/y.sysml",
+            SourceRole::Library,
+            b"y",
+        )]);
+        let built = builder.build();
+
+        let direct = SourceManifest::new(
+            vec![entry("file:///a.sysml", SourceRole::Workspace, b"x")],
+            vec![vec![entry(
+                "file:///lib/y.sysml",
+                SourceRole::Library,
+                b"y",
+            )]],
+        );
+        assert_eq!(built.root_digest(), direct.root_digest());
     }
 }

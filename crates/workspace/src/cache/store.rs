@@ -16,7 +16,7 @@ use super::api::{
 use super::config::{
     CacheConfig, CacheLimits, CacheMode, TMP_REAP_MIN_AGE_SECS, TOUCH_MIN_INTERVAL_SECS,
 };
-use super::digest::ArtifactKey;
+use sysml_model::ArtifactKey;
 use super::envelope;
 
 /// File extension for cache objects.

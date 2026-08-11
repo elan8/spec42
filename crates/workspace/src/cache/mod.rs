@@ -8,7 +8,6 @@
 
 pub mod api;
 pub mod config;
-pub mod digest;
 pub mod envelope;
 pub mod store;
 
@@ -18,7 +17,12 @@ pub use api::{
     CacheWriteFailure,
 };
 pub use config::{CacheConfig, CacheLimits, CacheMode};
-pub use digest::{
+pub use store::FileCacheStore;
+
+// Typed BLAKE3 source/artifact identities (plan §5.1) are a pure semantic-layer value type and
+// live in `sysml_model` so `SysmlDocument` and other semantic-layer types can use them without
+// `sysml_model` depending on `workspace` (dependencies only flow workspace -> sysml_model).
+// Re-exported here so existing `workspace::cache::{Blake3Digest, ...}` call sites are unaffected.
+pub use sysml_model::{
     ArtifactKey, Blake3Digest, CanonicalEncoder, ContentDigest, DigestParseError, RootDigest,
 };
-pub use store::FileCacheStore;

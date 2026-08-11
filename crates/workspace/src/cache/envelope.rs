@@ -20,7 +20,7 @@
 
 use super::api::{ArtifactKind, CacheMissReason};
 use super::config::CacheLimits;
-use super::digest::ArtifactKey;
+use sysml_model::ArtifactKey;
 
 pub const MAGIC: &[u8; 4] = b"S42C";
 pub const ENVELOPE_VERSION: u16 = 1;

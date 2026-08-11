@@ -32,7 +32,7 @@ fn catalog_document() -> SysmlDocument {
         content: SI_CATALOG_EXCERPT.to_string(),
         path_hint: Some("Domain Libraries/Quantities and Units/SI.sysml".to_string()),
         source_kind: SysmlDocumentSourceKind::Library,
-        sha256: None,
+        content_digest: None,
         byte_size: None,
     }
 }

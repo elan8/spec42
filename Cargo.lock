@@ -2033,6 +2033,7 @@ dependencies = [
 name = "sysml_model"
 version = "0.50.0"
 dependencies = [
+ "blake3",
  "ignore",
  "petgraph",
  "rayon",
@@ -2042,6 +2043,7 @@ dependencies = [
  "sysml-v2-parser 0.54.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sysml_diagnostics",
  "tempfile",
+ "thiserror 2.0.19",
  "ts-rs",
  "url",
  "walkdir",

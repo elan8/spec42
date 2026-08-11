@@ -8,6 +8,24 @@ use crate::semantic::library_loader::{
     resolve_library_closure, LibraryClosureOptions, WorkspaceSource,
 };
 use crate::semantic::source::{SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind};
+use crate::source_identity::ContentDigest;
+
+/// Reads `path` as bytes exactly once, computes its BLAKE3 content digest from that single
+/// buffer, and decodes it as UTF-8 from the same buffer (plan §5.1). A read failure or a UTF-8
+/// decode failure is a provider error; it is never swallowed or hidden behind a cache hit.
+fn read_source_exactly_once(path: &Path) -> Result<(String, ContentDigest, i64), String> {
+    let bytes =
+        fs::read(path).map_err(|err| format!("failed to read {}: {err}", path.display()))?;
+    let digest = ContentDigest::of_bytes(&bytes);
+    let byte_len = bytes.len() as i64;
+    let content = String::from_utf8(bytes).map_err(|err| {
+        format!(
+            "failed to decode {} as UTF-8: {err}",
+            path.display()
+        )
+    })?;
+    Ok((content, digest, byte_len))
+}
 
 #[derive(Debug, Clone)]
 pub struct FileSystemDocumentProvider {
@@ -69,11 +87,12 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
         let mut documents = Vec::new();
         let mut workspace_file_contents = Vec::new();
         let mut workspace_path_hints = Vec::new();
+        let mut workspace_digests = Vec::new();
+        let mut workspace_byte_sizes = Vec::new();
 
         if workspace_root.exists() {
             for path in collect_sysml_files(&workspace_root)? {
-                let content = fs::read_to_string(&path)
-                    .map_err(|err| format!("failed to read {}: {err}", path.display()))?;
+                let (content, digest, byte_len) = read_source_exactly_once(&path)?;
                 let path_hint = path
                     .strip_prefix(&workspace_root)
                     .ok()
@@ -81,12 +100,15 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                     .unwrap_or_else(|| path.display().to_string());
                 workspace_path_hints.push(path_hint);
                 workspace_file_contents.push(content);
+                workspace_digests.push(digest);
+                workspace_byte_sizes.push(byte_len);
             }
         }
 
-        for (path_hint, content) in workspace_path_hints
+        for ((path_hint, content), (digest, byte_len)) in workspace_path_hints
             .iter()
             .zip(workspace_file_contents.iter())
+            .zip(workspace_digests.iter().zip(workspace_byte_sizes.iter()))
         {
             let path = workspace_root.join(path_hint);
             let uri = path_to_url(&path)?;
@@ -95,8 +117,8 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                 content: content.clone(),
                 path_hint: Some(path_hint.clone()),
                 source_kind: SysmlDocumentSourceKind::Workspace,
-                sha256: None,
-                byte_size: None,
+                content_digest: Some(*digest),
+                byte_size: Some(*byte_len),
             });
         }
 
@@ -108,8 +130,7 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                     continue;
                 }
                 for path in collect_sysml_files(&library_root)? {
-                    let content = fs::read_to_string(&path)
-                        .map_err(|err| format!("failed to read {}: {err}", path.display()))?;
+                    let (content, digest, byte_len) = read_source_exactly_once(&path)?;
                     let path_hint = path
                         .strip_prefix(&library_root)
                         .ok()
@@ -121,8 +142,8 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                         content,
                         path_hint: Some(path_hint),
                         source_kind,
-                        sha256: None,
-                        byte_size: None,
+                        content_digest: Some(digest),
+                        byte_size: Some(byte_len),
                     });
                 }
             }
@@ -153,6 +174,13 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                 for file in loaded {
                     let path = PathBuf::from(&file.root).join(&file.path);
                     let uri = path_to_url(&path)?;
+                    // `resolve_library_closure` already performed the single admitting read and
+                    // UTF-8 decode of this file. Since that decode succeeded, re-encoding the
+                    // resulting `String` via `as_bytes()` reconstructs the exact original byte
+                    // sequence (UTF-8 decode is bijective for valid input), so hashing it here is
+                    // equivalent to hashing the original read buffer directly.
+                    let digest = ContentDigest::of_bytes(file.content.as_bytes());
+                    let byte_size = file.content.len() as i64;
                     documents.push(SysmlDocument {
                         uri,
                         content: file.content,
@@ -161,8 +189,8 @@ impl SysmlDocumentProvider for FileSystemDocumentProvider {
                             &canonicalize_or_self(&PathBuf::from(&file.root)),
                             &standard_library_paths,
                         ),
-                        sha256: None,
-                        byte_size: None,
+                        content_digest: Some(digest),
+                        byte_size: Some(byte_size),
                     });
                 }
             }
