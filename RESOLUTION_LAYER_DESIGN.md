@@ -525,6 +525,13 @@ lookup, direct typing/specialization, and any other query used repeatedly by a s
 Indexes may use dense ordinal arrays, CSR slices, interval indexes, or maps as appropriate. Their
 storage remains private, and query methods return typed outcomes or borrowed typed result slices.
 
+“Disposable” describes authority and lifetime, not necessarily evaluation strategy. Foundational
+indexes used by ordinary local queries are populated eagerly before the publication barrier so the
+first consumer cannot trigger an unreported whole-model traversal. Rich typed query services may
+memoize expensive transitive derivations lazily within one immutable snapshot, provided cold and
+warm answers are identical, cache absence cannot change semantics, and cache mutation is hidden
+behind the query contract. Lazy memoization is never lazy reference resolution.
+
 A complete scan is permitted while constructing or validating one publication when its cost is
 reported as construction work. A `ResolutionView` method, diagnostic category, editor request,
 projection, or generator must not linearly scan all nodes, all resolution facts, or all
