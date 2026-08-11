@@ -474,17 +474,29 @@ impl<'a> ResolutionDb<'a> {
             // the generic fixed-point driver mistake a partial pass for convergence.
             let mut next = previous.clone();
             for fact in solved.facts() {
-                let ready = previous
-                    .get(&fact.reference)
-                    .is_some_and(|outcome| match outcome {
-                        WorkingOutcome::Final(_) => true,
-                        WorkingOutcome::Pending { dependencies } => {
-                            dependencies.iter().all(|dependency| {
-                                matches!(previous.get(dependency), Some(WorkingOutcome::Final(_)))
-                            })
-                        }
-                    });
-                if ready {
+                let Some(WorkingOutcome::Pending { dependencies }) = previous.get(&fact.reference)
+                else {
+                    next.insert(
+                        fact.reference.clone(),
+                        WorkingOutcome::Final(fact.outcome.clone()),
+                    );
+                    continue;
+                };
+                let mut failed_dependency = false;
+                let mut waiting_dependency = false;
+                for dependency in dependencies {
+                    match previous.get(dependency) {
+                        Some(WorkingOutcome::Final(ResolutionOutcome::Resolved { .. })) => {}
+                        Some(WorkingOutcome::Final(_)) => failed_dependency = true,
+                        Some(WorkingOutcome::Pending { .. }) | None => waiting_dependency = true,
+                    }
+                }
+                if failed_dependency {
+                    next.insert(
+                        fact.reference.clone(),
+                        WorkingOutcome::Final(ResolutionOutcome::Unresolved),
+                    );
+                } else if !waiting_dependency {
                     next.insert(
                         fact.reference.clone(),
                         WorkingOutcome::Final(fact.outcome.clone()),
@@ -494,7 +506,7 @@ impl<'a> ResolutionDb<'a> {
             next
         });
         match result {
-            Ok(_) => Ok(self.solve_once()),
+            Ok(settled) => Ok(self.apply_working_outcomes(self.solve_once(), &settled)),
             Err(FixedPointFailure::DependencyDeadlock {
                 passes,
                 pending,
@@ -523,6 +535,22 @@ impl<'a> ResolutionDb<'a> {
                 pending_references: pending,
             }),
         }
+    }
+
+    fn apply_working_outcomes(
+        &self,
+        mut state: ResolutionState,
+        settled: &BTreeMap<
+            AuthoredReferenceId,
+            WorkingOutcome<AuthoredReferenceId, ResolutionOutcome>,
+        >,
+    ) -> ResolutionState {
+        for fact in &mut state.facts {
+            if let Some(WorkingOutcome::Final(outcome)) = settled.get(&fact.reference) {
+                fact.outcome = outcome.clone();
+            }
+        }
+        state
     }
 
     fn solve_once(&self) -> ResolutionState {
