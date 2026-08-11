@@ -87,6 +87,7 @@ fn build_host_semantic_model_node(
     library_urls: &[Url],
 ) -> HostSemanticModelNode {
     let mut attributes = node.attributes.clone();
+    sysml_model::semantic::model_projection::project_source_text_attributes(&mut attributes, node);
     // Additive: resolve the usage's canonical type reference. Existing
     // textual hints (`partType`, `type`, `typing`, ...) are left untouched.
     if let Some(typed_by) = typed_by_reference(graph, node) {
@@ -94,10 +95,7 @@ fn build_host_semantic_model_node(
             attributes.insert("typedBy".to_string(), value);
         }
     }
-    let documentation = attributes
-        .get("doc")
-        .and_then(|value| value.as_str())
-        .map(str::to_owned);
+    let documentation = node.source_text.doc.clone();
     let declared_short_name = node.declared_facts.short_name.clone();
 
     HostSemanticModelNode {

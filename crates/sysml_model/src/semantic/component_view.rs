@@ -389,6 +389,9 @@ fn expand_def_subtree(
                 crate::semantic::model_projection::project_expression_text_attributes(
                     &mut attrs, part_child,
                 );
+                crate::semantic::model_projection::project_source_text_attributes(
+                    &mut attrs, part_child,
+                );
                 attrs
             },
             uri: Some(part_child.id.uri.clone()),
@@ -494,6 +497,9 @@ fn expand_usage_children(
             attributes: {
                 let mut attrs = part_child.attributes.clone();
                 crate::semantic::model_projection::project_expression_text_attributes(
+                    &mut attrs, part_child,
+                );
+                crate::semantic::model_projection::project_source_text_attributes(
                     &mut attrs, part_child,
                 );
                 attrs

@@ -11,6 +11,8 @@ pub fn build_workspace_graph_dto(
         .map(|n| {
             let mut attributes = n.attributes.clone();
             super::project_expression_text_attributes(&mut attributes, n);
+            super::project_source_text_attributes(&mut attributes, n);
+            super::project_relationship_target_attributes(&mut attributes, n);
             GraphNodeDto {
                 id: n.id.qualified_name.clone(),
                 element_type: n.element_kind.as_str().to_string(),

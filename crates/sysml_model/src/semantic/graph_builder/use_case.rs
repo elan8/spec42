@@ -397,8 +397,7 @@ pub(super) fn add_ref_redefinition_node(
         &redef.name,
         "ref redefinition",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert("body".to_string(), serde_json::json!(redef.body.as_str()));
+    let attrs = HashMap::new();
     let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,

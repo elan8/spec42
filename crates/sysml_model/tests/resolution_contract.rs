@@ -233,11 +233,13 @@ fn contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_k
         .expect("annotatedElement attribute");
     assert!(
         annotated
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|value| value.as_str())
+            .declared_facts
+            .relationships
+            .subsetting
+            .first()
+            .map(|target| target.reference.as_str())
             == Some("annotatedElement"),
-        "expected subsetsFeature projection for :>> annotatedElement"
+        "expected subsetting fact for :>> annotatedElement"
     );
 
     let diagnostics = collect_diagnostics_from_graph(&graph, &uri, DiagnosticsOptions::default());
