@@ -73,37 +73,14 @@ pub(super) fn parse_attribute_text_range(node: &SemanticNode, key: &str) -> Opti
     })
 }
 
-pub(super) fn parse_origin_range(node: &SemanticNode) -> Option<TextRange> {
-    let origin = node.attributes.get("originRange")?;
-    let start = origin.get("start")?;
-    let end = origin.get("end")?;
-    Some(TextRange {
-        start: TextPosition {
-            line: start.get("line")?.as_u64()? as u32,
-            character: start.get("character")?.as_u64()? as u32,
-        },
-        end: TextPosition {
-            line: end.get("line")?.as_u64()? as u32,
-            character: end.get("character")?.as_u64()? as u32,
-        },
-    })
-}
-
+// `originRange` (B9 chunk E) had no writer anywhere in the codebase -- an exhaustive repository
+// grep found only this reader, which therefore always returned `None`. Deleted per the B9 "no
+// reader"/no-writer rule rather than migrated to a typed `TextRange` fact; `node.range` (and, for
+// synthetic ports, direct downstream anchor data) already covers what this always-empty fallback
+// attempted to provide.
 fn preferred_port_anchor_range(node: &SemanticNode) -> Option<TextRange> {
-    if is_synthetic(node) {
-        if let Some(origin) = parse_origin_range(node) {
-            if !is_unknown_range(origin) {
-                return Some(origin);
-            }
-        }
-    }
     if !is_unknown_range(node.range) {
         return Some(node.range);
-    }
-    if let Some(origin) = parse_origin_range(node) {
-        if !is_unknown_range(origin) {
-            return Some(origin);
-        }
     }
     None
 }

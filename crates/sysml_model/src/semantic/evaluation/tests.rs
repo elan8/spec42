@@ -84,6 +84,7 @@ fn add_feature_with_identity(
             ..Default::default()
         },
         source_text: Default::default(),
+        expression_text: Default::default(),
         parent_id: None,
     };
     let index = graph.graph.add_node(node);
@@ -264,6 +265,7 @@ fn publishes_analysis_for_a_constraint_usage_with_an_own_expression() {
             ..Default::default()
         },
         source_text: Default::default(),
+        expression_text: Default::default(),
         parent_id: None,
     };
     let index = graph.graph.add_node(node);

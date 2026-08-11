@@ -190,11 +190,7 @@ pub(crate) fn collect_import_conformance_diagnostics(
         if matches!(owner_kind, "view" | "view def" | "rendering def") {
             continue;
         }
-        let Some(condition) = node
-            .attributes
-            .get("condition")
-            .and_then(|value| value.as_str())
-        else {
+        let Some(condition) = node.expression_text.condition.as_deref() else {
             continue;
         };
         if condition_expression_is_boolean(node, condition) {

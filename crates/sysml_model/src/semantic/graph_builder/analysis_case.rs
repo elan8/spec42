@@ -122,10 +122,11 @@ pub(super) fn build_from_analysis_body(
                     let expression = strip_analysis_return_body(value.body.as_str());
                     if !expression.is_empty() {
                         if let Some(parent_node) = g.get_node_mut(parent_id) {
-                            parent_node.attributes.insert(
-                                "analysisExpression".to_string(),
-                                serde_json::json!(expression),
-                            );
+                            parent_node
+                                .declared_facts
+                                .analysis_case
+                                .get_or_insert_with(Default::default)
+                                .expression = Some(expression);
                             parent_node.attributes.insert(
                                 "analysisResultMode".to_string(),
                                 serde_json::json!("predicate"),
@@ -160,9 +161,6 @@ pub(super) fn build_from_analysis_body(
                     .value
                     .as_ref()
                     .map(|value| declared_expression(&value.value.expression));
-                if let Some(expression) = expression.as_deref() {
-                    attrs.insert("value".to_string(), serde_json::json!(expression));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -178,6 +176,11 @@ pub(super) fn build_from_analysis_body(
                         result.declared_facts.own_expression = Some(expression);
                     }
                 }
+                if let Some(expression) = expression.as_deref() {
+                    if let Some(result) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        result.expression_text.value = Some(expression.to_string());
+                    }
+                }
                 if let Some(type_name) = value.type_name.as_deref() {
                     add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
                 }
@@ -185,10 +188,11 @@ pub(super) fn build_from_analysis_body(
                     analysis_result_qualified = Some(qualified);
                     if let Some(expression) = expression {
                         if let Some(parent_node) = g.get_node_mut(parent_id) {
-                            parent_node.attributes.insert(
-                                "analysisExpression".to_string(),
-                                serde_json::json!(expression),
-                            );
+                            parent_node
+                                .declared_facts
+                                .analysis_case
+                                .get_or_insert_with(Default::default)
+                                .expression = Some(expression);
                             parent_node.attributes.insert(
                                 "analysisResultMode".to_string(),
                                 serde_json::json!("value"),
@@ -211,9 +215,6 @@ pub(super) fn build_from_analysis_body(
                     "objectiveBindingKind".to_string(),
                     serde_json::json!("analysis_result"),
                 );
-                if let Some(bound_to) = analysis_result_qualified.as_ref() {
-                    attrs.insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
-                }
                 if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
                     attrs.insert("objectiveType".to_string(), serde_json::json!(type_name));
                 }
@@ -227,6 +228,14 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(bound_to) = analysis_result_qualified.as_ref() {
+                    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        node.declared_facts
+                            .analysis_case
+                            .get_or_insert_with(Default::default)
+                            .objective_bound_to = Some(bound_to.clone());
+                    }
+                }
                 if let Some(type_name) = objective.value.requirement.value.type_name.as_ref() {
                     add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
                 }
@@ -242,13 +251,8 @@ pub(super) fn build_from_analysis_body(
                     "verify",
                 );
                 let mut attrs = HashMap::new();
-                attrs.insert(
-                    "lhs".to_string(),
-                    serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
-                );
+                let lhs_text = expressions::expression_to_debug_string(&value.lhs);
                 let rhs_text = expressions::expression_to_debug_string(&value.rhs);
-                attrs.insert("rhs".to_string(), serde_json::json!(rhs_text));
-                attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
                 let rhs_trimmed = rhs_text.trim();
                 attrs.insert(
                     "rhsIsBoolean".to_string(),
@@ -264,6 +268,11 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                    node.expression_text.lhs = Some(lhs_text);
+                    node.expression_text.rhs = Some(rhs_text);
+                    node.expression_text.is_then = Some(value.is_then);
+                }
             }
             UseCaseDefBodyElement::AttributeDef(attribute) => {
                 let value = &attribute.value;
@@ -287,10 +296,6 @@ pub(super) fn build_from_analysis_body(
                     );
                 }
                 if let Some(expr_node) = &value.value {
-                    let rendered =
-                        expressions::expression_to_debug_string(&expr_node.value.expression);
-                    attrs.insert("value".to_string(), serde_json::json!(rendered));
-                    attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
                     attrs.insert(
                         "valueIsBoolean".to_string(),
                         serde_json::json!(expressions::expression_is_boolean_valued(
@@ -314,6 +319,14 @@ pub(super) fn build_from_analysis_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expr_node) = &value.value {
+                    let rendered =
+                        expressions::expression_to_debug_string(&expr_node.value.expression);
+                    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        node.expression_text.value = Some(rendered.clone());
+                        node.expression_text.default_value = Some(rendered);
+                    }
+                }
                 attach_declared_typing_relationship(
                     g,
                     &NodeId::new(uri, &qualified),
@@ -336,16 +349,8 @@ pub(super) fn build_from_analysis_body(
                     if let Some(typing) = parsed.typing.as_ref() {
                         attrs.insert("attributeType".to_string(), serde_json::json!(typing));
                     }
-                    if let Some(value) = parsed.value {
-                        attrs.insert(
-                            if parsed.kind == "attribute def" {
-                                "defaultValue".to_string()
-                            } else {
-                                "value".to_string()
-                            },
-                            serde_json::json!(value),
-                        );
-                    }
+                    let is_attribute_def = parsed.kind == "attribute def";
+                    let parsed_value = parsed.value.clone();
                     add_node_and_recurse(
                         g,
                         uri,
@@ -356,6 +361,15 @@ pub(super) fn build_from_analysis_body(
                         attrs,
                         Some(parent_id),
                     );
+                    if let Some(value) = parsed_value {
+                        if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                            if is_attribute_def {
+                                node.expression_text.default_value = Some(value);
+                            } else {
+                                node.expression_text.value = Some(value);
+                            }
+                        }
+                    }
                     if let Some(typing) = parsed.typing.as_ref() {
                         add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
                     }
@@ -431,8 +445,10 @@ pub(super) fn build_from_analysis_body(
         for objective_id in &objective_node_ids {
             if let Some(objective_node) = g.get_node_mut(objective_id) {
                 objective_node
-                    .attributes
-                    .insert("objectiveBoundTo".to_string(), serde_json::json!(bound_to));
+                    .declared_facts
+                    .analysis_case
+                    .get_or_insert_with(Default::default)
+                    .objective_bound_to = Some(bound_to.clone());
             }
         }
     }
@@ -441,10 +457,11 @@ pub(super) fn build_from_analysis_body(
             inherited_case_expression(g, parent_id, bound_to.as_deref())
         {
             if let Some(parent_node) = g.get_node_mut(parent_id) {
-                parent_node.attributes.insert(
-                    "analysisExpression".to_string(),
-                    serde_json::json!(inherited_expression),
-                );
+                parent_node
+                    .declared_facts
+                    .analysis_case
+                    .get_or_insert_with(Default::default)
+                    .expression = Some(inherited_expression);
             }
         }
     }

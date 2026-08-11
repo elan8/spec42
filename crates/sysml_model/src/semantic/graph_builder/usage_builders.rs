@@ -93,9 +93,6 @@ pub(super) fn materialize_part_usage(
         .value
         .as_ref()
         .map(|v| expressions::expression_to_debug_string(&v.value.expression));
-    if let Some(ref v) = value_expression {
-        attrs.insert("value".to_string(), serde_json::json!(v));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -128,6 +125,11 @@ pub(super) fn materialize_part_usage(
     if let Some(value) = &n.value.value {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.feature_value = Some(declared_feature_value(value));
+        }
+    }
+    if let Some(ref v) = value_expression {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.expression_text.value = Some(v.clone());
         }
     }
     for target in typing_targets(n.typing.as_deref()) {
@@ -206,12 +208,6 @@ pub(super) fn materialize_attribute_usage(
     if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
-    if let Some(ref v) = n.value.value {
-        attrs.insert(
-            "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -249,6 +245,9 @@ pub(super) fn materialize_attribute_usage(
     if let Some(value) = &n.value.value {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.feature_value = Some(declared_feature_value(value));
+            node.expression_text.value = Some(expressions::expression_to_debug_string(
+                &value.value.expression,
+            ));
         }
     }
     node_id
@@ -280,9 +279,6 @@ pub(super) fn materialize_occurrence_usage(
     if let Some(ref portion_kind) = n.portion_kind {
         attrs.insert("portionKind".to_string(), serde_json::json!(portion_kind));
     }
-    if n.is_then {
-        attrs.insert("isThen".to_string(), serde_json::json!(true));
-    }
     if let Some(s) = subsetting_target(n.subsets.as_deref()) {
         attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
     }
@@ -309,6 +305,11 @@ pub(super) fn materialize_occurrence_usage(
         add_typing_edge_if_exists(g, uri, &qualified, t, container_prefix);
     }
     let node_id = NodeId::new(uri, &qualified);
+    if n.is_then {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.expression_text.is_then = Some(true);
+        }
+    }
     attach_declared_subsetting_family(
         g,
         &node_id,
@@ -407,12 +408,6 @@ pub(super) fn materialize_item_usage(
     if let Some(r) = subsetting_target(n.redefines.as_deref()) {
         attrs.insert("redefines".to_string(), serde_json::json!(r));
     }
-    if let Some(ref v) = n.value.value {
-        attrs.insert(
-            "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(&v.value.expression)),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -435,6 +430,9 @@ pub(super) fn materialize_item_usage(
     if let Some(value) = &n.value.value {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.feature_value = Some(declared_feature_value(value));
+            node.expression_text.value = Some(expressions::expression_to_debug_string(
+                &value.value.expression,
+            ));
         }
     }
     if let Some(ref t) = n.type_name {

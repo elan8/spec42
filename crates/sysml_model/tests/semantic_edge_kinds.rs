@@ -19,6 +19,7 @@ fn port_nodes(uri: &Url, a_qn: &str, b_qn: &str) -> (SemanticGraph, NodeId, Node
             attributes: Default::default(),
             declared_facts: Default::default(),
             source_text: Default::default(),
+            expression_text: Default::default(),
             parent_id: None,
         });
     }

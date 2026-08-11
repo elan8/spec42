@@ -107,9 +107,8 @@ fn assert_constraint_publishes_typed_result_and_passes_when_true() {
         .get("Grid::Feeder")
         .and_then(|ids| ids.first())
         .and_then(|id| graph.get_node(id))
-        .and_then(|node| node.attributes.get("analysisConstraints"))
-        .and_then(|value| value.as_array())
-        .cloned()
+        .and_then(|node| node.declared_facts.analysis_case.as_ref())
+        .map(|facts| facts.constraints.clone())
         .unwrap_or_default();
     assert_eq!(
         constraints.len(),

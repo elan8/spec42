@@ -288,6 +288,7 @@ pub(super) fn add_node_and_recurse(
             ..Default::default()
         },
         source_text: crate::semantic::model::SourceTextFacts::default(),
+        expression_text: crate::semantic::model::DeclaredExpressionText::default(),
         parent_id: parent_id.cloned(),
     };
     // Also index the node under its short-name-qualified variant (if any), so

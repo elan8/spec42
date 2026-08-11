@@ -111,7 +111,7 @@ pub(crate) fn collect_expression_conformance_diagnostics(
         }
 
         if node.element_kind == sysml_model::ElementKind::Attribute {
-            let Some(value) = node.attributes.get("value").and_then(|v| v.as_str()) else {
+            let Some(value) = node.expression_text.value.as_deref() else {
                 continue;
             };
             if let Some(scalar_kind) = resolved_scalar_kind(graph, node) {
@@ -281,7 +281,7 @@ pub(crate) fn collect_expression_conformance_diagnostics(
             if !matches!(owner_kind, "view" | "view def") {
                 continue;
             }
-            let Some(condition) = node.attributes.get("condition").and_then(|v| v.as_str()) else {
+            let Some(condition) = node.expression_text.condition.as_deref() else {
                 continue;
             };
             if condition_expression_is_boolean(node, condition) {
@@ -304,10 +304,10 @@ pub(crate) fn collect_expression_conformance_diagnostics(
         }
 
         if node.element_kind == sysml_model::ElementKind::Verify {
-            let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
+            let Some(lhs) = node.expression_text.lhs.as_deref() else {
                 continue;
             };
-            let Some(rhs) = node.attributes.get("rhs").and_then(|v| v.as_str()) else {
+            let Some(rhs) = node.expression_text.rhs.as_deref() else {
                 continue;
             };
             let lhs = lhs.trim();

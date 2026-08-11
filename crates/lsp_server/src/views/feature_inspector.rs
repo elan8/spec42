@@ -647,7 +647,13 @@ pub(crate) fn feature_inspector_element(
         multiplicity,
         direction,
         modifiers: feature_modifiers(semantic_graph, node),
-        attributes: node.attributes.clone(),
+        attributes: {
+            let mut attrs = node.attributes.clone();
+            sysml_model::semantic::model_projection::project_expression_text_attributes(
+                &mut attrs, node,
+            );
+            attrs
+        },
         evaluation: evaluation(semantic_graph, node),
         typing: resolution(has_typing_intent(node), typing_targets),
         effective_typing: resolution(

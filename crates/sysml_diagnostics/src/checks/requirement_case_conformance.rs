@@ -6,7 +6,7 @@ use crate::helpers::{diag, diagnostic_range, is_synthetic};
 use crate::types::DiagnosticSeverity;
 use crate::SemanticDiagnostic;
 use sysml_model::semantic::kinds::VERIFIED_REQUIREMENT_TARGET_KINDS;
-use sysml_model::semantic::model::{ElementKind, RelationshipKind};
+use sysml_model::semantic::model::{DeclaredAnalysisConstraint, ElementKind, RelationshipKind};
 use sysml_model::semantic::reference_resolution::resolve_expression_endpoint_strict;
 use sysml_model::{resolve_type_reference_targets, ResolveResult, SemanticGraph};
 
@@ -312,7 +312,7 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         if node.element_kind != ElementKind::Verify || is_synthetic(node) {
             continue;
         }
-        let Some(lhs) = node.attributes.get("lhs").and_then(|v| v.as_str()) else {
+        let Some(lhs) = node.expression_text.lhs.as_deref() else {
             continue;
         };
         let lhs = lhs.trim();
@@ -388,25 +388,17 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
         {
             continue;
         }
-        let Some(constraints) = node.attributes.get("analysisConstraints") else {
+        let Some(facts) = node.declared_facts.analysis_case.as_ref() else {
             continue;
         };
-        let items = match constraints {
-            serde_json::Value::Array(items) => items,
-            _ => continue,
-        };
-        for item in items {
-            let Some(kind) = item.get("kind").and_then(|v| v.as_str()) else {
+        for item in &facts.constraints {
+            let DeclaredAnalysisConstraint::RequireConstraint {
+                params, expression, ..
+            } = item
+            else {
                 continue;
             };
-            if kind != "require_constraint" {
-                continue;
-            }
-            let expression = item
-                .get("expression")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .trim();
+            let expression = expression.trim();
             if expression.is_empty() {
                 let key = format!("constraint_expr|{}", node.id.qualified_name);
                 if seen.insert(key) {
@@ -424,36 +416,23 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
                 }
                 continue;
             }
-            if let Some(params) = item.get("params").and_then(|v| v.as_array()) {
-                for param in params {
-                    let direction = param
-                        .get("direction")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("");
-                    let param_type = param
-                        .get("type")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("")
-                        .trim();
-                    if !matches!(direction, "in" | "out" | "inout") || param_type.is_empty() {
-                        let key = format!(
-                            "constraint_param|{}|{}",
-                            node.id.qualified_name,
-                            param.get("name").and_then(|v| v.as_str()).unwrap_or("")
-                        );
-                        if seen.insert(key) {
-                            diagnostics.push(diag(
-                                uri,
-                                diagnostic_range(graph, node, None),
-                                DiagnosticSeverity::Warning,
-                                "semantic",
-                                "requirement_constraint_invalid_membership",
-                                format!(
-                                    "Requirement '{}' require constraint parameter is missing direction or type.",
-                                    node.name
-                                ),
-                            ));
-                        }
+            for param in params {
+                let direction = param.direction.as_str();
+                let param_type = param.param_type.as_deref().unwrap_or("").trim();
+                if !matches!(direction, "in" | "out" | "inout") || param_type.is_empty() {
+                    let key = format!("constraint_param|{}|{}", node.id.qualified_name, param.name);
+                    if seen.insert(key) {
+                        diagnostics.push(diag(
+                            uri,
+                            diagnostic_range(graph, node, None),
+                            DiagnosticSeverity::Warning,
+                            "semantic",
+                            "requirement_constraint_invalid_membership",
+                            format!(
+                                "Requirement '{}' require constraint parameter is missing direction or type.",
+                                node.name
+                            ),
+                        ));
                     }
                 }
             }
@@ -600,12 +579,17 @@ pub(crate) fn collect_requirement_case_conformance_diagnostics(
                 .into_iter()
                 .filter(|child| child.element_kind == ElementKind::AnalysisResult)
                 .count();
-            let has_inherited_result = node.attributes.contains_key("analysisExpression")
+            let has_inherited_result = node
+                .declared_facts
+                .analysis_case
+                .as_ref()
+                .is_some_and(|facts| facts.expression.is_some())
                 || objectives.iter().any(|objective| {
                     objective
-                        .attributes
-                        .get("objectiveBoundTo")
-                        .and_then(|v| v.as_str())
+                        .declared_facts
+                        .analysis_case
+                        .as_ref()
+                        .and_then(|facts| facts.objective_bound_to.as_deref())
                         .is_some_and(|value| !value.trim().is_empty())
                 });
             let total = analysis_result_count.max(local_results as u64);

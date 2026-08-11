@@ -770,6 +770,7 @@ fn verification_membership_must_belong_to_a_verification_objective() {
             attributes: Default::default(),
             declared_facts: Default::default(),
             source_text: Default::default(),
+            expression_text: Default::default(),
             parent_id,
         };
     let verification = node("P::Check", "Check", ElementKind::VerificationDef, None);

@@ -497,9 +497,9 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
     );
     assert!(
         base_type
-            .attributes
-            .get("value")
-            .and_then(|v| v.as_str())
+            .expression_text
+            .value
+            .as_deref()
             .is_some_and(|v| v.contains("meta SysML::Usage")),
         "expected meta cast value on baseType restriction"
     );

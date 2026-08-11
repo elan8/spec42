@@ -123,9 +123,10 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
         .map(|m| format!(" {}", m))
         .unwrap_or_default();
     let value_suffix = node
-        .attributes
-        .get("value")
-        .and_then(json_value_to_inline_text)
+        .expression_text
+        .value
+        .as_deref()
+        .filter(|value| !value.trim().is_empty())
         .map(|value| format!(" = {}", value))
         .unwrap_or_default();
 
@@ -231,7 +232,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("ref :>> {} {{ {} }};", node.name, body.trim())
         }
         "actor redefinition" => {
-            let rhs = attr_str(node, "rhs").unwrap_or("");
+            let rhs = node.expression_text.rhs.as_deref().unwrap_or("");
             format!("actor :>> {} = {};", node.name, rhs.trim())
         }
         "include use case" => {
@@ -239,7 +240,7 @@ pub fn signature_from_node(node: &SemanticNode) -> Option<String> {
             format!("include {};", target)
         }
         "filter" => {
-            let condition = attr_str(node, "condition").unwrap_or("");
+            let condition = node.expression_text.condition.as_deref().unwrap_or("");
             if condition.trim().is_empty() {
                 "filter {};".to_string()
             } else {
@@ -374,7 +375,15 @@ pub fn hover_markdown_for_node(
     }
 
     append_attribute_value(&mut body, node, "Multiplicity", &["multiplicity"]);
-    append_attribute_value(&mut body, node, "Value", &["value", "defaultValue"]);
+    if let Some(value) = node
+        .expression_text
+        .value
+        .as_deref()
+        .or(node.expression_text.default_value.as_deref())
+        .filter(|value| !value.trim().is_empty())
+    {
+        append_field(&mut body, "Value", value);
+    }
     if let Some(evaluation) = graph
         .evaluation_facts_for(node)
         .and_then(|facts| facts.expression.as_ref())

@@ -299,10 +299,10 @@ fn requirement_require_constraint_stays_on_analysis_constraints_attr() {
         .find(|node| node.element_kind == "requirement def")
         .expect("requirement def");
     let constraints = req
-        .attributes
-        .get("analysisConstraints")
-        .and_then(|v| v.as_array())
-        .cloned()
+        .declared_facts
+        .analysis_case
+        .as_ref()
+        .map(|facts| facts.constraints.clone())
         .unwrap_or_default();
     assert!(
         !constraints.is_empty(),
@@ -317,4 +317,108 @@ fn requirement_require_constraint_stays_on_analysis_constraints_attr() {
         "expected require constraint child node on requirement def"
     );
     let _ = uri;
+}
+
+/// Regression for `UNIFY_CACHE_PROGRESS.md` chunk E: a require constraint's aggregated typed
+/// `DeclaredAnalysisConstraint` fact -- not a JSON `analysisConstraints` attribute -- drives the
+/// `requirement_constraint_invalid_membership` diagnostic, for both a firing (missing parameter
+/// type) and non-firing (fully typed parameter) case, with a stable code/severity/range.
+#[test]
+fn typed_analysis_constraint_expression_drives_requirement_constraint_diagnostic() {
+    let firing_doc = workspace_doc(
+        "untyped_param_constraint.sysml",
+        r#"package P {
+  requirement def Req1 {
+    require constraint {
+      in mass;
+      mass > 0.0;
+    }
+  }
+}"#,
+    );
+    let uri = firing_doc.uri.clone();
+    let (graph, _parsed) =
+        build_semantic_graph_from_documents(&[firing_doc]).expect("semantic graph");
+    let req = graph
+        .nodes_named("Req1")
+        .into_iter()
+        .find(|node| node.element_kind == "requirement def")
+        .expect("requirement def");
+    let constraints = req
+        .declared_facts
+        .analysis_case
+        .as_ref()
+        .map(|facts| facts.constraints.clone())
+        .unwrap_or_default();
+    assert!(
+        constraints.iter().any(|constraint| matches!(
+            constraint,
+            sysml_model::semantic::model::DeclaredAnalysisConstraint::RequireConstraint {
+                params,
+                ..
+            } if params.iter().any(|param| param.param_type.as_deref().unwrap_or("").is_empty())
+        )),
+        "expected a typed require-constraint fact with an untyped parameter, got {constraints:?}"
+    );
+    let diagnostics = sysml_diagnostics::collect_diagnostics_from_graph(
+        &graph,
+        &uri,
+        sysml_diagnostics::DiagnosticsOptions::default(),
+    );
+    let firing = diagnostics
+        .iter()
+        .find(|diag| diag.code == "requirement_constraint_invalid_membership")
+        .expect("expected requirement_constraint_invalid_membership to fire");
+    assert_eq!(
+        firing.severity,
+        sysml_diagnostics::DiagnosticSeverity::Warning
+    );
+    assert_eq!(firing.range, req.range);
+
+    let passing_doc = workspace_doc(
+        "populated_constraint.sysml",
+        r#"package P {
+  requirement def Req1 {
+    require constraint {
+      in mass : Real;
+      mass > 0.0;
+    }
+  }
+}"#,
+    );
+    let uri2 = passing_doc.uri.clone();
+    let (graph2, _parsed2) =
+        build_semantic_graph_from_documents(&[passing_doc]).expect("semantic graph");
+    let req2 = graph2
+        .nodes_named("Req1")
+        .into_iter()
+        .find(|node| node.element_kind == "requirement def")
+        .expect("requirement def");
+    let constraints2 = req2
+        .declared_facts
+        .analysis_case
+        .as_ref()
+        .map(|facts| facts.constraints.clone())
+        .unwrap_or_default();
+    assert!(
+        constraints2.iter().any(|constraint| matches!(
+            constraint,
+            sysml_model::semantic::model::DeclaredAnalysisConstraint::RequireConstraint {
+                expression,
+                ..
+            } if !expression.trim().is_empty()
+        )),
+        "expected a typed require-constraint fact with a non-empty expression, got {constraints2:?}"
+    );
+    let diagnostics2 = sysml_diagnostics::collect_diagnostics_from_graph(
+        &graph2,
+        &uri2,
+        sysml_diagnostics::DiagnosticsOptions::default(),
+    );
+    assert!(
+        !diagnostics2
+            .iter()
+            .any(|diag| diag.code == "requirement_constraint_invalid_membership"),
+        "populated require constraint must not fire requirement_constraint_invalid_membership: {diagnostics2:?}"
+    );
 }

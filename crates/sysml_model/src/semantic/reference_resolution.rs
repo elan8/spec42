@@ -712,9 +712,9 @@ mod tests {
             .next()
             .expect("status attribute");
         assert!(
-            status_attr.attributes.contains_key("value"),
-            "status attribute should carry value, attrs={:?}",
-            status_attr.attributes
+            status_attr.expression_text.value.is_some(),
+            "status attribute should carry value, expression_text={:?}",
+            status_attr.expression_text
         );
         let inherited = resolve_inherited_member_via_type(&graph, need, "status");
         assert!(

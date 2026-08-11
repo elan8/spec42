@@ -8,6 +8,45 @@ use crate::semantic::element_kind_classify::{is_attribute_like, is_parameter_lik
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::kinds::is_port_like_str as is_port_like;
 
+/// Projects [`crate::semantic::model::DeclaredExpressionText`] and the analysis-case-level
+/// `objectiveBoundTo`/`analysisExpression` facts onto a boundary DTO's legacy `attributes` JSON
+/// map, at the transport boundary only (see `AGENTS.md` "Boundary DTO modules remain explicitly
+/// allowed"). `SemanticNode` itself no longer carries these as JSON (`UNIFY_CACHE_PROGRESS.md`
+/// chunk E); this keeps presentation consumers that read the projected DTO's `attributes` (e.g.
+/// `general_view_fold::detail_value_text`, `lsp_server`'s hover/symbol projections) unchanged.
+pub fn project_expression_text_attributes(
+    attributes: &mut HashMap<String, Value>,
+    node: &crate::semantic::model::SemanticNode,
+) {
+    let text = &node.expression_text;
+    if let Some(value) = &text.value {
+        attributes.insert("value".to_string(), json!(value));
+    }
+    if let Some(value) = &text.default_value {
+        attributes.insert("defaultValue".to_string(), json!(value));
+    }
+    if let Some(value) = &text.lhs {
+        attributes.insert("lhs".to_string(), json!(value));
+    }
+    if let Some(value) = &text.rhs {
+        attributes.insert("rhs".to_string(), json!(value));
+    }
+    if let Some(value) = &text.condition {
+        attributes.insert("condition".to_string(), json!(value));
+    }
+    if let Some(value) = &text.is_then {
+        attributes.insert("isThen".to_string(), json!(value));
+    }
+    if let Some(facts) = &node.declared_facts.analysis_case {
+        if let Some(expression) = &facts.expression {
+            attributes.insert("analysisExpression".to_string(), json!(expression));
+        }
+        if let Some(bound_to) = &facts.objective_bound_to {
+            attributes.insert("objectiveBoundTo".to_string(), json!(bound_to));
+        }
+    }
+}
+
 pub fn canonical_general_view_graph(
     graph: &SysmlGraphDto,
     _include_all_roots: bool,

@@ -40,12 +40,6 @@ pub(super) fn add_view_filter_node(
     );
     let mut attrs = HashMap::new();
     attrs.insert(
-        "condition".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(
-            &filter.value.condition
-        )),
-    );
-    attrs.insert(
         "conditionIsBoolean".to_string(),
         serde_json::json!(expressions::expression_is_boolean_valued(
             &filter.value.condition
@@ -72,6 +66,9 @@ pub(super) fn add_view_filter_node(
     let node_id = NodeId::new(uri, &qualified);
     if let Some(node) = g.get_node_mut(&node_id) {
         node.declared_facts.own_expression = Some(declared_expression(&filter.value.condition));
+        node.expression_text.condition = Some(expressions::expression_to_debug_string(
+            &filter.value.condition,
+        ));
     }
 }
 
@@ -634,10 +631,6 @@ pub(super) fn build_filter_member(
     let qualified = qualified_name_for_node(g, uri, container_prefix, "_filter", "filter");
     let mut attrs = HashMap::new();
     attrs.insert(
-        "condition".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(&f.value.condition)),
-    );
-    attrs.insert(
         "conditionIsBoolean".to_string(),
         serde_json::json!(expressions::expression_is_boolean_valued(
             &f.value.condition
@@ -660,5 +653,7 @@ pub(super) fn build_filter_member(
     let node_id = NodeId::new(uri, &qualified);
     if let Some(node) = g.get_node_mut(&node_id) {
         node.declared_facts.own_expression = Some(declared_expression(&f.value.condition));
+        node.expression_text.condition =
+            Some(expressions::expression_to_debug_string(&f.value.condition));
     }
 }

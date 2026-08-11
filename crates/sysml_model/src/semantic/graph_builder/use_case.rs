@@ -251,7 +251,6 @@ impl CaseSuccessionChain {
         if let Some(ref typing) = use_case.value.type_name {
             attrs.insert("useCaseType".to_string(), serde_json::json!(typing));
         }
-        attrs.insert("isThen".to_string(), serde_json::json!(true));
         add_node_and_recurse(
             g,
             uri,
@@ -262,6 +261,9 @@ impl CaseSuccessionChain {
             attrs,
             Some(parent_id),
         );
+        if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+            node.expression_text.is_then = Some(true);
+        }
         let node_id = NodeId::new(uri, &qualified);
         if let Some(ref typing) = use_case.value.type_name {
             add_typing_edge_if_exists(g, uri, &qualified, typing, container_prefix);
@@ -376,11 +378,7 @@ pub(super) fn add_actor_redefinition_assignment_node(
         &assignment.name,
         "actor redefinition",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "rhs".to_string(),
-        serde_json::json!(assignment.rhs.as_str()),
-    );
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -391,6 +389,9 @@ pub(super) fn add_actor_redefinition_assignment_node(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        node.expression_text.rhs = Some(assignment.rhs.clone());
+    }
 }
 
 pub(super) fn add_ref_redefinition_node(
