@@ -1113,6 +1113,52 @@ pub struct DeclaredSemanticFacts {
     /// `["analysisConstraints"]`, `["objectiveBoundTo"]` (`UNIFY_CACHE_PROGRESS.md` chunk E).
     #[serde(default)]
     pub analysis_case: Option<DeclaredAnalysisCaseFacts>,
+    /// The recognized KerML metaclass role for a raw `KermlSemanticDecl`/`KermlFeatureDecl`
+    /// library declaration node, when its opaque BNF-tagged text names a known metaclass.
+    /// Drives genuine semantic classification (`is_kerml_metadata_supertype`, the
+    /// `SemanticMetadata` parent check) rather than presentation (was
+    /// `attributes["metaclassRole"]`, `UNIFY_CACHE_PROGRESS.md` chunk F).
+    #[serde(default)]
+    pub metaclass_role: Option<KermlMetaclassRole>,
+    /// An interface/connection end's declared type name (`end name : Type;`), kept separate from
+    /// `relationships.typing` so that generic unresolved-typing diagnostics do not walk it: ends
+    /// resolve leniently as either a type or a feature reference, and already have their own
+    /// `interface_end_invalid`-family diagnostics (was `attributes["endType"]`,
+    /// `UNIFY_CACHE_PROGRESS.md` chunk F).
+    #[serde(default)]
+    pub interface_end_type: Option<String>,
+    /// Declared keyword spelling used only for semantic-classification decisions: user-defined
+    /// modeled-keyword detection on a `feature decl`/`classifier decl` node, or the matched
+    /// keyword on a `MetadataKeyword` usage (see
+    /// `sysml_diagnostics::checks::view_metadata_conformance`). Deliberately distinct from
+    /// `SourceTextFacts::keyword`, which covers only the unrelated hover/doc-comment spelling of
+    /// an opaque member / action body decl (was `attributes["keyword"]` for this use,
+    /// `UNIFY_CACHE_PROGRESS.md` chunk F).
+    #[serde(default)]
+    pub modeled_keyword: Option<String>,
+}
+
+impl DeclaredSemanticFacts {
+    /// The declared target name for an interface/connection end: either its declared
+    /// `interface_end_type` or, for a `::>`/`references` end, its authored reference-subsetting
+    /// target. The two are mutually exclusive per the parser's `uses_derived_syntax`
+    /// discriminator, so the first present one is authoritative. Used by connection-wiring and
+    /// derivation-connection fallback resolution when no `Typing` edge has been published yet.
+    pub fn declared_end_reference(&self) -> Option<&str> {
+        self.interface_end_type.as_deref().or_else(|| {
+            self.relationships
+                .reference_subsetting
+                .first()
+                .map(|target| target.reference.as_str())
+        })
+    }
+}
+
+/// A recognized KerML metaclass role carried by a raw library declaration node.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum KermlMetaclassRole {
+    /// The declaration names (or contains) `SemanticMetadata`.
+    SemanticMetadata,
 }
 
 /// Declared analysis/verification-case facts that previously round-tripped through JSON
@@ -1366,6 +1412,14 @@ pub struct DeclaredRelationshipFacts {
     /// remain owned by their `typing` facts on `ElementKind::Subject` children.
     #[serde(default)]
     pub subject: Vec<DeclaredRelationshipTarget>,
+    /// Authored but unresolved-edge reference targets: a `Stakeholder`/`Purpose` declaration's
+    /// bare target name when no typed clause is authored alongside it (was
+    /// `attributes["refTarget"]`, `UNIFY_CACHE_PROGRESS.md` chunk F). These never publish a
+    /// graph edge; consumers resolve the name against the workspace directly. Distinct from
+    /// `reference`, which holds authored `RelationshipKind::Reference` targets that publish
+    /// edges on linking.
+    #[serde(default)]
+    pub reference_target: Vec<DeclaredRelationshipTarget>,
     /// Authored endpoint relationships whose parser adapter exposes only qualified target text.
     /// Their ranges remain explicit `None` until a richer AST adapter supplies them.
     #[serde(default)]
@@ -1450,6 +1504,16 @@ impl DeclaredRelationshipFacts {
                 range: None,
             },
         )
+    }
+
+    /// Records a `Stakeholder`/`Purpose` bare reference name. Kept out of `record_target`'s
+    /// kind routing: `RelationshipKind::Reference` there belongs to `reference`, whose facts
+    /// publish edges on linking, while these never do.
+    pub fn record_reference_target(&mut self, reference: &str) {
+        self.reference_target.push(DeclaredRelationshipTarget {
+            reference: reference.trim().to_string(),
+            range: None,
+        });
     }
 }
 

@@ -38,7 +38,6 @@ pub(super) fn add_metadata_keyword_node_opt(
     let name = format!("_{}", mk.keyword);
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "metadata keyword");
     let mut attrs = HashMap::new();
-    attrs.insert("keyword".to_string(), serde_json::json!(&mk.keyword));
     if let Some(ref type_name) = mk.type_name {
         attrs.insert("keywordType".to_string(), serde_json::json!(type_name));
     }
@@ -48,6 +47,7 @@ pub(super) fn add_metadata_keyword_node_opt(
             serde_json::json!(&mk.about_targets),
         );
     }
+    let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
         uri,
@@ -58,6 +58,9 @@ pub(super) fn add_metadata_keyword_node_opt(
         attrs,
         parent_id,
     );
+    if let Some(node) = g.get_node_mut(&node_id) {
+        node.declared_facts.modeled_keyword = Some(mk.keyword.clone());
+    }
     if let Some(ref type_name) = mk.type_name {
         add_typing_edge_if_exists(g, uri, &qualified, type_name, container_prefix);
     }

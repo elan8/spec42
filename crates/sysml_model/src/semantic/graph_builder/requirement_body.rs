@@ -734,8 +734,7 @@ pub(super) fn walk_requirement_def_body(
                         &format!("_stakeholder_{}", s.name),
                         "stakeholder",
                     );
-                    let mut attrs = HashMap::new();
-                    attrs.insert("refTarget".to_string(), serde_json::json!(&s.name));
+                    let node_id = NodeId::new(uri, &qualified);
                     add_node_and_recurse(
                         g,
                         uri,
@@ -743,9 +742,14 @@ pub(super) fn walk_requirement_def_body(
                         "stakeholder",
                         s.name.clone(),
                         span_to_range(&stakeholder.span),
-                        attrs,
+                        HashMap::new(),
                         Some(parent_id),
                     );
+                    if let Some(node) = g.get_node_mut(&node_id) {
+                        node.declared_facts
+                            .relationships
+                            .record_reference_target(&s.name);
+                    }
                 }
             }
             RequirementDefBodyElement::Purpose(purpose) => {
@@ -757,8 +761,7 @@ pub(super) fn walk_requirement_def_body(
                     &format!("_purpose_{}", p.target),
                     "purpose",
                 );
-                let mut attrs = HashMap::new();
-                attrs.insert("refTarget".to_string(), serde_json::json!(&p.target));
+                let node_id = NodeId::new(uri, &qualified);
                 add_node_and_recurse(
                     g,
                     uri,
@@ -766,9 +769,14 @@ pub(super) fn walk_requirement_def_body(
                     "purpose",
                     p.target.clone(),
                     span_to_range(&purpose.span),
-                    attrs,
+                    HashMap::new(),
                     Some(parent_id),
                 );
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.declared_facts
+                        .relationships
+                        .record_reference_target(&p.target);
+                }
             }
             RequirementDefBodyElement::TextualRep(t) => {
                 let tr = &t.value;
