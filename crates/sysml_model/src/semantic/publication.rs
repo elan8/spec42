@@ -12,7 +12,8 @@ use sha2::{Digest, Sha256};
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
-    DeclaredRelationshipFacts, DeclaredRelationshipTarget, NodeId, RelationshipKind, SemanticNode,
+    DeclaredRelationshipFacts, DeclaredRelationshipTarget, NodeId, RelationshipKind, SemanticEdge,
+    SemanticNode,
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
@@ -258,6 +259,17 @@ impl ResolutionState {
 
     pub fn relationships(&self) -> &[ResolvedRelationship] {
         &self.relationships
+    }
+
+    pub(crate) fn install_relationship_projection(&self, graph: &mut SemanticGraph) {
+        for relationship in &self.relationships {
+            crate::semantic::relationships::add_semantic_edge_once(
+                graph,
+                &relationship.source,
+                &relationship.target,
+                SemanticEdge::plain(relationship.kind.clone()),
+            );
+        }
     }
 }
 
@@ -555,7 +567,9 @@ pub enum SemanticCompleteness {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct EvaluationState;
+pub struct EvaluationState {
+    evaluated_nodes: usize,
+}
 
 /// Read-only semantic publication.
 #[derive(Debug, Clone)]
@@ -670,16 +684,26 @@ pub fn build_semantic_model(
         .map_err(SemanticBuildFailure::Resolution)?;
     let mut structural_graph = graph;
     structural_graph.remove_resolution_edges();
-    if matches!(request.evaluation, EvaluationPolicy::ResolvedOnly) {
+    let evaluation = if matches!(request.evaluation, EvaluationPolicy::Evaluate) {
+        resolution.install_relationship_projection(&mut structural_graph);
+        crate::semantic::analysis_typing::prepare_analysis_evaluation_context(
+            &mut structural_graph,
+        );
+        crate::semantic::evaluation::evaluate_expressions(&mut structural_graph);
+        Some(EvaluationState {
+            evaluated_nodes: structural_graph.evaluation_fact_count(),
+        })
+    } else {
         structural_graph.clear_evaluation_state();
-    }
+        None
+    };
+    structural_graph.remove_resolution_edges();
     let indexes = SemanticQueryIndexes::from_state(&resolution);
     Ok(SemanticModel {
         identity,
         structural_graph,
         resolution,
-        evaluation: matches!(request.evaluation, EvaluationPolicy::Evaluate)
-            .then_some(EvaluationState),
+        evaluation,
         phase: if matches!(request.evaluation, EvaluationPolicy::Evaluate) {
             SemanticPhase::Evaluated
         } else {
@@ -897,6 +921,29 @@ mod tests {
             panic!("inherited member should resolve: {:?}", fact.outcome);
         };
         assert_eq!(target.qualified_name, "M::Base::Member");
+    }
+
+    #[test]
+    fn evaluate_policy_runs_after_resolution_before_publication() {
+        let snapshot = ImmutableSourceSnapshot::new(vec![document(
+            "memory://test/a.sysml",
+            "package A { part def P {} part p : P; attribute x = 1; }",
+        )])
+        .unwrap();
+        let model = build_semantic_model(SemanticBuildRequest {
+            sources: snapshot,
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::Evaluate,
+            configuration: SemanticConfiguration::default(),
+        })
+        .expect("evaluated semantic model");
+        assert_eq!(model.phase(), SemanticPhase::Evaluated);
+        assert!(model.has_evaluation());
+        assert!(model
+            .structural_graph
+            .semantic_edges()
+            .into_iter()
+            .all(|(_, _, edge)| !matches!(edge.kind, RelationshipKind::Typing)));
     }
 
     #[test]

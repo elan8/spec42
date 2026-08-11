@@ -1059,6 +1059,10 @@ impl SemanticGraphData {
         self.invalidate_query_indexes();
     }
 
+    pub(crate) fn evaluation_fact_count(&self) -> usize {
+        self.evaluation_facts_by_node_id.len()
+    }
+
     pub fn node_ids_for_qualified_name(&self, qualified_name: &str) -> Option<&[NodeId]> {
         self.node_ids_by_qualified_name
             .get(qualified_name)
