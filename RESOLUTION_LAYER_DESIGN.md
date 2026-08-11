@@ -177,6 +177,10 @@ absolute scope, authored spelling, and range as distinct typed facts. The resolv
 borrowed compact slice of segment IDs; it never reconstructs grammar by splitting or joining text,
 and it never allocates a per-lookup segment vector. This follows the sibling compiler's
 canonicalization model: token-driven segment extraction followed by compact segment-block storage.
+Segment blocks live in a build/publication-owned arena, and authored facts hold opaque typed ranges
+into that arena; they do not own a `Vec`, boxed slice, or string collection per reference. Adapter
+scratch storage is phase-owned and reusable, and unsupported parser forms roll back their arena
+checkpoint rather than publishing a partial path.
 
 Performance is nevertheless a measured acceptance criterion, not an article of faith. The
 whole-model solver is the correctness oracle. Representative CLI and LSP benchmarks must record
