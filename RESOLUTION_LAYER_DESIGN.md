@@ -149,6 +149,22 @@ changed families within a solve, and isolated parallel evaluation followed by de
 It also avoids repeating equivalent lazy queries independently in diagnostics, navigation,
 validation, and generators.
 
+The semantic build and publication own a typed string side table. The parser/source adapter interns
+repeated semantic text as it enters the authored-fact pipeline; internal names, short names,
+qualified-name segments, document identities, and authored semantic-reference segments use compact
+typed IDs rather than independently allocated `String` values. Source bytes and original authored
+spelling remain available separately where syntax fidelity or provenance requires them. Renderers,
+protocol adapters, and stable external identity projections resolve IDs back to text only at their
+boundaries.
+
+The resolver's working representation is compiled once from those source-faithful structural
+facts. Hot paths use dense node/reference ordinals, interned string identities, compact slot arrays,
+and indexed adjacency or membership ranges. They do not use owned `String`, `Url`, or compound
+public `NodeId` values as per-query map keys and do not clone semantic nodes or rebuild whole-model
+maps while resolving a reference. Conversion back to stable public identities happens at the
+publication boundary. The string table is owned immutable publication data; lookup indexes over
+its IDs remain private disposable accelerators and never become semantic authorities.
+
 Performance is nevertheless a measured acceptance criterion, not an article of faith. The
 whole-model solver is the correctness oracle. Representative CLI and LSP benchmarks must record
 construction, solve, and downstream query time separately. If solving is too slow, optimization
