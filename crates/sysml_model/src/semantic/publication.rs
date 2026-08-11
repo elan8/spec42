@@ -12,8 +12,8 @@ use sha2::{Digest, Sha256};
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
-    DeclaredRelationshipFacts, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    DeclaredRelationshipFacts, DeclaredRelationshipTarget, ElementKind, ImpliedRelationshipRule,
+    NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
@@ -202,8 +202,13 @@ pub struct ResolutionFact {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ResolutionProvenance {
     Authored,
-    Implied,
-    Derived,
+    Implied(ImpliedRelationshipRule),
+    Derived(DerivedRelationshipRule),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DerivedRelationshipRule {
+    CaseSubjectFromTypedSubject,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -385,6 +390,7 @@ impl<'a> ResolutionDb<'a> {
                 }
             }
         }
+        derive_implied_relationships(self.graph, &mut relationships);
         derive_case_subject_relationships(self.graph, &mut relationships);
 
         facts.sort_by(|left, right| left.reference.cmp(&right.reference));
@@ -400,6 +406,51 @@ impl<'a> ResolutionDb<'a> {
             facts,
             relationships,
         })
+    }
+}
+
+fn derive_implied_relationships(
+    graph: &SemanticGraph,
+    relationships: &mut Vec<ResolvedRelationship>,
+) {
+    let mut nodes = graph.semantic_nodes();
+    nodes.sort_by(|left, right| node_id_order(&left.id, &right.id));
+    for source in nodes {
+        let Some(specification) = source
+            .element_kind
+            .universal_standard_library_relationship()
+        else {
+            continue;
+        };
+        let mut candidates = graph
+            .node_ids_for_qualified_name(specification.target.qualified_name())
+            .unwrap_or_default()
+            .iter()
+            .filter(|candidate| graph.standard_library_uris.contains(&candidate.uri))
+            .filter(|candidate| **candidate != source.id)
+            .cloned()
+            .collect::<Vec<_>>();
+        candidates.sort_by(node_id_order);
+        candidates.dedup();
+        let [target] = candidates.as_slice() else {
+            continue;
+        };
+        let authored_equivalent_exists = relationships.iter().any(|relationship| {
+            relationship.source == source.id
+                && relationship.target == *target
+                && relationship.kind == specification.kind
+                && relationship.provenance == ResolutionProvenance::Authored
+        });
+        if !authored_equivalent_exists {
+            relationships.push(ResolvedRelationship {
+                source: source.id,
+                target: target.clone(),
+                kind: specification.kind.clone(),
+                provenance: ResolutionProvenance::Implied(
+                    ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+                ),
+            });
+        }
     }
 }
 
@@ -438,7 +489,9 @@ fn derive_case_subject_relationships(
                         source: case.id.clone(),
                         target: target.clone(),
                         kind: RelationshipKind::Subject,
-                        provenance: ResolutionProvenance::Derived,
+                        provenance: ResolutionProvenance::Derived(
+                            DerivedRelationshipRule::CaseSubjectFromTypedSubject,
+                        ),
                     });
                 }
             }
@@ -996,7 +1049,47 @@ mod tests {
             .expect("derived subject relationship");
         assert_eq!(subject.source.qualified_name, "M::A");
         assert_eq!(subject.target.qualified_name, "M::P");
-        assert_eq!(subject.provenance, ResolutionProvenance::Derived);
+        assert_eq!(
+            subject.provenance,
+            ResolutionProvenance::Derived(DerivedRelationshipRule::CaseSubjectFromTypedSubject)
+        );
+    }
+
+    #[test]
+    fn standard_library_relationships_keep_implied_provenance() {
+        let snapshot = ImmutableSourceSnapshot::new(vec![
+            SysmlDocument::from_uri(
+                "memory://stdlib/parts.sysml",
+                "package Parts { part def Part; }".to_string(),
+                None,
+                SysmlDocumentSourceKind::StandardLibrary,
+                None,
+                None,
+            )
+            .expect("stdlib URI"),
+            document("memory://test/model.sysml", "package M { part def P; }"),
+        ])
+        .unwrap();
+        let model = build_semantic_model(SemanticBuildRequest {
+            sources: snapshot,
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: SemanticConfiguration::default(),
+        })
+        .expect("semantic model");
+        assert!(model
+            .resolution()
+            .relationships()
+            .iter()
+            .any(|relationship| {
+                relationship.source.qualified_name == "M::P"
+                    && relationship.target.qualified_name == "Parts::Part"
+                    && relationship.kind == RelationshipKind::Specializes
+                    && relationship.provenance
+                        == ResolutionProvenance::Implied(
+                            ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
+                        )
+            }));
     }
 
     #[test]

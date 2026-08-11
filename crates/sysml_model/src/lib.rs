@@ -70,8 +70,8 @@ pub use semantic::prepared_view::{
     PreparedNodeDto, PreparedViewDto,
 };
 pub use semantic::publication::{
-    build_semantic_model, AuthoredReferenceId, ConstructionStrategy, EvaluationPolicy,
-    ImmutableSourceSnapshot, ReferenceKind, ResolutionFact, ResolutionOutcome,
+    build_semantic_model, AuthoredReferenceId, ConstructionStrategy, DerivedRelationshipRule,
+    EvaluationPolicy, ImmutableSourceSnapshot, ReferenceKind, ResolutionFact, ResolutionOutcome,
     ResolutionProvenance, ResolutionState, ResolutionView, SemanticBuildFailure,
     SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticModel,
     SemanticModelIdentity, SemanticPhase,
