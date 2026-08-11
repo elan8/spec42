@@ -15,6 +15,15 @@ The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `FORMA
 Only sections in this contract are retained during normalization. Unknown or future sections
 should be added to the explicit ordering table before they become part of the corpus contract.
 
+Each readable fixture is built with both sequential and parallel construction. The runner compares
+the complete owned `SMG` and `DIAGNOSTICS` renderings, including the publication state embedded in
+`SMG`, before checking or writing goldens. Sequential output is the canonical rendering only after
+this parity check succeeds; there is no strategy override that can bypass it.
+
+Fixtures are evaluated concurrently with Rayon’s bounded global worker pool. Results are sorted by
+path, errors and stale paths are reported in that order, and update writes occur only after the
+complete worker batch succeeds.
+
 Run it from the repository root:
 
 ```sh

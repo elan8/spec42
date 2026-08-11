@@ -8,8 +8,9 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Parser, Subcommand};
 use language_service::{format_document_text, FormatOptions};
+use rayon::prelude::*;
 use sysml_diagnostics::{
     collect_document_diagnostics_from_model, write_diagnostics_sexpr, DiagnosticsOptions,
 };
@@ -33,15 +34,6 @@ struct Cli {
     /// Restrict the operation to one path relative to --root (or an explicit path).
     #[arg(long, global = true)]
     fixture: Option<PathBuf>,
-    /// Construction strategy used for the immutable semantic publication.
-    #[arg(long, value_enum, default_value_t = Strategy::Sequential, global = true)]
-    strategy: Strategy,
-}
-
-#[derive(Debug, Clone, Copy, ValueEnum)]
-enum Strategy {
-    Sequential,
-    Parallel,
 }
 
 #[derive(Debug, Subcommand)]
@@ -68,35 +60,49 @@ fn main() -> Result<(), String> {
         ));
     }
 
+    // Rayon uses its bounded global worker pool; fixture work is isolated and writes happen only
+    // after every worker has completed, in deterministic path order.
+    let mut results: Vec<_> = paths
+        .par_iter()
+        .map(|path| FixtureWorkResult {
+            path: path.clone(),
+            result: evaluate_fixture(path),
+        })
+        .collect();
+    sort_work_results(&mut results);
+
+    let mut failures = Vec::new();
     let mut stale = Vec::new();
-    for path in paths {
-        let bytes =
-            fs::read(&path).map_err(|error| format!("{}: read failed: {error}", path.display()))?;
-        let original = match String::from_utf8(bytes) {
-            Ok(original) => original,
-            Err(error) => {
-                let bytes = error.into_bytes();
-                let normalized = remove_non_canonical_sections_bytes(&bytes);
-                if normalized != bytes {
-                    match cli.command {
-                        Command::Check => stale.push(path.clone()),
-                        Command::Update => fs::write(&path, normalized).map_err(|error| {
-                            format!("{}: write failed: {error}", path.display())
-                        })?,
-                    }
-                }
-                eprintln!("SKIP {}: snapshot is not UTF-8", path.display());
-                continue;
+    let mut writes = Vec::new();
+    for result in results {
+        match result.result {
+            Ok(FixtureOutcome::Clean) => {}
+            Ok(FixtureOutcome::Skipped) => {
+                eprintln!("SKIP {}: snapshot is not UTF-8", result.path.display());
             }
-        };
-        let updated = regenerate_snapshot(&original, &path, cli.strategy)?;
-        if updated != original {
-            match cli.command {
-                Command::Check => stale.push(path),
-                Command::Update => fs::write(&path, updated)
-                    .map_err(|error| format!("{}: write failed: {error}", path.display()))?,
-            }
+            Ok(FixtureOutcome::StaleText(updated)) => match cli.command {
+                Command::Check => stale.push(result.path),
+                Command::Update => writes.push((result.path, updated.into_bytes())),
+            },
+            Ok(FixtureOutcome::StaleBytes(updated)) => match cli.command {
+                Command::Check => stale.push(result.path),
+                Command::Update => writes.push((result.path, updated)),
+            },
+            Err(error) => failures.push((result.path, error)),
         }
+    }
+
+    if !failures.is_empty() {
+        eprintln!("snapshot processing errors:");
+        for (path, error) in failures {
+            eprintln!("  {}: {error}", path.display());
+        }
+        return Err("snapshot processing failed".to_string());
+    }
+
+    for (path, bytes) in writes {
+        fs::write(&path, bytes)
+            .map_err(|error| format!("{}: write failed: {error}", path.display()))?;
     }
 
     if stale.is_empty() {
@@ -107,6 +113,44 @@ fn main() -> Result<(), String> {
         eprintln!("  {}", path.display());
     }
     Err("snapshot check failed".to_string())
+}
+
+enum FixtureOutcome {
+    Clean,
+    StaleText(String),
+    StaleBytes(Vec<u8>),
+    Skipped,
+}
+
+struct FixtureWorkResult {
+    path: PathBuf,
+    result: Result<FixtureOutcome, String>,
+}
+
+fn sort_work_results(results: &mut [FixtureWorkResult]) {
+    results.sort_by(|left, right| left.path.cmp(&right.path));
+}
+
+fn evaluate_fixture(path: &Path) -> Result<FixtureOutcome, String> {
+    let bytes = fs::read(path).map_err(|error| format!("read failed: {error}"))?;
+    let original = match String::from_utf8(bytes) {
+        Ok(original) => original,
+        Err(error) => {
+            let bytes = error.into_bytes();
+            let normalized = remove_non_canonical_sections_bytes(&bytes);
+            return Ok(if normalized == bytes {
+                FixtureOutcome::Skipped
+            } else {
+                FixtureOutcome::StaleBytes(normalized)
+            });
+        }
+    };
+    let updated = regenerate_snapshot(&original, path)?;
+    Ok(if updated == original {
+        FixtureOutcome::Clean
+    } else {
+        FixtureOutcome::StaleText(updated)
+    })
 }
 
 fn snapshot_paths(root: &Path, fixture: Option<&Path>) -> Result<Vec<PathBuf>, String> {
@@ -154,7 +198,7 @@ fn visit_markdown(directory: &Path, paths: &mut Vec<PathBuf>) -> Result<(), Stri
     Ok(())
 }
 
-fn regenerate_snapshot(fixture: &str, path: &Path, strategy: Strategy) -> Result<String, String> {
+fn regenerate_snapshot(fixture: &str, path: &Path) -> Result<String, String> {
     let fallback_name = path
         .file_name()
         .and_then(|name| name.to_str())
@@ -173,33 +217,80 @@ fn regenerate_snapshot(fixture: &str, path: &Path, strategy: Strategy) -> Result
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let snapshot = ImmutableSourceSnapshot::new(source_documents.clone())
-        .map_err(|error| format!("{}: invalid source snapshot: {error}", path.display()))?;
-    let model = build_semantic_model(SemanticBuildRequest {
-        sources: snapshot,
-        construction: match strategy {
-            Strategy::Sequential => ConstructionStrategy::Sequential,
-            Strategy::Parallel => ConstructionStrategy::Parallel,
-        },
-        evaluation: EvaluationPolicy::Evaluate,
-        configuration: SemanticConfiguration::default(),
-    })
-    .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))?;
+    let sequential = render_owned_sections(
+        build_model(&source_documents, ConstructionStrategy::Sequential, path)?,
+        &documents,
+        &source_documents,
+    )?;
+    let parallel = render_owned_sections(
+        build_model(&source_documents, ConstructionStrategy::Parallel, path)?,
+        &documents,
+        &source_documents,
+    )?;
+    ensure_strategy_parity(path, &sequential, &parallel)?;
 
-    let smg = render_semantic_model(&model)?;
     let format = render_format(&documents);
-    // Diagnostics are intentionally owned by the semantic diagnostics stage. The concrete
-    // adapter is kept behind this function so adding diagnostics does not expose model storage
-    // to the harness or turn the Markdown fixture into a second semantic API.
-    let diagnostics = render_diagnostics(&model, &documents, &source_documents)?;
 
-    let fixture = replace_or_insert_section(fixture, "SMG", &smg)
+    let fixture = replace_or_insert_section(fixture, "SMG", &sequential.smg)
         .ok_or_else(|| format!("{}: missing SOURCE/SMG section", path.display()))?;
-    let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &diagnostics)
+    let fixture = replace_or_insert_section(&fixture, "DIAGNOSTICS", &sequential.diagnostics)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_full_section(&fixture, "FORMAT", &format)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     Ok(canonicalize_sections(&fixture))
+}
+
+struct OwnedSections {
+    smg: String,
+    diagnostics: String,
+}
+
+fn build_model(
+    source_documents: &[SysmlDocument],
+    construction: ConstructionStrategy,
+    path: &Path,
+) -> Result<SemanticModel, String> {
+    let snapshot = ImmutableSourceSnapshot::new(source_documents.to_vec())
+        .map_err(|error| format!("{}: invalid source snapshot: {error}", path.display()))?;
+    build_semantic_model(SemanticBuildRequest {
+        sources: snapshot,
+        construction,
+        evaluation: EvaluationPolicy::Evaluate,
+        configuration: SemanticConfiguration::default(),
+    })
+    .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))
+}
+
+fn render_owned_sections(
+    model: SemanticModel,
+    documents: &[SourceDocument],
+    source_documents: &[SysmlDocument],
+) -> Result<OwnedSections, String> {
+    // Both strings are complete owner-defined projections. The SMG includes publication phase,
+    // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
+    let smg = render_semantic_model(&model)?;
+    let diagnostics = render_diagnostics(&model, documents, source_documents)?;
+    Ok(OwnedSections { smg, diagnostics })
+}
+
+fn ensure_strategy_parity(
+    path: &Path,
+    sequential: &OwnedSections,
+    parallel: &OwnedSections,
+) -> Result<(), String> {
+    if sequential.smg != parallel.smg {
+        return Err(format!(
+            "{}: sequential and parallel semantic-model outputs differ",
+            path.display()
+        ));
+    }
+    if sequential.diagnostics != parallel.diagnostics {
+        return Err(format!(
+            "{}: sequential and parallel diagnostics outputs differ",
+            path.display()
+        ));
+    }
+    Ok(())
 }
 
 fn render_semantic_model(model: &SemanticModel) -> Result<String, String> {
@@ -471,6 +562,50 @@ fn fenced_block(input: &str) -> Option<(String, &str)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cli_does_not_allow_a_strategy_override() {
+        assert!(
+            Cli::try_parse_from(["spec42-snapshot", "check", "--strategy", "parallel"]).is_err()
+        );
+    }
+
+    #[test]
+    fn work_results_are_sorted_for_deterministic_reporting() {
+        let mut results = vec![
+            FixtureWorkResult {
+                path: PathBuf::from("z.md"),
+                result: Err("z failure".to_string()),
+            },
+            FixtureWorkResult {
+                path: PathBuf::from("a.md"),
+                result: Err("a failure".to_string()),
+            },
+        ];
+        sort_work_results(&mut results);
+        assert_eq!(
+            results
+                .iter()
+                .map(|result| result.path.as_path())
+                .collect::<Vec<_>>(),
+            vec![Path::new("a.md"), Path::new("z.md")]
+        );
+    }
+
+    #[test]
+    fn parity_mismatch_is_reported_before_owned_output_is_selected() {
+        let sequential = OwnedSections {
+            smg: "sequential".to_string(),
+            diagnostics: "same".to_string(),
+        };
+        let parallel = OwnedSections {
+            smg: "parallel".to_string(),
+            diagnostics: "same".to_string(),
+        };
+        let error = ensure_strategy_parity(Path::new("fixture.md"), &sequential, &parallel)
+            .expect_err("mismatched owned output must fail parity");
+        assert!(error.contains("semantic-model outputs differ"));
+    }
 
     #[test]
     fn parses_single_and_multi_source_documents() {
