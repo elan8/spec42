@@ -1228,6 +1228,28 @@ mod tests {
     }
 
     #[test]
+    fn multi_document_resolution_is_independent_of_source_order() {
+        let first = document("memory://test/a.sysml", "package A { part def T; }");
+        let second = document(
+            "memory://test/b.sysml",
+            "package B { import A::*; part p : T; }",
+        );
+        let forward = ImmutableSourceSnapshot::new(vec![first.clone(), second.clone()]).unwrap();
+        let reverse = ImmutableSourceSnapshot::new(vec![second, first]).unwrap();
+        let configuration = SemanticConfiguration::default();
+        let make = |sources| {
+            build_semantic_model(SemanticBuildRequest {
+                sources,
+                construction: ConstructionStrategy::Parallel,
+                evaluation: EvaluationPolicy::ResolvedOnly,
+                configuration: configuration.clone(),
+            })
+            .expect("canonical multi-document model")
+        };
+        assert_eq!(make(forward).resolution(), make(reverse).resolution());
+    }
+
+    #[test]
     fn missing_targets_remain_explicitly_unresolved() {
         let model = build("package A { part p : Missing; }");
         assert!(model.resolution().facts().iter().any(|fact| {
