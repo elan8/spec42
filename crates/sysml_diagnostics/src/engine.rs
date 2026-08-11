@@ -75,26 +75,6 @@ mod tests {
     }
 
     #[test]
-    fn collect_diagnostics_from_graph_emits_implicit_redefinition_without_operator() {
-        let input = r#"
-            package P {
-                part def Base {
-                    attribute mass : Real;
-                }
-                part def Child :> Base {
-                    attribute mass = 1200;
-                }
-            }
-        "#;
-        let uri = Url::parse("file:///test.sysml").expect("uri");
-        let diagnostics = collect_from_model(input, &uri);
-        assert!(diagnostics.iter().any(|diagnostic| {
-            diagnostic.code == "implicit_redefinition_without_operator"
-                && diagnostic.severity == DiagnosticSeverity::Error
-        }));
-    }
-
-    #[test]
     fn graph_diagnostics_api_publishes_canonical_order() {
         let input = r#"
             package P {

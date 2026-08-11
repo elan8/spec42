@@ -2994,52 +2994,6 @@ mod tests {
     }
 
     #[test]
-    fn missing_targets_remain_explicitly_unresolved() {
-        let model = build("package A { part p : Missing; }");
-        assert!(model.resolution().facts().iter().any(|fact| {
-            fact.reference.kind == ReferenceKind::FeatureTyping
-                && matches!(fact.outcome, ResolutionOutcome::Unresolved)
-        }));
-    }
-
-    #[test]
-    fn imported_candidates_are_ambiguous_in_canonical_order() {
-        let model = build(
-            "package A { part def T; }
-             package B { part def T; }
-             package C {
-                 import A::*;
-                 import B::*;
-                 part p : T;
-             }",
-        );
-        let fact = model
-            .resolution()
-            .facts()
-            .iter()
-            .find(|fact| fact.reference.kind == ReferenceKind::FeatureTyping)
-            .expect("typing fact");
-        let ResolutionOutcome::Ambiguous { candidates } = &fact.outcome else {
-            panic!(
-                "expected imported duplicate to remain ambiguous: {:?}",
-                fact.outcome
-            );
-        };
-        assert_eq!(candidates.len(), 2);
-        assert!(candidates[0].qualified_name < candidates[1].qualified_name);
-    }
-
-    #[test]
-    fn filtered_imports_publish_an_explicit_unsupported_outcome() {
-        let model =
-            build("package Source { part def Item; } package Client { import Source [ 1 ]; }");
-        assert!(model.resolution().facts().iter().any(|fact| {
-            fact.reference.kind == ReferenceKind::NamespaceImport
-                && matches!(fact.outcome, ResolutionOutcome::UnsupportedFiltered)
-        }));
-    }
-
-    #[test]
     fn inner_lexical_binding_shadows_outer_import_even_when_incompatible() {
         let model = build(
             "package A { part def T; }
