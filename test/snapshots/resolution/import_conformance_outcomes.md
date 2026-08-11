@@ -78,14 +78,57 @@ package Client {
     (element (id (node (document "d0") (qualified-name "Source::Item"))) (kind "part def") (name "Item") (declared-name "Item") (range (start (line 2) (character 4)) (end (line 2) (character 18))) (parent (node (document "d0") (qualified-name "Source"))))
   )
   (references
-    (reference (id (source (node (document "d0") (qualified-name "Client::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Source::*") (range (start (line 5) (character 11)) (end (line 5) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Source")))))
-    (reference (id (source (node (document "d0") (qualified-name "Client::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Source::Item::*") (range (start (line 6) (character 11)) (end (line 6) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Source::Item")))))
-    (reference (id (source (node (document "d0") (qualified-name "Client::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "Missing::*") (range (start (line 7) (character 11)) (end (line 7) (character 18))) (outcome (status unresolved)))
-    (reference (id (source (node (document "d0") (qualified-name "Client::Source"))) (kind namespaceImport) (ordinal 0)) (authored-target "Source") (range (start (line 8) (character 11)) (end (line 8) (character 17))) (outcome (status unsupported-filtered)))
+    (reference (id (source (node (document "d0") (qualified-name "Client::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "Source::*") (range (start (line 5) (character 11)) (end (line 5) (character 17))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Source")))) (import (origin import) (shape namespace) (recursive false) (conformance valid)))
+    (reference (id (source (node (document "d0") (qualified-name "Client::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "Source::Item::*") (range (start (line 6) (character 11)) (end (line 6) (character 23))) (outcome (status resolved) (target (node (document "d0") (qualified-name "Source::Item")))) (import (origin import) (shape namespace) (recursive false) (conformance namespace-kind-mismatch (actual-kind "part def"))))
+    (reference (id (source (node (document "d0") (qualified-name "Client::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "Missing::*") (range (start (line 7) (character 11)) (end (line 7) (character 18))) (outcome (status unresolved)) (import (origin import) (shape namespace) (recursive false) (conformance not-checked-unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Client::Source"))) (kind namespaceImport) (ordinal 0)) (authored-target "Source") (range (start (line 8) (character 11)) (end (line 8) (character 17))) (outcome (status unsupported-filtered)) (import (origin import) (shape filtered-namespace) (recursive false) (conformance not-checked-unsupported-filtered)))
   )
   (relationships
   )
   (evaluation
+  )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (document "d0"
+    (query (range (start 5 11) (end 5 17)) (probe (position 5 11))
+      (reference
+        (source (document "d0") (qualified-name "Client::*"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Source::*")
+        (range (start 5 11) (end 5 17))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Source") (range (start 0 0) (end 0 56)))
+        )
+      )
+    )
+    (query (range (start 8 11) (end 8 17)) (probe (position 8 11))
+      (reference
+        (source (document "d0") (qualified-name "Client::Source"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Source")
+        (range (start 8 11) (end 8 17))
+        (outcome (status unsupported-filtered))
+      )
+    )
+    (query (range (start 7 11) (end 7 18)) (probe (position 7 11))
+      (reference
+        (source (document "d0") (qualified-name "Client::*#import2"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Missing::*")
+        (range (start 7 11) (end 7 18))
+        (outcome (status unresolved))
+      )
+    )
+    (query (range (start 6 11) (end 6 23)) (probe (position 6 11))
+      (reference
+        (source (document "d0") (qualified-name "Client::*#import"))
+        (kind namespaceImport) (ordinal 0) (authored-target "Source::Item::*")
+        (range (start 6 11) (end 6 23))
+        (outcome (status resolved)
+          (target (document "d0") (qualified-name "Source::Item") (range (start 2 4) (end 2 18)))
+        )
+      )
+    )
   )
 )
 ~~~

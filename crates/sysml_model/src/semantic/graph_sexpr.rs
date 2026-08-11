@@ -15,12 +15,12 @@ use crate::semantic::graph::{PendingExpressionRelationship, PendingRelationship,
 use crate::semantic::model::{
     DeclaredExpression, DeclaredFeatureProperties, DeclaredFeatureValueKind,
     DeclaredMultiplicityBound, DerivedRelationshipResolution, DerivedRelationshipRule,
-    ExpressionResultRole, ImpliedRelationshipRule, NodeId, RelationshipProvenance, SemanticEdge,
-    SemanticNode,
+    ExpressionResultRole, ImpliedRelationshipRule, ImportOrigin, ImportShape, NodeId,
+    RelationshipProvenance, SemanticEdge, SemanticNode,
 };
 use crate::semantic::publication::{
-    ReferenceKind, ResolutionOutcome, ResolutionProvenance, ResolvedRelationship,
-    SemanticCompleteness, SemanticModel, SemanticPhase,
+    ImportConformanceOutcome, ReferenceKind, ResolutionOutcome, ResolutionProvenance,
+    ResolvedRelationship, SemanticCompleteness, SemanticModel, SemanticPhase,
 };
 use crate::semantic::text_span::TextRange;
 
@@ -413,9 +413,66 @@ fn render_model_references(
             fact.authored_range.map_or_else(|| "none".to_string(), |range| render_range(&range)),
         )?;
         render_outcome(&fact.outcome, identities, output)?;
+        if let Some(import) = &fact.import {
+            render_resolution_import(import, output)?;
+        }
         output.write_str(")\n")?;
     }
     output.write_str("  )\n")
+}
+
+fn render_resolution_import(
+    import: &crate::semantic::publication::ResolutionImportFact,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    write!(
+        output,
+        " (import (origin {}) (shape {}) (recursive {})",
+        import_origin(import.origin),
+        import_shape(import.shape),
+        import.recursive,
+    )?;
+    match &import.conformance {
+        ImportConformanceOutcome::Valid => output.write_str(" (conformance valid)")?,
+        ImportConformanceOutcome::MissingTarget => {
+            output.write_str(" (conformance missing-target)")?
+        }
+        ImportConformanceOutcome::NotCheckedUnresolved => {
+            output.write_str(" (conformance not-checked-unresolved)")?
+        }
+        ImportConformanceOutcome::NotCheckedAmbiguous => {
+            output.write_str(" (conformance not-checked-ambiguous)")?
+        }
+        ImportConformanceOutcome::NotCheckedUnsupportedFiltered => {
+            output.write_str(" (conformance not-checked-unsupported-filtered)")?
+        }
+        ImportConformanceOutcome::NamespaceKindMismatch { actual } => write!(
+            output,
+            " (conformance namespace-kind-mismatch (actual-kind {}))",
+            atom(actual.as_str())
+        )?,
+        ImportConformanceOutcome::RecursiveNonNamespace { actual } => write!(
+            output,
+            " (conformance recursive-non-namespace (actual-kind {}))",
+            atom(actual.as_str())
+        )?,
+    }
+    output.write_char(')')
+}
+
+fn import_origin(origin: ImportOrigin) -> &'static str {
+    match origin {
+        ImportOrigin::Import => "import",
+        ImportOrigin::Expose => "expose",
+    }
+}
+
+fn import_shape(shape: ImportShape) -> &'static str {
+    match shape {
+        ImportShape::Membership => "membership",
+        ImportShape::Namespace => "namespace",
+        ImportShape::FilteredNamespace => "filtered-namespace",
+    }
 }
 
 fn render_outcome(
@@ -1225,7 +1282,8 @@ fn write_indent(output: &mut String, depth: usize) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::semantic::model::{DeclaredLiteral, EvaluatedValue};
+    use crate::semantic::model::{DeclaredLiteral, ElementKind, EvaluatedValue};
+    use crate::semantic::publication::ResolutionImportFact;
 
     #[test]
     fn renders_declared_and_evaluated_scalars_with_structural_type_tags() {
@@ -1249,5 +1307,45 @@ mod tests {
             render_evaluated_value(&EvaluatedValue::String("ok".into())),
             r#"(string "ok")"#
         );
+    }
+
+    #[test]
+    fn renders_import_resolution_facts_with_stable_typed_atoms() {
+        let cases = [
+            (
+                ResolutionImportFact {
+                    origin: ImportOrigin::Import,
+                    shape: ImportShape::Namespace,
+                    recursive: false,
+                    conformance: ImportConformanceOutcome::Valid,
+                },
+                " (import (origin import) (shape namespace) (recursive false) (conformance valid))",
+            ),
+            (
+                ResolutionImportFact {
+                    origin: ImportOrigin::Expose,
+                    shape: ImportShape::FilteredNamespace,
+                    recursive: true,
+                    conformance: ImportConformanceOutcome::NotCheckedUnsupportedFiltered,
+                },
+                " (import (origin expose) (shape filtered-namespace) (recursive true) (conformance not-checked-unsupported-filtered))",
+            ),
+            (
+                ResolutionImportFact {
+                    origin: ImportOrigin::Import,
+                    shape: ImportShape::Namespace,
+                    recursive: false,
+                    conformance: ImportConformanceOutcome::NamespaceKindMismatch {
+                        actual: ElementKind::PartDef,
+                    },
+                },
+                " (import (origin import) (shape namespace) (recursive false) (conformance namespace-kind-mismatch (actual-kind \"part def\")))",
+            ),
+        ];
+        for (fact, expected) in cases {
+            let mut rendered = String::new();
+            render_resolution_import(&fact, &mut rendered).expect("render import fact");
+            assert_eq!(rendered, expected);
+        }
     }
 }
