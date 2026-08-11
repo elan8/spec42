@@ -1,5 +1,6 @@
 //! Protocol-neutral workspace build, snapshot, comparison and library management for Spec42.
 
+pub mod cache;
 pub mod catalog;
 pub mod comparison;
 pub mod engine;

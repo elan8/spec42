@@ -40,6 +40,8 @@ tracing = "0.1"
 postcard = { workspace = true }
 rayon = "1.12"
 tempfile = "3"
+blake3 = { workspace = true }
+zstd = { workspace = true }
 
 [dev-dependencies]
 syn = { version = "2", features = ["full", "visit"] }
@@ -64,6 +66,10 @@ path = "tests/robot_vacuum_snapshot.rs"
 [[test]]
 name = "artifact_metadata_serde"
 path = "tests/artifact_metadata_serde.rs"
+
+[[test]]
+name = "cache_store"
+path = "tests/cache_store.rs"
 
 [[test]]
 name = "host_errors"
