@@ -57,7 +57,21 @@ pub struct MaterializeContext<'a> {
 /// Adds the root package/namespace as a node and sets parent_id on its direct children
 /// so that contains edges are emitted for the General View.
 pub fn build_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
+    build_graph_from_doc_mode(root, uri, false)
+}
+
+/// Builds an authored-only graph fragment for the canonical publication resolver.
+pub(crate) fn build_structural_graph_from_doc(root: &RootNamespace, uri: &Url) -> SemanticGraph {
+    build_graph_from_doc_mode(root, uri, true)
+}
+
+fn build_graph_from_doc_mode(
+    root: &RootNamespace,
+    uri: &Url,
+    structural_input_only: bool,
+) -> SemanticGraph {
     let mut g = SemanticGraph::new();
+    g.set_structural_input_only(structural_input_only);
     for node in &root.elements {
         match &node.value {
             // A RootNamespace is a sequence of PackageBodyElements. Packages, namespaces, and

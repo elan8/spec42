@@ -9,7 +9,7 @@ use url::Url;
 use crate::semantic::analysis_typing::prepare_analysis_evaluation_context;
 use crate::semantic::evaluation::evaluate_expressions;
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::graph_builder::build_graph_from_doc;
+use crate::semantic::graph_builder::{build_graph_from_doc, build_structural_graph_from_doc};
 use crate::semantic::library_loader::declared_packages_from_parsed;
 use crate::semantic::model::SemanticEdge;
 use crate::semantic::relationships::{
@@ -164,6 +164,7 @@ fn build_structural_graph_sequential(
     documents: &[SysmlDocument],
 ) -> (SemanticGraph, Vec<WorkspaceParsedDocument>) {
     let mut graph = SemanticGraph::new();
+    graph.set_structural_input_only(true);
     graph.set_standard_library_uris(
         documents
             .iter()
@@ -192,16 +193,15 @@ fn build_structural_graph_sequential(
     for document in workspace_docs {
         let entry = parse_document(document);
         workspace_packages.extend(declared_packages_from_parsed(&entry.parsed));
-        graph.merge(build_graph_from_doc(&entry.parsed, &entry.uri));
+        let doc_graph = build_structural_graph_from_doc(&entry.parsed, &entry.uri);
+        graph.merge(doc_graph);
         parsed_docs.push(entry);
     }
     let workspace_packages = most_specific_packages(workspace_packages);
     for document in library_docs {
         let entry = parse_document(document);
-        graph.merge_skip_existing_qualified_names(
-            build_graph_from_doc(&entry.parsed, &entry.uri),
-            &workspace_packages,
-        );
+        let doc_graph = build_structural_graph_from_doc(&entry.parsed, &entry.uri);
+        graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);
         parsed_docs.push(entry);
     }
     graph.invalidate_query_indexes();
@@ -226,7 +226,10 @@ fn build_structural_graph_parallel(
     });
     let workspace_built: Vec<(SemanticGraph, WorkspaceParsedDocument)> = workspace_entries
         .into_par_iter()
-        .map(|(_, entry)| (build_graph_from_doc(&entry.parsed, &entry.uri), entry))
+        .map(|(_, entry)| {
+            let graph = build_structural_graph_from_doc(&entry.parsed, &entry.uri);
+            (graph, entry)
+        })
         .collect();
     let workspace_packages = most_specific_packages(
         workspace_built
@@ -235,6 +238,7 @@ fn build_structural_graph_parallel(
             .collect(),
     );
     let mut graph = SemanticGraph::new();
+    graph.set_structural_input_only(true);
     let mut parsed_docs = Vec::new();
     for (doc_graph, entry) in workspace_built {
         graph.merge(doc_graph);
@@ -242,7 +246,10 @@ fn build_structural_graph_parallel(
     }
     let library_built: Vec<(SemanticGraph, WorkspaceParsedDocument)> = library_entries
         .into_par_iter()
-        .map(|(_, entry)| (build_graph_from_doc(&entry.parsed, &entry.uri), entry))
+        .map(|(_, entry)| {
+            let graph = build_structural_graph_from_doc(&entry.parsed, &entry.uri);
+            (graph, entry)
+        })
         .collect();
     for (doc_graph, entry) in library_built {
         graph.merge_skip_existing_qualified_names(doc_graph, &workspace_packages);

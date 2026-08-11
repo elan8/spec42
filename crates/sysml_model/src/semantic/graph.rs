@@ -91,6 +91,10 @@ pub struct SemanticGraphData {
     /// `NotApplicable` after this barrier is complete; otherwise it is explicitly `NotRun`.
     #[serde(default)]
     pub evaluation_publication: EvaluationPublicationState,
+    /// When set, document builders may record authored facts but must not resolve endpoints or
+    /// install semantic relationship edges. This is used only by the canonical publication path.
+    #[serde(skip)]
+    pub(crate) structural_input_only: bool,
     #[serde(skip)]
     pub import_lookup_cache: Mutex<HashMap<(NodeId, String, bool), Vec<NodeId>>>,
     #[serde(skip)]
@@ -146,6 +150,7 @@ impl Clone for SemanticGraphData {
                 .clone(),
             evaluation_facts_by_node_id: self.evaluation_facts_by_node_id.clone(),
             evaluation_publication: self.evaluation_publication,
+            structural_input_only: self.structural_input_only,
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -628,6 +633,10 @@ pub struct PendingRelationship {
 }
 
 impl SemanticGraphData {
+    pub(crate) fn set_structural_input_only(&mut self, value: bool) {
+        self.structural_input_only = value;
+    }
+
     /// Rebuild `node_index_by_id` and `children_by_parent_id` from the petgraph
     /// `graph` after deserialization (both fields are `#[serde(skip)]`).
     pub fn rebuild_derived_indexes(&mut self) {
@@ -696,6 +705,7 @@ impl SemanticGraphData {
             derived_relationship_resolution_by_source_id: HashMap::new(),
             evaluation_facts_by_node_id: HashMap::new(),
             evaluation_publication: EvaluationPublicationState::NotRun,
+            structural_input_only: false,
             import_lookup_cache: Mutex::new(HashMap::new()),
             query_indexes: Mutex::new(None),
             shape_cache: Mutex::new(ShapeCache::default()),
@@ -1020,10 +1030,6 @@ impl SemanticGraphData {
     #[cfg(test)]
     pub(crate) fn semantic_edges(&self) -> Vec<(NodeId, NodeId, SemanticEdge)> {
         self.iter_edges().collect()
-    }
-
-    pub(crate) fn evaluation_fact_count(&self) -> usize {
-        self.evaluation_facts_by_node_id.len()
     }
 
     pub fn node_ids_for_qualified_name(&self, qualified_name: &str) -> Option<&[NodeId]> {

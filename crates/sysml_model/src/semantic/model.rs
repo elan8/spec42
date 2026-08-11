@@ -1082,11 +1082,31 @@ pub struct DeclaredSemanticFacts {
     /// from that projection.
     #[serde(default)]
     pub relationships: DeclaredRelationshipFacts,
+    /// Authored endpoint relationships whose target identities are settled by the canonical
+    /// resolver after all source documents are merged.
+    #[serde(default)]
+    pub expression_relationships: Vec<DeclaredExpressionRelationship>,
     /// Set when this node's own declared substance *is* an expression (e.g. a
     /// `TransitionGuard` child), as opposed to `feature_value`, which represents "this
     /// feature's value is X". Projected as `HostElementFacts::content_expression_id`.
     #[serde(default)]
     pub own_expression: Option<DeclaredExpression>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredExpressionRelationship {
+    pub kind: RelationshipKind,
+    pub source_expression: String,
+    pub target_expression: String,
+    #[serde(default)]
+    pub scope_owner: Option<NodeId>,
+    pub source_range: TextRange,
+    #[serde(default)]
+    pub target_range: Option<TextRange>,
+    #[serde(default)]
+    pub is_interface_usage: bool,
+    #[serde(default)]
+    pub interface_type: Option<String>,
 }
 
 /// Visibility written on a membership declaration.

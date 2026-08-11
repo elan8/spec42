@@ -5,7 +5,7 @@
 //! existing graph is used while migrating the older builders, then is frozen behind this value;
 //! no resolver or query method is allowed to mutate it after publication.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fmt;
 
 use sha2::{Digest, Sha256};
@@ -13,8 +13,9 @@ use sha2::{Digest, Sha256};
 use crate::semantic::graph::SemanticGraph;
 pub use crate::semantic::model::DerivedRelationshipRule;
 use crate::semantic::model::{
-    DeclaredRelationshipFacts, DeclaredRelationshipTarget, ElementKind, ImpliedRelationshipRule,
-    NodeId, RelationshipKind, SemanticEdge, SemanticNode,
+    DeclaredExpressionRelationship, DeclaredRelationshipFacts, DeclaredRelationshipTarget,
+    ElementKind, ImpliedRelationshipRule, NodeEvaluationFacts, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
@@ -158,6 +159,14 @@ pub enum ReferenceKind {
     Redefinition,
     ReferenceSubsetting,
     CrossSubsetting,
+    ConnectionSource,
+    ConnectionTarget,
+    BindSource,
+    BindTarget,
+    SatisfySource,
+    SatisfyTarget,
+    AllocateSource,
+    AllocateTarget,
     NamespaceImport,
     MembershipImport,
 }
@@ -172,6 +181,14 @@ impl ReferenceKind {
             Self::ReferenceSubsetting => RelationshipKind::ReferenceSubsetting,
             Self::CrossSubsetting => RelationshipKind::CrossSubsetting,
             Self::NamespaceImport | Self::MembershipImport => return None,
+            Self::ConnectionSource
+            | Self::ConnectionTarget
+            | Self::BindSource
+            | Self::BindTarget
+            | Self::SatisfySource
+            | Self::SatisfyTarget
+            | Self::AllocateSource
+            | Self::AllocateTarget => return None,
         })
     }
 }
@@ -214,6 +231,7 @@ pub struct ResolvedRelationship {
     pub target: NodeId,
     pub kind: RelationshipKind,
     pub provenance: ResolutionProvenance,
+    pub expression: Option<DeclaredExpressionRelationship>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -472,6 +490,7 @@ impl<'a> ResolutionDb<'a> {
                             target: target.clone(),
                             kind: relationship_kind,
                             provenance: ResolutionProvenance::Authored,
+                            expression: None,
                         });
                     }
                     facts.push(ResolutionFact {
@@ -525,6 +544,7 @@ impl<'a> ResolutionDb<'a> {
                     });
                 }
             }
+            resolve_expression_relationships(self.graph, &node, &mut facts, &mut relationships);
         }
         derive_implied_relationships(self.graph, &mut relationships);
         derive_case_subject_relationships(self.graph, &facts, &mut relationships);
@@ -542,6 +562,96 @@ impl<'a> ResolutionDb<'a> {
             facts,
             relationships,
         }
+    }
+}
+
+fn resolve_expression_relationships(
+    graph: &SemanticGraph,
+    owner: &SemanticNode,
+    facts: &mut Vec<ResolutionFact>,
+    relationships: &mut Vec<ResolvedRelationship>,
+) {
+    for (ordinal, expression) in owner
+        .declared_facts
+        .expression_relationships
+        .iter()
+        .enumerate()
+    {
+        let (source_kind, target_kind) = match expression.kind {
+            RelationshipKind::Connection => (
+                ReferenceKind::ConnectionSource,
+                ReferenceKind::ConnectionTarget,
+            ),
+            RelationshipKind::Bind => (ReferenceKind::BindSource, ReferenceKind::BindTarget),
+            RelationshipKind::Satisfy => {
+                (ReferenceKind::SatisfySource, ReferenceKind::SatisfyTarget)
+            }
+            RelationshipKind::Allocate => {
+                (ReferenceKind::AllocateSource, ReferenceKind::AllocateTarget)
+            }
+            _ => continue,
+        };
+        let source_outcome =
+            resolve_expression_endpoint_outcome(graph, owner, &expression.source_expression);
+        let target_outcome =
+            resolve_expression_endpoint_outcome(graph, owner, &expression.target_expression);
+        facts.push(ResolutionFact {
+            reference: AuthoredReferenceId {
+                source: owner.id.clone(),
+                kind: source_kind,
+                authored_ordinal: ordinal as u32,
+            },
+            authored_target: expression.source_expression.clone(),
+            authored_range: Some(expression.source_range),
+            outcome: source_outcome.clone(),
+        });
+        facts.push(ResolutionFact {
+            reference: AuthoredReferenceId {
+                source: owner.id.clone(),
+                kind: target_kind,
+                authored_ordinal: ordinal as u32,
+            },
+            authored_target: expression.target_expression.clone(),
+            authored_range: expression.target_range,
+            outcome: target_outcome.clone(),
+        });
+        if let (
+            ResolutionOutcome::Resolved { target: source },
+            ResolutionOutcome::Resolved { target },
+        ) = (source_outcome, target_outcome)
+        {
+            relationships.push(ResolvedRelationship {
+                source,
+                target,
+                kind: expression.kind.clone(),
+                provenance: ResolutionProvenance::Authored,
+                expression: Some(expression.clone()),
+            });
+        }
+    }
+}
+
+fn resolve_expression_endpoint_outcome(
+    graph: &SemanticGraph,
+    owner: &SemanticNode,
+    authored: &str,
+) -> ResolutionOutcome {
+    // Endpoint expressions are authored by the containing scope itself, whereas a feature
+    // typing reference is authored by the child node. Start lookup at the scope owner so
+    // `connect left to right` can see sibling members without falling back to a root search.
+    let mut context = owner.clone();
+    context.parent_id = Some(owner.id.clone());
+    let mut candidates = explicit_name_candidates(graph, &context, authored);
+    candidates.sort_by(node_id_order);
+    candidates.dedup();
+    match candidates.as_slice() {
+        [target] => ResolutionOutcome::Resolved {
+            target: target.clone(),
+        },
+        [] => ResolutionOutcome::Unresolved,
+        candidates => ResolutionOutcome::Ambiguous {
+            candidates: candidates.to_vec(),
+        },
     }
 }
 
@@ -585,6 +695,7 @@ fn derive_implied_relationships(
                 provenance: ResolutionProvenance::Implied(
                     ImpliedRelationshipRule::UniversalStandardLibraryRelationship,
                 ),
+                expression: None,
             });
         }
     }
@@ -641,6 +752,7 @@ fn derive_case_subject_relationships(
                         provenance: ResolutionProvenance::Derived(
                             DerivedRelationshipRule::CaseSubjectFromTypedSubject,
                         ),
+                        expression: None,
                     });
                 }
             }
@@ -832,9 +944,9 @@ pub enum SemanticCompleteness {
     EditorRecovery,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct EvaluationState {
-    evaluated_nodes: usize,
+    facts: HashMap<NodeId, NodeEvaluationFacts>,
 }
 
 /// Read-only semantic publication.
@@ -868,6 +980,10 @@ impl SemanticModel {
 
     pub fn has_evaluation(&self) -> bool {
         self.evaluation.is_some()
+    }
+
+    pub fn evaluation_facts(&self) -> Option<&HashMap<NodeId, NodeEvaluationFacts>> {
+        self.evaluation.as_ref().map(|state| &state.facts)
     }
 
     pub fn view(&self) -> ResolutionView<'_> {
@@ -963,7 +1079,7 @@ pub(crate) fn build_semantic_model_with_max_passes(
         );
         crate::semantic::evaluation::evaluate_expressions(&mut evaluation_graph);
         Some(EvaluationState {
-            evaluated_nodes: evaluation_graph.evaluation_fact_count(),
+            facts: evaluation_graph.evaluation_facts_by_node_id.clone(),
         })
     } else {
         None
@@ -1091,6 +1207,24 @@ mod tests {
         })
         .expect("parallel semantic model");
         assert_eq!(sequential.resolution(), parallel.resolution());
+    }
+
+    #[test]
+    fn expression_relationships_are_recorded_and_resolved_at_publication() {
+        let model = build("package M { part def System { part a; part b; connect a to b; } }");
+        assert!(model.resolution().facts().iter().any(|fact| {
+            fact.reference.kind == ReferenceKind::ConnectionSource
+                && matches!(fact.outcome, ResolutionOutcome::Resolved { .. })
+        }));
+        let connection = model
+            .resolution()
+            .relationships()
+            .iter()
+            .find(|relationship| relationship.kind == RelationshipKind::Connection)
+            .expect("canonical connection relationship");
+        assert_eq!(connection.source.qualified_name, "M::System::a");
+        assert_eq!(connection.target.qualified_name, "M::System::b");
+        assert!(connection.expression.is_some());
     }
 
     #[test]
@@ -1313,6 +1447,9 @@ mod tests {
         .expect("evaluated semantic model");
         assert_eq!(model.phase(), SemanticPhase::Evaluated);
         assert!(model.has_evaluation());
+        assert!(model
+            .evaluation_facts()
+            .is_some_and(|facts| !facts.is_empty()));
         assert!(model
             .structural_graph
             .semantic_edges()
