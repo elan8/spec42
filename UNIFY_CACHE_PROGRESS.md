@@ -123,15 +123,36 @@ separately and must not be "fixed" by weakening assertions in passing.
 | 1 | Round-trip prerequisites, incl. attribute-bag removal | in progress | see B9 table |
 | 2 | Typed BLAKE3 identities, exact source snapshots, metadata v2 | done | merged |
 | 3 | Lock-free sharded store, postcard/zstd envelope, capacity, management API | done | merged |
-| 4 | Parse, library-index, closure, library-graph, workspace-graph artifacts | not started | blocked on 2, 3 |
+| 4 | Parse, library-index, closure, library-graph, workspace-graph artifacts | parse/index/closure done; the two graph artifacts gated | merged |
 | 5 | `SemanticBuildService`, route every production surface through it | not started | blocked on 4 |
 | 6 | CLI management and observability | not started | blocked on 5 |
 | 7 | Remove legacy caches, SHA-based metadata, legacy graph command | not started | blocked on 5 |
 | 8 | Parity, corruption, concurrency, performance gates | not started | blocked on 7 |
 
 Step 3 is deliberately started in parallel with step 1: the physical store depends on neither the
-semantic model nor the attribute-bag removal. Steps 2 and 4 onward are genuinely sequential
-because they consume the digest types and the graph record.
+semantic model nor the attribute-bag removal.
+
+Step 4 is only half blocked. `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8 explicitly permits developing the
+parse, library-index and closure artifacts while the graph blockers are open; only
+`LibrarySemanticGraph` and `WorkspaceSemanticGraph` are gated. Those three are merged as
+contracts. No selection or lexical-indexing algorithm is wired to them and no production call site
+consumes them — that is step 5's `SemanticBuildService`.
+
+Steps 5 onward remain sequential: they consume the graph record, which cannot exist while the
+attribute bag does.
+
+### Step 5 work list: surfaces diverging from the canonical closure policy
+
+`LibraryClosurePolicy` now exists as the single canonical closure contract. These surfaces still
+apply their own policy and must be routed through the build service in step 5:
+
+- `HostFilesystemProvider::new` — a fixed 20-name implied-seed list.
+- LSP `startup.rs` and `library_closure.rs` — both use `LibraryClosureOptions::default()` and are
+  independently gated by `SPEC42_LIBRARY_FULL_SCAN`.
+- `FileSystemDocumentProvider` — threads whatever seeds its caller happened to set.
+
+Until these converge, identical sources presented through different surfaces are not guaranteed to
+admit the same library set, which is the defect plan §1 records.
 
 ## B9: semantic-node attribute bag removal
 
