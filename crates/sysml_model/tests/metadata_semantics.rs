@@ -464,9 +464,11 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
         .expect("annotatedElement restriction attribute");
     assert_eq!(
         annotated_element
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|v| v.as_str()),
+            .declared_facts
+            .relationships
+            .subsetting
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("annotatedElement")
     );
     assert!(
@@ -490,9 +492,11 @@ fn requirement_metadata_def_shorthand_projects_restriction_attributes() {
         .expect("baseType restriction attribute");
     assert_eq!(
         base_type
-            .attributes
-            .get("redefines")
-            .and_then(|v| v.as_str()),
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("baseType")
     );
     assert!(
@@ -601,16 +605,20 @@ fn metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element() 
         .expect("annotatedElement");
     assert_eq!(
         annotated
-            .attributes
-            .get("subsetsFeature")
-            .and_then(|value| value.as_str()),
+            .declared_facts
+            .relationships
+            .subsetting
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("annotatedElement")
     );
     assert_eq!(
         annotated
-            .attributes
-            .get("redefines")
-            .and_then(|value| value.as_str()),
+            .declared_facts
+            .relationships
+            .redefinition
+            .first()
+            .map(|target| target.reference.as_str()),
         Some("annotatedElement")
     );
 

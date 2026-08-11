@@ -54,6 +54,11 @@ const RELATIONSHIP_PROJECTION_KEYS: &[&str] = &[
 /// post-construction *consumers*, these keys must not reappear anywhere in production source —
 /// including the graph builders that used to write them.
 const RETIRED_TYPING_PROJECTION_KEYS: &[&str] = &[
+    // Redundant with `attach_declared_subsetting_family`'s
+    // `DeclaredRelationshipFacts::reference_subsetting`/`cross_subsetting` typed facts: an
+    // exhaustive sweep found no reader anywhere (`UNIFY_CACHE_PROGRESS.md` chunk G).
+    "referencesFeature",
+    "crossesFeature",
     "actionType",
     "actorType",
     "allocationType",
@@ -324,6 +329,12 @@ fn is_excluded(path: &Path) -> bool {
         "component_view.rs",
         // Owns relationship spelling serialization, not a consumer decision.
         "model.rs",
+        // Boundary DTO projection (`project_source_text_attributes`,
+        // `project_relationship_target_attributes`, `project_expression_text_attributes`):
+        // projects typed facts onto a transport DTO's `attributes` map at construction sites
+        // only, never reading the map back into a semantic decision (`UNIFY_CACHE_PROGRESS.md`
+        // chunk D/G, precedented by `project_expression_text_attributes` in chunk E).
+        "model_projection.rs",
     ];
     path.components().any(|component| {
         EXCLUDED_DIRECTORIES
