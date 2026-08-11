@@ -171,6 +171,17 @@ pub(crate) fn write_semantic_model_sexpr(
     output.write_str(&model.to_semantic_model_sexpr())
 }
 
+impl SemanticModel {
+    /// Streams the canonical semantic-model debug projection to a caller-owned writer.
+    ///
+    /// This is deliberately a rendering sink rather than an inspection API: callers receive
+    /// no graph, index, fact, or resolution storage access. The projection is intended for the
+    /// standalone snapshot harness and diagnostics/debug output only.
+    pub fn write_debug_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
+        write_semantic_model_sexpr(self, output)
+    }
+}
+
 struct ModelCanonicalIdentities {
     document_labels: BTreeMap<Url, String>,
 }
@@ -182,13 +193,22 @@ impl ModelCanonicalIdentities {
             documents
                 .entry(node.id.uri.clone())
                 .or_default()
-                .push(format!("{}:{}:{}", node.id.qualified_name, node.element_kind.as_str(), node.name));
+                .push(format!(
+                    "{}:{}:{}",
+                    node.id.qualified_name,
+                    node.element_kind.as_str(),
+                    node.name
+                ));
         }
         for fact in model.resolution().facts() {
             documents
                 .entry(fact.reference.source.uri.clone())
                 .or_default()
-                .push(format!("reference:{}:{}", reference_kind(fact.reference.kind), fact.reference.authored_ordinal));
+                .push(format!(
+                    "reference:{}:{}",
+                    reference_kind(fact.reference.kind),
+                    fact.reference.authored_ordinal
+                ));
         }
         let mut ordered = documents.into_iter().collect::<Vec<_>>();
         ordered.iter_mut().for_each(|(_, facts)| facts.sort());
@@ -288,7 +308,10 @@ fn render_model_declared_facts(
         ("specializes", &facts.relationships.specializes),
         ("subsetting", &facts.relationships.subsetting),
         ("redefinition", &facts.relationships.redefinition),
-        ("reference-subsetting", &facts.relationships.reference_subsetting),
+        (
+            "reference-subsetting",
+            &facts.relationships.reference_subsetting,
+        ),
         ("cross-subsetting", &facts.relationships.cross_subsetting),
         ("subject", &facts.relationships.subject),
         ("connection", &facts.relationships.connection),
@@ -305,7 +328,11 @@ fn render_model_declared_facts(
         ("derivation", &facts.relationships.derivation),
     ];
     let has_relationships = relationships.iter().any(|(_, targets)| !targets.is_empty());
-    let has_import = facts.membership.as_ref().and_then(|membership| membership.import.as_ref()).is_some();
+    let has_import = facts
+        .membership
+        .as_ref()
+        .and_then(|membership| membership.import.as_ref())
+        .is_some();
     if !has_relationships && facts.expression_relationships.is_empty() && !has_import {
         return;
     }
@@ -339,7 +366,9 @@ fn render_model_declared_facts(
                     " ({} (reference {}) (range {}))",
                     kind,
                     atom(&target.reference),
-                    target.range.map_or_else(|| "none".to_string(), |range| render_range(&range))
+                    target
+                        .range
+                        .map_or_else(|| "none".to_string(), |range| render_range(&range))
                 );
             }
         }
@@ -399,7 +428,11 @@ fn render_outcome(
 ) {
     match outcome {
         ResolutionOutcome::Resolved { target } => {
-            let _ = write!(output, "(outcome (status resolved) (target {}))", identities.node(target));
+            let _ = write!(
+                output,
+                "(outcome (status resolved) (target {}))",
+                identities.node(target)
+            );
         }
         ResolutionOutcome::Unresolved => output.push_str("(outcome (status unresolved))"),
         ResolutionOutcome::UnsupportedFiltered => {
@@ -507,7 +540,11 @@ fn render_node_evaluation_facts(
     output: &mut String,
 ) {
     if let Some(expression) = &facts.expression {
-        let _ = write!(output, " (expression (status {})", atom(expression.status.as_str()));
+        let _ = write!(
+            output,
+            " (expression (status {})",
+            atom(expression.status.as_str())
+        );
         if let Some(value) = &expression.value {
             let _ = write!(output, " (value {})", render_evaluated_value(value));
         }
@@ -520,12 +557,20 @@ fn render_node_evaluation_facts(
         output.push(')');
     }
     if let Some(analysis) = &facts.analysis {
-        let _ = write!(output, " (analysis (status {})", atom(analysis.expression.status.as_str()));
+        let _ = write!(
+            output,
+            " (analysis (status {})",
+            atom(analysis.expression.status.as_str())
+        );
         if let Some(passed) = analysis.passed {
             let _ = write!(output, " (passed {passed})");
         }
         if let Some(value) = &analysis.computed_value {
-            let _ = write!(output, " (computed-value {})", render_evaluated_value(value));
+            let _ = write!(
+                output,
+                " (computed-value {})",
+                render_evaluated_value(value)
+            );
         }
         if let Some(unit) = &analysis.computed_unit {
             let _ = write!(output, " (computed-unit {})", atom(unit));
@@ -573,6 +618,8 @@ fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::DerivationTarget => "derivationTarget",
         ReferenceKind::NamespaceImport => "namespaceImport",
         ReferenceKind::MembershipImport => "membershipImport",
+        ReferenceKind::InitialStateSource => "initialStateSource",
+        ReferenceKind::InitialStateTarget => "initialStateTarget",
     }
 }
 
@@ -1359,61 +1406,5 @@ mod tests {
         reverse.restore_pending_relationship(second);
         reverse.restore_pending_relationship(first);
         assert_eq!(rendering, reverse.to_semantic_sexpr());
-    }
-
-    #[test]
-    fn semantic_model_projection_contains_authored_outcomes_and_provenance() {
-        let source = r#"
-            package Types { part def Engine; }
-            package Uses {
-                import Types::*;
-                part engine : Engine;
-                part missing : Missing;
-            }
-        "#;
-        let document = document("semantic-model-snapshot.sysml", source);
-        let snapshot = ImmutableSourceSnapshot::new(vec![document]).expect("snapshot");
-        let model = build_semantic_model(SemanticBuildRequest {
-            sources: snapshot,
-            construction: ConstructionStrategy::Sequential,
-            evaluation: EvaluationPolicy::ResolvedOnly,
-            configuration: SemanticConfiguration::default(),
-        })
-        .expect("semantic model");
-        let mut rendering = String::new();
-        write_semantic_model_sexpr(&model, &mut rendering).expect("render model");
-        assert!(rendering.starts_with("(semantic-model\n"));
-        assert!(rendering.contains("(publication (phase resolved) (completeness complete)"));
-        assert!(rendering.contains("(kind featureTyping)"));
-        assert!(rendering.contains("(authored-target \"Engine\")"));
-        assert!(rendering.contains("(outcome (status resolved)"));
-        assert!(rendering.contains("(outcome (status unresolved))"));
-        assert!(rendering.contains("(relationships (typing"));
-    }
-
-    #[test]
-    fn semantic_model_projection_exposes_all_ambiguity_candidates() {
-        let source = r#"
-            package A { part def T; }
-            package B { part def T; }
-            package C { import A::*; import B::*; part p : T; }
-        "#;
-        let snapshot = ImmutableSourceSnapshot::new(vec![document(
-            "semantic-model-ambiguity.sysml",
-            source,
-        )])
-        .expect("snapshot");
-        let model = build_semantic_model(SemanticBuildRequest {
-            sources: snapshot,
-            construction: ConstructionStrategy::Parallel,
-            evaluation: EvaluationPolicy::ResolvedOnly,
-            configuration: SemanticConfiguration::default(),
-        })
-        .expect("semantic model");
-        let mut rendering = String::new();
-        write_semantic_model_sexpr(&model, &mut rendering).expect("render model");
-        assert!(rendering.contains("(outcome (status ambiguous) (candidates"));
-        assert!(rendering.contains("qualified-name \"A::T\""));
-        assert!(rendering.contains("qualified-name \"B::T\""));
     }
 }

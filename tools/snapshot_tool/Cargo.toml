@@ -1,0 +1,18 @@
+[package]
+name = "spec42-snapshot-tool"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "spec42-snapshot"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+language_service = { path = "../../crates/language_service" }
+sysml_model = { path = "../../crates/sysml_model" }
+
+[dev-dependencies]
+tempfile = "3"

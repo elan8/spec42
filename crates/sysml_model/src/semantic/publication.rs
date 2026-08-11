@@ -1297,7 +1297,6 @@ impl SemanticModel {
         self.completeness
     }
 
-    #[cfg(test)]
     pub(crate) fn resolution(&self) -> &ResolutionState {
         &self.resolution
     }
