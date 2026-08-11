@@ -10,6 +10,13 @@ streams its canonical debug S-expression through the caller-provided writer. Dia
 collected by `sysml_diagnostics` from category-owned projections of the same published model; the
 runner never rebuilds a mutable graph for validation.
 
+Each section has one responsibility. `SMG` records semantic identity, kind, ownership, typed facts,
+provenance, settled outcomes, candidates, and relationships. It does not repeat routine source
+ranges for every element or reference. Exact locations belong in `DIAGNOSTICS` when reporting is
+location-sensitive and in `NAVIGATION` when source-to-target mapping is under test. A semantic
+source span is rendered in `SMG` only when the span itself is a named semantic fact that cannot be
+observed through those sections. This keeps formatting-only movement from obscuring semantic diffs.
+
 The canonical top-level section order is `META`, `SOURCE`, `DIAGNOSTICS`, `FORMAT`, `SMG`,
 `NAVIGATION`.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.

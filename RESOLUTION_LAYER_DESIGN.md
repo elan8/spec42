@@ -945,6 +945,10 @@ merge may expose two supported resolution systems.
   semantic lookup.
 - Add a test-only canonical reference projection containing authored reference identity, outcome,
   candidates, and projected relationship.
+- Keep snapshot sections purpose-specific: `SMG` renders semantic identity, typed facts,
+  provenance, outcomes, candidates, and relationships without routine element/reference ranges;
+  exact observable locations are owned by `DIAGNOSTICS` and `NAVIGATION`. Add an `SMG` span only
+  when the span is itself a named semantic fact not covered by either location-sensitive section.
 - Compare sequential, parallel, forward/reverse replacement, and the old scoped path before its
   deletion.
 - Build the corrected scope resolver as an isolated prototype using the target contracts.
