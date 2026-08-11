@@ -40,9 +40,10 @@ fn specialized_analysis_def_inherits_parent_return_ref_for_objective_binding() {
         .find(|node| node.element_kind == "objective" && node.name == "voltageDropObjective")
         .expect("voltageDropObjective node");
     let bound_to = objective
-        .attributes
-        .get("objectiveBoundTo")
-        .and_then(|value| value.as_str())
+        .declared_facts
+        .analysis_case
+        .as_ref()
+        .and_then(|facts| facts.objective_bound_to.as_deref())
         .unwrap_or_default();
     assert!(
         bound_to.ends_with("loadFlowComplete"),
@@ -56,9 +57,10 @@ fn specialized_analysis_def_inherits_parent_return_ref_for_objective_binding() {
         .expect("VoltageDropAnalysis node");
     assert_eq!(
         specialized
-            .attributes
-            .get("analysisExpression")
-            .and_then(|value| value.as_str()),
+            .declared_facts
+            .analysis_case
+            .as_ref()
+            .and_then(|facts| facts.expression.as_deref()),
         Some("true"),
         "expected inherited analysis expression on specialized analysis def"
     );

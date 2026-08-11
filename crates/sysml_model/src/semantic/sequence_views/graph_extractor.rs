@@ -583,11 +583,7 @@ fn ref_value(graph: &SemanticGraph, node: &SemanticNode, names: &[&str]) -> Opti
             continue;
         }
         if names.iter().any(|n| child.name.eq_ignore_ascii_case(n)) {
-            return child
-                .attributes
-                .get("value")
-                .and_then(|v| v.as_str())
-                .map(strip_quotes);
+            return child.expression_text.value.as_deref().map(strip_quotes);
         }
     }
     None
@@ -599,11 +595,7 @@ fn attribute_value(graph: &SemanticGraph, node: &SemanticNode, names: &[&str]) -
             continue;
         }
         if names.iter().any(|n| child.name.eq_ignore_ascii_case(n)) {
-            return child
-                .attributes
-                .get("value")
-                .and_then(|v| v.as_str())
-                .map(strip_quotes);
+            return child.expression_text.value.as_deref().map(strip_quotes);
         }
     }
     None

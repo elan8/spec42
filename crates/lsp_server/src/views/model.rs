@@ -51,14 +51,18 @@ fn build_document_graph_dto(semantic_graph: &semantic::SemanticGraph, uri: &Url)
         .nodes_for_uri(uri)
         .into_iter()
         .filter(|n| n.element_kind != ElementKind::Diagnostic)
-        .map(|n| GraphNodeDto {
-            id: n.id.qualified_name.clone(),
-            element_type: n.element_kind.as_str().to_string(),
-            name: n.name.clone(),
-            uri: Some(n.id.uri.as_str().to_string()),
-            parent_id: n.parent_id.as_ref().map(|p| p.qualified_name.clone()),
-            range: range_to_dto(n.range),
-            attributes: n.attributes.clone(),
+        .map(|n| {
+            let mut attributes = n.attributes.clone();
+            model_projection::project_expression_text_attributes(&mut attributes, n);
+            GraphNodeDto {
+                id: n.id.qualified_name.clone(),
+                element_type: n.element_kind.as_str().to_string(),
+                name: n.name.clone(),
+                uri: Some(n.id.uri.as_str().to_string()),
+                parent_id: n.parent_id.as_ref().map(|p| p.qualified_name.clone()),
+                range: range_to_dto(n.range),
+                attributes,
+            }
         })
         .collect();
 

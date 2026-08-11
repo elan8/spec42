@@ -822,9 +822,9 @@ fn collect_view_body_filters(
         .filter(|child| child.element_kind == ElementKind::Filter)
         .filter_map(|child| {
             child
-                .attributes
-                .get("condition")
-                .and_then(|value| value.as_str())
+                .expression_text
+                .condition
+                .as_deref()
                 .map(|text| parse_filter_text(text.trim()))
         })
         .collect()
