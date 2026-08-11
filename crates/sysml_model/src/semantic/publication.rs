@@ -3510,7 +3510,7 @@ impl Default for SemanticPublication {
 }
 
 #[cfg(test)]
-mod tests {
+mod publication_contract_tests {
     use super::*;
 
     fn digest(byte: u8) -> RootDigest {

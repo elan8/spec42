@@ -268,6 +268,37 @@ resolution blocker reaches into the cache work — it is not merely a correctnes
 arm's length, it physically prevents removing the field that blocks postcard encoding of the
 graph.
 
+### Chunk G is blocked on a provenance decision
+
+An attempt to retire the unblocked attribute keys (`feat/b9-chunk-g-partial`) was reverted from
+the integration branch. It is preserved on its branch and is mostly good work; one change in it
+needs a decision before any of it can land.
+
+Retiring the `subsetsFeature` key exposed that the metadata-def restriction shorthand
+(`:>> annotatedElement`, `:>> baseType` inside a `metadata def`) carries a **dual** relationship:
+the authored redefinition, plus a subsetting. The subsetting is genuinely load-bearing — the
+pre-existing contract test
+`resolution_contract::contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_kind`
+depends on it to avoid an incompatible-type-kind diagnostic — so it cannot simply be dropped.
+
+Previously that subsetting lived only in the untyped attribute map, where it produced no graph
+edge. Recording it as a typed declared fact makes it a real edge, which changed the
+`sysml/examples/ahfprofile_lib.md` golden by adding four `subsetting` relationships.
+
+The problem is provenance, not the relationship. `DeclaredRelationshipTarget` has no provenance
+field because declared facts are authored by definition, so recording the subsetting there
+publishes it as `(provenance authored)`. But it is not authored — it is *entailed* by the
+redefinition, since KerML's `Redefinition` specializes `Subsetting`. `AGENTS.md` is explicit:
+never make an implied relationship appear explicitly declared.
+
+The decision needed: record this subsetting through the implied-relationship mechanism with an
+appropriate `ImpliedRelationshipRule` identity rather than as a declared fact. The golden fixture
+should then change deliberately, showing `(provenance implied ...)`, with that rationale cited.
+
+Until that is settled the fixture must not move, so chunk G stays reverted. This is worth
+recording as a finding in its own right: the untyped attribute map was concealing a relationship
+whose provenance had never been classified.
+
 ### Resolving normative language questions
 
 Several findings in this effort are not cache questions at all but SysML/KerML semantics
