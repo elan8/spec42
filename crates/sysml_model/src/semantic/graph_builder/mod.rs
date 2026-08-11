@@ -13,8 +13,8 @@ use crate::semantic::ast_util::{
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
-    DeclaredFeatureProperties, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    ConstructionOwner, DeclaredFeatureProperties, DeclaredRelationshipTarget, ElementKind, NodeId,
+    RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::relationships::add_semantic_edge_once;
 
@@ -458,7 +458,10 @@ pub(super) fn attach_doc_comment(g: &mut SemanticGraph, node_id: &NodeId, text: 
         g,
         &doc_id,
         node_id,
-        SemanticEdge::plain(RelationshipKind::Annotation),
+        SemanticEdge::plain(
+            RelationshipKind::Annotation,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }
 

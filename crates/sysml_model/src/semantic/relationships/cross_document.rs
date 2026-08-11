@@ -58,8 +58,15 @@ pub fn find_part_def_in_elements<'a>(
 }
 
 /// URI-scoped resolver for workspace relationship linking. Adds typing/specializes/subject
-/// edges from nodes in the given URI, and maintains `cross_document_edges_by_source_uri` (see
-/// `graph.rs`) so it can cleanly remove and re-add its own edges on a later call.
+/// edges from nodes in the given URI.
+///
+/// `cross_document_edges_by_source_uri` (see `graph.rs`) is maintained centrally by
+/// `add_semantic_edge_once`, which promotes any Typing/Specializes/Subject edge whose endpoints
+/// cross a document boundary to `ConstructionOwner::WorkspaceCrossDocumentLinking` and records
+/// it there -- the same promotion applies uniformly regardless of whether this scoped resolver,
+/// the whole-graph fixed-point pass, or the parallel-build resolver produced the edge. This
+/// function does not need to (and must not) do that bookkeeping itself, so whole/parallel/
+/// scoped builds agree on ownership by construction rather than by convention.
 ///
 /// Self-cleaning and idempotent: any cross-document edges this function previously added for
 /// `uri` are removed first (via `remove_recorded_cross_document_edges_for_uri`), so calling it
@@ -76,17 +83,13 @@ pub fn find_part_def_in_elements<'a>(
 pub fn add_cross_document_edges_for_uri(g: &mut SemanticGraph, uri: &Url) {
     g.remove_recorded_cross_document_edges_for_uri(uri);
     let edges = resolve_cross_document_edges_for_uri(g, uri);
-    let mut recorded = Vec::with_capacity(edges.len());
     for (src_id, tgt_id, kind) in edges {
-        if add_semantic_edge_once(g, &src_id, &tgt_id, SemanticEdge::plain(kind.clone()))
-            == AddSemanticEdgeResult::Added
-        {
-            recorded.push((src_id, tgt_id, kind));
-        }
-    }
-    if !recorded.is_empty() {
-        g.cross_document_edges_by_source_uri
-            .insert(uri.clone(), recorded);
+        add_semantic_edge_once(
+            g,
+            &src_id,
+            &tgt_id,
+            SemanticEdge::plain(kind, ConstructionOwner::DocumentConstruction),
+        );
     }
 }
 

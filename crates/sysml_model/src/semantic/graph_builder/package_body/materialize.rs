@@ -1,5 +1,5 @@
 use super::*;
-use crate::semantic::model::{DeclaredFeatureProperties, SemanticEdge};
+use crate::semantic::model::{ConstructionOwner, DeclaredFeatureProperties, SemanticEdge};
 use crate::semantic::relationships::add_semantic_edge_once;
 use crate::semantic::text_span::TextRange;
 
@@ -250,7 +250,10 @@ fn materialize_conjugated_port_definition(
         g,
         &conjugate_id,
         base_id,
-        SemanticEdge::plain(RelationshipKind::PortConjugation),
+        SemanticEdge::plain(
+            RelationshipKind::PortConjugation,
+            ConstructionOwner::DocumentConstruction,
+        ),
     );
 }
 
