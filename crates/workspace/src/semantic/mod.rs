@@ -29,30 +29,4 @@ pub use sysml_model::{
     patch_graph_for_document, patch_graph_for_document_scoped, prepare_analysis_evaluation_context,
     WorkspaceParsedDocument,
 };
-pub use sysml_model::{
-    build_semantic_model, AuthoredReferenceId, ConstructionStrategy, DerivedRelationshipRule,
-    EvaluationPolicy, ImmutableSourceSnapshot, ReferenceKind, ResolutionOutcome,
-    ResolutionProvenance, SemanticBuildFailure, SemanticBuildRequest, SemanticCompleteness,
-    SemanticConfiguration, SemanticModel, SemanticModelIdentity, SemanticPhase,
-};
-
-/// Build a settled immutable semantic publication from workspace documents.
-///
-/// This is the workspace boundary for the canonical resolver. Callers select only how source
-/// construction is prepared and whether expression evaluation is requested; resolution always
-/// runs over the complete admitted snapshot.
-pub fn build_semantic_model_from_documents(
-    documents: &[sysml_model::SysmlDocument],
-    construction: ConstructionStrategy,
-    evaluation: EvaluationPolicy,
-    configuration: SemanticConfiguration,
-) -> Result<SemanticModel, SemanticBuildFailure> {
-    let sources = ImmutableSourceSnapshot::new(documents.to_vec())?;
-    build_semantic_model(SemanticBuildRequest {
-        sources,
-        construction,
-        evaluation,
-        configuration,
-    })
-}
 pub use workspace_uri::uri_under_any_library;

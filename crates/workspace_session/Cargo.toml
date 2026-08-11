@@ -10,6 +10,7 @@ description = "Tokio-actor concurrency wrapper giving lock-free reads and supers
 default = []
 
 [dependencies]
+sysml_query = { path = "../sysml_query" }
 workspace = { path = "../workspace", default-features = false }
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "sync", "macros", "time"] }
 thiserror = { workspace = true }

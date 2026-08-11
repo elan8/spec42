@@ -7,7 +7,7 @@ use serde_json::Value;
 use syn::visit::{self, Visit};
 use syn::{Fields, ImplItem, Item, ReturnType, Signature, Type, UseTree, Visibility};
 
-const DESIGNATED_CONSUMERS: &[&str] = &["spec42-snapshot"];
+const DESIGNATED_CONSUMERS: &[&str] = &["spec42-snapshot", "workspace_session"];
 const MODEL_IMPLEMENTATION_OWNERS: &[&str] = &["sysml_query"];
 const TRANSITIONAL_DIRECT_CONSUMERS: &[&str] = &[
     "language_service",
@@ -21,6 +21,9 @@ const FORBIDDEN_PUBLIC_TYPES: &[&str] = &[
     "SemanticGraph",
     "SemanticNode",
     "SemanticModel",
+    "SemanticModelIdentity",
+    "SemanticBuildRequest",
+    "ImmutableSourceSnapshot",
     "SemanticQueryIndexes",
     "ResolutionState",
     "ResolutionFact",
@@ -88,9 +91,79 @@ fn designated_consumers_use_the_query_facade_and_direct_model_dependencies_do_no
 
 #[test]
 fn query_facade_public_api_contains_no_raw_semantic_storage() {
-    let source_root = repository_root().join("crates/sysml_query/src");
+    assert_source_tree_has_no_raw_semantic_storage(
+        &repository_root().join("crates/sysml_query/src"),
+    );
+}
+
+#[test]
+fn workspace_publication_owner_contains_no_raw_semantic_storage() {
+    assert_source_tree_has_no_raw_semantic_storage(
+        &repository_root().join("crates/workspace_session/src"),
+    );
+}
+
+#[test]
+fn workspace_cannot_restore_the_retired_semantic_publication_wrapper() {
+    let root = repository_root();
+    let files = [
+        root.join("crates/workspace/src/lib.rs"),
+        root.join("crates/workspace/src/semantic/mod.rs"),
+    ];
+    let retired_types = BTreeSet::from([
+        "AuthoredReferenceId",
+        "ConstructionStrategy",
+        "EvaluationPolicy",
+        "ImmutableSourceSnapshot",
+        "ReferenceKind",
+        "ResolutionOutcome",
+        "ResolutionProvenance",
+        "SemanticBuildFailure",
+        "SemanticBuildRequest",
+        "SemanticCompleteness",
+        "SemanticConfiguration",
+        "SemanticModel",
+        "SemanticModelIdentity",
+        "SemanticPhase",
+    ]);
+    let mut violations = Vec::new();
+    for file in files {
+        let source = fs::read_to_string(&file).expect("read workspace facade");
+        let syntax = syn::parse_file(&source).expect("parse workspace facade");
+        for item in syntax.items {
+            match item {
+                Item::Fn(function)
+                    if is_public(&function.vis)
+                        && function.sig.ident == "build_semantic_model_from_documents" =>
+                {
+                    violations.push(format!(
+                        "{} restores build_semantic_model_from_documents",
+                        file.display()
+                    ));
+                }
+                Item::Use(item_use) if is_public(&item_use.vis) => {
+                    let mut identifiers = BTreeSet::new();
+                    use_identifiers(&item_use.tree, &mut identifiers);
+                    for retired in &retired_types {
+                        if identifiers.contains(*retired) {
+                            violations.push(format!(
+                                "{} reexports retired publication type {retired}",
+                                file.display()
+                            ));
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    assert!(violations.is_empty(), "{}", violations.join("\n"));
+}
+
+fn assert_source_tree_has_no_raw_semantic_storage(source_root: &Path) {
     let mut files = Vec::new();
-    rust_sources(&source_root, &mut files);
+    rust_sources(source_root, &mut files);
     let mut violations = Vec::new();
     for file in files {
         let source = fs::read_to_string(&file).expect("read Rust source");
@@ -103,7 +176,8 @@ fn query_facade_public_api_contains_no_raw_semantic_storage() {
     }
     assert!(
         violations.is_empty(),
-        "sysml_query exposes forbidden implementation types:\n{}",
+        "{} exposes forbidden implementation types:\n{}",
+        source_root.display(),
         violations.join("\n")
     );
 }

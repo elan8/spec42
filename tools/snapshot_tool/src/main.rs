@@ -229,11 +229,10 @@ fn build_model(
     construction: ConstructionStrategy,
     path: &Path,
 ) -> Result<PublishedModel, String> {
-    build_published_model(BuildRequest::evaluated(
-        source_documents.to_vec(),
-        construction,
-    ))
-    .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))
+    let request = BuildRequest::evaluated(source_documents.to_vec(), construction)
+        .map_err(|error| format!("{}: invalid semantic input: {error}", path.display()))?;
+    build_published_model(request)
+        .map_err(|error| format!("{}: semantic build failed: {error}", path.display()))
 }
 
 fn render_owned_sections(

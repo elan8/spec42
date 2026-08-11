@@ -25,11 +25,18 @@ mod snapshot;
 
 pub use actor::{MutatePanicked, Mutation, MutationOutcome, SessionActor, TracksRelink};
 pub use semantic_model::{
-    SemanticBuildFailureKind, SemanticBuildToken, SemanticModelSession, SemanticModelSnapshot,
-    SemanticPublicationOutcome,
+    PublishedModelSnapshot, SemanticBuildFailureKind, SemanticBuildToken,
+    SemanticPublicationOutcome, SemanticPublicationSession,
 };
 pub use snapshot::SnapshotHandle;
 
 // Re-exported so callers building `report_job_result` call sites don't need a direct
 // `workspace` dependency just for the token type.
 pub use workspace::{PublicationToken, RelinkToken};
+
+/// The raw model and the former workspace construction wrapper are deliberately inaccessible.
+///
+/// ```compile_fail
+/// use workspace::{build_semantic_model_from_documents, SemanticModel};
+/// ```
+pub struct RawSemanticPublicationIsNotPublic;

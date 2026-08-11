@@ -51,12 +51,8 @@ pub use provider::{
     InMemoryDocumentProvider, SysmlDocument, SysmlDocumentProvider, SysmlDocumentSourceKind,
 };
 pub use semantic::{
-    add_cross_document_edges_for_uri, build_graph_from_doc, build_semantic_model_from_documents,
-    evaluate_expressions, hover_markdown_for_node, AuthoredReferenceId, ConstructionStrategy,
-    DerivedRelationshipRule, EvaluationPolicy, ImmutableSourceSnapshot, NodeId, ReferenceKind,
-    RelationshipKind, ResolutionOutcome, ResolutionProvenance, SemanticBuildFailure,
-    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticGraph,
-    SemanticModel, SemanticModelIdentity, SemanticNode, SemanticPhase,
+    add_cross_document_edges_for_uri, build_graph_from_doc, evaluate_expressions,
+    hover_markdown_for_node, NodeId, RelationshipKind, SemanticGraph, SemanticNode,
 };
 pub use sysml_model::ElementKind;
 

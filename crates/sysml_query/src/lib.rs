@@ -39,6 +39,16 @@ pub struct SourceDocument {
 }
 
 impl SourceDocument {
+    pub fn from_uri(
+        uri: &str,
+        content: String,
+        source_kind: SourceKind,
+    ) -> Result<Self, SourceError> {
+        sysml_model::SysmlDocument::from_uri(uri, content, None, source_kind.into(), None, None)
+            .map(|inner| Self { inner })
+            .map_err(SourceError)
+    }
+
     pub fn from_memory_path(
         namespace: &str,
         path: &str,
@@ -85,19 +95,79 @@ pub enum EvaluationPolicy {
 /// partial index, or prior mutable state.
 #[derive(Debug, Clone)]
 pub struct BuildRequest {
-    pub sources: Vec<SourceDocument>,
-    pub construction: ConstructionStrategy,
-    pub evaluation: EvaluationPolicy,
-    pub semantic_contract_version: String,
+    sources: sysml_model::ImmutableSourceSnapshot,
+    construction: ConstructionStrategy,
+    evaluation: EvaluationPolicy,
+    semantic_contract_version: String,
 }
 
 impl BuildRequest {
-    pub fn evaluated(sources: Vec<SourceDocument>, construction: ConstructionStrategy) -> Self {
-        Self {
+    pub fn new(
+        sources: Vec<SourceDocument>,
+        construction: ConstructionStrategy,
+        evaluation: EvaluationPolicy,
+        semantic_contract_version: impl Into<String>,
+    ) -> Result<Self, BuildError> {
+        let sources = sources.into_iter().map(|source| source.inner).collect();
+        let sources = sysml_model::ImmutableSourceSnapshot::new(sources)
+            .map_err(|error| BuildError(error.to_string()))?;
+        Ok(Self {
             sources,
             construction,
-            evaluation: EvaluationPolicy::Evaluate,
-            semantic_contract_version: "canonical-resolution-v1".to_string(),
+            evaluation,
+            semantic_contract_version: semantic_contract_version.into(),
+        })
+    }
+
+    pub fn evaluated(
+        sources: Vec<SourceDocument>,
+        construction: ConstructionStrategy,
+    ) -> Result<Self, BuildError> {
+        Self::new(
+            sources,
+            construction,
+            EvaluationPolicy::Evaluate,
+            "canonical-resolution-v1",
+        )
+    }
+
+    pub fn identity(&self) -> PublicationIdentity {
+        PublicationIdentity {
+            inner: self.model_request().identity(),
+        }
+    }
+
+    fn model_request(&self) -> sysml_model::SemanticBuildRequest {
+        sysml_model::SemanticBuildRequest {
+            sources: self.sources.clone(),
+            construction: match self.construction {
+                ConstructionStrategy::Sequential => sysml_model::ConstructionStrategy::Sequential,
+                ConstructionStrategy::Parallel => sysml_model::ConstructionStrategy::Parallel,
+            },
+            evaluation: match self.evaluation {
+                EvaluationPolicy::ResolvedOnly => sysml_model::EvaluationPolicy::ResolvedOnly,
+                EvaluationPolicy::Evaluate => sysml_model::EvaluationPolicy::Evaluate,
+            },
+            configuration: sysml_model::SemanticConfiguration {
+                semantic_contract_version: self.semantic_contract_version.clone(),
+            },
+        }
+    }
+
+    fn into_model_request(self) -> sysml_model::SemanticBuildRequest {
+        sysml_model::SemanticBuildRequest {
+            sources: self.sources,
+            construction: match self.construction {
+                ConstructionStrategy::Sequential => sysml_model::ConstructionStrategy::Sequential,
+                ConstructionStrategy::Parallel => sysml_model::ConstructionStrategy::Parallel,
+            },
+            evaluation: match self.evaluation {
+                EvaluationPolicy::ResolvedOnly => sysml_model::EvaluationPolicy::ResolvedOnly,
+                EvaluationPolicy::Evaluate => sysml_model::EvaluationPolicy::Evaluate,
+            },
+            configuration: sysml_model::SemanticConfiguration {
+                semantic_contract_version: self.semantic_contract_version,
+            },
         }
     }
 }
@@ -120,28 +190,8 @@ pub struct PublishedModel {
 }
 
 pub fn build(request: BuildRequest) -> Result<PublishedModel, BuildError> {
-    let sources = request
-        .sources
-        .into_iter()
-        .map(|source| source.inner)
-        .collect();
-    let sources = sysml_model::ImmutableSourceSnapshot::new(sources)
+    let inner = sysml_model::build_semantic_model(request.into_model_request())
         .map_err(|error| BuildError(error.to_string()))?;
-    let inner = sysml_model::build_semantic_model(sysml_model::SemanticBuildRequest {
-        sources,
-        construction: match request.construction {
-            ConstructionStrategy::Sequential => sysml_model::ConstructionStrategy::Sequential,
-            ConstructionStrategy::Parallel => sysml_model::ConstructionStrategy::Parallel,
-        },
-        evaluation: match request.evaluation {
-            EvaluationPolicy::ResolvedOnly => sysml_model::EvaluationPolicy::ResolvedOnly,
-            EvaluationPolicy::Evaluate => sysml_model::EvaluationPolicy::Evaluate,
-        },
-        configuration: sysml_model::SemanticConfiguration {
-            semantic_contract_version: request.semantic_contract_version,
-        },
-    })
-    .map_err(|error| BuildError(error.to_string()))?;
     Ok(PublishedModel { inner })
 }
 
@@ -160,6 +210,70 @@ impl PublishedModel {
 
     pub fn resolution(&self) -> ResolutionQueries<'_> {
         ResolutionQueries { model: &self.inner }
+    }
+
+    pub fn publication(&self) -> PublicationQueries<'_> {
+        PublicationQueries { model: &self.inner }
+    }
+}
+
+/// Opaque identity committing every input and phase that can affect a publication.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PublicationIdentity {
+    inner: sysml_model::SemanticModelIdentity,
+}
+
+impl PublicationIdentity {
+    /// Content component of the identity. This digest is not the complete publication identity;
+    /// phase and contract inputs below participate in equality as well.
+    pub fn source_digest(&self) -> &str {
+        &self.inner.source_digest
+    }
+
+    pub fn semantic_contract_version(&self) -> &str {
+        &self.inner.semantic_contract_version
+    }
+
+    pub fn construction_strategy(&self) -> ConstructionStrategy {
+        match self.inner.construction {
+            sysml_model::ConstructionStrategy::Sequential => ConstructionStrategy::Sequential,
+            sysml_model::ConstructionStrategy::Parallel => ConstructionStrategy::Parallel,
+        }
+    }
+
+    pub fn evaluation_policy(&self) -> EvaluationPolicy {
+        match self.inner.evaluation {
+            sysml_model::EvaluationPolicy::ResolvedOnly => EvaluationPolicy::ResolvedOnly,
+            sysml_model::EvaluationPolicy::Evaluate => EvaluationPolicy::Evaluate,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PublicationCompleteness {
+    Complete,
+    EditorRecovery,
+}
+
+/// Publication metadata needed by atomic owners without exposing the model implementation.
+pub struct PublicationQueries<'a> {
+    model: &'a sysml_model::SemanticModel,
+}
+
+impl PublicationQueries<'_> {
+    pub fn identity(&self) -> PublicationIdentity {
+        PublicationIdentity {
+            inner: self.model.identity().clone(),
+        }
+    }
+
+    pub fn completeness(&self) -> PublicationCompleteness {
+        match self.model.completeness() {
+            sysml_model::SemanticCompleteness::Complete => PublicationCompleteness::Complete,
+            sysml_model::SemanticCompleteness::EditorRecovery => {
+                PublicationCompleteness::EditorRecovery
+            }
+        }
     }
 }
 
@@ -282,4 +396,84 @@ impl NavigationQueries<'_> {
 ///     let _ = sysml_query::PublishedModel::from_raw_parts();
 /// }
 /// ```
+///
+/// ```compile_fail
+/// fn leak(request: &sysml_query::BuildRequest) {
+///     let _ = &request.sources;
+/// }
+/// ```
 pub struct RawStorageIsNotPublic;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn build_request_rejects_duplicate_source_identity_before_publication() {
+        let source = SourceDocument::from_uri(
+            "memory://request/duplicate.sysml",
+            String::new(),
+            SourceKind::Workspace,
+        )
+        .expect("valid URI");
+        let result = BuildRequest::new(
+            vec![source.clone(), source],
+            ConstructionStrategy::Sequential,
+            EvaluationPolicy::ResolvedOnly,
+            "test-contract",
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn publication_identity_includes_contract_and_phase_inputs() {
+        let source = SourceDocument::from_uri(
+            "memory://request/identity.sysml",
+            String::new(),
+            SourceKind::Workspace,
+        )
+        .expect("valid URI");
+        let request = |construction, evaluation, contract| {
+            BuildRequest::new(vec![source.clone()], construction, evaluation, contract)
+                .expect("unique source")
+                .identity()
+        };
+        let base = request(
+            ConstructionStrategy::Sequential,
+            EvaluationPolicy::ResolvedOnly,
+            "contract-v1",
+        );
+
+        assert_ne!(
+            base,
+            request(
+                ConstructionStrategy::Parallel,
+                EvaluationPolicy::ResolvedOnly,
+                "contract-v1"
+            )
+        );
+        assert_ne!(
+            base,
+            request(
+                ConstructionStrategy::Sequential,
+                EvaluationPolicy::Evaluate,
+                "contract-v1"
+            )
+        );
+        assert_ne!(
+            base,
+            request(
+                ConstructionStrategy::Sequential,
+                EvaluationPolicy::ResolvedOnly,
+                "contract-v2"
+            )
+        );
+        assert_eq!(base.semantic_contract_version(), "contract-v1");
+        assert_eq!(
+            base.construction_strategy(),
+            ConstructionStrategy::Sequential
+        );
+        assert_eq!(base.evaluation_policy(), EvaluationPolicy::ResolvedOnly);
+    }
+}

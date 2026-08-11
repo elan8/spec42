@@ -1,43 +1,28 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use workspace::{
-    build_semantic_model_from_documents, ConstructionStrategy, EvaluationPolicy,
-    SemanticBuildRequest, SemanticConfiguration, SemanticModel, SysmlDocument,
-    SysmlDocumentSourceKind,
+use sysml_query::{
+    build, BuildRequest, ConstructionStrategy, EvaluationPolicy, PublicationCompleteness,
+    PublishedModel, SourceDocument, SourceKind,
 };
 use workspace_session::{
-    SemanticBuildFailureKind, SemanticModelSession, SemanticPublicationOutcome,
+    SemanticBuildFailureKind, SemanticPublicationOutcome, SemanticPublicationSession,
 };
 
-fn request(uri: &str, content: &str, evaluation: EvaluationPolicy) -> SemanticBuildRequest {
-    let document = SysmlDocument::from_uri(
-        uri,
-        content.to_string(),
-        None,
-        SysmlDocumentSourceKind::Workspace,
-        None,
-        None,
-    )
-    .unwrap();
-    SemanticBuildRequest {
-        sources: workspace::ImmutableSourceSnapshot::new(vec![document]).unwrap(),
-        construction: ConstructionStrategy::Sequential,
+fn request(uri: &str, content: &str, evaluation: EvaluationPolicy) -> BuildRequest {
+    let document =
+        SourceDocument::from_uri(uri, content.to_string(), SourceKind::Workspace).unwrap();
+    BuildRequest::new(
+        vec![document],
+        ConstructionStrategy::Sequential,
         evaluation,
-        configuration: SemanticConfiguration::default(),
-    }
+        "canonical-resolution-v1",
+    )
+    .unwrap()
 }
 
-fn model(build: &SemanticBuildRequest) -> Arc<SemanticModel> {
-    Arc::new(
-        build_semantic_model_from_documents(
-            build.sources.documents(),
-            build.construction,
-            build.evaluation,
-            build.configuration.clone(),
-        )
-        .unwrap(),
-    )
+fn model(request: &BuildRequest) -> Arc<PublishedModel> {
+    Arc::new(build(request.clone()).unwrap())
 }
 
 #[tokio::test]
@@ -54,7 +39,7 @@ async fn current_build_atomically_replaces_model_and_old_readers_remain_valid() 
     );
     let first = model(&first_request);
     let second = model(&second_request);
-    let session = SemanticModelSession::new(first.clone());
+    let session = SemanticPublicationSession::new(first.clone());
     let retained = session.current();
 
     assert_eq!(session.lifecycle(), workspace::SessionLifecycle::Ready);
@@ -70,7 +55,10 @@ async fn current_build_atomically_replaces_model_and_old_readers_remain_valid() 
     assert_eq!(session.lifecycle(), workspace::SessionLifecycle::Ready);
     assert!(Arc::ptr_eq(&retained, &first));
     assert!(Arc::ptr_eq(&session.current(), &second));
-    assert_eq!(retained.identity(), first.identity());
+    assert_eq!(
+        retained.publication().identity(),
+        first.publication().identity()
+    );
 }
 
 #[tokio::test]
@@ -81,7 +69,7 @@ async fn failed_and_cancelled_builds_keep_prior_model_and_ready_lifecycle() {
         EvaluationPolicy::ResolvedOnly,
     );
     let first = model(&first_request);
-    let session = SemanticModelSession::new(first.clone());
+    let session = SemanticPublicationSession::new(first.clone());
 
     let failed = session.begin_build(&first_request).await.unwrap();
     assert_eq!(
@@ -121,10 +109,10 @@ async fn incomplete_recovery_build_is_retained_as_prior_complete_model() {
     let first = model(&first_request);
     let recovery = model(&recovery_request);
     assert_eq!(
-        recovery.completeness(),
-        workspace::SemanticCompleteness::EditorRecovery
+        recovery.publication().completeness(),
+        PublicationCompleteness::EditorRecovery
     );
-    let session = SemanticModelSession::new(first.clone());
+    let session = SemanticPublicationSession::new(first.clone());
     let token = session.begin_build(&recovery_request).await.unwrap();
 
     assert_eq!(
@@ -149,7 +137,7 @@ async fn mismatched_identity_is_rejected_without_replacing_prior_model() {
     );
     let first = model(&first_request);
     let second = model(&second_request);
-    let session = SemanticModelSession::new(first.clone());
+    let session = SemanticPublicationSession::new(first.clone());
     let token = session.begin_build(&first_request).await.unwrap();
 
     assert_eq!(
@@ -179,7 +167,7 @@ async fn superseded_failure_and_cancellation_do_not_replace_or_finish_newer_buil
     );
     let first = model(&first_request);
     let third = model(&third_request);
-    let session = SemanticModelSession::new(first.clone());
+    let session = SemanticPublicationSession::new(first.clone());
 
     let stale = session.begin_build(&second_request).await.unwrap();
     let current = session.begin_build(&third_request).await.unwrap();
@@ -223,7 +211,7 @@ async fn stale_out_of_order_build_cannot_replace_newer_model() {
     let first = model(&first_request);
     let second = model(&second_request);
     let third = model(&third_request);
-    let session = SemanticModelSession::new(first);
+    let session = SemanticPublicationSession::new(first);
 
     let stale = session.begin_build(&second_request).await.unwrap();
     let current = session.begin_build(&third_request).await.unwrap();
@@ -257,8 +245,8 @@ async fn token_from_another_owner_is_stale() {
     );
     let first = model(&first_request);
     let second = model(&second_request);
-    let left = SemanticModelSession::new(first);
-    let right = SemanticModelSession::new(second.clone());
+    let left = SemanticPublicationSession::new(first);
+    let right = SemanticPublicationSession::new(second.clone());
     let token = left.begin_build(&second_request).await.unwrap();
 
     assert_eq!(
@@ -277,16 +265,16 @@ async fn concurrent_readers_retain_coherent_models_during_publication() {
         EvaluationPolicy::ResolvedOnly,
     );
     let initial = model(&initial_request);
-    let session = Arc::new(SemanticModelSession::new(initial));
+    let session = Arc::new(SemanticPublicationSession::new(initial));
     let reader_session = session.clone();
     let reader = tokio::spawn(async move {
         for _ in 0..2_000 {
             let retained = reader_session.current();
             assert_eq!(
-                retained.completeness(),
-                workspace::SemanticCompleteness::Complete
+                retained.publication().completeness(),
+                PublicationCompleteness::Complete
             );
-            assert!(!retained.identity().source_digest.is_empty());
+            assert!(!retained.publication().identity().source_digest().is_empty());
         }
     });
 

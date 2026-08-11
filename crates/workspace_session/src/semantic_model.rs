@@ -1,4 +1,4 @@
-//! Atomic publication owner for immutable [`workspace::SemanticModel`] values.
+//! Atomic publication owner for opaque immutable [`sysml_query::PublishedModel`] values.
 //!
 //! A build runs against an immutable source snapshot outside this owner.  The owner only admits
 //! a completed model at its publication barrier, after checking both the owner-scoped relink token
@@ -7,17 +7,15 @@
 
 use std::sync::Arc;
 
-use workspace::{
-    SemanticBuildRequest, SemanticCompleteness, SemanticModel, SemanticModelIdentity,
-    SessionLifecycle, WorkspaceSession,
-};
+use sysml_query::{BuildRequest, PublicationCompleteness, PublicationIdentity, PublishedModel};
+use workspace::{SessionLifecycle, WorkspaceSession};
 
 use crate::{MutatePanicked, Mutation, SessionActor, SnapshotHandle, TracksRelink};
 
 #[derive(Clone)]
 struct SemanticOwnerState {
     session: WorkspaceSession,
-    model: Arc<SemanticModel>,
+    model: Arc<PublishedModel>,
 }
 
 impl TracksRelink for SemanticOwnerState {
@@ -37,11 +35,11 @@ impl TracksRelink for SemanticOwnerState {
 #[derive(Debug, Clone)]
 pub struct SemanticBuildToken {
     relink: workspace::RelinkToken,
-    identity: SemanticModelIdentity,
+    identity: PublicationIdentity,
 }
 
 impl SemanticBuildToken {
-    pub fn identity(&self) -> &SemanticModelIdentity {
+    pub fn identity(&self) -> &PublicationIdentity {
         &self.identity
     }
 
@@ -63,16 +61,16 @@ pub enum SemanticPublicationOutcome {
 
 /// A reader's immutable semantic publication.
 #[derive(Debug, Clone)]
-pub struct SemanticModelSnapshot {
-    model: Arc<SemanticModel>,
+pub struct PublishedModelSnapshot {
+    model: Arc<PublishedModel>,
 }
 
-impl SemanticModelSnapshot {
-    pub fn model(&self) -> &SemanticModel {
+impl PublishedModelSnapshot {
+    pub fn model(&self) -> &PublishedModel {
         &self.model
     }
 
-    pub fn into_model(self) -> Arc<SemanticModel> {
+    pub fn into_model(self) -> Arc<PublishedModel> {
         self.model
     }
 }
@@ -83,17 +81,17 @@ impl SemanticModelSnapshot {
 /// only after the actor has checked the complete identity and owner-scoped token.  The owner does
 /// not expose mutable graph state or a partial model.
 #[derive(Clone)]
-pub struct SemanticModelSession {
+pub struct SemanticPublicationSession {
     actor: SessionActor<SemanticOwnerState>,
     snapshot: SnapshotHandle<SemanticOwnerState>,
 }
 
-impl SemanticModelSession {
+impl SemanticPublicationSession {
     /// Starts a ready session with an already settled model.
-    pub fn new(initial: Arc<SemanticModel>) -> Self {
+    pub fn new(initial: Arc<PublishedModel>) -> Self {
         assert_eq!(
-            initial.completeness(),
-            SemanticCompleteness::Complete,
+            initial.publication().completeness(),
+            PublicationCompleteness::Complete,
             "the initial semantic publication must be complete"
         );
         let mut session = WorkspaceSession::new();
@@ -107,13 +105,13 @@ impl SemanticModelSession {
 
     /// Returns an immutable model `Arc` immediately.  A reader may retain it while a replacement
     /// build is running or after a newer model has been published.
-    pub fn current(&self) -> Arc<SemanticModel> {
+    pub fn current(&self) -> Arc<PublishedModel> {
         self.snapshot.current().model.clone()
     }
 
     /// Returns a reader-owned immutable publication wrapper.
-    pub fn snapshot(&self) -> SemanticModelSnapshot {
-        SemanticModelSnapshot {
+    pub fn snapshot(&self) -> PublishedModelSnapshot {
+        PublishedModelSnapshot {
             model: self.current(),
         }
     }
@@ -125,7 +123,7 @@ impl SemanticModelSession {
     /// or configuration inputs used by the build.
     pub async fn begin_build(
         &self,
-        request: &SemanticBuildRequest,
+        request: &BuildRequest,
     ) -> Result<SemanticBuildToken, MutatePanicked> {
         let identity = request.identity();
         self.actor
@@ -144,7 +142,7 @@ impl SemanticModelSession {
     pub async fn finish_build(
         &self,
         token: SemanticBuildToken,
-        result: Result<Arc<SemanticModel>, SemanticBuildFailureKind>,
+        result: Result<Arc<PublishedModel>, SemanticBuildFailureKind>,
     ) -> Result<SemanticPublicationOutcome, MutatePanicked> {
         self.actor
             .mutate_if_changed(move |state| {
@@ -161,11 +159,14 @@ impl SemanticModelSession {
                         assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedCancelled
                     }
-                    Ok(model) if model.completeness() != SemanticCompleteness::Complete => {
+                    Ok(model)
+                        if model.publication().completeness()
+                            != PublicationCompleteness::Complete =>
+                    {
                         assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedIncomplete
                     }
-                    Ok(model) if model.identity() != &token.identity => {
+                    Ok(model) if model.publication().identity() != token.identity => {
                         assert!(state.session.commit_relink(&token.relink));
                         SemanticPublicationOutcome::DiscardedIdentityMismatch
                     }
