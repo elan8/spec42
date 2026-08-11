@@ -67,7 +67,6 @@ fn add_kerml_library_decl_node(g: &mut SemanticGraph, input: KermlLibraryNodeInp
         "bnfProduction".to_string(),
         serde_json::json!(bnf_production),
     );
-    attrs.insert("text".to_string(), serde_json::json!(text));
     let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,
@@ -136,7 +135,6 @@ pub(super) fn add_kerml_library_feature_node(
                 "bnfProduction".to_string(),
                 serde_json::json!(bnf_production),
             );
-            attrs.insert("text".to_string(), serde_json::json!(text));
             let node_id = NodeId::new(uri, &qualified);
             add_node_and_recurse(
                 g,
@@ -160,7 +158,6 @@ pub(super) fn add_kerml_library_feature_node(
         "bnfProduction".to_string(),
         serde_json::json!(bnf_production),
     );
-    attrs.insert("text".to_string(), serde_json::json!(text));
     let node_id = NodeId::new(uri, &qualified);
     add_node_and_recurse(
         g,

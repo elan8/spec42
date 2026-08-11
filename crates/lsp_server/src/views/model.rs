@@ -54,6 +54,8 @@ fn build_document_graph_dto(semantic_graph: &semantic::SemanticGraph, uri: &Url)
         .map(|n| {
             let mut attributes = n.attributes.clone();
             model_projection::project_expression_text_attributes(&mut attributes, n);
+            model_projection::project_source_text_attributes(&mut attributes, n);
+            model_projection::project_relationship_target_attributes(&mut attributes, n);
             GraphNodeDto {
                 id: n.id.qualified_name.clone(),
                 element_type: n.element_kind.as_str().to_string(),
