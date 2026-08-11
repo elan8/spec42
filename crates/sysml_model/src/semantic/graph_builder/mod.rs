@@ -98,6 +98,7 @@ fn build_graph_from_doc_mode(
         }
     }
     g.assert_no_pending_declared_membership_facts();
+    g.assert_no_pending_declared_short_names();
     g
 }
 
@@ -269,6 +270,7 @@ pub(super) fn add_node_and_recurse(
 ) {
     let node_id = NodeId::new(uri, qualified);
     let declared_membership = g.take_declared_membership_facts(&node_id);
+    let declared_short_name = g.take_declared_short_name(&node_id);
     let is_anonymous = attrs
         .get("isAnonymous")
         .and_then(serde_json::Value::as_bool)
@@ -282,6 +284,7 @@ pub(super) fn add_node_and_recurse(
         attributes: attrs,
         declared_facts: crate::semantic::model::DeclaredSemanticFacts {
             membership: declared_membership,
+            short_name: declared_short_name,
             ..Default::default()
         },
         parent_id: parent_id.cloned(),

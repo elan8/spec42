@@ -5,7 +5,7 @@ use sysml_v2_parser::Node;
 use sysml_v2_parser::RootNamespace;
 use url::Url;
 
-use crate::semantic::ast_util::{attach_short_name_attribute, identification_name, span_to_range};
+use crate::semantic::ast_util::{identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::NodeId;
 use crate::semantic::text_span::TextRange;
@@ -103,7 +103,9 @@ fn build_package_like(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name_display, "package");
     let node_id = NodeId::new(uri, &qualified);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, identification);
+    if let Some(short_name) = crate::semantic::ast_util::declared_short_name(identification) {
+        g.register_declared_short_name(node_id.clone(), short_name);
+    }
     if is_standard_library {
         attrs.insert("isStandardLibrary".to_string(), serde_json::json!(true));
     }

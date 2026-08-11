@@ -98,10 +98,7 @@ fn build_host_semantic_model_node(
         .get("doc")
         .and_then(|value| value.as_str())
         .map(str::to_owned);
-    let declared_short_name = attributes
-        .get("shortName")
-        .and_then(|value| value.as_str())
-        .map(str::to_owned);
+    let declared_short_name = node.declared_facts.short_name.clone();
 
     HostSemanticModelNode {
         semantic_id: semantic_element_id(

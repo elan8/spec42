@@ -77,6 +77,10 @@ pub struct SemanticGraphData {
     /// node materialization. It is never serialized or published as an attribute projection.
     #[serde(skip)]
     pub(crate) pending_declared_membership_facts: HashMap<NodeId, DeclaredMembershipFacts>,
+    /// Build-local typed handoff from an AST identification adapter to its immediately following
+    /// node materialization. It is never serialized or published as an attribute projection.
+    #[serde(skip)]
+    pub(crate) pending_declared_short_names: HashMap<NodeId, String>,
     /// Authoritative effective facts published after semantic linking. Unlike query indexes,
     /// this is model state: consumers use it instead of re-deriving defaults or closure facts.
     #[serde(default)]
@@ -149,6 +153,7 @@ impl Clone for SemanticGraphData {
             pending_relationships: self.pending_relationships.clone(),
             // A cloned/published graph must never inherit an unfinished builder handoff.
             pending_declared_membership_facts: HashMap::new(),
+            pending_declared_short_names: HashMap::new(),
             effective_facts_by_node_id: self.effective_facts_by_node_id.clone(),
             derived_relationship_resolution_by_source_id: self
                 .derived_relationship_resolution_by_source_id
@@ -731,6 +736,7 @@ impl SemanticGraphData {
             declared_expression_relationships: Vec::new(),
             pending_relationships: Vec::new(),
             pending_declared_membership_facts: HashMap::new(),
+            pending_declared_short_names: HashMap::new(),
             effective_facts_by_node_id: HashMap::new(),
             derived_relationship_resolution_by_source_id: HashMap::new(),
             evaluation_facts_by_node_id: HashMap::new(),
@@ -839,10 +845,11 @@ impl SemanticGraphData {
     }
 
     /// The short-name-qualified alias for `node` (see
-    /// `graph_builder::attach_short_name_attribute`) — the same qualified name a sibling
-    /// declared under the short name directly would get. `None` if `node` has no short name.
+    /// [`crate::semantic::model::DeclaredSemanticFacts::short_name`]) — the same qualified name
+    /// a sibling declared under the short name directly would get. `None` if `node` has no short
+    /// name.
     pub(crate) fn short_name_alias_qualified(node: &SemanticNode) -> Option<String> {
-        let short_name = node.attributes.get("shortName").and_then(|v| v.as_str())?;
+        let short_name = node.declared_facts.short_name.as_deref()?;
         let container_prefix = node
             .parent_id
             .as_ref()
@@ -1218,6 +1225,29 @@ impl SemanticGraphData {
         assert!(
             self.pending_declared_membership_facts.is_empty(),
             "all parser-authored membership facts must be consumed before graph publication"
+        );
+    }
+
+    /// Registers a parser-backed short name for the node identity about to be materialized.
+    /// The graph builder consumes it during node insertion; duplicate registration is a builder
+    /// bug because one declaration has exactly one short name.
+    pub(crate) fn register_declared_short_name(&mut self, id: NodeId, short_name: String) {
+        assert!(
+            self.pending_declared_short_names
+                .insert(id, short_name)
+                .is_none(),
+            "short name registered twice for one node"
+        );
+    }
+
+    pub(crate) fn take_declared_short_name(&mut self, id: &NodeId) -> Option<String> {
+        self.pending_declared_short_names.remove(id)
+    }
+
+    pub(crate) fn assert_no_pending_declared_short_names(&self) {
+        assert!(
+            self.pending_declared_short_names.is_empty(),
+            "all parser-authored short names must be consumed before graph publication"
         );
     }
 

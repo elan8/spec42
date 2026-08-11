@@ -14,9 +14,7 @@ use super::{
     add_node_and_recurse, insert_def_specialization_attr, qualified_name_for_node,
     resolve_addressable_name, wire_def_specialization_edge,
 };
-use crate::semantic::ast_util::{
-    attach_short_name_attribute, declared_expression, identification_name, span_to_range,
-};
+use crate::semantic::ast_util::{declared_expression, identification_name, span_to_range};
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
 use crate::semantic::model::NodeId;
@@ -206,7 +204,11 @@ pub(super) fn build_constraint_def(
         attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
     }
     insert_def_specialization_attr(&mut attrs, c_node.value.specializes.as_deref());
-    attach_short_name_attribute(&mut attrs, &c_node.value.identification);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&c_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
@@ -330,7 +332,11 @@ pub(super) fn build_calc_def(
     if let Some(expr) = expression {
         attrs.insert("analysisExpression".to_string(), serde_json::json!(expr));
     }
-    attach_short_name_attribute(&mut attrs, &c_node.value.identification);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&c_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.value.membership),
@@ -460,7 +466,11 @@ pub(super) fn materialize_calc_usage(
     let qualified = qualified_name_for_node(g, uri, Some(&parent_id.qualified_name), &name, "calc");
     let range = span_to_range(&calc_node.span);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &calc_node.value.identification);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&calc_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&calc_node.value.membership),

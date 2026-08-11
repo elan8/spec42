@@ -1,82 +1,67 @@
-//! Project unit-catalog metadata from attribute definitions onto graph node attributes.
-
-use std::collections::HashMap;
+//! Derive typed unit-catalog metadata ([`DeclaredUnitFacts`]) from attribute definitions.
 
 use crate::semantic::ast_util::{subsetting_target, typing_target};
-use serde_json::{json, Value};
+use crate::semantic::model::{DeclaredUnitConversion, DeclaredUnitFacts, DeclaredUnitPrefix};
 use sysml_v2_parser::ast::{
     AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, BinaryOperator, Expression,
     Node, UnaryOperator,
 };
 
-/// Keys stored on unit-related `attribute def` graph nodes.
-pub const SHORT_NAME_KEY: &str = "shortName";
-pub const UNIT_CONVERSION_KEY: &str = "unitConversion";
-pub const UNIT_VALUE_EXPR_KEY: &str = "unitValueExpr";
-pub const UNIT_PREFIX_KEY: &str = "unitPrefix";
+/// A declared `UnitPrefix` catalog entry, before being projected into [`DeclaredUnitPrefix`].
+pub type UnitConversionMeta = DeclaredUnitConversion;
 
-#[derive(Debug, Clone, Default, PartialEq)]
-pub struct UnitConversionMeta {
-    pub kind: String,
-    pub reference_unit: Option<String>,
-    pub conversion_factor: Option<f64>,
-    pub prefix: Option<String>,
-    pub interval_unit: Option<String>,
-    pub zero_offset_kelvin: Option<f64>,
+/// Returns the authored short name for `def` (e.g. `attribute <km> kilometre : ...;`), if any.
+/// This is a distinct producer from `ast_util::declared_short_name`: `AttributeDef` carries its
+/// own `short_name` field rather than an `Identification`.
+pub fn attribute_def_short_name(def: &AttributeDef) -> Option<String> {
+    def.short_name
+        .as_ref()
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
 }
 
-pub fn project_attribute_def_unit_metadata(attrs: &mut HashMap<String, Value>, def: &AttributeDef) {
-    if let Some(short) = def.short_name.as_ref().filter(|s| !s.is_empty()) {
-        attrs.insert(SHORT_NAME_KEY.to_string(), json!(short));
-    }
-    if let Some(expr) = &def.value {
-        let rendered = super::expressions::expression_to_debug_string(&expr.value.expression);
-        attrs.insert(UNIT_VALUE_EXPR_KEY.to_string(), json!(rendered));
-    }
-    project_unit_body_metadata(attrs, typing_target(def.typing.as_deref()), &def.body);
+/// Derives the typed unit-catalog facts (prefix/conversion/value-expression) for an
+/// `attribute def` node, or `None` when it carries none.
+pub fn attribute_def_unit_facts(def: &AttributeDef) -> Option<DeclaredUnitFacts> {
+    let value_expr = def
+        .value
+        .as_ref()
+        .map(|expr| super::expressions::expression_to_debug_string(&expr.value.expression));
+    unit_body_facts(typing_target(def.typing.as_deref()), &def.body, value_expr)
 }
 
-pub fn project_attribute_usage_unit_metadata(
-    attrs: &mut HashMap<String, Value>,
-    usage: &AttributeUsage,
-) {
-    project_unit_body_metadata(attrs, typing_target(usage.typing.as_deref()), &usage.body);
+/// Derives the typed unit-catalog facts for an `attribute` usage node, or `None` when it
+/// carries none.
+pub fn attribute_usage_unit_facts(usage: &AttributeUsage) -> Option<DeclaredUnitFacts> {
+    unit_body_facts(typing_target(usage.typing.as_deref()), &usage.body, None)
 }
 
-fn project_unit_body_metadata(
-    attrs: &mut HashMap<String, Value>,
+fn unit_body_facts(
     typing: Option<&str>,
     body: &AttributeBody,
-) {
-    if typing.map(base_type_name) == Some("UnitPrefix") {
-        if let Some(prefix) = extract_unit_prefix_from_body(body) {
-            attrs.insert(
-                UNIT_PREFIX_KEY.to_string(),
-                json!({
-                    "symbol": prefix.symbol,
-                    "conversionFactor": prefix.conversion_factor,
-                }),
-            );
-        }
-    }
+    value_expr: Option<String>,
+) -> Option<DeclaredUnitFacts> {
+    let prefix = if typing.map(base_type_name) == Some("UnitPrefix") {
+        extract_unit_prefix_from_body(body).map(|prefix| DeclaredUnitPrefix {
+            symbol: prefix.symbol,
+            conversion_factor: prefix.conversion_factor,
+        })
+    } else {
+        None
+    };
     let conversion = if typing.map(base_type_name) == Some("IntervalScale") {
         extract_interval_scale_from_body(body)
     } else {
         extract_unit_conversion_from_body(body)
     };
-    if let Some(conversion) = conversion {
-        attrs.insert(
-            UNIT_CONVERSION_KEY.to_string(),
-            json!({
-                "kind": conversion.kind,
-                "referenceUnit": conversion.reference_unit,
-                "conversionFactor": conversion.conversion_factor,
-                "prefix": conversion.prefix,
-                "intervalUnit": conversion.interval_unit,
-                "zeroOffsetKelvin": conversion.zero_offset_kelvin,
-            }),
-        );
+    if prefix.is_none() && conversion.is_none() && value_expr.is_none() {
+        return None;
     }
+    Some(DeclaredUnitFacts {
+        prefix,
+        conversion,
+        value_expr,
+    })
 }
 
 fn base_type_name(name: &str) -> &str {
@@ -390,9 +375,12 @@ mod tests {
             .find(|n| n.name == "kilometre")
             .expect("kilometre");
         assert!(
-            km.attributes.contains_key(UNIT_CONVERSION_KEY),
-            "km attrs: {:?}",
-            km.attributes
+            km.declared_facts
+                .unit
+                .as_ref()
+                .is_some_and(|u| u.conversion.is_some()),
+            "km facts: {:?}",
+            km.declared_facts.unit
         );
         let ft = graph
             .nodes_for_uri(&uri)
@@ -400,15 +388,23 @@ mod tests {
             .find(|n| n.name == "foot")
             .expect("foot");
         assert!(
-            ft.attributes.contains_key(UNIT_CONVERSION_KEY),
-            "ft attrs: {:?}",
-            ft.attributes
+            ft.declared_facts
+                .unit
+                .as_ref()
+                .is_some_and(|u| u.conversion.is_some()),
+            "ft facts: {:?}",
+            ft.declared_facts.unit
         );
-        let km_conv = km.attributes.get(UNIT_CONVERSION_KEY).expect("km conv");
+        let km_conv = km
+            .declared_facts
+            .unit
+            .as_ref()
+            .and_then(|u| u.conversion.as_ref())
+            .expect("km conv");
         assert_eq!(
-            km_conv.get("referenceUnit").and_then(|v| v.as_str()),
+            km_conv.reference_unit.as_deref(),
             Some("m"),
-            "km conv json: {km_conv}"
+            "km conv: {km_conv:?}"
         );
     }
 
@@ -435,16 +431,18 @@ mod tests {
         let f_abs = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|n| n.attributes.get(SHORT_NAME_KEY).and_then(|v| v.as_str()) == Some("°F_abs"))
+            .find(|n| n.declared_facts.short_name.as_deref() == Some("°F_abs"))
             .expect("°F_abs");
         let conv = f_abs
-            .attributes
-            .get(UNIT_CONVERSION_KEY)
+            .declared_facts
+            .unit
+            .as_ref()
+            .and_then(|u| u.conversion.as_ref())
             .expect("interval conversion");
         assert_eq!(
-            conv.get("zeroOffsetKelvin").and_then(|v| v.as_f64()),
+            conv.zero_offset_kelvin,
             Some(229835.0 / 900.0),
-            "conv={conv}"
+            "conv={conv:?}"
         );
     }
 
@@ -471,24 +469,17 @@ mod tests {
         let c_abs = graph
             .nodes_for_uri(&uri)
             .into_iter()
-            .find(|n| n.attributes.get(SHORT_NAME_KEY).and_then(|v| v.as_str()) == Some("°C_abs"))
+            .find(|n| n.declared_facts.short_name.as_deref() == Some("°C_abs"))
             .expect("°C_abs");
         let conv = c_abs
-            .attributes
-            .get(UNIT_CONVERSION_KEY)
+            .declared_facts
+            .unit
+            .as_ref()
+            .and_then(|u| u.conversion.as_ref())
             .expect("interval conversion");
-        assert_eq!(
-            conv.get("kind").and_then(|v| v.as_str()),
-            Some("IntervalScale")
-        );
-        assert_eq!(
-            conv.get("intervalUnit").and_then(|v| v.as_str()),
-            Some("°C")
-        );
-        assert_eq!(
-            conv.get("zeroOffsetKelvin").and_then(|v| v.as_f64()),
-            Some(273.15)
-        );
+        assert_eq!(conv.kind, "IntervalScale");
+        assert_eq!(conv.interval_unit.as_deref(), Some("°C"));
+        assert_eq!(conv.zero_offset_kelvin, Some(273.15));
     }
 
     #[test]
@@ -516,9 +507,12 @@ mod tests {
             .find(|n| n.name == "kilo")
             .expect("kilo");
         assert!(
-            kilo.attributes.contains_key(UNIT_PREFIX_KEY),
-            "kilo attrs: {:?}",
-            kilo.attributes
+            kilo.declared_facts
+                .unit
+                .as_ref()
+                .is_some_and(|u| u.prefix.is_some()),
+            "kilo facts: {:?}",
+            kilo.declared_facts.unit
         );
         let km = graph
             .nodes_for_uri(&uri)
@@ -526,9 +520,12 @@ mod tests {
             .find(|n| n.name == "kilometre")
             .expect("kilometre");
         assert!(
-            km.attributes.contains_key(UNIT_CONVERSION_KEY),
-            "km attrs: {:?}",
-            km.attributes
+            km.declared_facts
+                .unit
+                .as_ref()
+                .is_some_and(|u| u.conversion.is_some()),
+            "km facts: {:?}",
+            km.declared_facts.unit
         );
     }
 }
