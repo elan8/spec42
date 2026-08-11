@@ -163,6 +163,11 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                     }
                 })
             });
+            let mut attributes = node.attributes.clone();
+            crate::semantic::model_projection::project_source_text_attributes(
+                &mut attributes,
+                node,
+            );
             parts.push(IbdPartDto {
                 id: qn.clone(),
                 node_id: qualified_name_to_dot(&qn),
@@ -171,7 +176,7 @@ pub fn build_ibd_for_uri(graph: &SemanticGraph, uri: &Url) -> IbdDataDto {
                 uri: Some(node.id.uri.as_str().to_string()),
                 container_id: container_id.map(|s| qualified_name_to_dot(&s)),
                 element_type: node.element_kind.as_str().to_string(),
-                attributes: node.attributes.clone(),
+                attributes,
                 range: Some(crate::semantic::dto::range_to_dto(node.range)),
             });
         } else if kinds::is_port_like(&node.element_kind) {

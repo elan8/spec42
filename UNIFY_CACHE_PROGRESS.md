@@ -152,7 +152,8 @@ the same files; ownership is per key, not per file.
 | E | analysis and expression: `value`, `defaultValue`, `lhs`, `rhs`, `condition`, `isThen`, `analysis*`, `objectiveBoundTo`, `originRange` | merged | `feat/b9-analysis-expression` |
 | F | relationship endpoints and semantic classification keys | merged |  |
 | F2 | the `*Type` classification family | merged; entangled residue remains | `feat/b9-type-family` |
-| G | presentation cutover and field deletion: `generalView*` rollups, remaining `lsp_server`/`server`/`generator_api`/`workspace` consumers, then delete the field | not started | |
+| G (partial) | chunk D dual write (`doc`/`text`/`language`/`body`/hover `keyword`), the relationship-target family (`redefines`/`subsetsFeature`/`referencesFeature`/`crossesFeature`/`specializes`), retired dead keys | merged | `feat/b9-chunk-g-partial` |
+| G (remaining) | `generalView*` rollups (owned by a DTO, not `SemanticNode`, see below), the blocked `*Type` residue, then delete the field | not started | |
 
 Chunk C additionally deleted `stateName` outright as a redundant duplicate of the node's own
 name, and replaced the `finalStateCount`/`doneTransitionCount` visit counters with a derivation
@@ -244,60 +245,126 @@ well defined. Together with B1's finding that whole-graph and incremental linkin
 independently implemented resolution engines, the resolution layer is the least settled part of
 this work.
 
+### Chunk G (partial): what was retired
+
+`feat/b9-chunk-g-partial` retired every remaining `SemanticNode.attributes` key that was not
+blocked by the resolution-scoping defect, driven by a fresh exhaustive sweep of every
+`attrs.insert`/`attributes.insert` producer and every `.attributes.get`/`.attributes[...]` reader
+in the repository:
+
+- **Chunk D's transitional dual write** (`doc`, `text`, `language`, `body`, hover-only `keyword`):
+  every remaining post-construction reader on `SemanticNode` (`workspace/src/snapshot/facts.rs`,
+  `generator_api/src/model.rs`, `lsp_server/src/views/feature_inspector.rs`,
+  `sysml_diagnostics/src/checks/view_metadata_conformance.rs`) now reads the typed
+  `SourceTextFacts` directly. The producer writes onto `SemanticNode.attributes` were deleted from
+  every graph-builder site (`graph_builder/mod.rs`, `action.rs`, `part_def.rs`, `kerml_library.rs`,
+  `package_body/materialize.rs`, `requirement_body.rs`, `use_case.rs`). A new
+  `model_projection::project_source_text_attributes` boundary-DTO projection (same precedent as
+  chunk E's `project_expression_text_attributes`) serves the transport-DTO consumers
+  (`GraphNodeDto`/`HostSemanticModelNode`) that still expect these keys in a JSON map, without
+  writing anything back onto `SemanticNode`. One unrelated `"doc"` key survives in
+  `requirement_body.rs` (a require-constraint child field distinct from source-fidelity doc text,
+  called out at chunk E time) and needs no migration.
+- **The relationship-target family** (`redefines`, `subsetsFeature`, `referencesFeature`,
+  `crossesFeature`, `specializes`): `visualization/scope.rs` now reads
+  `declared_facts.relationships.redefinition`/`subsetting` directly; `model_projection/
+  general_view_fold.rs` reads them through a new `model_projection::
+  project_relationship_target_attributes` boundary-DTO projection (`redefines`/`subsetsFeature`
+  only — the other three have no reader left, see below). Every graph-builder producer of
+  `redefines`/`subsetsFeature`/`referencesFeature`/`crossesFeature`/`specializes` onto
+  `SemanticNode.attributes` was deleted. One real gap surfaced and was fixed: the metadata-def
+  restriction shorthand (`:>> annotatedElement : ...`) previously wrote `subsetsFeature` as a
+  second key alongside `redefines` for that one gate, encoding that a redefinition of a
+  semantic-metadata restriction feature is *also* a subsetting per KerML; `attribute_body.rs` now
+  records that dual relationship as a second typed `DeclaredRelationshipFacts::subsetting` target
+  explicitly, instead of only the redefinition.
+- **Fully dead keys retired outright** (no reader anywhere): `referencesFeature`, `crossesFeature`
+  (redundant with `attach_declared_subsetting_family`'s `reference_subsetting`/`cross_subsetting`
+  typed facts) and the display-only `specializes` attribute (redundant with
+  `wire_def_specialization_edge`'s real per-target edges and
+  `DeclaredRelationshipFacts::specializes`; distinct from the `"specializes"` edge-kind/`rel_type`
+  string used throughout the graph and DTOs, which is untouched). `referencesFeature`/
+  `crossesFeature` were added to `semantic_ownership_guardrails.rs`'s
+  `RETIRED_TYPING_PROJECTION_KEYS` (repo-wide ratchet); `specializes` was not, because that string
+  is legitimately reused as a `RelationshipKind`/`rel_type` literal outside the attribute map and
+  an unscoped literal-string guard would false-positive on every one of those.
+- Fourteen tests across `sysml_model`/`workspace` that asserted directly against the legacy
+  `SemanticNode.attributes` map for these keys were rewritten to assert against the typed
+  `declared_facts.relationships`/`source_text` facts instead (same observable behavior, typed
+  source of truth) — see the branch's commits for the full list.
+- `semantic_ownership_guardrails.rs`'s `EXCLUDED_MODULES` now also excludes
+  `model_projection.rs` (the file, not the `model_projection/` directory, which was already
+  excluded): it owns the two new boundary-DTO projection functions above and would otherwise be
+  flagged as a "consumer" for writing the very keys it projects.
+
+**Not retired — the `generalView*` projection rollups** (`generalViewDirectAttributes`,
+`generalViewDirectParts`, `generalViewDirectPorts`, `generalViewInheritedAttributes`,
+`generalViewInheritedParts`) are written by `general_view_fold.rs` onto `GraphNodeDto.attributes`,
+**not onto `SemanticNode.attributes`** — `GraphNodeDto` is a boundary transport DTO, populated
+from the semantic graph earlier in the same request and never written back. Since B9's field to
+remove is `SemanticNode.attributes`, these do not block that deletion and were left alone rather
+than spending chunk G's remaining budget on a DTO-internal refactor. They are still the anti-
+pattern B9 names in spirit ("projection-time JSON aggregates … Replace … with typed projection
+results owned outside the semantic graph"), just one level removed from the blocking field, so a
+future pass should still give them a typed `GeneralViewDetails`-shaped result instead of a JSON
+map on the DTO.
+
 ### Remaining attribute keys and why
 
-After chunk F2, these keys are deliberately still written. They are the entire remaining barrier
-to deleting `SemanticNode.attributes`.
+After chunk F2 and chunk G (partial), these keys are the entire remaining barrier to deleting
+`SemanticNode.attributes`. Every one of them is blocked on the resolution-scoping defect, directly
+or by entanglement with a key that is; nothing else is left.
 
-| Key(s) | Why it remains |
-|--------|----------------|
-| `attributeType`, `dataType`, bare `type` | Blocked on the resolution-scoping defect. Routing attribute typing into `relationships.typing` sends it through the over-broad workspace-wide pass. |
-| `payloadType`, `acceptType` | Pairing them would newly populate `relationships.typing` for constructs that do not currently populate it, widening the same defect's blast radius. |
-| `partType`, `portType`, `refType`, `parameterType` | Redundant, but entangled with the blocked `attributeType`/`dataType` chain in `detail_type_name`; needs its own typed-DTO rewrite. |
-| `renderingType` | Mixed semantics on view columns; one site carries no typing meaning at all. |
-| `returnType`, `analysisResultType` | Have semantic, non-presentation readers with no safe typed home yet. |
-| `redefines`, `subsetsFeature`, `referencesFeature`, `crossesFeature`, `specializes` | Consumers migrated, but `visualization/scope.rs` and `general_view_fold.rs` still read them, so the producer writes stay for chunk G. |
-| `doc`, `text`, `language`, `keyword` | Chunk D's transitional dual write, pending its last consumers. |
+| Key(s) | Producer sites | Remaining readers | Why it remains |
+|--------|-----------------|--------------------|-----------------|
+| `attributeType`, `dataType`, bare `type` | `graph_builder/{action,analysis_case,attribute_body,occurrence_body,package_body/materialize,part_def,port_def,requirement_body,unit_type_promotion,usage_builders,verification}.rs` | `lsp_server/src/lsp_runtime/symbols.rs`, `sysml_diagnostics/src/checks/behavior_conformance.rs`, tests | Blocked on the resolution-scoping defect. Routing attribute typing into `relationships.typing` sends it through the over-broad workspace-wide `link_workspace_relationships_pass`. |
+| `payloadType`, `acceptType` | `graph_builder/{flow_usage,payload}.rs` | `lsp_server/src/lsp_runtime/symbols.rs`, tests | Pairing them would newly populate `relationships.typing` for constructs that do not currently populate it, widening the same defect's blast radius. |
+| `partType`, `portType`, `refType`, `parameterType` | `graph_builder/{occurrence_body,usage_builders}.rs` (`partType`); `graph_builder/{interface_def,port_def}.rs` (`portType`); `graph_builder/ref_decl.rs` (`refType`); `graph_builder/{action,calc_constraint_def,port_def}.rs` (`parameterType`) | `lsp_server/src/lsp_runtime/symbols.rs`, tests | Redundant, but entangled with the blocked `attributeType`/`dataType` chain in `detail_type_name`; needs its own typed-DTO rewrite that is meaningless to do before the scoping fix lands (it would just be redundant JSON either way). |
+| `renderingType` | `graph_builder/view_def.rs` | `lsp_server/src/lsp_runtime/symbols.rs`, tests | Mixed semantics on view columns; one site carries no typing meaning at all, so it cannot be folded into the blocked typing chain without first disentangling that site. |
+| `returnType`, `analysisResultType` | `graph_builder/analysis_case.rs` (`returnType`); `semantic/analysis_typing.rs` (`analysisResultType`) | `sysml_diagnostics/src/checks/behavior_conformance.rs`, tests | Have semantic, non-presentation readers with no safe typed home yet, and sit in the same `detail_type_name`/typing-resolution family as the rows above. |
 
-`baseType`, `relationType` and one `dataType` site are not attribute keys at all and need no
-migration.
+`baseType`, `relationType` and one `dataType` site (in `general_view_fold.rs`) are not attribute
+keys at all — they are unrelated string identifiers/edge-kind labels — and need no migration.
 
-**Consequence: chunk G cannot fully complete until the resolution-scoping defect is fixed.** Six
-of the rows above are blocked on it directly or by entanglement. This is the concrete way the
-resolution blocker reaches into the cache work — it is not merely a correctness concern held at
-arm's length, it physically prevents removing the field that blocks postcard encoding of the
-graph.
+**Consequence: chunk G cannot fully complete until the resolution-scoping defect is fixed.** Every
+row above is blocked on it directly or by entanglement. This is the concrete way the resolution
+blocker reaches into the cache work — it is not merely a correctness concern held at arm's length,
+it physically prevents removing the field that blocks postcard encoding of the graph. Beyond this
+table, the only other thing standing between the repository and deleting
+`SemanticNode.attributes` is the `generalView*` rollup refactor described above, which is
+unblocked and can proceed independently whenever a future chunk has budget for it.
 
-### Chunk G is blocked on a provenance decision
+### Chunk G's provenance defect is fixed
 
-An attempt to retire the unblocked attribute keys (`feat/b9-chunk-g-partial`) was reverted from
-the integration branch. It is preserved on its branch and is mostly good work; one change in it
-needs a decision before any of it can land.
+The earlier attempt (`feat/b9-chunk-g-partial`, reverted by `ab0d0fd6`) recorded the metadata-def
+restriction shorthand's entailed subsetting (`:>> annotatedElement`, `:>> baseType`) as a second
+`DeclaredRelationshipTarget`, which has no provenance field and therefore published the entailed
+relationship as `(provenance authored)`. That was wrong: KerML's `Redefinition` specializes
+`Subsetting` (`org.omg.sysml/model/kerml.ecore:1471` in the OMG pilot metamodel — normative, not a
+pilot-only behaviour), so the subsetting is genuinely entailed but nobody authors it.
 
-Retiring the `subsetsFeature` key exposed that the metadata-def restriction shorthand
-(`:>> annotatedElement`, `:>> baseType` inside a `metadata def`) carries a **dual** relationship:
-the authored redefinition, plus a subsetting. The subsetting is genuinely load-bearing — the
-pre-existing contract test
-`resolution_contract::contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_kind`
-depends on it to avoid an incompatible-type-kind diagnostic — so it cannot simply be dropped.
+Fixed on `feat/b9-chunk-g-implied-subsetting` by adding
+`ImpliedRelationshipRule::MetadataRedefinitionEntailsSubsetting` and publishing the subsetting as a
+graph edge with `RelationshipProvenance::Implied(..)` in
+`relationships::link_subsetting_family_edges_for_node`, alongside the authored `Redefinition` edge
+to the same resolved target — never as a declared fact. The rule is deliberately narrowed to the
+metadata-def restriction shorthand rather than widened to every redefinition (KerML's entailment is
+universal, but publishing it for every redefinition would move a large number of corpus fixtures;
+see the variant's doc comment for that follow-up).
 
-Previously that subsetting lived only in the untyped attribute map, where it produced no graph
-edge. Recording it as a typed declared fact makes it a real edge, which changed the
-`sysml/examples/ahfprofile_lib.md` golden by adding four `subsetting` relationships.
+`sysml/examples/ahfprofile_lib.md` gained the expected four implied `subsetting` relationships,
+correctly tagged `(provenance (implied (rule metadata-redefinition-entails-subsetting)))`. One other
+corpus fixture, `sysml/validation/14c_language_extensions.md`, moved for the same reason (four more
+`baseType` restrictions under `FMEAMetadata`) plus a downstream multiplicity-derivation consequence:
+`baseType` no longer shows the implied `1..1` default because it now correctly inherits multiplicity
+through the previously-missing subsetting edge. No other fixture moved.
 
-The problem is provenance, not the relationship. `DeclaredRelationshipTarget` has no provenance
-field because declared facts are authored by definition, so recording the subsetting there
-publishes it as `(provenance authored)`. But it is not authored — it is *entailed* by the
-redefinition, since KerML's `Redefinition` specializes `Subsetting`. `AGENTS.md` is explicit:
-never make an implied relationship appear explicitly declared.
-
-The decision needed: record this subsetting through the implied-relationship mechanism with an
-appropriate `ImpliedRelationshipRule` identity rather than as a declared fact. The golden fixture
-should then change deliberately, showing `(provenance implied ...)`, with that rationale cited.
-
-Until that is settled the fixture must not move, so chunk G stays reverted. This is worth
-recording as a finding in its own right: the untyped attribute map was concealing a relationship
-whose provenance had never been classified.
+Chunk G is otherwise complete: the two named tests
+(`resolution_contract::contract_metadata_redefine_shorthand_annotated_element_no_incompatible_type_kind`,
+`metadata_semantics::metadata_redefine_shorthand_projects_subsets_feature_for_annotated_element`) were
+migrated to assert the graph edge instead of the declared fact, and the rest of the reverted branch's
+work (chunk D's dual-write retirement, the relationship-target family retirement, the boundary DTO
+projections, the guardrail extensions) landed unchanged.
 
 ### Resolving normative language questions
 

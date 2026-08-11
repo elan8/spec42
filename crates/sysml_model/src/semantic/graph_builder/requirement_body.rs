@@ -647,11 +647,6 @@ pub(super) fn walk_requirement_def_body(
                         serde_json::json!(typed_by.join(", ")),
                     );
                 }
-                if let Some(redefines) = crate::semantic::ast_util::subsetting_target(
-                    attr_usage.value.redefines.as_deref(),
-                ) {
-                    attrs.insert("redefines".to_string(), serde_json::json!(redefines));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -785,10 +780,8 @@ pub(super) fn walk_requirement_def_body(
                     "textualRep",
                 );
                 let mut attrs = HashMap::new();
-                // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic; kept
-                // on the untyped attribute map in addition to `source_text.language` below.
-                attrs.insert("language".to_string(), serde_json::json!(&tr.language));
-                attrs.insert("text".to_string(), serde_json::json!(&tr.text));
+                // `language` also feeds the `viewpoint_rep_language_unresolved` diagnostic, which
+                // reads the typed `source_text.language` fact set below.
                 if let Some(ref language_span) = tr.language_span {
                     attrs.insert(
                         "languageSpan".to_string(),

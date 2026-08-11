@@ -60,6 +60,7 @@ pub enum HostRelationshipProvenance {
 pub enum HostImpliedRelationshipRule {
     UniversalStandardLibraryRelationship,
     EnumerationValueTyping,
+    MetadataRedefinitionEntailsSubsetting,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
