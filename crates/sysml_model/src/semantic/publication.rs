@@ -1331,6 +1331,14 @@ pub struct ResolutionView<'a> {
 }
 
 impl<'a> ResolutionView<'a> {
+    pub fn facts(&self) -> &'a [ResolutionFact] {
+        self.model.resolution.facts()
+    }
+
+    pub fn relationships(&self) -> &'a [ResolvedRelationship] {
+        self.model.resolution.relationships()
+    }
+
     pub fn outcome(&self, reference: &AuthoredReferenceId) -> Option<&'a ResolutionOutcome> {
         self.model.resolution.outcome(reference)
     }
