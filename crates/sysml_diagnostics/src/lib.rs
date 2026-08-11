@@ -18,7 +18,7 @@ pub use engine::{
 };
 pub use model::collect_document_diagnostics_from_model;
 pub use ordering::canonicalize_diagnostics;
-pub use sexpr::render_diagnostics_sexpr;
+pub use sexpr::write_diagnostics_sexpr;
 pub use shared_rules::{
     collect_untyped_part_usage_diagnostics, missing_library_context_diagnostic,
 };

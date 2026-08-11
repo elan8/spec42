@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 use clap::{Parser, Subcommand, ValueEnum};
 use language_service::{format_document_text, FormatOptions};
 use sysml_diagnostics::{
-    collect_document_diagnostics_from_model, render_diagnostics_sexpr, DiagnosticsOptions,
+    collect_document_diagnostics_from_model, write_diagnostics_sexpr, DiagnosticsOptions,
 };
 use sysml_model::{
     build_semantic_model, ConstructionStrategy, EvaluationPolicy, ImmutableSourceSnapshot,
@@ -216,7 +216,10 @@ fn render_diagnostics(
             DiagnosticsOptions::default(),
         );
         rendered.push_str(&format!("  (document {:?}\n", document.name));
-        for line in render_diagnostics_sexpr(&diagnostics).lines() {
+        let mut rendered_diagnostics = String::new();
+        write_diagnostics_sexpr(&diagnostics, &mut rendered_diagnostics)
+            .map_err(|error| format!("diagnostic rendering failed: {error}"))?;
+        for line in rendered_diagnostics.lines() {
             rendered.push_str("    ");
             rendered.push_str(line);
             rendered.push('\n');

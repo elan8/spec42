@@ -6,62 +6,71 @@
 //! locations, and order are the stable facts asserted by compatibility
 //! fixtures.
 
+use std::fmt;
+
 use crate::ordering::{canonical_related_information, canonicalize_diagnostics};
 use crate::{DiagnosticSeverity, SemanticDiagnostic};
 
-/// Renders a diagnostic collection as a deterministic S-expression.
+/// Writes a diagnostic collection as a deterministic S-expression.
 ///
 /// This is intentionally not an interchange format. It is a compact golden
 /// representation owned by `sysml_diagnostics`.
-pub fn render_diagnostics_sexpr(diagnostics: &[SemanticDiagnostic]) -> String {
+pub fn write_diagnostics_sexpr(
+    diagnostics: &[SemanticDiagnostic],
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
     let mut diagnostics = diagnostics.to_vec();
     canonicalize_diagnostics(&mut diagnostics);
 
-    let mut rendered = String::from("(diagnostics\n");
+    writeln!(output, "(diagnostics")?;
     for diagnostic in diagnostics {
-        rendered.push_str("  (diagnostic\n");
-        rendered.push_str(&format!(
-            "    (severity {})\n",
+        writeln!(output, "  (diagnostic")?;
+        writeln!(
+            output,
+            "    (severity {})",
             severity_name(diagnostic.severity)
-        ));
-        rendered.push_str(&format!("    (code {})\n", quote(&diagnostic.code)));
-        rendered.push_str(&format!("    (source {})\n", quote(&diagnostic.source)));
-        rendered.push_str(&format!(
-            "    (range (start {} {}) (end {} {}))\n",
+        )?;
+        writeln!(output, "    (code {})", quote(&diagnostic.code))?;
+        writeln!(output, "    (source {})", quote(&diagnostic.source))?;
+        writeln!(
+            output,
+            "    (range (start {} {}) (end {} {}))",
             diagnostic.range.start.line,
             diagnostic.range.start.character,
             diagnostic.range.end.line,
             diagnostic.range.end.character,
-        ));
-        render_related_information(&mut rendered, &diagnostic);
-        rendered.push_str("  )\n");
+        )?;
+        render_related_information(output, &diagnostic)?;
+        writeln!(output, "  )")?;
     }
-    rendered.push(')');
-    rendered
+    write!(output, ")")
 }
 
-fn render_related_information(rendered: &mut String, diagnostic: &SemanticDiagnostic) {
+fn render_related_information(
+    output: &mut dyn fmt::Write,
+    diagnostic: &SemanticDiagnostic,
+) -> fmt::Result {
     let related = canonical_related_information(&diagnostic.related_information);
     if related.is_empty() {
-        return;
+        return Ok(());
     }
 
-    rendered.push_str("    (related-information\n");
+    writeln!(output, "    (related-information")?;
     for related in related {
-        rendered.push_str(&format!(
-            "      (related\n        (uri {})\n",
-            quote(related.uri.as_str())
-        ));
-        rendered.push_str(&format!(
-            "        (range (start {} {}) (end {} {}))\n",
+        writeln!(output, "      (related")?;
+        writeln!(output, "        (uri {})", quote(related.uri.as_str()))?;
+        writeln!(
+            output,
+            "        (range (start {} {}) (end {} {}))",
             related.range.start.line,
             related.range.start.character,
             related.range.end.line,
             related.range.end.character,
-        ));
-        rendered.push_str("      )\n");
+        )?;
+        writeln!(output, "      )")?;
     }
-    rendered.push_str("    )\n");
+    writeln!(output, "    )")?;
+    Ok(())
 }
 
 fn severity_name(severity: DiagnosticSeverity) -> &'static str {
@@ -124,7 +133,9 @@ mod tests {
             TextRange::new(TextPosition::new(1, 2), TextPosition::new(1, 3)),
         );
 
-        let rendered = render_diagnostics_sexpr(&[later, early_warning, early_error]);
+        let mut rendered = String::new();
+        write_diagnostics_sexpr(&[later, early_warning, early_error], &mut rendered)
+            .expect("render diagnostics");
         assert_eq!(
             rendered,
             "(diagnostics\n  (diagnostic\n    (severity error)\n    (code \"early_error\")\n    (source \"semantic\")\n    (range (start 1 2) (end 1 3))\n  )\n  (diagnostic\n    (severity warning)\n    (code \"early_warning\")\n    (source \"semantic\")\n    (range (start 1 2) (end 1 3))\n  )\n  (diagnostic\n    (severity warning)\n    (code \"later\")\n    (source \"semantic\")\n    (range (start 4 3) (end 4 4))\n    (related-information\n      (related\n        (uri \"memory://diagnostics/related.sysml\")\n        (range (start 0 0) (end 0 1))\n      )\n    )\n  )\n)"
