@@ -334,9 +334,6 @@ fn materialize_port_def_item_usage(
             serde_json::json!(direction_name(direction)),
         );
     }
-    if let Some(ref t) = n.type_name {
-        attrs.insert("itemType".to_string(), serde_json::json!(t));
-    }
     if let Some(ref m) = n.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }

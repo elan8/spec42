@@ -480,9 +480,6 @@ pub(super) fn materialize_allocation_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&alloc_node.membership),
     );
-    if let Some(ref t) = alloc_node.type_name {
-        attrs.insert("allocationType".to_string(), serde_json::json!(t));
-    }
     if let Some(source) = alloc_node.source.as_ref() {
         attrs.insert(
             "allocationSource".to_string(),
@@ -539,14 +536,11 @@ pub(super) fn materialize_concern_usage(
     };
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, kind);
     let range = span_to_range(&cu_node.span);
-    let mut attrs = HashMap::new();
+    let attrs = HashMap::new();
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&cu_node.membership),
     );
-    if let Some(ref t) = cu_node.type_name {
-        attrs.insert("concernType".to_string(), serde_json::json!(t));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -634,9 +628,6 @@ pub(crate) fn materialize_use_case_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&ucu_node.membership),
     );
-    if let Some(ref t) = ucu_node.type_name {
-        attrs.insert("useCaseType".to_string(), serde_json::json!(t));
-    }
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(ucu_node.is_abstract),
@@ -890,9 +881,6 @@ pub(crate) fn materialize_enum_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&enum_node.membership),
     );
-    if let Some(ref t) = enum_node.type_name {
-        attrs.insert("enumerationType".to_string(), serde_json::json!(t));
-    }
     if let Some(ref m) = enum_node.multiplicity {
         attrs.insert("multiplicity".to_string(), serde_json::json!(m));
     }
@@ -1260,9 +1248,6 @@ pub(crate) fn materialize_case_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
     );
-    if let Some(ref t) = c_node.type_name {
-        attrs.insert("caseType".to_string(), serde_json::json!(t));
-    }
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1350,9 +1335,6 @@ pub(crate) fn materialize_analysis_case_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
     );
-    if let Some(ref t) = c_node.type_name {
-        attrs.insert("analysisType".to_string(), serde_json::json!(t));
-    }
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),
@@ -1435,9 +1417,6 @@ pub(crate) fn materialize_verification_case_usage(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&c_node.membership),
     );
-    if let Some(ref t) = c_node.type_name {
-        attrs.insert("verificationType".to_string(), serde_json::json!(t));
-    }
     attrs.insert(
         "isAbstract".to_string(),
         serde_json::json!(c_node.is_abstract),

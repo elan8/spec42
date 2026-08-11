@@ -85,10 +85,7 @@ pub(super) fn build_from_part_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &es.name, "exhibit state");
             let range = span_to_range(&es_node.span);
-            let mut attrs = HashMap::new();
-            if let Some(ref state_type) = es.type_name {
-                attrs.insert("stateType".to_string(), serde_json::json!(state_type));
-            }
+            let attrs = HashMap::new();
             add_node_and_recurse(
                 g,
                 uri,
@@ -514,9 +511,6 @@ pub(super) fn build_from_part_def_body_element(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&enum_node.membership),
             );
-            if let Some(ref t) = enum_node.type_name {
-                attrs.insert("enumerationType".to_string(), serde_json::json!(t));
-            }
             if let Some(ref m) = enum_node.multiplicity {
                 attrs.insert("multiplicity".to_string(), serde_json::json!(m));
             }

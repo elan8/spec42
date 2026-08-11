@@ -204,14 +204,11 @@ pub(super) fn build_from_state_body(
                 let name = &state_node.name;
                 let qualified = qualified_name_for_node(g, uri, container_prefix, name, "state");
                 let range = span_to_range(&state_node.span);
-                let mut attrs = HashMap::new();
+                let attrs = HashMap::new();
                 g.register_declared_membership_facts(
                     NodeId::new(uri, &qualified),
                     crate::semantic::ast_util::declared_membership_facts(&state_node.membership),
                 );
-                if let Some(ref t) = state_node.type_name {
-                    attrs.insert("stateType".to_string(), serde_json::json!(t));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
