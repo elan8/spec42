@@ -12,8 +12,8 @@ use sha2::{Digest, Sha256};
 
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{
-    DeclaredRelationshipFacts, DeclaredRelationshipTarget, NodeId, RelationshipKind, SemanticEdge,
-    SemanticNode,
+    DeclaredRelationshipFacts, DeclaredRelationshipTarget, ElementKind, NodeId, RelationshipKind,
+    SemanticEdge, SemanticNode,
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
@@ -380,6 +380,7 @@ impl<'a> ResolutionDb<'a> {
                 }
             }
         }
+        derive_case_subject_relationships(self.graph, &mut relationships);
 
         facts.sort_by(|left, right| left.reference.cmp(&right.reference));
         relationships.sort_by(|left, right| {
@@ -395,6 +396,65 @@ impl<'a> ResolutionDb<'a> {
             relationships,
         })
     }
+}
+
+fn derive_case_subject_relationships(
+    graph: &SemanticGraph,
+    relationships: &mut Vec<ResolvedRelationship>,
+) {
+    for case in graph.semantic_nodes().into_iter().filter(is_case_kind) {
+        let mut subject_nodes = graph
+            .children_of(&case)
+            .into_iter()
+            .filter(|child| child.element_kind == ElementKind::Subject)
+            .collect::<Vec<_>>();
+        for child in graph.children_of(&case) {
+            if child.element_kind == ElementKind::Objective {
+                subject_nodes.extend(
+                    graph
+                        .children_of(child)
+                        .into_iter()
+                        .filter(|nested| nested.element_kind == ElementKind::VerifiedRequirement),
+                );
+            }
+        }
+        for subject in subject_nodes {
+            let references = if subject.element_kind == ElementKind::Subject {
+                &subject.declared_facts.relationships.typing
+            } else {
+                &subject.declared_facts.relationships.subject
+            };
+            for authored in references {
+                let mut candidates = explicit_name_candidates(graph, subject, &authored.reference);
+                candidates.sort_by(node_id_order);
+                candidates.dedup();
+                if let [target] = candidates.as_slice() {
+                    relationships.push(ResolvedRelationship {
+                        source: case.id.clone(),
+                        target: target.clone(),
+                        kind: RelationshipKind::Subject,
+                        provenance: ResolutionProvenance::Derived,
+                    });
+                }
+            }
+        }
+    }
+}
+
+fn is_case_kind(node: &SemanticNode) -> bool {
+    matches!(
+        node.element_kind,
+        ElementKind::AnalysisDef
+            | ElementKind::Analysis
+            | ElementKind::VerificationDef
+            | ElementKind::Verification
+            | ElementKind::UseCaseDef
+            | ElementKind::UseCase
+            | ElementKind::ConcernDef
+            | ElementKind::Concern
+            | ElementKind::RequirementDef
+            | ElementKind::Requirement
+    )
 }
 
 fn authored_reference_ids(graph: &SemanticGraph) -> Vec<AuthoredReferenceId> {
@@ -921,6 +981,20 @@ mod tests {
             panic!("inherited member should resolve: {:?}", fact.outcome);
         };
         assert_eq!(target.qualified_name, "M::Base::Member");
+    }
+
+    #[test]
+    fn case_subject_is_a_derived_relationship_with_explicit_provenance() {
+        let model = build("package M { part def P; analysis def A { subject s : P; } }");
+        let subject = model
+            .resolution()
+            .relationships()
+            .iter()
+            .find(|relationship| relationship.kind == RelationshipKind::Subject)
+            .expect("derived subject relationship");
+        assert_eq!(subject.source.qualified_name, "M::A");
+        assert_eq!(subject.target.qualified_name, "M::P");
+        assert_eq!(subject.provenance, ResolutionProvenance::Derived);
     }
 
     #[test]
