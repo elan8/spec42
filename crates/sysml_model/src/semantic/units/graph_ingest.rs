@@ -1,12 +1,7 @@
 //! Ingest unit definitions from semantic graph nodes.
 
-use serde_json::Value;
-
 use crate::semantic::graph::SemanticGraph;
-use crate::semantic::graph_builder::unit_metadata::{
-    SHORT_NAME_KEY, UNIT_CONVERSION_KEY, UNIT_PREFIX_KEY, UNIT_VALUE_EXPR_KEY,
-};
-use crate::semantic::model::SemanticNode;
+use crate::semantic::model::{DeclaredUnitConversion, SemanticNode};
 use crate::semantic::units::registry::{UnitDef, UnitRegistry};
 use crate::semantic::units::type_resolver::{base_type_name, is_unit_type_name_in_graph};
 
@@ -97,13 +92,12 @@ fn unit_prefix_from_node(node: &SemanticNode) -> Option<(String, Option<String>,
     {
         return None;
     }
-    let obj = node.attributes.get(UNIT_PREFIX_KEY)?.as_object()?;
-    let factor = obj.get("conversionFactor").and_then(|v| v.as_f64())?;
-    let symbol = obj
-        .get("symbol")
-        .and_then(|v| v.as_str())
-        .map(str::to_string);
-    Some((node.name.clone(), symbol, factor))
+    let prefix = node.declared_facts.unit.as_ref()?.prefix.as_ref()?;
+    Some((
+        node.name.clone(),
+        prefix.symbol.clone(),
+        prefix.conversion_factor,
+    ))
 }
 
 fn unit_def_from_graph_node(
@@ -122,19 +116,16 @@ fn unit_def_from_graph_node(
         return None;
     }
 
+    let unit_facts = node.declared_facts.unit.as_ref();
     let short_name = node
-        .attributes
-        .get(SHORT_NAME_KEY)
-        .and_then(|v| v.as_str())
-        .map(str::to_string)
+        .declared_facts
+        .short_name
+        .clone()
         .filter(|s| !s.is_empty());
-    let unit_value_expr = node
-        .attributes
-        .get(UNIT_VALUE_EXPR_KEY)
-        .and_then(|v| v.as_str())
-        .map(str::to_string)
+    let unit_value_expr = unit_facts
+        .and_then(|u| u.value_expr.clone())
         .filter(|s| !s.is_empty());
-    let has_conversion = node.attributes.contains_key(UNIT_CONVERSION_KEY);
+    let has_conversion = unit_facts.is_some_and(|u| u.conversion.is_some());
 
     let symbol = short_name.or_else(|| {
         if unit_value_expr.is_some() || has_conversion {
@@ -155,7 +146,7 @@ fn unit_def_from_graph_node(
     let mut reference_unit = None;
     let mut conversion_factor = 1.0_f64;
     let mut conversion_offset = 0.0_f64;
-    if let Some(meta) = node.attributes.get(UNIT_CONVERSION_KEY) {
+    if let Some(meta) = unit_facts.and_then(|u| u.conversion.as_ref()) {
         apply_conversion_meta(
             meta,
             registry,
@@ -176,32 +167,22 @@ fn unit_def_from_graph_node(
 }
 
 fn apply_conversion_meta(
-    meta: &Value,
+    meta: &DeclaredUnitConversion,
     registry: &UnitRegistry,
     reference_unit: &mut Option<String>,
     conversion_factor: &mut f64,
     conversion_offset: &mut f64,
 ) {
-    let Some(obj) = meta.as_object() else {
-        return;
-    };
-    let kind = obj.get("kind").and_then(|v| v.as_str()).unwrap_or("");
-    match kind {
+    match meta.kind.as_str() {
         "ConversionByConvention" => {
-            *reference_unit = obj
-                .get("referenceUnit")
-                .and_then(|v| v.as_str())
-                .map(str::to_string);
-            if let Some(factor) = obj.get("conversionFactor").and_then(|v| v.as_f64()) {
+            reference_unit.clone_from(&meta.reference_unit);
+            if let Some(factor) = meta.conversion_factor {
                 *conversion_factor = factor;
             }
         }
         "ConversionByPrefix" => {
-            *reference_unit = obj
-                .get("referenceUnit")
-                .and_then(|v| v.as_str())
-                .map(str::to_string);
-            if let Some(prefix) = obj.get("prefix").and_then(|v| v.as_str()) {
+            reference_unit.clone_from(&meta.reference_unit);
+            if let Some(prefix) = meta.prefix.as_deref() {
                 if let Some(factor) = registry.prefix_factor_by_name(prefix) {
                     *conversion_factor = factor;
                 }
@@ -209,12 +190,12 @@ fn apply_conversion_meta(
         }
         "IntervalScale" => {
             *reference_unit = Some("K".to_string());
-            if let Some(interval_unit) = obj.get("intervalUnit").and_then(|v| v.as_str()) {
+            if let Some(interval_unit) = meta.interval_unit.as_deref() {
                 if let Some(base) = registry.get(interval_unit) {
                     *conversion_factor = base.conversion_factor;
                 }
             }
-            if let Some(zero) = obj.get("zeroOffsetKelvin").and_then(|v| v.as_f64()) {
+            if let Some(zero) = meta.zero_offset_kelvin {
                 *conversion_offset = zero;
             }
         }

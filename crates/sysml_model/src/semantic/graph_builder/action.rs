@@ -11,9 +11,8 @@ use url::Url;
 
 use crate::semantic::ast_util::declared_expression;
 use crate::semantic::ast_util::{
-    action_usage_feature_properties, attach_short_name_attribute, declared_multiplicity,
-    span_to_range, state_usage_feature_properties, subsetting_target, subsetting_targets,
-    typing_targets,
+    action_usage_feature_properties, declared_multiplicity, span_to_range,
+    state_usage_feature_properties, subsetting_target, subsetting_targets, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::DeclaredFeatureProperties;
@@ -1352,7 +1351,11 @@ pub(super) fn materialize_action_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, name, "action def");
     let action_id = NodeId::new(uri, &qualified);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &ad_node.identification);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&ad_node.identification)
+    {
+        g.register_declared_short_name(action_id.clone(), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&ad_node.membership),

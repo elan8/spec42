@@ -4,8 +4,7 @@ use sysml_v2_parser::ast::{InterfaceDefBody, PartDefBody, PartDefBodyElement};
 use url::Url;
 
 use crate::semantic::ast_util::{
-    attach_short_name_attribute, definition_feature_properties, identification_name, span_to_range,
-    typing_targets,
+    definition_feature_properties, identification_name, span_to_range, typing_targets,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::model::{DeclaredFeatureProperties, NodeId, RelationshipKind};
@@ -118,7 +117,11 @@ pub(super) fn build_from_part_def_body_element(
             );
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "part def");
             let range = span_to_range(&pd_node.span);
-            attach_short_name_attribute(&mut attrs, &pd_node.identification);
+            if let Some(short_name) =
+                crate::semantic::ast_util::declared_short_name(&pd_node.identification)
+            {
+                g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+            }
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&pd_node.membership),
@@ -183,7 +186,11 @@ pub(super) fn build_from_part_def_body_element(
                 &mut attrs,
             );
             let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "item def");
-            attach_short_name_attribute(&mut attrs, &item_node.identification);
+            if let Some(short_name) =
+                crate::semantic::ast_util::declared_short_name(&item_node.identification)
+            {
+                g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+            }
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&item_node.membership),
@@ -289,8 +296,12 @@ pub(super) fn build_from_part_def_body_element(
             let qualified =
                 qualified_name_for_node(g, uri, container_prefix, &name, "interface def");
             let range = span_to_range(&id_node.span);
-            let mut attrs = HashMap::new();
-            attach_short_name_attribute(&mut attrs, &id_node.identification);
+            let attrs = HashMap::new();
+            if let Some(short_name) =
+                crate::semantic::ast_util::declared_short_name(&id_node.identification)
+            {
+                g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+            }
             g.register_declared_membership_facts(
                 NodeId::new(uri, &qualified),
                 crate::semantic::ast_util::declared_membership_facts(&id_node.membership),

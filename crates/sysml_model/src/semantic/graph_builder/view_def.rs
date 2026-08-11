@@ -17,8 +17,7 @@ use super::{
     wire_def_specialization_edge,
 };
 use crate::semantic::ast_util::{
-    attach_short_name_attribute, declared_expression, identification_name, span_to_range,
-    subsetting_target,
+    declared_expression, identification_name, span_to_range, subsetting_target,
 };
 use crate::semantic::graph::SemanticGraph;
 use crate::semantic::graph_builder::expressions;
@@ -356,7 +355,11 @@ pub(super) fn build_view_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "view def");
     let range = span_to_range(&vd_node.span);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &vd_node.value.identification);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&vd_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vd_node.value.membership),
@@ -419,7 +422,11 @@ pub(super) fn build_viewpoint_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "viewpoint def");
     let range = span_to_range(&vpd_node.span);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &vpd_node.value.identification);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&vpd_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&vpd_node.value.membership),
@@ -466,7 +473,11 @@ pub(super) fn build_rendering_def(
     let qualified = qualified_name_for_node(g, uri, container_prefix, &name, "rendering def");
     let range = span_to_range(&rd_node.span);
     let mut attrs = HashMap::new();
-    attach_short_name_attribute(&mut attrs, &rd_node.value.identification);
+    if let Some(short_name) =
+        crate::semantic::ast_util::declared_short_name(&rd_node.value.identification)
+    {
+        g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+    }
     g.register_declared_membership_facts(
         NodeId::new(uri, &qualified),
         crate::semantic::ast_util::declared_membership_facts(&rd_node.value.membership),

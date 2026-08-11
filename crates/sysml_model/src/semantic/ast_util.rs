@@ -1,7 +1,5 @@
 //! Helpers for working with sysml-v2-parser AST: span/range conversion and name extraction.
 
-use std::collections::HashMap;
-
 use crate::semantic::expression_fold::{fold_expression, ExpressionAlgebra, FoldedChild};
 use crate::semantic::model::{
     DeclaredBinaryOperator, DeclaredCollectionOperator, DeclaredExpression,
@@ -788,26 +786,19 @@ pub fn identification_name(ident: &Identification) -> String {
         .to_string()
 }
 
-/// Stashes `identification.short_name` as a `"shortName"` attribute when both a short name
-/// and a regular name are present. When short_name is the *only* name, `identification_name`
-/// already uses it as `SemanticNode.name`, so there's nothing extra to capture — without this,
-/// a short name declared alongside a regular name (e.g. `part def <'CB'> ControlBoard;`) was
-/// silently dropped: nothing outside the raw source text ever knew `CB` refers to
-/// `ControlBoard`, so references to `CB` failed to resolve entirely.
-pub fn attach_short_name_attribute(
-    attrs: &mut HashMap<String, serde_json::Value>,
-    identification: &Identification,
-) {
-    if identification.name.is_none() {
-        return;
-    }
-    if let Some(short) = identification
+/// Returns `identification.short_name` when both a short name and a regular name are present.
+/// When short_name is the *only* name, `identification_name` already uses it as
+/// `SemanticNode.name`, so there's nothing extra to capture — without this, a short name
+/// declared alongside a regular name (e.g. `part def <'CB'> ControlBoard;`) was silently
+/// dropped: nothing outside the raw source text ever knew `CB` refers to `ControlBoard`, so
+/// references to `CB` failed to resolve entirely.
+pub fn declared_short_name(identification: &Identification) -> Option<String> {
+    identification.name.as_ref()?;
+    identification
         .short_name
         .as_deref()
         .filter(|s| !s.is_empty())
-    {
-        attrs.insert("shortName".to_string(), serde_json::json!(short));
-    }
+        .map(str::to_string)
 }
 
 #[cfg(test)]
@@ -824,9 +815,7 @@ mod tests {
     #[test]
     fn attaches_short_name_when_both_name_and_short_name_present() {
         let ident = identification(Some("ControlBoard"), Some("CB"));
-        let mut attrs = HashMap::new();
-        attach_short_name_attribute(&mut attrs, &ident);
-        assert_eq!(attrs.get("shortName").and_then(|v| v.as_str()), Some("CB"));
+        assert_eq!(declared_short_name(&ident).as_deref(), Some("CB"));
     }
 
     #[test]
@@ -834,17 +823,13 @@ mod tests {
         // identification_name already uses short_name as the node's primary name in this case,
         // so there is nothing extra to capture.
         let ident = identification(None, Some("CB"));
-        let mut attrs = HashMap::new();
-        attach_short_name_attribute(&mut attrs, &ident);
-        assert!(!attrs.contains_key("shortName"));
+        assert_eq!(declared_short_name(&ident), None);
     }
 
     #[test]
     fn does_not_attach_short_name_when_absent() {
         let ident = identification(Some("ControlBoard"), None);
-        let mut attrs = HashMap::new();
-        attach_short_name_attribute(&mut attrs, &ident);
-        assert!(!attrs.contains_key("shortName"));
+        assert_eq!(declared_short_name(&ident), None);
     }
 
     #[test]

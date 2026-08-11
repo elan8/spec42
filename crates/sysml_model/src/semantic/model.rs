@@ -1097,6 +1097,16 @@ pub struct DeclaredSemanticFacts {
     /// two-step handoff `ConnectStatementDetail`'s `source_expression`/`target_expression` use.
     #[serde(default)]
     pub transition_endpoints: Option<TransitionEndpointFacts>,
+    /// Authored short name (e.g. `part def <'CB'> ControlBoard;`), present only when a short
+    /// name is declared alongside a regular name. When short_name is the *only* name,
+    /// [`ast_util::identification_name`] already uses it as [`SemanticNode::name`], so there is
+    /// nothing extra to capture here.
+    #[serde(default)]
+    pub short_name: Option<String>,
+    /// Unit-catalog metadata (prefix, conversion, and value-expression facts) for
+    /// `attribute def`/`attribute` nodes that participate in the unit catalog.
+    #[serde(default)]
+    pub unit: Option<DeclaredUnitFacts>,
 }
 
 /// Typed source/target endpoint facts for a `transition` statement's `Transition` node.
@@ -1111,6 +1121,39 @@ pub struct TransitionEndpointFacts {
     pub is_initial: bool,
     /// True when the target endpoint resolves to the implicit `done` pseudostate.
     pub target_is_done: bool,
+}
+
+/// Parser-authored unit-catalog metadata for an `attribute def`/`attribute` node: prefix
+/// declarations (`UnitPrefix`), unit conversions (`ConversionByConvention`, `ConversionByPrefix`,
+/// `IntervalScale`), and the rendered debug form of a declared value expression. Owned entirely
+/// by the semantic system (see `graph_builder::unit_metadata`); no `serde_json::Value` involved.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct DeclaredUnitFacts {
+    #[serde(default)]
+    pub prefix: Option<DeclaredUnitPrefix>,
+    #[serde(default)]
+    pub conversion: Option<DeclaredUnitConversion>,
+    #[serde(default)]
+    pub value_expr: Option<String>,
+}
+
+/// A declared `UnitPrefix` catalog entry (e.g. `attribute kilo: UnitPrefix { :>> symbol = "k";
+/// :>> conversionFactor = 1E3; }`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DeclaredUnitPrefix {
+    pub symbol: Option<String>,
+    pub conversion_factor: f64,
+}
+
+/// A declared unit conversion, in one of the catalog's supported shapes.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct DeclaredUnitConversion {
+    pub kind: String,
+    pub reference_unit: Option<String>,
+    pub conversion_factor: Option<f64>,
+    pub prefix: Option<String>,
+    pub interval_unit: Option<String>,
+    pub zero_offset_kelvin: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -2058,16 +2101,11 @@ pub struct SemanticNode {
     pub parent_id: Option<NodeId>,
 }
 
-/// True if `node`'s declared name or short name (see `ast_util::attach_short_name_attribute`)
+/// True if `node`'s declared name or short name (see [`DeclaredSemanticFacts::short_name`])
 /// equals `target`. Use this instead of `node.name == target` anywhere a simple-name match is
 /// used for reference resolution, so short names declared alongside a regular name
 /// (`part def <'CB'> ControlBoard;`) resolve as real alternate identifiers, matching SysML v2/
 /// KerML semantics, instead of only being findable in the raw source text.
 pub fn node_matches_simple_name(node: &SemanticNode, target: &str) -> bool {
-    node.name == target
-        || node
-            .attributes
-            .get("shortName")
-            .and_then(serde_json::Value::as_str)
-            == Some(target)
+    node.name == target || node.declared_facts.short_name.as_deref() == Some(target)
 }

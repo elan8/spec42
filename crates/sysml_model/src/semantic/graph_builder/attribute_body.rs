@@ -52,6 +52,9 @@ pub(super) fn build_from_attribute_body(
                     NodeId::new(uri, &qualified),
                     crate::semantic::ast_util::declared_membership_facts(&value.membership),
                 );
+                if let Some(short_name) = unit_metadata::attribute_def_short_name(value) {
+                    g.register_declared_short_name(NodeId::new(uri, &qualified), short_name);
+                }
                 let targets = typing_targets(value.typing.as_deref());
                 if !targets.is_empty() {
                     attrs.insert(
@@ -59,7 +62,6 @@ pub(super) fn build_from_attribute_body(
                         serde_json::json!(targets.join(", ")),
                     );
                 }
-                unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
                 if let Some(expr_node) = &value.value {
                     let rendered =
                         expressions::expression_to_debug_string(&expr_node.value.expression);
@@ -76,10 +78,14 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
+                let node_id = NodeId::new(uri, &qualified);
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.declared_facts.unit = unit_metadata::attribute_def_unit_facts(value);
+                }
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
-                attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);
+                attach_nested_doc_comments(g, &node_id, &value.body);
             }
             AttributeBodyElement::AttributeUsage(attribute) => {
                 let value = &attribute.value;
@@ -98,7 +104,6 @@ pub(super) fn build_from_attribute_body(
                         serde_json::json!(targets.join(", ")),
                     );
                 }
-                unit_metadata::project_attribute_usage_unit_metadata(&mut attrs, value);
                 if let Some(s) = subsetting_target(value.subsets.as_deref()) {
                     attrs.insert("subsetsFeature".to_string(), serde_json::json!(s));
                 }
@@ -129,19 +134,23 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
-                attach_declared_name(g, &NodeId::new(uri, &qualified), &value.name);
+                let node_id = NodeId::new(uri, &qualified);
+                attach_declared_name(g, &node_id, &value.name);
                 attach_declared_subsetting_family(
                     g,
-                    &NodeId::new(uri, &qualified),
+                    &node_id,
                     value.subsets.as_deref(),
                     value.redefines.as_deref(),
                     value.references.as_deref(),
                     value.crosses.as_deref(),
                 );
+                if let Some(node) = g.get_node_mut(&node_id) {
+                    node.declared_facts.unit = unit_metadata::attribute_usage_unit_facts(value);
+                }
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
-                attach_nested_doc_comments(g, &NodeId::new(uri, &qualified), &value.body);
+                attach_nested_doc_comments(g, &node_id, &value.body);
             }
             AttributeBodyElement::Doc(doc) => {
                 super::attach_doc_comment(g, parent_id, &doc.value.text);

@@ -296,10 +296,7 @@ impl GeneratorModelView {
                 .get("doc")
                 .and_then(|value| value.as_str())
                 .map(str::to_owned),
-            short_name: attributes
-                .get("shortName")
-                .and_then(|value| value.as_str())
-                .map(str::to_owned),
+            short_name: node.declared_facts.short_name.clone(),
             direction: properties
                 .and_then(|value| value.direction.clone())
                 .or_else(|| declared_properties.and_then(|value| value.direction.clone())),
