@@ -69,6 +69,19 @@ onto a *boundary DTO's* JSON map at transport construction sites only. Nothing i
 onto `SemanticNode`; that projection is the precedent for how later chunks may serve presentation
 consumers without reintroducing a second semantic authority.
 
+### Two cross-document resolution engines
+
+B1 established typed edge construction ownership and made whole, parallel, incremental and
+decoded builds agree on it, by tagging ownership structurally at the single edge-insertion choke
+point rather than trusting whichever pass added the edge.
+
+While doing so it confirmed that whole-graph linking and the scoped/incremental resolver are two
+independently implemented resolution engines, to the point that fixes have had to be applied to
+both separately. B1 only required identical *ownership*, which is now guaranteed regardless of
+which engine produced an edge. Unifying the two algorithms is a larger separate concern and is
+not yet scheduled; it is a standing risk to the plan's requirement that full, incremental, cached
+and parallel paths be observably equivalent.
+
 ### Agent worktree hygiene
 
 Each agent worktree builds its own `target/`, at roughly 20 GB apiece. Seven concurrent
@@ -114,10 +127,10 @@ Tracked against `ROUNDTRIP_SEMGRAPH_PREREQS.md` §8. Persistent `LibrarySemantic
 
 | Blocker | Summary | Status |
 |---------|---------|--------|
-| B1 | Typed edge construction ownership; rebuild cross-document ownership from it | in progress |
+| B1 | Typed edge construction ownership; rebuild cross-document ownership from it | done |
 | B2 | Omit lookup/containment indexes from the record; rebuild and validate them | not started |
 | B3 | Complete source roles and canonical resolution precedence | not started |
-| B4 | `SemanticPublication` identity, phase, completeness | not started |
+| B4 | `SemanticPublication` identity, phase, completeness | in progress |
 | B5 | `SemanticGraphRecordV1` replaces direct runtime serde | not started |
 | B6 | Graph hit rehydrates sources and ASTs; no concealed missing input | not started |
 | B7 | Typed `GraphInvariantError` and single cache-import validator | not started |
