@@ -1,0 +1,392 @@
+# META
+~~~ini
+description=Standard Library: Kernel Libraries/Kernel Function Library/ScalarFunctions
+type=file
+~~~
+# SOURCE
+~~~kerml
+standard library package ScalarFunctions {
+	doc
+	/*
+	 * This package defines abstract functions that specialize the DataFunctions for use with ScalarValues. 
+	 */
+
+	public import ScalarValues::*;
+	
+	abstract function '+' specializes DataFunctions::'+' { in x: ScalarValue[1]; in y: ScalarValue[0..1]; return : ScalarValue[1]; }
+	abstract function '-' specializes DataFunctions::'-' { in x: ScalarValue[1]; in y: ScalarValue[0..1]; return : ScalarValue[1]; }
+	abstract function '*' specializes DataFunctions::'*' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	abstract function '/' specializes DataFunctions::'/' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	abstract function '**' specializes DataFunctions::'**' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	abstract function '^' specializes DataFunctions::'^' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	abstract function '%' specializes DataFunctions::'%' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	
+	abstract function 'not' specializes DataFunctions::'not' { in x: ScalarValue[1]; return : ScalarValue[1]; }
+	abstract function 'xor' specializes DataFunctions::'xor' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+
+	abstract function '~' specializes DataFunctions::'~' { in x: ScalarValue[1]; return : ScalarValue[1]; }	
+	abstract function '|' specializes DataFunctions::'|' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	abstract function '&' specializes DataFunctions::'&' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	
+	abstract function '<' specializes DataFunctions::'<' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+	abstract function '>' specializes DataFunctions::'>' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+	abstract function '<=' specializes DataFunctions::'<=' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+	abstract function '>=' specializes DataFunctions::'>=' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+	
+	abstract function max specializes DataFunctions::max { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	abstract function min specializes DataFunctions::min { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+	
+	abstract function '..' specializes DataFunctions::'..' { in lower: ScalarValue[1]; in upper: ScalarValue[1]; return : ScalarValue[0..*]; }
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "scalar_functions.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 15) (end 6 27))
+      )
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwPublic,KwImport,Ident,ColonColon,Star,Semicolon,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,Ident,KwSpecializes,Ident,ColonColon,Ident,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,CloseCurly,
+KwAbstract,KwFunction,UnrestrictedName,KwSpecializes,Ident,ColonColon,UnrestrictedName,OpenCurly,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwIn,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,Semicolon,KwReturn,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (standard_library_package_def 'ScalarFunctions'
+    (documentation)
+    (import_decl public 'ScalarValues::*')
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'x' : 'ScalarValue' multiplicity)
+      (feature_def in 'y' : 'ScalarValue' multiplicity)
+      (return_member))
+    (function_def
+      (feature_def in 'lower' : 'ScalarValue' multiplicity)
+      (feature_def in 'upper' : 'ScalarValue' multiplicity)
+      (return_member))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'DataFunctions::+'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::-'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::/'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::**'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::^'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::%'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::not'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::xor'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::~'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::|'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::&'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::<'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::>'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::<='
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::>='
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::max'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::min'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::..'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'DataFunctions::+'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::-'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::*'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::/'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::**'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::^'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::%'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::not'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::xor'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::~'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::|'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::&'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::<'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::>'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::<='
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::>='
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'Boolean'
+semantic.unresolved_name 'DataFunctions::max'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::min'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'DataFunctions::..'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+semantic.unresolved_name 'ScalarValue'
+~~~
+# FORMAT
+~~~sysml
+standard library package ScalarFunctions {
+    doc
+    /*
+	 * This package defines abstract functions that specialize the DataFunctions for use with ScalarValues. 
+	 */
+
+    public import ScalarValues::*;
+
+    abstract function '+' specializes DataFunctions::'+' { in x: ScalarValue[1]; in y: ScalarValue[0..1]; return : ScalarValue[1]; }
+    abstract function '-' specializes DataFunctions::'-' { in x: ScalarValue[1]; in y: ScalarValue[0..1]; return : ScalarValue[1]; }
+    abstract function '*' specializes DataFunctions::'*' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function '/' specializes DataFunctions::'/' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function '**' specializes DataFunctions::'**' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function '^' specializes DataFunctions::'^' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function '%' specializes DataFunctions::'%' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+
+    abstract function 'not' specializes DataFunctions::'not' { in x: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function 'xor' specializes DataFunctions::'xor' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+
+    abstract function '~' specializes DataFunctions::'~' { in x: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function '|' specializes DataFunctions::'|' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function '&' specializes DataFunctions::'&' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+
+    abstract function '<' specializes DataFunctions::'<' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+    abstract function '>' specializes DataFunctions::'>' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+    abstract function '<=' specializes DataFunctions::'<=' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+    abstract function '>=' specializes DataFunctions::'>=' { in x: ScalarValue[1]; in y: ScalarValue[1]; return : Boolean[1]; }
+
+    abstract function max specializes DataFunctions::max { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+    abstract function min specializes DataFunctions::min { in x: ScalarValue[1]; in y: ScalarValue[1]; return : ScalarValue[1]; }
+
+    abstract function '..' specializes DataFunctions::'..' { in lower: ScalarValue[1]; in upper: ScalarValue[1]; return : ScalarValue[0..*]; }
+}
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "9f6f079bee2fac1478efabdac671b137e3d5aca224131575fcb9cf8605e01154") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions"))) (kind "package") (name "ScalarFunctions") (declared-name "ScalarFunctions") (range (start (line 0) (character 0)) (end (line 0) (character 2595))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 6) (character 1)) (end (line 6) (character 31))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))) (authored (membership (kind Import) (visibility "public") (import (reference "ScalarValues::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 6) (character 15)) (end (line 6) (character 27))))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2595))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 8) (character 1)) (end (line 8) (character 129))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 9) (character 1)) (end (line 9) (character 129))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl10"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 20) (character 1)) (end (line 20) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl11"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 21) (character 1)) (end (line 21) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl12"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 23) (character 1)) (end (line 23) (character 122))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl13"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 24) (character 1)) (end (line 24) (character 122))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl14"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 25) (character 1)) (end (line 25) (character 124))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl15"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 26) (character 1)) (end (line 26) (character 124))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl16"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 31) (character 1)) (end (line 31) (character 139))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl2"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 10) (character 1)) (end (line 10) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl3"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 11) (character 1)) (end (line 11) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl4"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 12) (character 1)) (end (line 12) (character 128))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl5"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 13) (character 1)) (end (line 13) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl6"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 14) (character 1)) (end (line 14) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl7"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 16) (character 1)) (end (line 16) (character 108))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl8"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 17) (character 1)) (end (line 17) (character 130))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::function#kermlDecl9"))) (kind "kermlDecl") (name "function") (declared-name "function") (range (start (line 19) (character 1)) (end (line 19) (character 104))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::max"))) (kind "kermlDecl") (name "max") (declared-name "max") (range (start (line 28) (character 1)) (end (line 28) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+    (element (id (node (document "d0") (qualified-name "ScalarFunctions::min"))) (kind "kermlDecl") (name "min") (declared-name "min") (range (start (line 29) (character 1)) (end (line 29) (character 126))) (parent (node (document "d0") (qualified-name "ScalarFunctions"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "ScalarFunctions::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "ScalarValues::*") (range (start (line 6) (character 15)) (end (line 6) (character 27))) (outcome (status unresolved)))
+  )
+  (relationships
+  )
+  (evaluation
+  )
+)
+~~~

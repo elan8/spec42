@@ -1,0 +1,145 @@
+# META
+~~~ini
+description=KerML Simple Tests: Behaviors
+type=file
+~~~
+# SOURCE
+~~~kerml
+package Behaviors {
+    behavior A {
+        in x;
+        out y = b.y1;
+        composite step b : B {
+            in x1 = A::x;
+        }
+    }
+    behavior B specializes A {
+        in x1;
+        out var y1;
+    }
+    class C {
+        var z = A().y;
+        step a : A;
+        step b : B;
+        binding z = a.y;
+        flow a.y to b.x1;
+    }
+    abstract flow msg of C;
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "behaviors.md"
+    (diagnostics
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwPackage,Ident,OpenCurly,
+KwBehavior,Ident,OpenCurly,
+KwIn,Ident,Semicolon,
+KwOut,Ident,Eq,Ident,Dot,Ident,Semicolon,
+KwComposite,KwStep,Ident,Colon,Ident,OpenCurly,
+KwIn,Ident,Eq,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+CloseCurly,
+KwBehavior,Ident,KwSpecializes,Ident,OpenCurly,
+KwIn,Ident,Semicolon,
+KwOut,KwVar,Ident,Semicolon,
+CloseCurly,
+KwClass,Ident,OpenCurly,
+KwVar,Ident,Eq,Ident,OpenParen,CloseParen,Dot,Ident,Semicolon,
+KwStep,Ident,Colon,Ident,Semicolon,
+KwStep,Ident,Colon,Ident,Semicolon,
+KwBinding,Ident,Eq,Ident,Dot,Ident,Semicolon,
+KwFlow,Ident,Dot,Ident,KwTo,Ident,Dot,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwFlow,Ident,KwOf,Ident,Semicolon,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def 'Behaviors'
+    (behavior_def
+      (feature_def in 'x')
+      (feature_def out 'y' value)
+      (step_def
+        (feature_def in 'x1' value)))
+    (behavior_def
+      (feature_def in 'x1')
+      (feature_def out var 'y1'))
+    (class_def 'C'
+      (feature_def var 'z' value)
+      (step_def)
+      (step_def)
+      (binding_connector
+        (connector_end)
+        (connector_end))
+      (flow_feature 'a'))
+    (flow_usage 'msg' : 'C')))
+~~~
+# EXPECTED
+~~~
+semantic.duplicate_name 'a'
+semantic.ambiguous_member 'a'
+semantic.invalid_connection_end_count
+semantic.feature_typing_kind_mismatch
+~~~
+# PROBLEMS
+~~~
+semantic.duplicate_name 'a'
+semantic.ambiguous_member 'a'
+semantic.invalid_connection_end_count
+semantic.feature_typing_kind_mismatch
+~~~
+# FORMAT
+~~~sysml
+package Behaviors {
+    behavior A {
+        in x;
+        out y = b.y1;
+        composite step b : B {
+            in x1 = A::x;
+        }
+    }
+    behavior B specializes A {
+        in x1;
+        out var y1;
+    }
+    class C {
+        var z = A().y;
+        step a : A;
+        step b : B;
+        binding z = a.y;
+        flow a.y to b.x1;
+    }
+    abstract flow msg of C;
+}
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "064c204138ff4566abef35592ad2725319e611e2bb3e378176cd6a44d346775b") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Behaviors"))) (kind "package") (name "Behaviors") (declared-name "Behaviors") (range (start (line 0) (character 0)) (end (line 0) (character 381))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::A"))) (kind "kermlDecl") (name "A") (declared-name "A") (range (start (line 1) (character 4)) (end (line 1) (character 125))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::B"))) (kind "kermlDecl") (name "B") (declared-name "B") (range (start (line 8) (character 4)) (end (line 8) (character 71))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 12) (character 4)) (end (line 12) (character 133))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::msg"))) (kind "flow") (name "msg") (declared-name "msg") (range (start (line 19) (character 4)) (end (line 19) (character 27))) (parent (node (document "d0") (qualified-name "Behaviors"))))
+    (element (id (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind "flow payload") (name "_payload") (declared-name "_payload") (range (start (line 19) (character 25)) (end (line 19) (character 26))) (parent (node (document "d0") (qualified-name "Behaviors::msg"))) (authored (relationships (typing (reference "C") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind featureTyping) (ordinal 0)) (authored-target "C") (range none) (outcome (status resolved) (target (node (document "d0") (qualified-name "Behaviors::C")))))
+  )
+  (relationships
+    (relationship (kind typing) (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (target (node (document "d0") (qualified-name "Behaviors::C"))) (provenance authored) (authored-reference (source (node (document "d0") (qualified-name "Behaviors::msg::_payload"))) (kind featureTyping) (ordinal 0)))
+  )
+  (evaluation
+  )
+)
+~~~

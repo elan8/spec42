@@ -1,0 +1,318 @@
+# META
+~~~ini
+description=SysML Validation (15-Properties-Values-Expressions): 15_01-Constants
+type=file
+~~~
+# SOURCE
+~~~sysml
+package '15_01-Constants' {
+    private import MeasurementReferences::*;
+    private import SI::*;
+    private import RealFunctions::*;
+
+    /* Note: Value properties that are bound to specific values are constants and have the specified
+     * values in all contexts. It is not legal to redefine them.
+     */    
+    
+    package 'Mathematical Constants' {
+	    doc
+	    /*
+	     * Standard mathematical constants
+	     * 
+	     * Irrational constants cannot be represented exactly with finite precision.
+	     * However, they can be required to be implemented with a attribute that is accurate
+	     * to at least a certain precision.
+	     * 
+	     * (The decimal literals here should be interpreted as being fixed point and exact.)
+	     */
+    
+        attribute e: Real {
+        	assert constraint { round(e * 1E20) == 271828182845904523536.0 }
+        }
+        attribute pi: Real {
+        	assert constraint { round(pi * 1E20) == 314159265358979323846.0 }
+        }
+    }
+
+    package 'Fundamental Physical Constants' {
+	    doc
+	    /*
+	     * Standard fundamental physical constants
+	     * 
+	     * Physical constants have a standard measured attribute to a finite precision.
+	     *
+	     * The reference source is:
+	     * CODATA - Task Group on Fundamental Physical Constants (TGFC) - 2018 CODATA recommended values
+	     * See https://codata.org/initiatives/strategic-programme/fundamental-physical-constants/
+	     * For the actual values see https://pml.nist.gov/cuu/Constants/ 
+	     */
+    
+        attribute 'fine structure constant'      : DimensionOneValue = 7.2973525693E-3[one];  // 2018 CODATA attribute 7.2973525693E-3;  uncertainty = 0.0000000011E-3
+        attribute 'electron to proton mass ratio': DimensionOneValue = 5.44617021487E-4[one]; // 2018 CODATA attribute 5.44617021487E-4; uncertainty = 0.00000000033E-4 
+        attribute 'speed of light in vacuum'     : SpeedValue = 299792458[m/s];               // 2018 CODATA attribute 299792458 m s^-1; (exact)
+     }
+
+    package 'Global Context' {
+        attribute 'nominal earth gravitational acceleration': AccelerationValue = 9.80665['m/s²'];
+    }
+
+    package 'Model X Context' {
+        attribute 'amplifier gain': DimensionOneValue = 3.5[one];
+    }
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "15_01_constants.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 19) (end 1 40))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 19) (end 2 21))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 3 19) (end 3 32))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 21 8) (end 21 111))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 24 8) (end 24 113))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 42 8) (end 42 92))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 43 8) (end 43 93))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 44 8) (end 44 79))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 48 8) (end 48 99))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_type_reference")
+        (source "semantic")
+        (range (start 52 8) (end 52 65))
+      )
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwPackage,UnrestrictedName,OpenCurly,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+RegularComment,
+KwPackage,UnrestrictedName,OpenCurly,
+KwDoc,
+RegularComment,
+KwAttribute,Ident,Colon,Ident,OpenCurly,
+KwAssert,KwConstraint,OpenCurly,Ident,OpenParen,Ident,Star,ExponentialValue,CloseParen,EqEq,DecimalValue,Dot,DecimalValue,CloseCurly,
+CloseCurly,
+KwAttribute,Ident,Colon,Ident,OpenCurly,
+KwAssert,KwConstraint,OpenCurly,Ident,OpenParen,Ident,Star,ExponentialValue,CloseParen,EqEq,DecimalValue,Dot,DecimalValue,CloseCurly,
+CloseCurly,
+CloseCurly,
+KwPackage,UnrestrictedName,OpenCurly,
+KwDoc,
+RegularComment,
+KwAttribute,UnrestrictedName,Colon,Ident,Eq,DecimalValue,Dot,ExponentialValue,OpenSquare,Ident,CloseSquare,Semicolon,LineComment,
+KwAttribute,UnrestrictedName,Colon,Ident,Eq,DecimalValue,Dot,ExponentialValue,OpenSquare,Ident,CloseSquare,Semicolon,LineComment,
+KwAttribute,UnrestrictedName,Colon,Ident,Eq,DecimalValue,OpenSquare,Ident,Slash,Ident,CloseSquare,Semicolon,LineComment,
+CloseCurly,
+KwPackage,UnrestrictedName,OpenCurly,
+KwAttribute,UnrestrictedName,Colon,Ident,Eq,DecimalValue,Dot,DecimalValue,OpenSquare,UnrestrictedName,CloseSquare,Semicolon,
+CloseCurly,
+KwPackage,UnrestrictedName,OpenCurly,
+KwAttribute,UnrestrictedName,Colon,Ident,Eq,DecimalValue,Dot,DecimalValue,OpenSquare,Ident,CloseSquare,Semicolon,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def ''15_01-Constants''
+    (import_decl private 'MeasurementReferences::*')
+    (import_decl private 'SI::*')
+    (import_decl private 'RealFunctions::*')
+    (comment)
+    (package_def ''Mathematical Constants''
+      (documentation)
+      (attribute_usage 'e' : 'Real'
+        (sysml_decl
+          (result_expr_member)))
+      (attribute_usage 'pi' : 'Real'
+        (sysml_decl
+          (result_expr_member))))
+    (package_def ''Fundamental Physical Constants''
+      (documentation)
+      (attribute_usage ''fine structure constant'' : 'DimensionOneValue' value)
+      (line_comment)
+      (attribute_usage ''electron to proton mass ratio'' : 'DimensionOneValue' value)
+      (line_comment)
+      (attribute_usage ''speed of light in vacuum'' : 'SpeedValue' value)
+      (line_comment))
+    (package_def ''Global Context''
+      (attribute_usage ''nominal earth gravitational acceleration'' : 'AccelerationValue' value))
+    (package_def ''Model X Context''
+      (attribute_usage ''amplifier gain'' : 'DimensionOneValue' value))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'DimensionOneValue'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'Real'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'DimensionOneValue'
+semantic.unresolved_name 'SpeedValue'
+semantic.unresolved_name 'AccelerationValue'
+semantic.unresolved_name 'DimensionOneValue'
+~~~
+# FORMAT
+~~~sysml
+package '15_01-Constants' {
+    private import MeasurementReferences::*;
+    private import SI::*;
+    private import RealFunctions::*;
+
+    /* Note: Value properties that are bound to specific values are constants and have the specified
+     * values in all contexts. It is not legal to redefine them.
+     */    
+
+    package 'Mathematical Constants' {
+        doc
+        /*
+	     * Standard mathematical constants
+	     * 
+	     * Irrational constants cannot be represented exactly with finite precision.
+	     * However, they can be required to be implemented with a attribute that is accurate
+	     * to at least a certain precision.
+	     * 
+	     * (The decimal literals here should be interpreted as being fixed point and exact.)
+	     */
+
+        attribute e: Real {
+            assert constraint { round(e * 1E20) == 271828182845904523536.0 }
+        }
+        attribute pi: Real {
+            assert constraint { round(pi * 1E20) == 314159265358979323846.0 }
+        }
+    }
+
+    package 'Fundamental Physical Constants' {
+        doc
+        /*
+	     * Standard fundamental physical constants
+	     * 
+	     * Physical constants have a standard measured attribute to a finite precision.
+	     *
+	     * The reference source is:
+	     * CODATA - Task Group on Fundamental Physical Constants (TGFC) - 2018 CODATA recommended values
+	     * See https://codata.org/initiatives/strategic-programme/fundamental-physical-constants/
+	     * For the actual values see https://pml.nist.gov/cuu/Constants/ 
+	     */
+
+        attribute 'fine structure constant'      : DimensionOneValue = 7.2973525693E-3[one];  // 2018 CODATA attribute 7.2973525693E-3;  uncertainty = 0.0000000011E-3
+        attribute 'electron to proton mass ratio': DimensionOneValue = 5.44617021487E-4[one]; // 2018 CODATA attribute 5.44617021487E-4; uncertainty = 0.00000000033E-4
+        attribute 'speed of light in vacuum'     : SpeedValue = 299792458[m/s];               // 2018 CODATA attribute 299792458 m s^-1; (exact)
+    }
+
+    package 'Global Context' {
+        attribute 'nominal earth gravitational acceleration': AccelerationValue = 9.80665['m/s²'];
+    }
+
+    package 'Model X Context' {
+        attribute 'amplifier gain': DimensionOneValue = 3.5[one];
+    }
+}
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "f99c981413d792060de56f388e3682d4aaa6dcbcdd8e953e4201eb5f9886a710") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "15_01-Constants"))) (kind "package") (name "15_01-Constants") (declared-name "15_01-Constants") (range (start (line 0) (character 0)) (end (line 0) (character 2245))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 4)) (end (line 1) (character 44))) (parent (node (document "d0") (qualified-name "15_01-Constants"))) (authored (membership (kind Import) (visibility "private") (import (reference "MeasurementReferences::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 19)) (end (line 1) (character 40))))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 4)) (end (line 2) (character 25))) (parent (node (document "d0") (qualified-name "15_01-Constants"))) (authored (membership (kind Import) (visibility "private") (import (reference "SI::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 19)) (end (line 2) (character 21))))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::*#import2"))) (kind "import") (name "*") (declared-name "*") (range (start (line 3) (character 4)) (end (line 3) (character 36))) (parent (node (document "d0") (qualified-name "15_01-Constants"))) (authored (membership (kind Import) (visibility "private") (import (reference "RealFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 3) (character 19)) (end (line 3) (character 32))))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))) (kind "package") (name "Fundamental Physical Constants") (declared-name "Fundamental Physical Constants") (range (start (line 29) (character 4)) (end (line 29) (character 1016))) (parent (node (document "d0") (qualified-name "15_01-Constants"))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::_documentation"))) (kind "documentation") (name "") (range (start (line 29) (character 4)) (end (line 29) (character 1016))) (parent (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::electron to proton mass ratio"))) (kind "attribute def") (name "electron to proton mass ratio") (declared-name "electron to proton mass ratio") (range (start (line 43) (character 8)) (end (line 43) (character 93))) (parent (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::fine structure constant"))) (kind "attribute def") (name "fine structure constant") (declared-name "fine structure constant") (range (start (line 42) (character 8)) (end (line 42) (character 92))) (parent (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::speed of light in vacuum"))) (kind "attribute def") (name "speed of light in vacuum") (declared-name "speed of light in vacuum") (range (start (line 44) (character 8)) (end (line 44) (character 79))) (parent (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants"))) (authored (membership (kind Owning)) (relationships (typing (reference "SpeedValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Global Context"))) (kind "package") (name "Global Context") (declared-name "Global Context") (range (start (line 47) (character 4)) (end (line 47) (character 136))) (parent (node (document "d0") (qualified-name "15_01-Constants"))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration"))) (kind "attribute def") (name "nominal earth gravitational acceleration") (declared-name "nominal earth gravitational acceleration") (range (start (line 48) (character 8)) (end (line 48) (character 99))) (parent (node (document "d0") (qualified-name "15_01-Constants::Global Context"))) (authored (membership (kind Owning)) (relationships (typing (reference "AccelerationValue") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))) (kind "package") (name "Mathematical Constants") (declared-name "Mathematical Constants") (range (start (line 9) (character 4)) (end (line 9) (character 662))) (parent (node (document "d0") (qualified-name "15_01-Constants"))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::_documentation"))) (kind "documentation") (name "") (range (start (line 9) (character 4)) (end (line 9) (character 662))) (parent (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::e"))) (kind "attribute def") (name "e") (declared-name "e") (range (start (line 21) (character 8)) (end (line 21) (character 111))) (parent (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::pi"))) (kind "attribute def") (name "pi") (declared-name "pi") (range (start (line 24) (character 8)) (end (line 24) (character 113))) (parent (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants"))) (authored (membership (kind Owning)) (relationships (typing (reference "Real") (range none)))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Model X Context"))) (kind "package") (name "Model X Context") (declared-name "Model X Context") (range (start (line 51) (character 4)) (end (line 51) (character 103))) (parent (node (document "d0") (qualified-name "15_01-Constants"))))
+    (element (id (node (document "d0") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (kind "attribute def") (name "amplifier gain") (declared-name "amplifier gain") (range (start (line 52) (character 8)) (end (line 52) (character 65))) (parent (node (document "d0") (qualified-name "15_01-Constants::Model X Context"))) (authored (membership (kind Owning)) (relationships (typing (reference "DimensionOneValue") (range none)))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "MeasurementReferences::*") (range (start (line 1) (character 19)) (end (line 1) (character 40))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "SI::*") (range (start (line 2) (character 19)) (end (line 2) (character 21))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::*#import2"))) (kind namespaceImport) (ordinal 0)) (authored-target "RealFunctions::*") (range (start (line 3) (character 19)) (end (line 3) (character 32))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::electron to proton mass ratio"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::fine structure constant"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::speed of light in vacuum"))) (kind featureTyping) (ordinal 0)) (authored-target "SpeedValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration"))) (kind featureTyping) (ordinal 0)) (authored-target "AccelerationValue") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::e"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::Mathematical Constants::pi"))) (kind featureTyping) (ordinal 0)) (authored-target "Real") (range none) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "15_01-Constants::Model X Context::amplifier gain"))) (kind featureTyping) (ordinal 0)) (authored-target "DimensionOneValue") (range none) (outcome (status unresolved)))
+  )
+  (relationships
+  )
+  (evaluation
+    (node (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::electron to proton mass ratio")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::fine structure constant")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_01-Constants::Fundamental Physical Constants::speed of light in vacuum")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_01-Constants::Global Context::nominal earth gravitational acceleration")) (expression (status "unsupported") (error "declared expression form is not supported")))
+    (node (node (document "d0") (qualified-name "15_01-Constants::Model X Context::amplifier gain")) (expression (status "unsupported") (error "declared expression form is not supported")))
+  )
+)
+~~~

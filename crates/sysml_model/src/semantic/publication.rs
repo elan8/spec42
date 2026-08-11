@@ -14,12 +14,12 @@ use crate::semantic::graph::{DeclaredExpressionRelationshipRecord, SemanticGraph
 pub use crate::semantic::model::DerivedRelationshipRule;
 use crate::semantic::model::{
     DeclaredExpressionRelationship, DeclaredRelationshipFacts, DeclaredRelationshipTarget,
-    ElementKind, ImpliedRelationshipRule, NodeEvaluationFacts, NodeId, RelationshipKind,
-    SemanticEdge, SemanticNode,
+    ElementKind, EvaluatedValue, EvaluationStatus, ImpliedRelationshipRule, NodeEvaluationFacts,
+    NodeId, RelationshipKind, SemanticEdge, SemanticNode,
 };
 use crate::semantic::pipeline::build_structural_graph;
 use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
-use crate::semantic::text_span::TextRange;
+use crate::semantic::text_span::{TextPosition, TextRange};
 
 /// An exact set of source documents admitted to one semantic build.
 #[derive(Debug, Clone)]
@@ -1284,6 +1284,216 @@ pub struct SemanticModel {
     indexes: SemanticQueryIndexes,
 }
 
+/// A source reference outcome owned by the resolution phase for diagnostics.
+///
+/// This is intentionally not a clone of [`ResolutionFact`]: diagnostic consumers receive the
+/// source range and classification they need, but cannot inspect resolver storage or rebuild a
+/// graph from a collection of general-purpose facts.
+#[derive(Debug, Clone)]
+pub struct ResolutionDiagnosticReference {
+    pub source: NodeId,
+    pub source_kind: ElementKind,
+    pub source_range: TextRange,
+    pub authored_target: String,
+    pub authored_range: Option<TextRange>,
+    pub kind: ReferenceKind,
+    pub authored_ordinal: u32,
+    pub outcome: ResolutionOutcome,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ResolutionDiagnosticInput {
+    references: Vec<ResolutionDiagnosticReference>,
+}
+
+impl ResolutionDiagnosticInput {
+    pub fn references(&self) -> &[ResolutionDiagnosticReference] {
+        &self.references
+    }
+}
+
+/// The structural facts needed by inherited-feature diagnostics. The resolver computes the
+/// inherited comparison before publication; diagnostics therefore do not walk nodes, indexes,
+/// or relationship adjacency themselves.
+#[derive(Debug, Clone)]
+pub struct StructuralDiagnosticFact {
+    pub feature: NodeId,
+    pub feature_name: String,
+    pub feature_kind: ElementKind,
+    pub range: TextRange,
+    pub inherited_feature_name: String,
+    pub inherited_feature_kind: ElementKind,
+    pub inherited_type: Option<String>,
+    pub inherited_is_enum: bool,
+    pub authored_value: Option<String>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct StructuralDiagnosticInput {
+    facts: Vec<StructuralDiagnosticFact>,
+}
+
+impl StructuralDiagnosticInput {
+    pub fn inherited_features(&self) -> &[StructuralDiagnosticFact] {
+        &self.facts
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ConnectionDiagnosticRelationship {
+    pub source: NodeId,
+    pub target: NodeId,
+    pub source_kind: ElementKind,
+    pub target_kind: ElementKind,
+    pub range: TextRange,
+    pub source_expression: Option<String>,
+    pub target_expression: Option<String>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ConnectionDiagnosticInput {
+    relationships: Vec<ConnectionDiagnosticRelationship>,
+}
+
+impl ConnectionDiagnosticInput {
+    pub fn relationships(&self) -> &[ConnectionDiagnosticRelationship] {
+        &self.relationships
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct BehaviorDiagnosticRelationship {
+    pub source: NodeId,
+    pub target: NodeId,
+    pub source_kind: ElementKind,
+    pub target_kind: ElementKind,
+    pub kind: RelationshipKind,
+    pub range: TextRange,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct BehaviorDiagnosticInput {
+    relationships: Vec<BehaviorDiagnosticRelationship>,
+}
+
+impl BehaviorDiagnosticInput {
+    pub fn relationships(&self) -> &[BehaviorDiagnosticRelationship] {
+        &self.relationships
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct RequirementCaseDiagnosticRelationship {
+    pub source: NodeId,
+    pub target: NodeId,
+    pub source_kind: ElementKind,
+    pub target_kind: ElementKind,
+    pub kind: RelationshipKind,
+    pub range: TextRange,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct RequirementCaseDiagnosticInput {
+    relationships: Vec<RequirementCaseDiagnosticRelationship>,
+}
+
+impl RequirementCaseDiagnosticInput {
+    pub fn relationships(&self) -> &[RequirementCaseDiagnosticRelationship] {
+        &self.relationships
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ViewDiagnosticRelationship {
+    pub source: NodeId,
+    pub target: NodeId,
+    pub source_kind: ElementKind,
+    pub target_kind: ElementKind,
+    pub kind: RelationshipKind,
+    pub range: TextRange,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ViewDiagnosticInput {
+    relationships: Vec<ViewDiagnosticRelationship>,
+}
+
+impl ViewDiagnosticInput {
+    pub fn relationships(&self) -> &[ViewDiagnosticRelationship] {
+        &self.relationships
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ExpressionDiagnosticFact {
+    pub owner: NodeId,
+    pub range: TextRange,
+    pub status: Option<EvaluationStatus>,
+    pub value: Option<EvaluatedValue>,
+    pub unit: Option<String>,
+    pub error: Option<String>,
+    pub analysis_passed: Option<bool>,
+    pub analysis_status: Option<EvaluationStatus>,
+    pub analysis_error: Option<String>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ExpressionDiagnosticInput {
+    facts: Vec<ExpressionDiagnosticFact>,
+}
+
+impl ExpressionDiagnosticInput {
+    pub fn facts(&self) -> &[ExpressionDiagnosticFact] {
+        &self.facts
+    }
+}
+
+/// Unit diagnostics consume the evaluator's typed unit result, rather than parsing expression
+/// text or inspecting attributes.
+#[derive(Debug, Clone)]
+pub struct UnitDiagnosticFact {
+    pub owner: NodeId,
+    pub range: TextRange,
+    pub status: Option<EvaluationStatus>,
+    pub unit: Option<String>,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct UnitDiagnosticInput {
+    facts: Vec<UnitDiagnosticFact>,
+}
+
+impl UnitDiagnosticInput {
+    pub fn facts(&self) -> &[UnitDiagnosticFact] {
+        &self.facts
+    }
+}
+
+/// Builder/endpoint diagnostics consume only endpoint reference outcomes. This deliberately
+/// shares the resolution owner's typed record shape through a category-specific view.
+#[derive(Debug, Clone, Default)]
+pub struct BuilderDiagnosticInput {
+    references: Vec<BuilderDiagnosticReference>,
+}
+
+#[derive(Debug, Clone)]
+pub struct BuilderDiagnosticReference {
+    pub source: NodeId,
+    pub source_range: TextRange,
+    pub authored_target: String,
+    pub authored_range: Option<TextRange>,
+    pub kind: ReferenceKind,
+    pub authored_ordinal: u32,
+    pub outcome: ResolutionOutcome,
+}
+
+impl BuilderDiagnosticInput {
+    pub fn references(&self) -> &[BuilderDiagnosticReference] {
+        &self.references
+    }
+}
+
 impl SemanticModel {
     pub fn identity(&self) -> &SemanticModelIdentity {
         &self.identity
@@ -1297,9 +1507,12 @@ impl SemanticModel {
         self.completeness
     }
 
-    #[cfg(test)]
     pub(crate) fn resolution(&self) -> &ResolutionState {
         &self.resolution
+    }
+
+    pub(crate) fn structural_nodes_for_debug(&self) -> Vec<&SemanticNode> {
+        self.structural_graph.semantic_node_refs()
     }
 
     pub fn has_evaluation(&self) -> bool {
@@ -1313,6 +1526,402 @@ impl SemanticModel {
     pub fn view(&self) -> ResolutionView<'_> {
         ResolutionView { model: self }
     }
+
+    /// Returns resolution-owned reference outcomes for diagnostics.
+    pub fn resolution_diagnostics(&self) -> ResolutionDiagnosticInput {
+        let mut references: Vec<ResolutionDiagnosticReference> = self
+            .resolution
+            .facts
+            .iter()
+            .filter_map(|fact| {
+                let source = self.structural_graph.get_node(&fact.reference.source)?;
+                Some(ResolutionDiagnosticReference {
+                    source: fact.reference.source.clone(),
+                    source_kind: source.element_kind.clone(),
+                    source_range: source.range,
+                    authored_target: fact.authored_target.clone(),
+                    authored_range: fact.authored_range,
+                    kind: fact.reference.kind,
+                    authored_ordinal: fact.reference.authored_ordinal,
+                    outcome: fact.outcome.clone(),
+                })
+            })
+            .collect();
+        references.sort_by(|left, right| {
+            left.source
+                .cmp(&right.source)
+                .then(left.kind.cmp(&right.kind))
+                .then(left.authored_ordinal.cmp(&right.authored_ordinal))
+                .then(
+                    range_order(left.authored_range.or(Some(left.source_range))).cmp(&range_order(
+                        right.authored_range.or(Some(right.source_range)),
+                    )),
+                )
+        });
+        ResolutionDiagnosticInput { references }
+    }
+
+    /// Returns structural inherited-value comparisons computed at the publication barrier.
+    pub fn structural_diagnostics(&self) -> StructuralDiagnosticInput {
+        let nodes = self
+            .structural_graph
+            .semantic_nodes()
+            .into_iter()
+            .map(|node| (node.id.clone(), node))
+            .collect::<HashMap<_, _>>();
+        let mut typing = HashMap::<NodeId, Vec<NodeId>>::new();
+        let mut specializes = HashMap::<NodeId, Vec<NodeId>>::new();
+        for relationship in &self.resolution.relationships {
+            match relationship.kind {
+                RelationshipKind::Typing => typing
+                    .entry(relationship.source.clone())
+                    .or_default()
+                    .push(relationship.target.clone()),
+                RelationshipKind::Specializes => specializes
+                    .entry(relationship.source.clone())
+                    .or_default()
+                    .push(relationship.target.clone()),
+                _ => {}
+            }
+        }
+        let mut facts = Vec::new();
+        for node in nodes.values() {
+            let Some(value) = node
+                .attributes
+                .get("value")
+                .and_then(|value| value.as_str())
+                .map(str::to_string)
+            else {
+                continue;
+            };
+            if node.element_kind == ElementKind::Ref
+                || !node.declared_facts.relationships.redefinition.is_empty()
+            {
+                continue;
+            }
+            let Some(owner_id) = node.parent_id.as_ref() else {
+                continue;
+            };
+            let Some(owner) = nodes.get(owner_id) else {
+                continue;
+            };
+            let mut pending = typing.get(&owner.id).cloned().unwrap_or_default();
+            if pending.is_empty() {
+                pending.push(owner.id.clone());
+            }
+            let mut visited = std::collections::HashSet::new();
+            let mut inherited = None;
+            while let Some(type_id) = pending.pop() {
+                if !visited.insert(type_id.clone()) {
+                    continue;
+                }
+                if let Some(candidate) = nodes.values().find(|candidate| {
+                    candidate.parent_id.as_ref() == Some(&type_id) && candidate.name == node.name
+                }) {
+                    inherited = Some(candidate);
+                    break;
+                }
+                pending.extend(specializes.get(&type_id).into_iter().flatten().cloned());
+            }
+            let Some(inherited) = inherited else {
+                continue;
+            };
+            facts.push(StructuralDiagnosticFact {
+                feature: node.id.clone(),
+                feature_name: node.name.clone(),
+                feature_kind: node.element_kind.clone(),
+                range: node.range,
+                inherited_feature_name: inherited.name.clone(),
+                inherited_feature_kind: inherited.element_kind.clone(),
+                inherited_type: inherited
+                    .declared_facts
+                    .relationships
+                    .typing
+                    .first()
+                    .map(|target| target.reference.clone()),
+                inherited_is_enum: typing
+                    .get(&inherited.id)
+                    .and_then(|targets| targets.first())
+                    .and_then(|target| nodes.get(target))
+                    .is_some_and(|target| target.element_kind == ElementKind::EnumDef),
+                authored_value: Some(value),
+            });
+        }
+        facts.sort_by(|left, right| left.feature.cmp(&right.feature));
+        StructuralDiagnosticInput { facts }
+    }
+
+    fn relationship_range(&self, relationship: &ResolvedRelationship) -> TextRange {
+        relationship
+            .expression
+            .as_ref()
+            .map(|expression| expression.source_range)
+            .or_else(|| {
+                self.structural_graph
+                    .get_node(&relationship.source)
+                    .map(|node| node.range)
+            })
+            .unwrap_or(TextRange {
+                start: TextPosition::new(0, 0),
+                end: TextPosition::new(0, 0),
+            })
+    }
+
+    /// Returns only connection and binding endpoint facts, including the resolved endpoint kinds.
+    pub fn connection_diagnostics(&self) -> ConnectionDiagnosticInput {
+        let mut relationships: Vec<ConnectionDiagnosticRelationship> = self
+            .resolution
+            .relationships
+            .iter()
+            .filter(|relationship| {
+                matches!(
+                    relationship.kind,
+                    RelationshipKind::Connection | RelationshipKind::Bind
+                )
+            })
+            .filter_map(|relationship| {
+                let source = self.structural_graph.get_node(&relationship.source)?;
+                let target = self.structural_graph.get_node(&relationship.target)?;
+                let (source_expression, target_expression) = relationship
+                    .expression
+                    .as_ref()
+                    .map(|expression| {
+                        (
+                            Some(expression.source_expression.clone()),
+                            Some(expression.target_expression.clone()),
+                        )
+                    })
+                    .unwrap_or((None, None));
+                Some(ConnectionDiagnosticRelationship {
+                    source: relationship.source.clone(),
+                    target: relationship.target.clone(),
+                    source_kind: source.element_kind.clone(),
+                    target_kind: target.element_kind.clone(),
+                    range: self.relationship_range(relationship),
+                    source_expression,
+                    target_expression,
+                })
+            })
+            .collect();
+        relationships.sort_by(|left, right| {
+            left.source
+                .cmp(&right.source)
+                .then(left.target.cmp(&right.target))
+                .then(range_order(Some(left.range)).cmp(&range_order(Some(right.range))))
+        });
+        ConnectionDiagnosticInput { relationships }
+    }
+
+    pub fn behavior_diagnostics(&self) -> BehaviorDiagnosticInput {
+        let mut relationships: Vec<BehaviorDiagnosticRelationship> = self
+            .resolution
+            .relationships
+            .iter()
+            .filter(|relationship| {
+                matches!(
+                    relationship.kind,
+                    RelationshipKind::Flow
+                        | RelationshipKind::SuccessionFlow
+                        | RelationshipKind::Perform
+                        | RelationshipKind::Transition
+                        | RelationshipKind::InitialState
+                )
+            })
+            .filter_map(|relationship| {
+                let source = self.structural_graph.get_node(&relationship.source)?;
+                let target = self.structural_graph.get_node(&relationship.target)?;
+                Some(BehaviorDiagnosticRelationship {
+                    source: relationship.source.clone(),
+                    target: relationship.target.clone(),
+                    source_kind: source.element_kind.clone(),
+                    target_kind: target.element_kind.clone(),
+                    kind: relationship.kind.clone(),
+                    range: self.relationship_range(relationship),
+                })
+            })
+            .collect();
+        relationships.sort_by(|left, right| {
+            left.source
+                .cmp(&right.source)
+                .then(left.kind.cmp(&right.kind))
+                .then(left.target.cmp(&right.target))
+        });
+        BehaviorDiagnosticInput { relationships }
+    }
+
+    pub fn requirement_case_diagnostics(&self) -> RequirementCaseDiagnosticInput {
+        let mut relationships: Vec<RequirementCaseDiagnosticRelationship> = self
+            .resolution
+            .relationships
+            .iter()
+            .filter(|relationship| {
+                matches!(
+                    relationship.kind,
+                    RelationshipKind::Satisfy
+                        | RelationshipKind::Subject
+                        | RelationshipKind::Derivation
+                        | RelationshipKind::Dependency
+                )
+            })
+            .filter_map(|relationship| {
+                let source = self.structural_graph.get_node(&relationship.source)?;
+                let target = self.structural_graph.get_node(&relationship.target)?;
+                Some(RequirementCaseDiagnosticRelationship {
+                    source: relationship.source.clone(),
+                    target: relationship.target.clone(),
+                    source_kind: source.element_kind.clone(),
+                    target_kind: target.element_kind.clone(),
+                    kind: relationship.kind.clone(),
+                    range: self.relationship_range(relationship),
+                })
+            })
+            .collect();
+        relationships.sort_by(|left, right| {
+            left.source
+                .cmp(&right.source)
+                .then(left.kind.cmp(&right.kind))
+                .then(left.target.cmp(&right.target))
+        });
+        RequirementCaseDiagnosticInput { relationships }
+    }
+
+    pub fn view_diagnostics(&self) -> ViewDiagnosticInput {
+        let mut relationships: Vec<ViewDiagnosticRelationship> = self
+            .resolution
+            .relationships
+            .iter()
+            .filter(|relationship| {
+                matches!(
+                    relationship.kind,
+                    RelationshipKind::Annotation | RelationshipKind::Satisfy
+                )
+            })
+            .filter_map(|relationship| {
+                let source = self.structural_graph.get_node(&relationship.source)?;
+                let target = self.structural_graph.get_node(&relationship.target)?;
+                Some(ViewDiagnosticRelationship {
+                    source: relationship.source.clone(),
+                    target: relationship.target.clone(),
+                    source_kind: source.element_kind.clone(),
+                    target_kind: target.element_kind.clone(),
+                    kind: relationship.kind.clone(),
+                    range: self.relationship_range(relationship),
+                })
+            })
+            .collect();
+        relationships.sort_by(|left, right| {
+            left.source
+                .cmp(&right.source)
+                .then(left.kind.cmp(&right.kind))
+                .then(left.target.cmp(&right.target))
+        });
+        ViewDiagnosticInput { relationships }
+    }
+
+    pub fn expression_diagnostics(&self) -> ExpressionDiagnosticInput {
+        let mut facts: Vec<ExpressionDiagnosticFact> = self
+            .evaluation
+            .as_ref()
+            .into_iter()
+            .flat_map(|state| state.facts.iter())
+            .filter_map(|(owner, facts)| {
+                let node = self.structural_graph.get_node(owner)?;
+                Some(ExpressionDiagnosticFact {
+                    owner: owner.clone(),
+                    range: node.range,
+                    status: facts
+                        .expression
+                        .as_ref()
+                        .map(|expression| expression.status),
+                    value: facts
+                        .expression
+                        .as_ref()
+                        .and_then(|expression| expression.value.clone()),
+                    unit: facts
+                        .expression
+                        .as_ref()
+                        .and_then(|expression| expression.unit.clone()),
+                    error: facts
+                        .expression
+                        .as_ref()
+                        .and_then(|expression| expression.error.clone()),
+                    analysis_passed: facts.analysis.as_ref().and_then(|analysis| analysis.passed),
+                    analysis_status: facts
+                        .analysis
+                        .as_ref()
+                        .map(|analysis| analysis.expression.status),
+                    analysis_error: facts
+                        .analysis
+                        .as_ref()
+                        .and_then(|analysis| analysis.expression.error.clone()),
+                })
+            })
+            .collect();
+        facts.sort_by(|left, right| left.owner.cmp(&right.owner));
+        ExpressionDiagnosticInput { facts }
+    }
+
+    pub fn unit_diagnostics(&self) -> UnitDiagnosticInput {
+        let facts = self
+            .expression_diagnostics()
+            .facts
+            .into_iter()
+            .map(|fact| UnitDiagnosticFact {
+                owner: fact.owner,
+                range: fact.range,
+                status: fact.status,
+                unit: fact.unit,
+                error: fact.error,
+            })
+            .collect();
+        UnitDiagnosticInput { facts }
+    }
+
+    pub fn builder_diagnostics(&self) -> BuilderDiagnosticInput {
+        let references = self
+            .resolution_diagnostics()
+            .references
+            .into_iter()
+            .filter(|reference| {
+                matches!(
+                    reference.kind,
+                    ReferenceKind::ConnectionSource
+                        | ReferenceKind::ConnectionTarget
+                        | ReferenceKind::BindSource
+                        | ReferenceKind::BindTarget
+                        | ReferenceKind::SatisfySource
+                        | ReferenceKind::SatisfyTarget
+                        | ReferenceKind::AllocateSource
+                        | ReferenceKind::AllocateTarget
+                        | ReferenceKind::DerivationSource
+                        | ReferenceKind::DerivationTarget
+                )
+            })
+            .map(|reference| BuilderDiagnosticReference {
+                source: reference.source,
+                source_range: reference.source_range,
+                authored_target: reference.authored_target,
+                authored_range: reference.authored_range,
+                kind: reference.kind,
+                authored_ordinal: reference.authored_ordinal,
+                outcome: reference.outcome,
+            })
+            .collect();
+        BuilderDiagnosticInput { references }
+    }
+}
+
+fn range_order(range: Option<TextRange>) -> (u32, u32, u32, u32) {
+    let range = range.unwrap_or(TextRange {
+        start: TextPosition::new(u32::MAX, u32::MAX),
+        end: TextPosition::new(u32::MAX, u32::MAX),
+    });
+    (
+        range.start.line,
+        range.start.character,
+        range.end.line,
+        range.end.character,
+    )
 }
 
 #[derive(Debug, Clone, Default)]

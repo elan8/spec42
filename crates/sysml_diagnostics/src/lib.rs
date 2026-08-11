@@ -4,6 +4,7 @@ pub mod engine;
 mod engine_impl;
 mod helpers;
 mod kind_rules;
+mod model;
 mod ordering;
 mod pending_relationship_diagnostics;
 mod relationship_endpoint_messages;
@@ -15,6 +16,7 @@ pub use document::collect_document_diagnostics;
 pub use engine::{
     collect_diagnostics_from_graph, collect_diagnostics_from_graph_with_unit_registry,
 };
+pub use model::collect_document_diagnostics_from_model;
 pub use ordering::canonicalize_diagnostics;
 pub use sexpr::render_diagnostics_sexpr;
 pub use shared_rules::{

@@ -5,7 +5,7 @@
 //! attributes are excluded. Ordering is canonical, so construction order does not
 //! affect the rendering.
 
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write;
 
 use petgraph::visit::{EdgeRef, IntoEdgeReferences};
@@ -18,6 +18,11 @@ use crate::semantic::model::{
     ExpressionResultRole, ImpliedRelationshipRule, NodeId, RelationshipProvenance, SemanticEdge,
     SemanticNode,
 };
+use crate::semantic::publication::{
+    ReferenceKind, ResolutionOutcome, ResolutionProvenance, ResolvedRelationship,
+    SemanticCompleteness, SemanticModel, SemanticPhase,
+};
+use crate::semantic::text_span::TextRange;
 
 const FORMAT_ROOT: &str = "semantic-graph";
 
@@ -134,6 +139,485 @@ impl SemanticGraph {
         render_derived_relationship_resolutions(self, &identities, &mut output);
         output.push(')');
         output
+    }
+}
+
+/// Renders the immutable semantic publication using the same diagnostic S-expression convention
+/// as [`SemanticGraph::to_semantic_sexpr`].  Unlike the legacy graph renderer, this projection
+/// reads only `SemanticModel`/`ResolutionView`: unresolved and ambiguous authored references are
+/// retained, and no pending queues or mutable graph edges can become a second source of truth.
+/// Writes the canonical replacement-model projection into a caller-owned formatter.
+///
+/// The public semantic contract remains `SemanticModel`/`ResolutionView`; this test-support
+/// renderer is crate-private so snapshots cannot become an alternate query API.
+pub(crate) fn write_semantic_model_sexpr(
+    model: &SemanticModel,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    let identities = ModelCanonicalIdentities::from_model(model);
+    output.write_str("(semantic-model\n")?;
+    render_model_metadata(model, output)?;
+    render_model_structure(model, &identities, output)?;
+    render_model_references(model, &identities, output)?;
+    render_model_relationships(model, &identities, output)?;
+    render_model_evaluation(model, &identities, output)?;
+    output.write_char(')')
+}
+
+impl SemanticModel {
+    /// Streams the canonical semantic-model debug projection to a caller-owned writer.
+    ///
+    /// This is deliberately a rendering sink rather than an inspection API: callers receive
+    /// no graph, index, fact, or resolution storage access. The projection is intended for the
+    /// standalone snapshot harness and diagnostics/debug output only.
+    pub fn write_debug_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
+        write_semantic_model_sexpr(self, output)
+    }
+}
+
+struct ModelCanonicalIdentities {
+    document_labels: BTreeMap<Url, String>,
+}
+
+impl ModelCanonicalIdentities {
+    fn from_model(model: &SemanticModel) -> Self {
+        let mut documents: BTreeMap<Url, Vec<String>> = BTreeMap::new();
+        for node in model.structural_nodes_for_debug() {
+            documents
+                .entry(node.id.uri.clone())
+                .or_default()
+                .push(format!(
+                    "{}:{}:{}",
+                    node.id.qualified_name,
+                    node.element_kind.as_str(),
+                    node.name
+                ));
+        }
+        for fact in model.resolution().facts() {
+            documents
+                .entry(fact.reference.source.uri.clone())
+                .or_default()
+                .push(format!(
+                    "reference:{}:{}",
+                    reference_kind(fact.reference.kind),
+                    fact.reference.authored_ordinal
+                ));
+        }
+        let mut ordered = documents.into_iter().collect::<Vec<_>>();
+        ordered.iter_mut().for_each(|(_, facts)| facts.sort());
+        ordered.sort_by(|(left_uri, left_facts), (right_uri, right_facts)| {
+            left_facts
+                .cmp(right_facts)
+                .then_with(|| left_uri.as_str().cmp(right_uri.as_str()))
+        });
+        Self {
+            document_labels: ordered
+                .into_iter()
+                .enumerate()
+                .map(|(index, (uri, _))| (uri, format!("d{index}")))
+                .collect(),
+        }
+    }
+
+    fn document(&self, uri: &Url) -> &str {
+        self.document_labels
+            .get(uri)
+            .map(String::as_str)
+            .expect("every model fact belongs to an admitted document")
+    }
+
+    fn node(&self, node: &NodeId) -> String {
+        format!(
+            "(node (document {}) (qualified-name {}))",
+            atom(self.document(&node.uri)),
+            atom(&node.qualified_name)
+        )
+    }
+}
+
+fn render_model_metadata(
+    model: &SemanticModel,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    let phase = match model.phase() {
+        SemanticPhase::Resolved => "resolved",
+        SemanticPhase::Evaluated => "evaluated",
+    };
+    let completeness = match model.completeness() {
+        SemanticCompleteness::Complete => "complete",
+        SemanticCompleteness::EditorRecovery => "editor-recovery",
+    };
+    let identity = model.identity();
+    writeln!(
+        output,
+        "  (publication (phase {}) (completeness {}) (has-evaluation {}) (source-digest {}) (contract-version {}))",
+        phase,
+        completeness,
+        model.has_evaluation(),
+        atom(&identity.source_digest),
+        atom(&identity.semantic_contract_version),
+    )
+}
+
+fn render_model_structure(
+    model: &SemanticModel,
+    identities: &ModelCanonicalIdentities,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    let mut nodes = model.structural_nodes_for_debug();
+    nodes.sort_by_key(|node| {
+        (
+            identities.document(&node.id.uri).to_string(),
+            node.id.qualified_name.clone(),
+            node.element_kind.as_str().to_string(),
+        )
+    });
+    output.write_str("  (structure\n")?;
+    for node in nodes {
+        write!(
+            output,
+            "    (element (id {}) (kind {}) (name {})",
+            identities.node(&node.id),
+            atom(node.element_kind.as_str()),
+            atom(&node.name),
+        )?;
+        if let Some(declared_name) = &node.declared_name {
+            write!(output, " (declared-name {})", atom(declared_name))?;
+        }
+        write!(output, " (range {})", render_range(&node.range))?;
+        if let Some(parent) = &node.parent_id {
+            write!(output, " (parent {})", identities.node(parent))?;
+        }
+        render_model_declared_facts(&node.declared_facts, identities, output)?;
+        output.write_str(")\n")?;
+    }
+    output.write_str("  )\n")
+}
+
+fn render_model_declared_facts(
+    facts: &crate::semantic::model::DeclaredSemanticFacts,
+    identities: &ModelCanonicalIdentities,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    let relationships = [
+        ("typing", &facts.relationships.typing),
+        ("specializes", &facts.relationships.specializes),
+        ("subsetting", &facts.relationships.subsetting),
+        ("redefinition", &facts.relationships.redefinition),
+        (
+            "reference-subsetting",
+            &facts.relationships.reference_subsetting,
+        ),
+        ("cross-subsetting", &facts.relationships.cross_subsetting),
+        ("subject", &facts.relationships.subject),
+        ("connection", &facts.relationships.connection),
+        ("bind", &facts.relationships.bind),
+        ("satisfy", &facts.relationships.satisfy),
+        ("allocate", &facts.relationships.allocate),
+        ("flow", &facts.relationships.flow),
+        ("succession-flow", &facts.relationships.succession_flow),
+        ("perform", &facts.relationships.perform),
+        ("transition", &facts.relationships.transition),
+        ("initial-state", &facts.relationships.initial_state),
+        ("reference", &facts.relationships.reference),
+        ("dependency", &facts.relationships.dependency),
+        ("derivation", &facts.relationships.derivation),
+    ];
+    let has_relationships = relationships.iter().any(|(_, targets)| !targets.is_empty());
+    let has_import = facts
+        .membership
+        .as_ref()
+        .and_then(|membership| membership.import.as_ref())
+        .is_some();
+    if !has_relationships && facts.expression_relationships.is_empty() && !has_import {
+        return Ok(());
+    }
+    output.write_str(" (authored")?;
+    if let Some(membership) = &facts.membership {
+        write!(output, " (membership (kind {:?})", membership.kind)?;
+        if let Some(visibility) = membership.visibility {
+            write!(output, " (visibility {})", atom(visibility.as_str()))?;
+        }
+        if let Some(import) = &membership.import {
+            write!(
+                output,
+                " (import (reference {}) (origin {:?}) (shape {:?}) (recursive {}))",
+                atom(&import.target.reference),
+                import.origin,
+                import.shape,
+                import.recursive
+            )?;
+            if let Some(range) = import.target.range {
+                write!(output, " (import-range {})", render_range(&range))?;
+            }
+        }
+        output.write_char(')')?;
+    }
+    if has_relationships {
+        output.write_str(" (relationships")?;
+        for (kind, targets) in relationships {
+            for target in targets {
+                write!(
+                    output,
+                    " ({} (reference {}) (range {}))",
+                    kind,
+                    atom(&target.reference),
+                    target
+                        .range
+                        .map_or_else(|| "none".to_string(), |range| render_range(&range))
+                )?;
+            }
+        }
+        output.write_char(')')?;
+    }
+    if !facts.expression_relationships.is_empty() {
+        output.write_str(" (expression-relationships")?;
+        for relationship in &facts.expression_relationships {
+            write!(
+                output,
+                " ({} (source {}) (target {}) (source-range {})",
+                relationship.kind.as_str(),
+                atom(&relationship.source_expression),
+                atom(&relationship.target_expression),
+                render_range(&relationship.source_range)
+            )?;
+            if let Some(range) = relationship.target_range {
+                write!(output, " (target-range {})", render_range(&range))?;
+            }
+            output.write_char(')')?;
+        }
+        output.write_char(')')?;
+    }
+    output.write_char(')')?;
+    let _ = identities;
+    Ok(())
+}
+
+fn render_model_references(
+    model: &SemanticModel,
+    identities: &ModelCanonicalIdentities,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    let mut facts = model.resolution().facts().to_vec();
+    facts.sort_by_key(|fact| fact.reference.clone());
+    output.write_str("  (references\n")?;
+    for fact in facts {
+        let reference = &fact.reference;
+        write!(
+            output,
+            "    (reference (id (source {}) (kind {}) (ordinal {})) (authored-target {}) (range {}) ",
+            identities.node(&reference.source),
+            reference_kind(reference.kind),
+            reference.authored_ordinal,
+            atom(&fact.authored_target),
+            fact.authored_range.map_or_else(|| "none".to_string(), |range| render_range(&range)),
+        )?;
+        render_outcome(&fact.outcome, identities, output)?;
+        output.write_str(")\n")?;
+    }
+    output.write_str("  )\n")
+}
+
+fn render_outcome(
+    outcome: &ResolutionOutcome,
+    identities: &ModelCanonicalIdentities,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    match outcome {
+        ResolutionOutcome::Resolved { target } => {
+            write!(
+                output,
+                "(outcome (status resolved) (target {}))",
+                identities.node(target)
+            )
+        }
+        ResolutionOutcome::Unresolved => output.write_str("(outcome (status unresolved))"),
+        ResolutionOutcome::UnsupportedFiltered => {
+            output.write_str("(outcome (status unsupported-filtered))")
+        }
+        ResolutionOutcome::Ambiguous { candidates } => {
+            output.write_str("(outcome (status ambiguous) (candidates")?;
+            for candidate in candidates {
+                write!(output, " {}", identities.node(candidate))?;
+            }
+            output.write_str("))")
+        }
+    }
+}
+
+fn render_model_relationships(
+    model: &SemanticModel,
+    identities: &ModelCanonicalIdentities,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    let mut relationships = model.resolution().relationships().to_vec();
+    relationships.sort_by_key(|relationship| {
+        (
+            relationship.source.clone(),
+            relationship.kind.clone(),
+            relationship.target.clone(),
+            relationship.authored_reference.clone(),
+        )
+    });
+    output.write_str("  (relationships\n")?;
+    for relationship in relationships {
+        render_model_relationship(&relationship, identities, output)?;
+    }
+    output.write_str("  )\n")
+}
+
+fn render_model_relationship(
+    relationship: &ResolvedRelationship,
+    identities: &ModelCanonicalIdentities,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    write!(
+        output,
+        "    (relationship (kind {}) (source {}) (target {})",
+        relationship.kind.as_str(),
+        identities.node(&relationship.source),
+        identities.node(&relationship.target),
+    )?;
+    match relationship.provenance {
+        ResolutionProvenance::Authored => output.write_str(" (provenance authored)")?,
+        ResolutionProvenance::Implied(rule) => {
+            write!(output, " (provenance (implied {:?}))", rule)?;
+        }
+        ResolutionProvenance::Derived(rule) => {
+            write!(output, " (provenance (derived {:?}))", rule)?;
+        }
+    }
+    if let Some(reference) = &relationship.authored_reference {
+        write!(
+            output,
+            " (authored-reference (source {}) (kind {}) (ordinal {}))",
+            identities.node(&reference.source),
+            reference_kind(reference.kind),
+            reference.authored_ordinal,
+        )?;
+    }
+    if let Some(expression) = &relationship.expression {
+        write!(
+            output,
+            " (expression (kind {}) (source {}) (target {}) (source-range {})",
+            expression.kind.as_str(),
+            atom(&expression.source_expression),
+            atom(&expression.target_expression),
+            render_range(&expression.source_range),
+        )?;
+        if let Some(range) = expression.target_range {
+            write!(output, " (target-range {})", render_range(&range))?;
+        }
+        output.write_char(')')?;
+    }
+    output.write_str(")\n")
+}
+
+fn render_model_evaluation(
+    model: &SemanticModel,
+    identities: &ModelCanonicalIdentities,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    let Some(facts) = model.evaluation_facts() else {
+        return Ok(());
+    };
+    let mut facts = facts.iter().collect::<Vec<_>>();
+    facts.sort_by(|(left, _), (right, _)| left.cmp(right));
+    output.write_str("  (evaluation\n")?;
+    for (node, facts) in facts {
+        write!(output, "    (node {}", identities.node(node))?;
+        render_node_evaluation_facts(facts, output)?;
+        output.write_str(")\n")?;
+    }
+    output.write_str("  )\n")
+}
+
+fn render_node_evaluation_facts(
+    facts: &crate::semantic::model::NodeEvaluationFacts,
+    output: &mut dyn std::fmt::Write,
+) -> std::fmt::Result {
+    if let Some(expression) = &facts.expression {
+        write!(
+            output,
+            " (expression (status {})",
+            atom(expression.status.as_str())
+        )?;
+        if let Some(value) = &expression.value {
+            write!(output, " (value {})", render_evaluated_value(value))?;
+        }
+        if let Some(unit) = &expression.unit {
+            write!(output, " (unit {})", atom(unit))?;
+        }
+        if let Some(error) = &expression.error {
+            write!(output, " (error {})", atom(error))?;
+        }
+        output.write_char(')')?;
+    }
+    if let Some(analysis) = &facts.analysis {
+        write!(
+            output,
+            " (analysis (status {})",
+            atom(analysis.expression.status.as_str())
+        )?;
+        if let Some(passed) = analysis.passed {
+            write!(output, " (passed {passed}")?;
+        }
+        if let Some(value) = &analysis.computed_value {
+            write!(
+                output,
+                " (computed-value {})",
+                render_evaluated_value(value)
+            )?;
+        }
+        if let Some(unit) = &analysis.computed_unit {
+            write!(output, " (computed-unit {})", atom(unit))?;
+        }
+        output.write_char(')')?;
+    }
+    Ok(())
+}
+
+fn render_range(range: &TextRange) -> String {
+    format!(
+        "(start (line {}) (character {})) (end (line {}) (character {}))",
+        range.start.line, range.start.character, range.end.line, range.end.character
+    )
+}
+
+fn reference_kind(kind: ReferenceKind) -> &'static str {
+    match kind {
+        ReferenceKind::FeatureTyping => "featureTyping",
+        ReferenceKind::Specialization => "specialization",
+        ReferenceKind::Subsetting => "subsetting",
+        ReferenceKind::Redefinition => "redefinition",
+        ReferenceKind::ReferenceSubsetting => "referenceSubsetting",
+        ReferenceKind::CrossSubsetting => "crossSubsetting",
+        ReferenceKind::ConnectionSource => "connectionSource",
+        ReferenceKind::ConnectionTarget => "connectionTarget",
+        ReferenceKind::BindSource => "bindSource",
+        ReferenceKind::BindTarget => "bindTarget",
+        ReferenceKind::SatisfySource => "satisfySource",
+        ReferenceKind::SatisfyTarget => "satisfyTarget",
+        ReferenceKind::AllocateSource => "allocateSource",
+        ReferenceKind::AllocateTarget => "allocateTarget",
+        ReferenceKind::FlowSource => "flowSource",
+        ReferenceKind::FlowTarget => "flowTarget",
+        ReferenceKind::SuccessionFlowSource => "successionFlowSource",
+        ReferenceKind::SuccessionFlowTarget => "successionFlowTarget",
+        ReferenceKind::PerformSource => "performSource",
+        ReferenceKind::PerformTarget => "performTarget",
+        ReferenceKind::TransitionSource => "transitionSource",
+        ReferenceKind::TransitionTarget => "transitionTarget",
+        ReferenceKind::ReferenceSource => "referenceSource",
+        ReferenceKind::ReferenceTarget => "referenceTarget",
+        ReferenceKind::DependencySource => "dependencySource",
+        ReferenceKind::DependencyTarget => "dependencyTarget",
+        ReferenceKind::DerivationSource => "derivationSource",
+        ReferenceKind::DerivationTarget => "derivationTarget",
+        ReferenceKind::NamespaceImport => "namespaceImport",
+        ReferenceKind::MembershipImport => "membershipImport",
+        ReferenceKind::InitialStateSource => "initialStateSource",
+        ReferenceKind::InitialStateTarget => "initialStateTarget",
     }
 }
 
@@ -745,6 +1229,10 @@ mod tests {
         DeclaredLiteral, DeclaredSemanticFacts, ElementKind, EvaluatedValue, NodeId,
     };
     use crate::semantic::pipeline::{build_and_link_graph, patch_graph_for_document};
+    use crate::semantic::publication::{
+        build_semantic_model, ConstructionStrategy, EvaluationPolicy, ImmutableSourceSnapshot,
+        SemanticBuildRequest, SemanticConfiguration,
+    };
     use crate::semantic::source::{SysmlDocument, SysmlDocumentSourceKind};
     use crate::semantic::text_span::{TextPosition, TextRange};
     use serde_json::json;

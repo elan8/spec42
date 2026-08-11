@@ -16,6 +16,7 @@ members = [
   "crates/workspace",
   "crates/sysml_tokens",
   "crates/workspace_session",
+  "tools/snapshot_tool",
 ]
 
 [workspace.package]

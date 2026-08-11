@@ -1,0 +1,119 @@
+# META
+~~~ini
+description=KerML Mass Roll-up: MassRollup_2
+type=file
+~~~
+# SOURCE
+~~~kerml
+package MassRollup_2 {
+	private import NumericalFunctions::*;
+	private import ISQ::*;
+	
+	class MassedThing {
+		feature mass : ScalarValues::Real; 
+		feature totalMass : ScalarValues::Real =
+			mass + sum(subcomponents.totalMass);
+			
+		feature subcomponents redefines massedThings;	
+	}
+	
+	feature massedThings: MassedThing[0..*];
+
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "mass_rollup_2.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 1 16) (end 1 34))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 2 16) (end 2 19))
+      )
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwPackage,Ident,OpenCurly,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Star,Semicolon,
+KwClass,Ident,OpenCurly,
+KwFeature,Ident,Colon,Ident,ColonColon,Ident,Semicolon,
+KwFeature,Ident,Colon,Ident,ColonColon,Ident,Eq,
+Ident,Plus,Ident,OpenParen,Ident,Dot,Ident,CloseParen,Semicolon,
+KwFeature,Ident,KwRedefines,Ident,Semicolon,
+CloseCurly,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Semicolon,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def 'MassRollup_2'
+    (import_decl private 'NumericalFunctions::*')
+    (import_decl private 'ISQ::*')
+    (class_def 'MassedThing'
+      (feature_def 'mass' : 'ScalarValues::Real')
+      (feature_def 'totalMass' : 'ScalarValues::Real' value)
+      (feature_def 'subcomponents' :>> 'massedThings'))
+    (feature_def 'massedThings' : 'MassedThing' multiplicity)))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'ScalarValues::Real'
+semantic.unresolved_name 'ScalarValues::Real'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'ScalarValues::Real'
+semantic.unresolved_name 'ScalarValues::Real'
+~~~
+# FORMAT
+~~~sysml
+package MassRollup_2 {
+	private import NumericalFunctions::*;
+	private import ISQ::*;
+	
+	class MassedThing {
+		feature mass : ScalarValues::Real; 
+		feature totalMass : ScalarValues::Real =
+			mass + sum(subcomponents.totalMass);
+			
+		feature subcomponents redefines massedThings;	
+	}
+	
+	feature massedThings: MassedThing[0..*];
+
+}
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b9b8d063edca619e86dd4d0bab8c688b7289ee8d34cf8df8fb90fa3e5dd93f65") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "MassRollup_2"))) (kind "package") (name "MassRollup_2") (declared-name "MassRollup_2") (range (start (line 0) (character 0)) (end (line 0) (character 332))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_2::*"))) (kind "import") (name "*") (declared-name "*") (range (start (line 1) (character 1)) (end (line 1) (character 38))) (parent (node (document "d0") (qualified-name "MassRollup_2"))) (authored (membership (kind Import) (visibility "private") (import (reference "NumericalFunctions::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 1) (character 16)) (end (line 1) (character 34))))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_2::*#import"))) (kind "import") (name "*") (declared-name "*") (range (start (line 2) (character 1)) (end (line 2) (character 23))) (parent (node (document "d0") (qualified-name "MassRollup_2"))) (authored (membership (kind Import) (visibility "private") (import (reference "ISQ::*") (origin Import) (shape Namespace) (recursive false)) (import-range (start (line 2) (character 16)) (end (line 2) (character 19))))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_2::MassedThing"))) (kind "classifier decl") (name "MassedThing") (declared-name "MassedThing") (range (start (line 4) (character 1)) (end (line 4) (character 197))) (parent (node (document "d0") (qualified-name "MassRollup_2"))))
+    (element (id (node (document "d0") (qualified-name "MassRollup_2::massedThings"))) (kind "feature decl") (name "massedThings") (declared-name "massedThings") (range (start (line 12) (character 1)) (end (line 12) (character 41))) (parent (node (document "d0") (qualified-name "MassRollup_2"))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "MassRollup_2::*"))) (kind namespaceImport) (ordinal 0)) (authored-target "NumericalFunctions::*") (range (start (line 1) (character 16)) (end (line 1) (character 34))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "MassRollup_2::*#import"))) (kind namespaceImport) (ordinal 0)) (authored-target "ISQ::*") (range (start (line 2) (character 16)) (end (line 2) (character 19))) (outcome (status unresolved)))
+  )
+  (relationships
+  )
+  (evaluation
+  )
+)
+~~~

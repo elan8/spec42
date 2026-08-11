@@ -1,0 +1,289 @@
+# META
+~~~ini
+description=Standard Library: Kernel Libraries/Kernel Semantic Library/Links
+type=file
+~~~
+# SOURCE
+~~~kerml
+standard library package Links {
+    doc
+    /*
+     * This package defines associations and features that are related to the typing of links.
+     */
+
+    private import Base::Anything;
+    private import Base::things;
+    
+    abstract assoc Link specializes Anything {
+        doc
+        /*
+         * Link is the most general association between two or more things.
+         */
+
+        feature participant: Anything[2..*] nonunique ordered;
+    }
+    
+    assoc all BinaryLink specializes Link {
+        doc
+        /*
+         * BinaryLink is the most general binary association between exactly two things, 
+         * nominally directed from source to target.
+         */
+         
+        feature participant: Anything[2] nonunique ordered redefines Link::participant;
+        
+        end feature source: Anything[1] subsets participant;
+        end feature target: Anything[1] subsets participant;
+    }
+    
+    assoc all SelfLink specializes BinaryLink {
+        doc
+        /*
+         * SelfLink is a binary association in which the things at the two ends are asserted
+         * to be the same.
+         */
+        
+        end feature thisThing: Anything redefines source subsets sameThing crosses sameThing.self;
+        end self2 [1] feature sameThing: Anything redefines target subsets thisThing;
+    }
+        
+    abstract feature links: Link[0..*] nonunique subsets things {
+        doc
+        /*
+         * links is the most general feature of links between individuals.
+         */
+    }
+    
+    abstract feature binaryLinks: BinaryLink[0..*] nonunique subsets links {
+        doc
+        /*
+         * binaryLinks is a specialization of links restricted to type BinaryLink.
+         */
+    }
+    
+    abstract feature selfLinks: SelfLink[0..*] nonunique subsets binaryLinks {
+        doc
+        /*
+         * selfLinks is a specialization of binaryLinks restricted to type SelfLink.
+         */
+
+        end feature thisThing: Anything redefines SelfLink::thisThing, binaryLinks::source;
+        end feature sameThing: Anything redefines SelfLink::sameThing, binaryLinks::target;
+    }
+
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "links.md"
+    (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 6 19) (end 6 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_import_target")
+        (source "semantic")
+        (range (start 7 19) (end 7 31))
+      )
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwStandard,KwLibrary,KwPackage,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwPrivate,KwImport,Ident,ColonColon,Ident,Semicolon,
+KwAbstract,KwAssoc,Ident,KwSpecializes,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwOrdered,Semicolon,
+CloseCurly,
+KwAssoc,KwAll,Ident,KwSpecializes,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwNonunique,KwOrdered,KwRedefines,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwSubsets,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,CloseSquare,KwSubsets,Ident,Semicolon,
+CloseCurly,
+KwAssoc,KwAll,Ident,KwSpecializes,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,KwSubsets,Ident,KwCrosses,Ident,Dot,Ident,Semicolon,
+KwEnd,Ident,OpenSquare,DecimalValue,CloseSquare,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,KwSubsets,Ident,Semicolon,
+CloseCurly,
+KwAbstract,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwAbstract,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+CloseCurly,
+KwAbstract,KwFeature,Ident,Colon,Ident,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,KwNonunique,KwSubsets,Ident,OpenCurly,
+KwDoc,
+RegularComment,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+KwEnd,KwFeature,Ident,Colon,Ident,KwRedefines,Ident,ColonColon,Ident,Comma,Ident,ColonColon,Ident,Semicolon,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (standard_library_package_def 'Links'
+    (documentation)
+    (import_decl private 'Base::Anything')
+    (import_decl private 'Base::things')
+    (association_def abstract 'Link' :> 'Anything'
+      (documentation)
+      (feature_def 'participant' : 'Anything' multiplicity ordered nonunique))
+    (association_def all 'BinaryLink' :> 'Link'
+      (documentation)
+      (feature_def 'participant' : 'Anything' multiplicity :>> 'Link::participant' ordered nonunique)
+      (feature_def end 'source' : 'Anything' multiplicity :> 'participant')
+      (feature_def end 'target' : 'Anything' multiplicity :> 'participant'))
+    (association_def all 'SelfLink' :> 'BinaryLink'
+      (documentation)
+      (feature_def end 'thisThing' : 'Anything' :>> 'source' :> 'sameThing' crosses 'sameThing.self')
+      (feature_def end 'sameThing' multiplicity : 'Anything' :>> 'target' :> 'thisThing'))
+    (feature_def abstract 'links' : 'Link' multiplicity :> 'things' nonunique
+      (documentation))
+    (feature_def abstract 'binaryLinks' : 'BinaryLink' multiplicity :> 'links' nonunique
+      (documentation))
+    (feature_def abstract 'selfLinks' : 'SelfLink' multiplicity :> 'binaryLinks' nonunique
+      (documentation)
+      (feature_def end 'thisThing' : 'Anything' :>> 'SelfLink::thisThing', 'binaryLinks::source')
+      (feature_def end 'sameThing' : 'Anything' :>> 'SelfLink::sameThing', 'binaryLinks::target'))))
+~~~
+# EXPECTED
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'sameThing::self'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+~~~
+# PROBLEMS
+~~~
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'sameThing::self'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'things'
+semantic.unresolved_name 'Anything'
+semantic.unresolved_name 'Anything'
+~~~
+# FORMAT
+~~~sysml
+standard library package Links {
+    doc
+    /*
+     * This package defines associations and features that are related to the typing of links.
+     */
+
+    private import Base::Anything;
+    private import Base::things;
+    
+    abstract assoc Link specializes Anything {
+        doc
+        /*
+         * Link is the most general association between two or more things.
+         */
+
+        feature participant: Anything[2..*] nonunique ordered;
+    }
+    
+    assoc all BinaryLink specializes Link {
+        doc
+        /*
+         * BinaryLink is the most general binary association between exactly two things, 
+         * nominally directed from source to target.
+         */
+         
+        feature participant: Anything[2] nonunique ordered redefines Link::participant;
+        
+        end feature source: Anything[1] subsets participant;
+        end feature target: Anything[1] subsets participant;
+    }
+    
+    assoc all SelfLink specializes BinaryLink {
+        doc
+        /*
+         * SelfLink is a binary association in which the things at the two ends are asserted
+         * to be the same.
+         */
+        
+        end feature thisThing: Anything redefines source subsets sameThing crosses sameThing.self;
+        end self2 [1] feature sameThing: Anything redefines target subsets thisThing;
+    }
+        
+    abstract feature links: Link[0..*] nonunique subsets things {
+        doc
+        /*
+         * links is the most general feature of links between individuals.
+         */
+    }
+    
+    abstract feature binaryLinks: BinaryLink[0..*] nonunique subsets links {
+        doc
+        /*
+         * binaryLinks is a specialization of links restricted to type BinaryLink.
+         */
+    }
+    
+    abstract feature selfLinks: SelfLink[0..*] nonunique subsets binaryLinks {
+        doc
+        /*
+         * selfLinks is a specialization of binaryLinks restricted to type SelfLink.
+         */
+
+        end feature thisThing: Anything redefines SelfLink::thisThing, binaryLinks::source;
+        end feature sameThing: Anything redefines SelfLink::sameThing, binaryLinks::target;
+    }
+
+}
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "b4572ee699fde98115409de601e85689a244738a78dd4baf2a9402fd3f9e4eb5") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "Links"))) (kind "package") (name "Links") (declared-name "Links") (range (start (line 0) (character 0)) (end (line 0) (character 2117))))
+    (element (id (node (document "d0") (qualified-name "Links::Anything"))) (kind "import") (name "Anything") (declared-name "Anything") (range (start (line 6) (character 4)) (end (line 6) (character 34))) (parent (node (document "d0") (qualified-name "Links"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::Anything") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 6) (character 19)) (end (line 6) (character 33))))))
+    (element (id (node (document "d0") (qualified-name "Links::Link"))) (kind "kermlDecl") (name "Link") (declared-name "Link") (range (start (line 9) (character 4)) (end (line 9) (character 227))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::_documentation"))) (kind "documentation") (name "") (range (start (line 0) (character 0)) (end (line 0) (character 2117))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::all"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 18) (character 4)) (end (line 18) (character 456))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::all#kermlDecl"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 31) (character 4)) (end (line 31) (character 402))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::binaryLinks"))) (kind "feature decl") (name "binaryLinks") (declared-name "binaryLinks") (range (start (line 49) (character 4)) (end (line 49) (character 200))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::links"))) (kind "feature decl") (name "links") (declared-name "links") (range (start (line 42) (character 4)) (end (line 42) (character 181))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::selfLinks"))) (kind "feature decl") (name "selfLinks") (declared-name "selfLinks") (range (start (line 56) (character 4)) (end (line 56) (character 389))) (parent (node (document "d0") (qualified-name "Links"))))
+    (element (id (node (document "d0") (qualified-name "Links::things"))) (kind "import") (name "things") (declared-name "things") (range (start (line 7) (character 4)) (end (line 7) (character 32))) (parent (node (document "d0") (qualified-name "Links"))) (authored (membership (kind Import) (visibility "private") (import (reference "Base::things") (origin Import) (shape Membership) (recursive false)) (import-range (start (line 7) (character 19)) (end (line 7) (character 31))))))
+  )
+  (references
+    (reference (id (source (node (document "d0") (qualified-name "Links::Anything"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::Anything") (range (start (line 6) (character 19)) (end (line 6) (character 33))) (outcome (status unresolved)))
+    (reference (id (source (node (document "d0") (qualified-name "Links::things"))) (kind membershipImport) (ordinal 0)) (authored-target "Base::things") (range (start (line 7) (character 19)) (end (line 7) (character 31))) (outcome (status unresolved)))
+  )
+  (relationships
+  )
+  (evaluation
+  )
+)
+~~~

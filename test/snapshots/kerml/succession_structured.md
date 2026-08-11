@@ -1,0 +1,98 @@
+# META
+~~~ini
+description=KerML succession with structured parsing (stdlib patterns from StatePerformances/TransitionPerformances)
+type=file
+~~~
+# SOURCE
+~~~kerml
+package SuccessionStructured {
+    succession all [*] trigger then [*] guard;
+    succession [1] entry then [*] middle;
+    succession first X then Y;
+    succession s first A then B;
+    succession all [*] acceptable then [1] exit;
+    succession x;
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "succession_structured.md"
+    (diagnostics
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwPackage,Ident,OpenCurly,
+KwSuccession,KwAll,OpenSquare,Star,CloseSquare,Ident,KwThen,OpenSquare,Star,CloseSquare,Ident,Semicolon,
+KwSuccession,OpenSquare,DecimalValue,CloseSquare,KwEntry,KwThen,OpenSquare,Star,CloseSquare,Ident,Semicolon,
+KwSuccession,KwFirst,Ident,KwThen,Ident,Semicolon,
+KwSuccession,Ident,KwFirst,Ident,KwThen,Ident,Semicolon,
+KwSuccession,KwAll,OpenSquare,Star,CloseSquare,Ident,KwThen,OpenSquare,DecimalValue,CloseSquare,KwExit,Semicolon,
+KwSuccession,Ident,Semicolon,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def 'SuccessionStructured'
+    (succession_def multiplicity
+      (connector_end)
+      (connector_end))
+    (succession_def multiplicity
+      (connector_end)
+      (connector_end))
+    (succession_as_usage
+      (connector_end)
+      (connector_end))
+    (succession_def 's'
+      (connector_end)
+      (connector_end))
+    (succession_def multiplicity
+      (connector_end)
+      (connector_end))
+    (succession_def 'x')))
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
+# FORMAT
+~~~sysml
+package SuccessionStructured {
+    succession all [*] trigger then [*] guard;
+    succession [1] entry then [*] middle;
+    succession first X then Y;
+    succession s first A then B;
+    succession all [*] acceptable then [1] exit;
+    succession x;
+}
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "ac1b530173454fe16dbfa27e062b9c1f14b86ac23e8f8c2df9fe2bc2c406bf29") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "SuccessionStructured"))) (kind "package") (name "SuccessionStructured") (declared-name "SuccessionStructured") (range (start (line 0) (character 0)) (end (line 0) (character 252))))
+    (element (id (node (document "d0") (qualified-name "SuccessionStructured::1"))) (kind "kermlDecl") (name "1") (declared-name "1") (range (start (line 2) (character 4)) (end (line 2) (character 41))) (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
+    (element (id (node (document "d0") (qualified-name "SuccessionStructured::all"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 1) (character 4)) (end (line 1) (character 46))) (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
+    (element (id (node (document "d0") (qualified-name "SuccessionStructured::all#kermlDecl"))) (kind "kermlDecl") (name "all") (declared-name "all") (range (start (line 5) (character 4)) (end (line 5) (character 48))) (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
+    (element (id (node (document "d0") (qualified-name "SuccessionStructured::first"))) (kind "kermlDecl") (name "first") (declared-name "first") (range (start (line 3) (character 4)) (end (line 3) (character 30))) (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
+    (element (id (node (document "d0") (qualified-name "SuccessionStructured::s"))) (kind "kermlDecl") (name "s") (declared-name "s") (range (start (line 4) (character 4)) (end (line 4) (character 32))) (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
+    (element (id (node (document "d0") (qualified-name "SuccessionStructured::x"))) (kind "kermlDecl") (name "x") (declared-name "x") (range (start (line 6) (character 4)) (end (line 6) (character 17))) (parent (node (document "d0") (qualified-name "SuccessionStructured"))))
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
+  )
+)
+~~~

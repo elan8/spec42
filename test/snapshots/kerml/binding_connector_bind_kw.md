@@ -1,0 +1,100 @@
+# META
+~~~ini
+description=KerML Binding Connector: bind keyword and per-end multiplicities
+type=file
+~~~
+# SOURCE
+~~~kerml
+package P {
+    class C {
+        feature x;
+        feature y;
+        feature startShot;
+        feature endShot;
+        feature baseEdges;
+
+        binding [1] bind [0..*] x = [0..*] y;
+        binding b bind lhs = rhs;
+    }
+}
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "binding_connector_bind_kw.md"
+    (diagnostics
+    )
+  )
+)
+~~~
+# TOKENS
+~~~zig
+KwPackage,Ident,OpenCurly,
+KwClass,Ident,OpenCurly,
+KwFeature,Ident,Semicolon,
+KwFeature,Ident,Semicolon,
+KwFeature,Ident,Semicolon,
+KwFeature,Ident,Semicolon,
+KwFeature,Ident,Semicolon,
+KwBinding,OpenSquare,DecimalValue,CloseSquare,KwBind,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Ident,Eq,OpenSquare,DecimalValue,DotDot,Star,CloseSquare,Ident,Semicolon,
+KwBinding,Ident,KwBind,Ident,Eq,Ident,Semicolon,
+CloseCurly,
+CloseCurly,EndOfFile,
+~~~
+# AST
+~~~
+(root
+  (package_def 'P'
+    (class_def 'C'
+      (feature_def 'x')
+      (feature_def 'y')
+      (feature_def 'startShot')
+      (feature_def 'endShot')
+      (feature_def 'baseEdges')
+      (binding_connector multiplicity
+        (connector_end)
+        (connector_end))
+      (binding_connector 'b'
+        (connector_end)
+        (connector_end)))))
+~~~
+# EXPECTED
+~~~
+NIL
+~~~
+# PROBLEMS
+~~~
+NIL
+~~~
+# FORMAT
+~~~sysml
+package P {
+    class C {
+        feature x;
+        feature y;
+        feature startShot;
+        feature endShot;
+        feature baseEdges;
+
+        binding [1] bind [0..*] x = [0..*] y;
+        binding b bind lhs = rhs;
+    }
+}
+
+~~~
+# SMG
+~~~
+(semantic-model
+  (publication (phase evaluated) (completeness complete) (has-evaluation true) (source-digest "be6e83169ba5806b9c01f5e87c746f136e4ab1f61dcacfa7a4e498942ddccef1") (contract-version "canonical-resolution-v1"))
+  (structure
+    (element (id (node (document "d0") (qualified-name "P"))) (kind "package") (name "P") (declared-name "P") (range (start (line 0) (character 0)) (end (line 0) (character 231))))
+    (element (id (node (document "d0") (qualified-name "P::C"))) (kind "classifier decl") (name "C") (declared-name "C") (range (start (line 1) (character 4)) (end (line 1) (character 217))) (parent (node (document "d0") (qualified-name "P"))))
+  )
+  (references
+  )
+  (relationships
+  )
+  (evaluation
+  )
+)
+~~~

@@ -10,10 +10,7 @@ use syn::spanned::Spanned;
 use syn::visit::Visit;
 use syn::{Attribute, Expr, ExprLit, Lit, Meta};
 
-const FIXTURES: &str = concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/tests/fixtures/sysml_compatibility"
-);
+const FIXTURES: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../test/snapshots");
 
 const GENERIC_SEMANTIC_GRAPH_SKIP_REASON: &str =
     "strictly parsed non-empty source produced no typed semantic graph facts";

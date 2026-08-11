@@ -1838,6 +1838,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "spec42-snapshot"
+version = "0.50.0"
+dependencies = [
+ "clap",
+ "language_service",
+ "sysml_diagnostics",
+ "sysml_model",
+ "tempfile",
+]
+
+[[package]]
 name = "spin"
 version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
