@@ -70,11 +70,16 @@ pub use semantic::prepared_view::{
     PreparedNodeDto, PreparedViewDto,
 };
 pub use semantic::publication::{
-    build_semantic_model, AuthoredReferenceId, ConstructionStrategy, DerivedRelationshipRule,
-    EvaluationPolicy, ImmutableSourceSnapshot, ReferenceKind, ResolutionFact, ResolutionOutcome,
+    build_semantic_model, AuthoredReferenceId, BehaviorDiagnosticInput,
+    BehaviorDiagnosticRelationship, BuilderDiagnosticInput, ConnectionDiagnosticInput,
+    ConnectionDiagnosticRelationship, ConstructionStrategy, DerivedRelationshipRule,
+    EvaluationDiagnosticFact, EvaluationPolicy, ExpressionDiagnosticInput, ImmutableSourceSnapshot,
+    ReferenceKind, RequirementCaseDiagnosticInput, RequirementCaseDiagnosticRelationship,
+    ResolutionDiagnosticInput, ResolutionDiagnosticReference, ResolutionFact, ResolutionOutcome,
     ResolutionProvenance, ResolutionState, ResolutionView, SemanticBuildFailure,
-    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticDiagnosticInput,
-    SemanticModel, SemanticModelIdentity, SemanticPhase,
+    SemanticBuildRequest, SemanticCompleteness, SemanticConfiguration, SemanticModel,
+    SemanticModelIdentity, SemanticPhase, StructuralDiagnosticFact, StructuralDiagnosticInput,
+    UnitDiagnosticInput, ViewDiagnosticInput, ViewDiagnosticRelationship,
 };
 pub use semantic::reference_resolution::{
     parse_expose_target_suffix, resolve_expose_target, resolve_expression_endpoint_strict,
