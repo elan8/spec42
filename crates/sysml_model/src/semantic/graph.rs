@@ -21,6 +21,7 @@ use crate::semantic::model::{
     MembershipVisibilityProvenance, NodeEvaluationFacts, NodeId, RelationshipKind,
     RelationshipProvenance, SemanticEdge, SemanticNode, VisibilityKind,
 };
+use crate::semantic::publication::SemanticPublication;
 
 fn serialize_url<S: Serializer>(url: &Url, s: S) -> Result<S::Ok, S::Error> {
     s.serialize_str(url.as_str())
@@ -139,6 +140,15 @@ pub struct SemanticGraphData {
     /// called from [`SemanticGraphData::rebuild_derived_indexes`] after deserialization.
     #[serde(skip)]
     pub cross_document_edges_by_source_uri: HashMap<Url, Vec<(NodeId, NodeId, RelationshipKind)>>,
+    /// The graph's own publication identity, phase, and completeness (`ROUNDTRIP_SEMGRAPH_PREREQS.md`
+    /// B4, `UNIFY_CACHE_PLAN.md` §4.3). Stamped with a real source root and completeness by the
+    /// pipeline entry points that own document enumeration
+    /// ([`crate::semantic::pipeline::build_and_link_graph`],
+    /// [`crate::semantic::pipeline::build_and_link_graph_parallel`]); advanced through
+    /// [`SemanticPublication::advance_phase`] at the barriers the pipeline already crosses. See
+    /// [`SemanticGraph::is_storage_eligible`] for the one place storage eligibility is decided.
+    #[serde(default)]
+    pub publication: SemanticPublication,
 }
 
 impl Default for SemanticGraphData {
@@ -175,6 +185,7 @@ impl Clone for SemanticGraphData {
             document_dependency_targets: self.document_dependency_targets.clone(),
             document_dependents: self.document_dependents.clone(),
             cross_document_edges_by_source_uri: self.cross_document_edges_by_source_uri.clone(),
+            publication: self.publication,
         }
     }
 }
@@ -417,6 +428,23 @@ impl SemanticGraph {
     pub fn invalidate_evaluation_facts(&mut self) {
         self.evaluation_facts_by_node_id.clear();
         self.evaluation_publication = EvaluationPublicationState::NotRun;
+        self.retreat_publication_after_structural_mutation();
+    }
+
+    /// The single typed predicate for whether this graph may be accepted into persistent cache
+    /// storage (`ROUNDTRIP_SEMGRAPH_PREREQS.md` B4, `UNIFY_CACHE_PLAN.md` §4.3).
+    ///
+    /// Requires both [`SemanticPublication::is_storage_eligible`] (phase == settled/evaluated,
+    /// completeness == complete) **and** `evaluation_publication == Complete`. The two are kept
+    /// in lockstep by construction -- `publication`'s phase only ever reaches
+    /// [`SemanticPhase::SettledEvaluated`] at the same pipeline barrier that sets
+    /// `evaluation_publication` to `Complete`, and [`Self::invalidate_evaluation_facts`] retreats
+    /// both together -- but this predicate checks both explicitly rather than trusting that
+    /// invariant silently, so a future caller that only mutates one of the two cannot
+    /// accidentally publish a mismatched pair as storage-eligible.
+    pub fn is_storage_eligible(&self) -> bool {
+        self.publication.is_storage_eligible()
+            && self.evaluation_publication == EvaluationPublicationState::Complete
     }
 
     /// Returns a feature's ownership after applying its parser-backed modifier or the one
@@ -823,6 +851,7 @@ impl SemanticGraphData {
             document_dependency_targets: HashMap::new(),
             document_dependents: HashMap::new(),
             cross_document_edges_by_source_uri: HashMap::new(),
+            publication: SemanticPublication::default(),
         }
     }
 
@@ -969,6 +998,38 @@ impl SemanticGraphData {
         }
     }
 
+    /// Retreats `publication`'s phase to [`SemanticPhase::Parsed`] (never advances it) after a
+    /// structural mutation that invalidated settled/evaluated state, so a stale
+    /// `SettledEvaluated` publication can never survive a mutation that did not re-cross that
+    /// barrier.
+    ///
+    /// [`SemanticPublication::advance_phase`] is deliberately forward-only, so this is the one
+    /// place that moves `phase` backward. Retreating all the way to `Parsed` (not merely to
+    /// `StructurallyLinked`) matters: the mutation's own caller has not necessarily relinked yet
+    /// either (e.g. `patch_graph_for_document(..., evaluate: false)` merges a document's nodes
+    /// and returns without relinking), so claiming `StructurallyLinked` here would be exactly the
+    /// kind of unearned phase this type exists to prevent. Whichever pipeline function performs
+    /// real relinking/evaluation afterward advances the phase again through its own barriers.
+    ///
+    /// Deliberately leaves `completeness` and `root_digest` untouched: a document patch (a
+    /// remove followed by a re-merge) does not by itself make the graph cover less than its
+    /// admitted source set, nor does it change which sources are admitted; see
+    /// [`SemanticCompleteness::Partial`]'s doc comment. A caller with genuine new information
+    /// about parse quality (e.g. a whole-document-set pipeline entry point that inspects real
+    /// parse diagnostics) sets completeness explicitly via [`SemanticPublication::set_identity`];
+    /// this retreat must not silently invent a downgrade the caller never observed.
+    ///
+    /// Called from every structural mutation point ([`Self::remove_nodes_for_uri`],
+    /// [`Self::merge_inner`], [`SemanticGraph::invalidate_evaluation_facts`]) so a caller can
+    /// never observe a settled/evaluated, storage-eligible publication for content that was never
+    /// relinked or re-evaluated.
+    fn retreat_publication_after_structural_mutation(&mut self) {
+        self.publication = SemanticPublication::new(
+            self.publication.root_digest(),
+            self.publication.completeness(),
+        );
+    }
+
     /// Removes all nodes (and their incident edges) for the given URI.
     pub fn remove_nodes_for_uri(&mut self, uri: &Url) {
         // A URI alone is never durable evidence of standard-library provenance. Once its
@@ -1024,6 +1085,7 @@ impl SemanticGraphData {
         self.derived_relationship_resolution_by_source_id.clear();
         self.evaluation_facts_by_node_id.clear();
         self.evaluation_publication = EvaluationPublicationState::NotRun;
+        self.retreat_publication_after_structural_mutation();
         self.remove_recorded_cross_document_edges_for_uri(uri);
         self.invalidate_query_indexes();
         self.clear_import_lookup_cache();
@@ -1057,6 +1119,7 @@ impl SemanticGraphData {
         self.derived_relationship_resolution_by_source_id.clear();
         self.evaluation_facts_by_node_id.clear();
         self.evaluation_publication = EvaluationPublicationState::NotRun;
+        self.retreat_publication_after_structural_mutation();
         self.pending_relationships
             .extend(other.pending_relationships.iter().cloned());
         self.pending_expression_relationships

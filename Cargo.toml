@@ -46,5 +46,4 @@ blake3 = "1"
 sysml-v2-parser = { version = "0.54.0", features = ["serde"] }
 sysml-v2-parser-next = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "cb026cdc3658c3ac0f9f1b0395ec07bcbea69250", package = "sysml-v2-parser", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
-blake3 = "1"
 zstd = "0.13"

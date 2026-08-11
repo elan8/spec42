@@ -254,8 +254,8 @@ mod legacy {
 
         pub fn completeness(&self) -> PublicationCompleteness {
             match self.model.inner.completeness() {
-                sysml_model::SemanticCompleteness::Complete => PublicationCompleteness::Complete,
-                sysml_model::SemanticCompleteness::EditorRecovery => {
+                sysml_model::SemanticModelCompleteness::Complete => PublicationCompleteness::Complete,
+                sysml_model::SemanticModelCompleteness::EditorRecovery => {
                     PublicationCompleteness::EditorRecovery
                 }
             }
