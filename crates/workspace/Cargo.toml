@@ -74,6 +74,10 @@ name = "cache_store"
 path = "tests/cache_store.rs"
 
 [[test]]
+name = "cache_artifacts"
+path = "tests/cache_artifacts.rs"
+
+[[test]]
 name = "host_errors"
 path = "tests/host_errors.rs"
 
