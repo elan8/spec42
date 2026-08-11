@@ -566,6 +566,37 @@ No `ResolutionView` query runs a convergence pass, mutates memo state needed for
 changes publication completeness. Harmless allocation-free cache warming is unnecessary because
 the publication builds its query indexes before becoming visible.
 
+### 5.2.1 Query crate and enforceable consumer boundary
+
+The implementation packages the published model and all supported semantic query services behind
+a `sysml_query` crate. `sysml_query` may depend on `sysml_model` to construct its opaque published
+state, but diagnostics, language service, LSP, workspace presentation, generators, and other
+semantic consumers do not depend directly on `sysml_model`. Rust does not make transitive
+dependencies nameable, so this manifest boundary makes raw graph, resolver, fact-collection, and
+index types unavailable to those consumers even when an implementation type must be public for
+the owning crate-to-crate construction seam.
+
+`sysml_query` owns the private `SemanticQueryIndexes` representation and exposes cohesive typed
+services rather than one generic inventory API. Its public surface may re-export neutral semantic
+identities, result enums, provenance, ranges, and immutable model handles required by callers. It
+does not re-export `SemanticGraph`, graph nodes, resolver databases, builders, raw index types,
+generic attribute maps, complete resolution-fact collections, or constructors that accept a
+partly settled model. Consumers cannot request an index handle or iterate general storage and
+classify it themselves. A missing consumer operation extends the owning typed query service.
+
+A repository architecture check reads Cargo workspace metadata and fails when a semantic consumer
+adds a direct dependency on `sysml_model` or another implementation crate outside an explicit
+owner/tool allowlist. Compile-fail contract tests prove that index types, fields, raw collections,
+and construction functions are inaccessible through `sysml_query`. A syntax-aware API check also
+rejects forbidden public escape-hatch shapes such as raw graph/index accessors; text search alone
+is not the authority. These checks run in the normal workspace gate.
+
+This boundary cannot mathematically prove that arbitrary code never combines legitimate typed
+answers into a new derived meaning. The query API therefore avoids overly general inventories,
+and architectural review still checks for downstream semantic classification. The enforceable
+guarantee is that supported consumers cannot access raw semantic storage or resolution machinery
+and cannot add such access without a manifest/API gate failure.
+
 There is no public resolver accepting an arbitrary context string, container prefix, or concrete
 allowed-kind slice. Diagnostics query the authored reference's canonical outcome. Interactive
 language-service lookup uses a separate typed `LookupRole` (for example navigation symbol,
