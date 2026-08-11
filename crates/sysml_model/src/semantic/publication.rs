@@ -65,23 +65,32 @@ impl Default for SemanticConfiguration {
     }
 }
 
-/// Content-complete identity for an immutable semantic input.
+/// Content-complete identity for an immutable semantic input and publication phase.
+///
+/// The construction and evaluation policies are included even when two policies currently
+/// produce equivalent resolution facts.  They are phase-affecting inputs: changing either may
+/// change completeness, evaluation facts, indexes, diagnostics, or the publication contract in a
+/// later implementation.  A cache or publication owner must never treat those phases as the same
+/// model merely because the source bytes match.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SemanticModelIdentity {
     pub source_digest: String,
     pub semantic_contract_version: String,
+    pub construction: ConstructionStrategy,
+    pub evaluation: EvaluationPolicy,
 }
 
 impl SemanticModelIdentity {
-    fn for_request(
-        snapshot: &ImmutableSourceSnapshot,
-        configuration: &SemanticConfiguration,
-    ) -> Self {
+    fn for_request(request: &SemanticBuildRequest) -> Self {
         let mut hasher = Sha256::new();
         hasher.update(b"spec42-semantic-input\0");
-        hasher.update(configuration.semantic_contract_version.as_bytes());
+        hasher.update(request.configuration.semantic_contract_version.as_bytes());
         hasher.update([0]);
-        for document in snapshot.documents() {
+        hasher.update(construction_tag(request.construction));
+        hasher.update([0]);
+        hasher.update(evaluation_tag(request.evaluation));
+        hasher.update([0]);
+        for document in request.sources.documents() {
             hasher.update(document.uri.as_str().as_bytes());
             hasher.update([0]);
             hasher.update(source_kind_tag(document.source_kind));
@@ -92,8 +101,24 @@ impl SemanticModelIdentity {
         let digest = hasher.finalize();
         Self {
             source_digest: digest.iter().map(|byte| format!("{byte:02x}")).collect(),
-            semantic_contract_version: configuration.semantic_contract_version.clone(),
+            semantic_contract_version: request.configuration.semantic_contract_version.clone(),
+            construction: request.construction,
+            evaluation: request.evaluation,
         }
+    }
+}
+
+fn construction_tag(strategy: ConstructionStrategy) -> &'static [u8] {
+    match strategy {
+        ConstructionStrategy::Sequential => b"sequential",
+        ConstructionStrategy::Parallel => b"parallel",
+    }
+}
+
+fn evaluation_tag(policy: EvaluationPolicy) -> &'static [u8] {
+    match policy {
+        EvaluationPolicy::ResolvedOnly => b"resolved-only",
+        EvaluationPolicy::Evaluate => b"evaluate",
     }
 }
 
@@ -124,6 +149,17 @@ pub struct SemanticBuildRequest {
     pub construction: ConstructionStrategy,
     pub evaluation: EvaluationPolicy,
     pub configuration: SemanticConfiguration,
+}
+
+impl SemanticBuildRequest {
+    /// Returns the complete identity of this immutable build request.
+    ///
+    /// Publication owners use this method when issuing a background-build token.  Keeping the
+    /// derivation on the request prevents callers from supplying an identity that does not match
+    /// the source, construction, evaluation, or configuration inputs they actually build.
+    pub fn identity(&self) -> SemanticModelIdentity {
+        SemanticModelIdentity::for_request(self)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1113,7 +1149,7 @@ pub(crate) fn build_semantic_model_with_max_passes(
     request: SemanticBuildRequest,
     max_passes: usize,
 ) -> Result<SemanticModel, SemanticBuildFailure> {
-    let identity = SemanticModelIdentity::for_request(&request.sources, &request.configuration);
+    let identity = request.identity();
     let documents = request.sources.documents();
     let (graph, _, completeness) = build_structural_graph(documents, request.construction);
     let resolution = ResolutionDb::new(&graph)
@@ -1203,10 +1239,51 @@ mod tests {
             ImmutableSourceSnapshot::new(vec![document("memory://test/a.sysml", "package B {}")])
                 .unwrap();
         let config = SemanticConfiguration::default();
-        assert_ne!(
-            SemanticModelIdentity::for_request(&first, &config),
-            SemanticModelIdentity::for_request(&second, &config)
+        let first_request = SemanticBuildRequest {
+            sources: first,
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: config.clone(),
+        };
+        let second_request = SemanticBuildRequest {
+            sources: second,
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: config,
+        };
+        assert_ne!(first_request.identity(), second_request.identity());
+    }
+
+    #[test]
+    fn identity_includes_phase_affecting_policies() {
+        let snapshot =
+            ImmutableSourceSnapshot::new(vec![document("memory://test/a.sysml", "package A {}")])
+                .unwrap();
+        let resolved_only = SemanticBuildRequest {
+            sources: snapshot.clone(),
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: SemanticConfiguration::default(),
+        };
+        let evaluated = SemanticBuildRequest {
+            sources: snapshot.clone(),
+            construction: ConstructionStrategy::Sequential,
+            evaluation: EvaluationPolicy::Evaluate,
+            configuration: SemanticConfiguration::default(),
+        };
+        let parallel = SemanticBuildRequest {
+            sources: snapshot,
+            construction: ConstructionStrategy::Parallel,
+            evaluation: EvaluationPolicy::ResolvedOnly,
+            configuration: SemanticConfiguration::default(),
+        };
+        assert_ne!(resolved_only.identity(), evaluated.identity());
+        assert_ne!(resolved_only.identity(), parallel.identity());
+        assert_eq!(
+            resolved_only.identity().evaluation,
+            EvaluationPolicy::ResolvedOnly
         );
+        assert_eq!(evaluated.identity().evaluation, EvaluationPolicy::Evaluate);
     }
 
     #[test]
