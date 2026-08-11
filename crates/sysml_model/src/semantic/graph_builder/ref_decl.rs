@@ -53,9 +53,6 @@ pub(super) fn materialize_ref_decl(
         .value
         .as_ref()
         .map(|value| expressions::expression_to_debug_string(&value.value.expression));
-    if let Some(ref v) = value_expression {
-        attrs.insert("value".to_string(), serde_json::json!(v));
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -73,6 +70,11 @@ pub(super) fn materialize_ref_decl(
     if let Some(value) = &n.value {
         if let Some(node) = g.get_node_mut(&node_id) {
             node.declared_facts.feature_value = Some(declared_feature_value(value));
+        }
+    }
+    if let Some(ref v) = value_expression {
+        if let Some(node) = g.get_node_mut(&node_id) {
+            node.expression_text.value = Some(v.clone());
         }
     }
     for target in typing_targets(n.typing.as_deref()) {

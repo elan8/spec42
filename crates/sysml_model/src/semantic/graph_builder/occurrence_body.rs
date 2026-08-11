@@ -89,12 +89,6 @@ pub(super) fn build_from_occurrence_body_element(
             if let Some(r) = subsetting_target(value.redefines.as_deref()) {
                 attrs.insert("redefines".to_string(), serde_json::json!(r));
             }
-            if let Some(expr_node) = &value.value {
-                attrs.insert(
-                    "value".to_string(),
-                    serde_json::json!(expression_to_debug_string(&expr_node.value.expression)),
-                );
-            }
             add_node_and_recurse(
                 g,
                 uri,
@@ -111,6 +105,8 @@ pub(super) fn build_from_occurrence_body_element(
                 if let Some(attribute) = g.get_node_mut(&node_id) {
                     attribute.declared_facts.feature_value =
                         Some(declared_feature_value(feature_value));
+                    attribute.expression_text.value =
+                        Some(expression_to_debug_string(&feature_value.value.expression));
                 }
             }
             attach_declared_subsetting_family(

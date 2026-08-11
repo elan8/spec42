@@ -60,12 +60,6 @@ pub(super) fn build_from_attribute_body(
                     );
                 }
                 unit_metadata::project_attribute_def_unit_metadata(&mut attrs, value);
-                if let Some(expr_node) = &value.value {
-                    let rendered =
-                        expressions::expression_to_debug_string(&expr_node.value.expression);
-                    attrs.insert("value".to_string(), serde_json::json!(rendered));
-                    attrs.insert("defaultValue".to_string(), serde_json::json!(rendered));
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -76,6 +70,14 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expr_node) = &value.value {
+                    let rendered =
+                        expressions::expression_to_debug_string(&expr_node.value.expression);
+                    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        node.expression_text.value = Some(rendered.clone());
+                        node.expression_text.default_value = Some(rendered);
+                    }
+                }
                 for target in typing_targets(value.typing.as_deref()) {
                     add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
                 }
@@ -111,14 +113,6 @@ pub(super) fn build_from_attribute_body(
                         attrs.insert("subsetsFeature".to_string(), serde_json::json!(r));
                     }
                 }
-                if let Some(expr_node) = &value.value {
-                    attrs.insert(
-                        "value".to_string(),
-                        serde_json::json!(expressions::expression_to_debug_string(
-                            &expr_node.value.expression
-                        )),
-                    );
-                }
                 add_node_and_recurse(
                     g,
                     uri,
@@ -129,6 +123,13 @@ pub(super) fn build_from_attribute_body(
                     attrs,
                     Some(parent_id),
                 );
+                if let Some(expr_node) = &value.value {
+                    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+                        node.expression_text.value = Some(expressions::expression_to_debug_string(
+                            &expr_node.value.expression,
+                        ));
+                    }
+                }
                 attach_declared_name(g, &NodeId::new(uri, &qualified), &value.name);
                 attach_declared_subsetting_family(
                     g,

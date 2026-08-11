@@ -1097,6 +1097,68 @@ pub struct DeclaredSemanticFacts {
     /// two-step handoff `ConnectStatementDetail`'s `source_expression`/`target_expression` use.
     #[serde(default)]
     pub transition_endpoints: Option<TransitionEndpointFacts>,
+    /// Analysis/verification-case level facts: rendered case expression, aggregated
+    /// require/assert constraints, and objective-to-result binding. See
+    /// [`DeclaredAnalysisCaseFacts`]. Replaces `attributes["analysisExpression"]`,
+    /// `["analysisConstraints"]`, `["objectiveBoundTo"]` (`UNIFY_CACHE_PROGRESS.md` chunk E).
+    #[serde(default)]
+    pub analysis_case: Option<DeclaredAnalysisCaseFacts>,
+}
+
+/// Declared analysis/verification-case facts that previously round-tripped through JSON
+/// attributes. `analysisKind`/`analysisParams`/`analysisReturn`/`parameters` are deliberately
+/// **not** modeled here: an exhaustive repository grep found no reader for any of the four
+/// (`calc_constraint_def.rs` only ever wrote them), so their producer writes were deleted
+/// outright per the B9 "no reader" rule instead of being migrated to a typed fact.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredAnalysisCaseFacts {
+    /// Rendered analysis/verification-case expression text (was `attributes["analysisExpression"]`).
+    /// Remains a rendered string, not a `DeclaredExpression` tree, because every consumer (case
+    /// inheritance propagation, `requirement_case_conformance`, hover) matches on the text itself
+    /// rather than walking a parsed tree; producers only ever had a debug-rendered string here.
+    #[serde(default)]
+    pub expression: Option<String>,
+    /// Aggregated `require constraint` / `assert constraint` facts owned by this case/requirement
+    /// (was `attributes["analysisConstraints"]`).
+    #[serde(default)]
+    pub constraints: Vec<DeclaredAnalysisConstraint>,
+    /// Qualified name of the analysis result this objective is bound to (was
+    /// `attributes["objectiveBoundTo"]`). Modeled as the qualified-name target rather than a
+    /// presence-only bool: `requirement_case_conformance.rs` reads the string content (and
+    /// requires it to be non-empty), not merely whether the key exists; the `engine_impl.rs`
+    /// gate is a strict subset (`is_some()`) of that same fact.
+    #[serde(default)]
+    pub objective_bound_to: Option<String>,
+}
+
+/// One aggregated constraint fact contributing to a case/requirement's
+/// [`DeclaredAnalysisCaseFacts::constraints`]. Mirrors the two producers of
+/// `attributes["analysisConstraints"]` entries: a requirement's authored `require constraint`
+/// body, and an owned `assert constraint` child projected onto its parent.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase", tag = "kind")]
+#[allow(clippy::enum_variant_names)]
+pub enum DeclaredAnalysisConstraint {
+    RequireConstraint {
+        params: Vec<DeclaredAnalysisConstraintParam>,
+        expression: String,
+        #[serde(default)]
+        doc: String,
+        #[serde(default)]
+        metadata: Vec<String>,
+    },
+    AssertConstraint {
+        expression: String,
+    },
+}
+
+/// One `in`/`out`/`inout` parameter of a `require constraint`'s declared parameter list.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredAnalysisConstraintParam {
+    pub direction: String,
+    pub name: String,
+    #[serde(default)]
+    pub param_type: Option<String>,
 }
 
 /// Typed source/target endpoint facts for a `transition` statement's `Transition` node.
@@ -2037,6 +2099,44 @@ pub struct SourceTextFacts {
     pub keyword: Option<String>,
 }
 
+/// Debug-rendered expression text kept for consumers that still compare against the raw
+/// rendered text rather than a structured tree (boolean-literal detection, unit-bracket
+/// parsing, `::`-qualification checks, LHS/RHS assignment-target text). Replaces
+/// `attributes["value"]`, `["defaultValue"]`, `["lhs"]`, `["rhs"]`, `["condition"]`,
+/// `["isThen"]` (`UNIFY_CACHE_PROGRESS.md` chunk E).
+///
+/// Where a producer also has a parsed expression AST available, the structured tree is (and
+/// remains) recorded separately as [`DeclaredSemanticFacts::feature_value`] or
+/// `::own_expression`; this struct duplicates the *same* already-computed rendered string 1:1
+/// with the previous JSON attribute value, so no consumer-visible text changes. A handful of
+/// producers (`use_case.rs` `isThen`/"actor redefinition" `rhs`, `analysis_case.rs`'s
+/// `parse_analysis_attributes_from_other`, `requirement_body.rs`'s span-fallback `defaultValue`)
+/// never had a parsed expression to begin with -- only authored/derived text -- so this struct
+/// is their sole representation, matching [`TransitionEndpointFacts`]'s authored-text pattern.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeclaredExpressionText {
+    /// Rendered declared/initial value text (was `attributes["value"]`).
+    #[serde(default)]
+    pub value: Option<String>,
+    /// Rendered attribute-def default-value text (was `attributes["defaultValue"]`).
+    #[serde(default)]
+    pub default_value: Option<String>,
+    /// Rendered LHS of a `verify`/`assign` comparison (was `attributes["lhs"]`).
+    #[serde(default)]
+    pub lhs: Option<String>,
+    /// Rendered RHS of a `verify`/`assign` comparison, or of an actor redefinition (was
+    /// `attributes["rhs"]`).
+    #[serde(default)]
+    pub rhs: Option<String>,
+    /// Rendered guard/filter condition text (was `attributes["condition"]`).
+    #[serde(default)]
+    pub condition: Option<String>,
+    /// True when a `verify`/`assign` comparison, or a chained use case, was declared with
+    /// `then` (was `attributes["isThen"]`).
+    #[serde(default)]
+    pub is_then: Option<bool>,
+}
+
 /// A node in the semantic graph representing a model element.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemanticNode {
@@ -2055,6 +2155,9 @@ pub struct SemanticNode {
     /// Typed source-fidelity/documentation text. See [`SourceTextFacts`].
     #[serde(default)]
     pub source_text: SourceTextFacts,
+    /// Typed rendered-expression-text facts. See [`DeclaredExpressionText`].
+    #[serde(default)]
+    pub expression_text: DeclaredExpressionText,
     pub parent_id: Option<NodeId>,
 }
 

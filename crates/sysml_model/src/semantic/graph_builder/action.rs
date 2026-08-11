@@ -213,12 +213,6 @@ pub(super) fn add_in_out_decl(
         "parameterType".to_string(),
         serde_json::json!(&parameter.type_name),
     );
-    if let Some(ref v) = parameter.value {
-        attrs.insert(
-            "defaultValue".to_string(),
-            serde_json::json!(super::expressions::expression_to_debug_string(v)),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -243,6 +237,10 @@ pub(super) fn add_in_out_decl(
             ..Default::default()
         });
         node.declared_facts.own_expression = parameter.value.as_ref().map(declared_expression);
+        node.expression_text.default_value = parameter
+            .value
+            .as_ref()
+            .map(super::expressions::expression_to_debug_string);
     }
     add_typing_edge_if_exists(
         g,
@@ -336,16 +334,7 @@ fn add_assign_stmt(
         "_assign",
         "assign",
     );
-    let mut attrs = HashMap::new();
-    attrs.insert(
-        "lhs".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(&value.lhs)),
-    );
-    attrs.insert(
-        "rhs".to_string(),
-        serde_json::json!(expressions::expression_to_debug_string(&value.rhs)),
-    );
-    attrs.insert("isThen".to_string(), serde_json::json!(value.is_then));
+    let attrs = HashMap::new();
     add_node_and_recurse(
         g,
         uri,
@@ -356,6 +345,11 @@ fn add_assign_stmt(
         attrs,
         Some(parent_id),
     );
+    if let Some(node) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+        node.expression_text.lhs = Some(expressions::expression_to_debug_string(&value.lhs));
+        node.expression_text.rhs = Some(expressions::expression_to_debug_string(&value.rhs));
+        node.expression_text.is_then = Some(value.is_then);
+    }
 }
 
 /// Materialize the standalone `first <step>;` form as an explicit initial control node.
@@ -547,14 +541,6 @@ fn add_default_reference_usage(
             serde_json::json!(targets.join(", ")),
         );
     }
-    if let Some(expr_node) = &value.value {
-        attrs.insert(
-            "value".to_string(),
-            serde_json::json!(expressions::expression_to_debug_string(
-                &expr_node.value.expression
-            )),
-        );
-    }
     add_node_and_recurse(
         g,
         uri,
@@ -565,6 +551,13 @@ fn add_default_reference_usage(
         attrs,
         Some(parent_id),
     );
+    if let Some(expr_node) = &value.value {
+        if let Some(n) = g.get_node_mut(&NodeId::new(uri, &qualified)) {
+            n.expression_text.value = Some(expressions::expression_to_debug_string(
+                &expr_node.value.expression,
+            ));
+        }
+    }
     attach_declared_typing_relationship(g, &NodeId::new(uri, &qualified), value.typing.as_deref());
     for target in targets {
         add_typing_edge_if_exists(g, uri, &qualified, target, container_prefix);
